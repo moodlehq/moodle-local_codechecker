@@ -25,27 +25,8 @@
  */
 
 
-require_once($CFG->dirroot . '/lib/formslib.php');
-
-
-/**
- * Settings form for the code checker.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class local_codechecker_form extends moodleform {
-    function definition() {
-        global $path;
-        $mform = $this->_form;
-        $mform->addElement('static', '', '', get_string('info', 'local_codechecker'));
-
-        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'));
-        $mform->setDefault('path', $path);
-
-        $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
-    }
-}
+require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->dirroot . '/local/codechecker/checkslib.php');
 
 
 /**
@@ -67,12 +48,19 @@ class local_codechecker {
     /** @var array the list of files to check. */
     protected $files;
 
+    /** @var array the checks to perform on the entire file contents. */
+    protected $filechecks;
+
+    /** @var array the checks to perform on each line of each file. */
+    protected $linechecks;
+
     /**
      * Constructor.
      * @param string $dirroot full path of the root of the codebase to search inside.
      */
     public function __construct($dirroot) {
         $this->dirroot = $dirroot;
+        $this->create_checks();
     }
 
     /**
@@ -200,106 +188,41 @@ class local_codechecker {
 
         // Whole file checks
         $wholefile = file_get_contents($file);
-
-        // Windows line ending
-        if (strpos($wholefile, "\r\n") !== false) {
-            $problems[] = new local_codechecker_problem('windows');
-        }
-
-        // Check for expected header
-        $header = <<<EOT
-<?php
-
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-EOT;
-        if (strpos(str_replace("<?php\n//", "<?php\n\n//", $wholefile), $header) !== 0) {
-            $problems[] = new local_codechecker_problem('noheader');
-        }
-
-        if (!preg_match('~[^\n]\n$~', $wholefile)) {
-            $problems[] = new local_codechecker_problem('eoflf');
+        foreach ($this->filechecks as $filecheck) {
+            $problems = array_merge($problems, $filecheck->check($wholefile, $file));
         }
 
         // Line-by-line checks
         $lines = file($file);
-        $index = 0;
-        foreach ($lines as $line) {
-            $index++;
-
-            // Automatically exclude regular expressions (unless they are formatted
-            // across lines, we're not that clever)
-            $l = preg_replace('~preg_(match|replace)\(\'.*?\',~', 'ignore', $line);
-
-            // Whitespace at EOL
-            if (preg_match('~ +$~', $l)) {
-                $problems[] = new local_codechecker_problem('eol', $index, $line);
-            }
-            // Tab anywhere in line
-            if (preg_match('~\t~', $l)) {
-                $problems[] = new local_codechecker_problem('tab', $index, $line);
-            }
-            // Missing space after if, foreach, etc
-            if (preg_match('~\b(if|foreach|for|while|catch|switch)\(~', $l)) {
-                $problems[] = new local_codechecker_problem('keywordspace', $index, $line);
-            }
-            // Missing space between ) and {
-            if (preg_match('~\){~', $l)) {
-                $problems[] = new local_codechecker_problem('spacebeforebrace', $index, $line);
-            }
-            // Missing space after comma
-            if (preg_match('~\,(?!( |\'[ ,)]|\"[ ,)]|\n))~', $l)) {
-                $problems[] = new local_codechecker_problem('spaceaftercomma', $index, $line);
-            }
-            // Closing PHP tag
-            if (preg_match('~\?\>\s*$~', $l)) {
-                // Check it's at end of file
-                $ok = false;
-                for ($i=$index; $i < count($lines); $i++) {
-                    if (preg_match('~\S~', $lines[$i])) {
-                        $ok = true;
-                        break;
-                    }
-                }
-                if (!$ok) {
-                    $problems[] = new local_codechecker_problem('closephp', $index, $line);
-                }
-            }
-            // Very long lines (permitted in lang files)
-            if (strlen($line) > local_codechecker::MAX_LINE_LENGTH &&
-                    !preg_match('~/lang/~', $file)) {
-                $problems[] = new local_codechecker_problem(
-                        'toolong', $index, $line, strlen($line));
-            }
-            // Wrong variable names
-            $matches = array();
-            if (preg_match_all('~\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*~', $l,
-                    $matches)) {
-                foreach ($matches[0] as $varname) {
-                    // Check for normal name (lower-case) or global (upper, underline
-                    // allowed for statics)
-                    if (!preg_match('~^\$[a-z0-9]+$~', $varname) &&
-                            !preg_match('~^\$[A-Z0-9_]+$~', $varname)) {
-                        $problems[] = new local_codechecker_problem('varname', $index, $line);
-                        break;
-                    }
-                }
+        foreach ($lines as $i => $line) {
+            foreach ($this->linechecks as $linecheck) {
+                $problems = array_merge($problems, $linecheck->check($line, $i + 1, $file));
             }
         }
 
         return $problems;
+    }
+
+    protected function create_checks() {
+        $this->filechecks = array(
+            new local_codechecker_preg_file_check('windows', '~\r\n~'),
+            new local_codechecker_header_file_check(),
+            new local_codechecker_preg_file_check('eoflf', '~\n\n$~D'),
+            new local_codechecker_preg_file_check('eoflf', '~(?<!\n)$~D'),
+            new local_codechecker_preg_file_check('closephp', '~\?>\s*$~D'),
+        );
+
+        $this->linechecks = array(
+            new local_codechecker_preg_line_check('eol', '~ +$~'),
+            new local_codechecker_preg_line_check('tab', '~\t~'),
+            new local_codechecker_preg_line_check('keywordspace',
+                    '~\b(if|foreach|for|while|catch|switch)\(~'),
+            new local_codechecker_preg_line_check('spacebeforebrace', '~\)' . '{~'),
+            new local_codechecker_preg_line_check('spaceaftercomma',
+                    '~\,' . '(?!( |\n|[\'"][, )]))~'),
+            new local_codechecker_line_length_check(self::MAX_LINE_LENGTH),
+            new local_codechecker_variable_name_check(),
+        );
     }
 }
 
@@ -315,7 +238,7 @@ class local_codechecker_problem {
      * @var string internal name of this error. Get looked up in the lang file as
      * 'fail_' . $this->err.
      */
-    public $code;
+    public $shortname;
 
     /** @var int the line number on which the problme occurred. */
     public $linenum;
@@ -328,15 +251,15 @@ class local_codechecker_problem {
 
     /**
      * Constructor
-     * @param string $code internal name of this error.
+     * @param string $shortname internal name of this error.
      * @param int $linenum the line number on which the problme occurred (optional).
      * @param int $line the contents of the problem line (optional).
      * @param mixed $a extra data used to render the message (optional).
      */
-    public function __construct($code, $linenum = null, $line = null, $a = null) {
+    public function __construct($shortname, $linenum = null, $code = null, $a = null) {
         $this->linenum = $linenum;
+        $this->shortname = $shortname;
         $this->code = $code;
-        $this->line = $line;
         $this->a = $a;
     }
 
@@ -344,7 +267,7 @@ class local_codechecker_problem {
      * @return string the human-readable message about this failure.
      */
     public function get_message() {
-        return get_string('fail_' . $this->code, 'local_codechecker', $this->a);
+        return get_string('fail_' . $this->shortname, 'local_codechecker', $this->a);
     }
 
     /**
@@ -356,5 +279,25 @@ class local_codechecker_problem {
         } else {
             return get_string('wholefile', 'local_codechecker');
         }
+    }
+}
+
+
+/**
+ * Settings form for the code checker.
+ *
+ * @copyright  2011 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class local_codechecker_form extends moodleform {
+    function definition() {
+        global $path;
+        $mform = $this->_form;
+        $mform->addElement('static', '', '', get_string('info', 'local_codechecker'));
+
+        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'));
+        $mform->setDefault('path', $path);
+
+        $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
 }

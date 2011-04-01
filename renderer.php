@@ -117,12 +117,12 @@ class local_codechecker_renderer extends plugin_renderer_base {
         $info = html_writer::tag('div', html_writer::tag('strong', $problem->get_line()) . ': ' .
                 $problem->get_message(), array('class'=>'info'));
 
-        if ($problem->line) {
-            $linedisplay = html_writer::tag('pre', str_replace(
+        if ($problem->code) {
+            $info = html_writer::tag('pre', str_replace(
                     array_keys($this->replaces), array_values($this->replaces),
-                    s($problem->line))) . $info;
+                    s($problem->code))) . $info;
         }
 
-        return html_writer::tag('li', $info, array('class'=>'fail ' . $problem->code));
+        return html_writer::tag('li', $info, array('class' => 'fail ' . $problem->shortname));
     }
 }
