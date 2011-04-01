@@ -17,10 +17,10 @@
 /**
  * Add page to admin menu.
  *
- * @copyright &copy; 2011 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package local
+ * @package    local
  * @subpackage codechecker
+ * @copyright  2011 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 if ($hassiteconfig) { // needs this condition or there is error on login page

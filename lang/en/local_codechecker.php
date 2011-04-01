@@ -17,10 +17,10 @@
 /**
  * Language strings
  *
- * @copyright &copy; 2011 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package local
+ * @package    local
  * @subpackage codechecker
+ * @copyright  2011 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Code checker';
@@ -50,6 +50,6 @@ $string['fail_closephp'] = 'Closing PHP tag not permitted';
 $string['fail_windows'] = 'File contains Windows line endings (fix with Eclipse File / Convert Line Delimiters To)';
 $string['fail_noheader'] = 'Does not precisely contain standard header (the // part)';
 $string['fail_eoflf'] = 'File must end with precisely one line feed';
-$string['fail_toolong'] = 'Lines should be no longer than 100 characters';
+$string['fail_toolong'] = 'Lines should not be longer than 100 characters (actual length {$a})';
 $string['fail_varname'] = 'Variable names must be all lower case, no _';
 $string['filesummary'] = '{$a->path} ({$a->count})';
