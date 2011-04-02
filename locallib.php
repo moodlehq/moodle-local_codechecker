@@ -24,6 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/local/codechecker/checkslib.php');
@@ -61,6 +62,28 @@ class local_codechecker {
     public function __construct($dirroot) {
         $this->dirroot = $dirroot;
         $this->create_checks();
+    }
+
+    protected function create_checks() {
+        $this->filechecks = array(
+            new local_codechecker_preg_file_check('windows', '~\r\n~'),
+            new local_codechecker_header_file_check(),
+            new local_codechecker_preg_file_check('eoflf', '~\n\n$~D'),
+            new local_codechecker_preg_file_check('eoflf', '~(?<!\n)$~D'),
+            new local_codechecker_preg_file_check('closephp', '~\?>\s*$~D'),
+        );
+
+        $this->linechecks = array(
+            new local_codechecker_preg_line_check('eol', '~ +$~'),
+            new local_codechecker_preg_line_check('tab', '~\t~'),
+            new local_codechecker_preg_line_check('keywordspace',
+                    '~\b(if|foreach|for|while|catch|switch)\(~'),
+            new local_codechecker_preg_line_check('spacebeforebrace', '~\)' . '{~'),
+            new local_codechecker_preg_line_check('spaceaftercomma',
+                    '~\,' . '(?!( |\n|[\'"][, )]))~'),
+            new local_codechecker_line_length_check(self::MAX_LINE_LENGTH),
+            new local_codechecker_variable_name_check(),
+        );
     }
 
     /**
@@ -209,28 +232,6 @@ class local_codechecker {
 
         return $problems;
     }
-
-    protected function create_checks() {
-        $this->filechecks = array(
-            new local_codechecker_preg_file_check('windows', '~\r\n~'),
-            new local_codechecker_header_file_check(),
-            new local_codechecker_preg_file_check('eoflf', '~\n\n$~D'),
-            new local_codechecker_preg_file_check('eoflf', '~(?<!\n)$~D'),
-            new local_codechecker_preg_file_check('closephp', '~\?>\s*$~D'),
-        );
-
-        $this->linechecks = array(
-            new local_codechecker_preg_line_check('eol', '~ +$~'),
-            new local_codechecker_preg_line_check('tab', '~\t~'),
-            new local_codechecker_preg_line_check('keywordspace',
-                    '~\b(if|foreach|for|while|catch|switch)\(~'),
-            new local_codechecker_preg_line_check('spacebeforebrace', '~\)' . '{~'),
-            new local_codechecker_preg_line_check('spaceaftercomma',
-                    '~\,' . '(?!( |\n|[\'"][, )]))~'),
-            new local_codechecker_line_length_check(self::MAX_LINE_LENGTH),
-            new local_codechecker_variable_name_check(),
-        );
-    }
 }
 
 
@@ -297,7 +298,7 @@ class local_codechecker_problem {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_codechecker_form extends moodleform {
-    function definition() {
+    protected function definition() {
         global $path;
         $mform = $this->_form;
 

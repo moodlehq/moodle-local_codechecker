@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 if ($hassiteconfig) { // needs this condition or there is error on login page
     $ADMIN->add('development', new admin_externalpage('codechecker',
             get_string('pluginname', 'local_codechecker'),
