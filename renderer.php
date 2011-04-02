@@ -45,7 +45,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
      */
     public function summary_start($numfiles) {
         return html_writer::tag('h2', get_string('filesfound', 'local_codechecker', $numfiles)) .
-                html_writer::end_tag('ul');
+                html_writer::start_tag('ul');
     }
 
     /**
@@ -74,19 +74,24 @@ class local_codechecker_renderer extends plugin_renderer_base {
      */
     public function summary_end($numfiles, $totalproblems) {
         $output = html_writer::end_tag('ul');
-        if ($totalproblems) {
-            $output .= $this->output->notification(get_string(
-                    'summary', 'local_codechecker', $totalproblems));
+        if ($totalproblems > 0) {
+            $output .= html_writer::tag('p', get_string('summary', 'local_codechecker',
+                    $totalproblems), array('class' => 'fail'));
+        } else {
+            $output .= html_writer::tag('p', get_string('success', 'local_codechecker'),
+                    array('class' => 'good'));
         }
         return $output;
     }
 
     /**
      * Display a message about the path being invalid.
+     * @param string $path the invaid path.
      * @return string HTML to output.
      */
-    public function invald_path_message() {
-        return $this->output->notification(get_string('invalidpath', 'local_codechecker'));
+    public function invald_path_message($path) {
+        return $this->output->notification(get_string(
+                'invalidpath', 'local_codechecker', s($path)));
     }
 
     /**
@@ -183,10 +188,11 @@ class local_codechecker_renderer_cli extends local_codechecker_renderer {
 
     /**
      * Display a message about the path being invalid.
+     * @param string $path the invaid path.
      * @return string HTML to output.
      */
-    public function invald_path_message() {
-        return get_string('invalidpath', 'local_codechecker') . "\n";
+    public function invald_path_message($path) {
+        return get_string('invalidpath', 'local_codechecker', $path) . "\n";
     }
 
     /**

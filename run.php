@@ -31,12 +31,14 @@ require_once($CFG->libdir . '/clilib.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 // Get the command-line options.
-list($options, $unrecognized) = cli_get_params(array('help' => false), array('h' => 'help'));
+list($options, $unrecognized) = cli_get_params(array(
+        'help' => false, 'verbose' => false),
+        array('h' => 'help', 'v' => 'verbose'));
 
 if (count($unrecognized) != 1) {
     $options['help'] = true;
 } else {
-    $path = reset($unrecognized);
+    $path = clean_param(reset($unrecognized), PARAM_PATH);
 }
 
 if ($options['help']) {
@@ -46,14 +48,17 @@ if ($options['help']) {
 
 $output = $PAGE->get_renderer('local_codechecker', null, RENDERER_TARGET_CLI);
 $checker = local_codechecker::create($CFG->dirroot, trim($path, '/'));
-if ($path) {
-    if (!is_null($checker)) {
-        $totalproblems = $checker->summary($output);
-        if ($totalproblems) {
-            $checker->check($output);
-        }
 
-    } else {
-        echo $renderer->invald_path_message();
+if ($checker->get_num_files() == 0) {
+    echo $output->invald_path_message($path);
+
+} else if ($checker->get_num_files() == 1) {
+    $checker->check($output, true);
+
+} else {
+
+    $totalproblems = $checker->summary($output);
+    if ($totalproblems) {
+        $checker->check($output);
     }
 }

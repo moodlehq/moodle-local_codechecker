@@ -28,7 +28,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 
-$path = optional_param('path', '', PARAM_SAFEPATH);
+$path = optional_param('path', '', PARAM_PATH);
 if ($path) {
     $pageparams = array('path' => $path);
 } else {
@@ -49,6 +49,7 @@ require_login();
 require_capability('moodle/site:config', $context);
 
 $mform = new local_codechecker_form(new moodle_url('/local/codechecker/'));
+$mform->set_data((object) array('path' => $path));
 if ($data = $mform->get_data()) {
     redirect('./?path=' . urlencode($data->path));
 }
@@ -59,14 +60,14 @@ $checker = local_codechecker::create($CFG->dirroot, trim($path, '/'));
 echo $OUTPUT->header();
 
 if ($path) {
-    if (!is_null($checker)) {
+    if ($checker->get_num_files() > 0) {
         $totalproblems = $checker->summary($output);
         if ($totalproblems) {
             $checker->check($output);
         }
 
     } else {
-        echo $renderer->invald_path_message();
+        echo $output->invald_path_message();
     }
 }
 

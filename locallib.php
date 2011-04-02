@@ -80,11 +80,18 @@ class local_codechecker {
             $files = $checker->find_all_files($fullpath);
             sort($files);
         } else {
-            return null;
+            $files = array();
         }
 
         $checker->set_files($files);
         return $checker;
+    }
+
+    /**
+     * @return int the number of files to be checked.
+     */
+    public function get_num_files() {
+        return count($this->files);
     }
 
     /**
@@ -169,10 +176,10 @@ class local_codechecker {
      * Output full results for checking all the files.
      * @param local_codechecker_renderer $output to generate the output
      */
-    public function check(local_codechecker_renderer $output) {
+    public function check(local_codechecker_renderer $output, $forceoutput = false) {
         foreach ($this->files as $i => $file) {
             $problems = $this->check_php_file($file);
-            if ($problems) {
+            if ($problems || $forceoutput) {
                 echo $output->problems($i, $this->pretty_path($file), $problems);
             }
         }
@@ -293,10 +300,14 @@ class local_codechecker_form extends moodleform {
     function definition() {
         global $path;
         $mform = $this->_form;
-        $mform->addElement('static', '', '', get_string('info', 'local_codechecker'));
+
+        $a = new stdClass();
+        $a->link = html_writer::link('http://docs.moodle.org/en/Development:Coding_style',
+                get_string('moodlecodingguidelines', 'local_codechecker'));
+        $a->path = html_writer::tag('tt', 'local/codechecker');
+        $mform->addElement('static', '', '', get_string('info', 'local_codechecker', $a));
 
         $mform->addElement('text', 'path', get_string('path', 'local_codechecker'));
-        $mform->setDefault('path', $path);
 
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }

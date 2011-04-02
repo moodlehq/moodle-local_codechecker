@@ -10,11 +10,15 @@
     margin: 0.5em 0;
     padding: 0;
 }
-#page-local-codechecker-index .fail .info {
+#page-local-codechecker-index .fail .info,
+#page-local-codechecker-index .region-content .fail {
     color: #660000;
 }
 #page-local-codechecker-index .good {
     color: #006600;
+}
+#page-local-codechecker-index tt {
+    display: inline; /* Override silly rule in Canvas theme. */
 }
 #page-local-codechecker-index pre {
     margin-bottom: 0;
@@ -29,7 +33,4 @@
     border-radius: 5px;
     background-color:#f2f2f2;
     margin: 1em 0;
-}
-#page-local-codechecker-index .notifyproblem {
-    text-align: left;
 }
