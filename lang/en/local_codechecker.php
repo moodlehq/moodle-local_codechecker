@@ -30,6 +30,9 @@ $string['info'] = '<p>Checks code for whitespace and similar errors within a giv
 <p>Paths are relative to Moodle code root, for example: <tt>local/codechecker</tt></p>';
 $string['path'] = 'Path to check';
 $string['check'] = 'Check code';
+$string['clihelp'] = 'Check some PHP code against the Moodle coding guidelines.
+Example:
+  php run.php local/codechecker';
 
 $string['filesfound'] = 'Found files: {$a}';
 
@@ -44,8 +47,8 @@ $string['summary_ok'] = 'No errors or warnings';
 $string['fail_eol'] = 'Whitespace at end of line';
 $string['fail_tab'] = 'Tab in line';
 $string['fail_keywordspace'] = 'Missing space after language keyword and before (';
-$string['fail_spacebeforebrace'] = 'Missing space after ) and before {';
-$string['fail_spaceaftercomma'] = 'Missing space after comma';
+$string['fail_spacebeforebrace'] = 'Missing space between ) and {';
+$string['fail_spaceaftercomma'] = 'Missing space after a comma';
 $string['fail_closephp'] = 'Closing PHP tag not permitted';
 $string['fail_windows'] = 'File contains Windows line endings (fix with Eclipse File / Convert Line Delimiters To)';
 $string['fail_noheader'] = 'Does not precisely contain standard header (the // part)';

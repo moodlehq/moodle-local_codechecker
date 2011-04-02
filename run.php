@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Run the code checker from the web.
+ * Run the code checker from the command-line.
  *
  * @package    local
  * @subpackage codechecker
@@ -24,40 +24,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../config.php');
+define('CLI_SCRIPT', true);
+
+require(dirname(__FILE__) . '/../../config.php');
+require_once($CFG->libdir . '/clilib.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
+// Get the command-line options.
+list($options, $unrecognized) = cli_get_params(array('help' => false), array('h' => 'help'));
 
-$path = optional_param('path', '', PARAM_SAFEPATH);
-if ($path) {
-    $pageparams = array('path' => $path);
+if (count($unrecognized) != 1) {
+    $options['help'] = true;
 } else {
-    $pageparams = array();
+    $path = reset($unrecognized);
 }
 
-$context = get_context_instance(CONTEXT_SYSTEM);
-$pagename = get_string('pluginname', 'local_codechecker');
-
-$PAGE->set_url(new moodle_url('/local/codechecker/', $pageparams));
-$PAGE->set_context($context);
-$PAGE->set_pagelayout('admin');
-$PAGE->set_heading($SITE->fullname);
-$PAGE->set_title($SITE->fullname. ': ' . $pagename);
-$PAGE->navbar->add($pagename);
-
-require_login();
-require_capability('moodle/site:config', $context);
-
-$mform = new local_codechecker_form(new moodle_url('/local/codechecker/'));
-if ($data = $mform->get_data()) {
-    redirect('./?path=' . urlencode($data->path));
+if ($options['help']) {
+    echo get_string('clihelp', 'local_codechecker'), "\n";
+    die();
 }
 
-$output = $PAGE->get_renderer('local_codechecker');
+$output = $PAGE->get_renderer('local_codechecker', null, RENDERER_TARGET_CLI);
 $checker = local_codechecker::create($CFG->dirroot, trim($path, '/'));
-
-echo $OUTPUT->header();
-
 if ($path) {
     if (!is_null($checker)) {
         $totalproblems = $checker->summary($output);
@@ -69,6 +57,3 @@ if ($path) {
         echo $renderer->invald_path_message();
     }
 }
-
-$mform->display();
-echo $OUTPUT->footer();
