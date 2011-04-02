@@ -30,3 +30,6 @@
     background-color:#f2f2f2;
     margin: 1em 0;
 }
+#page-local-codechecker-index .notifyproblem {
+    text-align: left;
+}

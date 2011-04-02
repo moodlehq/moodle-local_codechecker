@@ -151,7 +151,7 @@ class local_codechecker {
             $totalproblems += $numproblems;
         }
 
-        echo $output->summary_end(count($this->files));
+        echo $output->summary_end(count($this->files), $totalproblems);
 
         return $totalproblems;
     }

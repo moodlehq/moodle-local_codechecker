@@ -69,10 +69,16 @@ class local_codechecker_renderer extends plugin_renderer_base {
     /**
      * Display the end of the list of the files checked.
      * @param int $numfiles the number of files checked.
+     * @param int $totalproblems the total number of problems found.
      * @return string HTML to output.
      */
-    public function summary_end($numfiles) {
-        return html_writer::end_tag('ul');
+    public function summary_end($numfiles, $totalproblems) {
+        $output = html_writer::end_tag('ul');
+        if ($totalproblems) {
+            $output .= $this->output->notification(get_string(
+                    'summary', 'local_codechecker', $totalproblems));
+        }
+        return $output;
     }
 
     /**
