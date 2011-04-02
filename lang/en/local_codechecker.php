@@ -41,12 +41,13 @@ $string['fail_eoflf'] = 'File must end with precisely one line feed';
 $string['fail_toolong'] = 'Lines should not be longer than {$a->max} characters (actual length {$a->actual})';
 $string['fail_varname'] = 'Variable names must be all lower case, no _ ({$a})';
 $string['filesfound'] = 'Files found: {$a}';
-$string['filesummary'] = '{$a->path} ({$a->count})';
+$string['filesummary'] = '{$a->path} - {$a->count}';
 $string['info'] = '<p>Checks code against some aspects of the {$a->link}.</p>
 <p>Enter a path relative to the Moodle code root, for example: {$a->path}.</p>
 <p>You can enter either a specific PHP file, or to a folder to check all the files it contains.</p>';
 $string['invalidpath'] = 'Invalid path {$a}';
 $string['moodlecodingguidelines'] = 'Moodle coding guidelines';
+$string['numerrorswarnings'] = '{$a->numErrors} error(s) and {$a->numWarnings} warning(s)';
 $string['path'] = 'Path to check';
 $string['pluginname'] = 'Code checker';
 $string['success'] = 'Well done!';

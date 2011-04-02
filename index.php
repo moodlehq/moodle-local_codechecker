@@ -67,7 +67,7 @@ if ($path) {
         }
 
     } else {
-        echo $output->invald_path_message();
+        echo $output->invald_path_message($path);
     }
 }
 

@@ -14,6 +14,10 @@
 #page-local-codechecker-index .region-content .fail {
     color: #660000;
 }
+#page-local-codechecker-index .fail.warning .info {
+    color: #996600;
+    font-weight: normal;
+}
 #page-local-codechecker-index .good {
     color: #006600;
 }
