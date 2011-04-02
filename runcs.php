@@ -28,23 +28,8 @@ define('CLI_SCRIPT', true);
 
 require(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/clilib.php');
-require_once($CFG->libdir . '/pear/PHP/CodeSniffer.php');
+require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
-
-/**
- * Code sniffer insists on having an PHP_CodeSniffer_CLI, even though we don't
- * really want one. This is a dummy class to make it work.
- */
-class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
-    /** Constructor */
-    public function __construct() {
-        $this->errorSeverity = 1;
-        $this->warningSeverity = 1;
-    }
-    public function getCommandLineValues() {
-        return array('showProgress' => false);
-    }
-}
 
 // Get the command-line options.
 list($options, $unrecognized) = cli_get_params(array('help' => false), array('h' => 'help'));

@@ -138,6 +138,81 @@ class local_codechecker_renderer extends plugin_renderer_base {
 
         return html_writer::tag('li', $info, array('class' => 'fail ' . $problem->shortname));
     }
+
+    public function cs_report(array $problems, PHP_CodeSniffer $phpcs, $numerrors) {
+        $output = '';
+
+        $numfiles = count($problems);
+        $output .= $this->summary_start($numfiles);
+
+        $index = 0;
+        foreach ($problems as $file => $info) {
+            $index++;
+
+            $summary = '';
+            if ($info['numErrors'] + $info['numWarnings'] > 0) {
+                $summary = get_string('numerrorswarnings', 'local_codechecker', $info);
+            }
+
+            $output .= $this->summary_line($index, local_codechecker_pretty_path($file), $summary);
+        }
+        $output .= $this->summary_end($numfiles, $numerrors);
+
+        $index = 0;
+        foreach ($problems as $file => $info) {
+            $index++;
+
+            if ($info['numErrors'] + $info['numWarnings'] == 0) {
+                continue;
+            }
+
+            $output .= $this->cs_problems($index, local_codechecker_pretty_path($file), $info);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Display the full results of checking a file. Will only be called if
+     * $problems is a non-empty array.
+     * @param int $fileindex unique index of this file.
+     * @param string $prettypath the name of the file checked.
+     * @param array $problems of {@link local_codechecker_problem}s. The problems found.
+     * @return string HTML to output.
+     */
+    public function cs_problems($fileindex, $prettypath, $info) {
+        $output = html_writer::start_tag('div',
+                array('class'=>'resultfile', 'id'=>'file' . $fileindex));
+        $output .= html_writer::tag('h3', s($prettypath));
+        $output .= html_writer::start_tag('ul');
+
+        $output .= $this->cs_problem_list('error', $info['errors']);
+        $output .= $this->cs_problem_list('warning', $info['warnings']);
+
+        $output .= html_writer::end_tag('ul');
+        $output .= html_writer::end_tag('div');
+
+        return $output;
+    }
+
+    public function cs_problem_list($level, $problems) {
+        $output = '';
+        foreach ($problems as $line => $lineproblems) {
+            foreach ($lineproblems as $char => $charproblems) {
+                foreach ($charproblems as $problem) {
+                    $output .= $this->cs_problem_message($line, $char, $level, $problem);
+                }
+            }
+        }
+        return $output;
+    }
+
+    public function cs_problem_message($line, $char, $level, $problem) {
+        $sourceclass = str_replace('.', '_', $problem['source']);
+        $info = html_writer::tag('div', html_writer::tag('strong', $line) . ': ' .
+                $problem['message'], array('class'=>'info ' . $sourceclass));
+        return html_writer::tag('li', $info, array('class' => 'fail ' . $level));
+    }
 }
 
 

@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/local/codechecker/checkslib.php');
+require_once($CFG->libdir . '/pear/PHP/CodeSniffer.php');
 
 
 /**
@@ -313,3 +314,30 @@ class local_codechecker_form extends moodleform {
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
 }
+
+
+/**
+ * Code sniffer insists on having an PHP_CodeSniffer_CLI, even though we don't
+ * really want one. This is a dummy class to make it work.
+ */
+class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
+    /** Constructor */
+    public function __construct() {
+        $this->errorSeverity = 1;
+        $this->warningSeverity = 1;
+    }
+    public function getCommandLineValues() {
+        return array('showProgress' => false);
+    }
+}
+
+
+    /**
+     * Convert a full path name to a relative one, for output.
+     * @param string $file a full path name of a file.
+     * @return string the prittied up path name.
+     */
+    function local_codechecker_pretty_path($file) {
+        global $CFG;
+        return substr($file, strlen($CFG->dirroot) + 1);
+    }
