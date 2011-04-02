@@ -23,27 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Code checker';
 
-$string['info'] = '<p>Checks code for whitespace and similar errors within a given path.</p>
-<p>You can enter a path to a specific PHP file or to a folder, in which case all subfolders will be checked.</p>
-<p>Paths are relative to Moodle code root, for example: <tt>local/codechecker</tt></p>';
-$string['path'] = 'Path to check';
 $string['check'] = 'Check code';
 $string['clihelp'] = 'Check some PHP code against the Moodle coding guidelines.
 Example:
   php run.php local/codechecker';
-
-$string['filesfound'] = 'Found files: {$a}';
-
-$string['invalidpath'] = 'Invalid path';
-
 $string['error_find'] = 'Folder search failed';
-
-$string['wholefile'] = 'File';
-$string['summary'] = '{$a} error(s)';
-$string['summary_ok'] = 'No errors or warnings';
-
 $string['fail_eol'] = 'Whitespace at end of line';
 $string['fail_tab'] = 'Tab in line';
 $string['fail_keywordspace'] = 'Missing space after language keyword and before (';
@@ -55,4 +40,15 @@ $string['fail_noheader'] = 'Does not precisely contain standard header (the // p
 $string['fail_eoflf'] = 'File must end with precisely one line feed';
 $string['fail_toolong'] = 'Lines should not be longer than {$a->max} characters (actual length {$a->actual})';
 $string['fail_varname'] = 'Variable names must be all lower case, no _ ({$a})';
+$string['filesfound'] = 'Files found: {$a}';
 $string['filesummary'] = '{$a->path} ({$a->count})';
+$string['info'] = '<p>Checks code against some aspects of the {$a->link}.</p>
+<p>Enter a path relative to the Moodle code root, for example: {$a->path}.</p>
+<p>You can enter either a specific PHP file, or to a folder to check all the files it contains.</p>';
+$string['invalidpath'] = 'Invalid path {$a}';
+$string['moodlecodingguidelines'] = 'Moodle coding guidelines';
+$string['path'] = 'Path to check';
+$string['pluginname'] = 'Code checker';
+$string['success'] = 'Well done!';
+$string['summary'] = '{$a} error(s)';
+$string['wholefile'] = 'File';
