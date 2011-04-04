@@ -45,10 +45,13 @@ if ($options['help']) {
     die();
 }
 
+raise_memory_limit(MEMORY_HUGE);
+
+$standard = $CFG->dirroot . str_replace('/', DIRECTORY_SEPARATOR, '/local/codechecker/moodle');
+
 $phpcs = new PHP_CodeSniffer(1);
 $phpcs->setCli(new local_codechecker_codesniffer_cli());
-$numerrors = $phpcs->process($CFG->dirroot . '/' . trim($path, '/'),
-        $CFG->dirroot . '/local/codechecker/moodle');
+$numerrors = $phpcs->process($CFG->dirroot . '/' . trim($path, '/'), $standard);
 
 $reporting       = new PHP_CodeSniffer_Reporting();
 $problems = $phpcs->getFilesErrors();

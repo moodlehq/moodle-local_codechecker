@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/local/codechecker/checkslib.php');
-require_once($CFG->libdir . '/pear/PHP/CodeSniffer.php');
+require_once($CFG->dirroot . '/local/codechecker/pear/PHP/CodeSniffer.php');
 
 
 /**
