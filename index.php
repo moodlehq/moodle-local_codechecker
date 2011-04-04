@@ -46,6 +46,7 @@ $PAGE->set_title($SITE->fullname. ': ' . $pagename);
 $PAGE->navbar->add($pagename);
 
 raise_memory_limit(MEMORY_HUGE);
+set_time_limit(300);
 
 require_login();
 require_capability('moodle/site:config', $context);
