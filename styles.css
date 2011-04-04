@@ -39,3 +39,7 @@
     background-color:#f2f2f2;
     margin: 1em 0;
 }
+#page-local-codechecker-index h3 :link,
+#page-local-codechecker-index h3 :visited {
+    color: inherit;
+}

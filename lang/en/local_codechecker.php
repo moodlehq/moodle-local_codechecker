@@ -50,6 +50,7 @@ $string['moodlecodingguidelines'] = 'Moodle coding guidelines';
 $string['numerrorswarnings'] = '{$a->numErrors} error(s) and {$a->numWarnings} warning(s)';
 $string['path'] = 'Path to check';
 $string['pluginname'] = 'Code checker';
+$string['recheckfile'] = 'Re-check just this file';
 $string['success'] = 'Well done!';
 $string['summary'] = 'Total: {$a}';
 $string['wholefile'] = 'File';

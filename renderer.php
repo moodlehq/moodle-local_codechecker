@@ -140,7 +140,9 @@ class local_codechecker_renderer extends plugin_renderer_base {
     public function problems($fileindex, $prettypath, $info) {
         $output = html_writer::start_tag('div',
                 array('class'=>'resultfile', 'id'=>'file' . $fileindex));
-        $output .= html_writer::tag('h3', s($prettypath));
+        $output .= html_writer::tag('h3', html_writer::link(
+                new moodle_url('/local/codechecker/', array('path' => $prettypath)),
+                s($prettypath), array('title' => get_string('recheckfile', 'local_codechecker'))));
         $output .= html_writer::start_tag('ul');
 
         $output .= $this->problem_list('error', $info['errors'], $prettypath);
