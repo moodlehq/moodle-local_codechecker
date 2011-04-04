@@ -71,6 +71,7 @@ if ($path) {
     if ($fullpath) {
         $phpcs = new PHP_CodeSniffer();
         $phpcs->setCli(new local_codechecker_codesniffer_cli());
+        $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
         $numerrors = $phpcs->process($fullpath,
                 $CFG->dirroot . '/local/codechecker/moodle');
         $problems = $phpcs->getFilesErrors();

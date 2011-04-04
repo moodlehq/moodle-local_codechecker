@@ -332,12 +332,30 @@ class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
 }
 
 
-    /**
-     * Convert a full path name to a relative one, for output.
-     * @param string $file a full path name of a file.
-     * @return string the prittied up path name.
-     */
-    function local_codechecker_pretty_path($file) {
-        global $CFG;
-        return substr($file, strlen($CFG->dirroot) + 1);
+/**
+ * Convert a full path name to a relative one, for output.
+ * @param string $file a full path name of a file.
+ * @return string the prittied up path name.
+ */
+function local_codechecker_pretty_path($file) {
+    global $CFG;
+    return substr($file, strlen($CFG->dirroot) + 1);
+}
+
+/**
+ * Get a list of folders to ignores.
+ * @return array of paths.
+ */
+function local_codesniffer_get_ignores() {
+    global $CFG;
+
+    $paths = array();
+
+    $thirdparty = simplexml_load_file($CFG->libdir . '/thirdpartylibs.xml');
+    foreach ($thirdparty->xpath('/libraries/library/location') as $lib) {
+        $paths[] = preg_quote('/lib/' . $lib);
     }
+
+    $paths[] = preg_quote('/local/codechecker' . DIRECTORY_SEPARATOR . 'pear');
+    return $paths;
+}
