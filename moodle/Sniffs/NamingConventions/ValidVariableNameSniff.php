@@ -35,12 +35,13 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === fa
  * @copyright 2009 Nicolas Connault
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class Moodle_Sniffs_NamingConventions_ValidVariableNameSniff
+class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
         extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
 
-    private $allowedglobals = array('ADMIN', 'CFG', 'COURSE', 'DB', 'OUTPUT', 'PAGE',
-            'SESSION', 'SITE', 'THEME', 'USER', '_SERVER', '_GET', '_POST', '_FILES',
-            '_REQUEST', '_SESSION', '_ENV', '_COOKIE', '_HTTP_RAW_POST_DATA');
+    private $allowedglobals = array('ADMIN', 'CFG', 'COURSE', 'DB', 'FULLME',
+            'OUTPUT', 'PAGE', 'PERF', 'SESSION', 'SITE', 'THEME', 'USER',
+            '_SERVER', '_GET', '_POST', '_FILES', '_REQUEST', '_SESSION', '_ENV',
+            '_COOKIE', '_HTTP_RAW_POST_DATA');
 
     /**
      * Processes class member variables.

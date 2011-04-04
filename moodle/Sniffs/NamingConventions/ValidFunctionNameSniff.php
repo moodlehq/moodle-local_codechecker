@@ -38,7 +38,7 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @copyright 2009 Nicolas Connault
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class Moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
+class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         extends PHP_CodeSniffer_Standards_AbstractScopeSniff {
 
     /**
@@ -123,21 +123,6 @@ class Moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
             $phpcsfile->adderror($error, $stackptr);
             return;
         }
-
-        // No numbers accepted
-        if (preg_match('/[0-9]+/', $methodname)) {
-
-            if ($scopespecified === true) {
-                $error = ucfirst($scope) . ' method name "' . $classname . '::' .
-                        $methodname . '" must only contain letters';
-            } else {
-                $error = 'Method name "' . $classname . '::' . $methodname .
-                        '" must only contain letters';
-            }
-
-            $phpcsfile->adderror($error, $stackptr);
-            return;
-        }
     }
 
     /**
@@ -168,14 +153,6 @@ class Moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         // Only lower-case accepted
         if (preg_match('/[A-Z]+/', $functionname)) {
             $error = "function name \"$functionname\" must be lower-case letters only";
-
-            $phpcsfile->addError($error, $stackptr);
-            return;
-        }
-
-        // Only letters accepted
-        if (preg_match('/[0-9]+/', $functionname)) {
-            $error = "function name \"$functionname\" must only contain letters";
 
             $phpcsfile->addError($error, $stackptr);
             return;

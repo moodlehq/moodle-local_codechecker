@@ -78,20 +78,8 @@ class moodle_Sniffs_PHP_IncludingFileSniff implements PHP_CodeSniffer_Sniff {
         }
 
         $tokentype = $tokens[$stackptr]['code'];
-        if ($incondition === true) {
-            // We are inside a conditional statement. We need an include_once.
-            if ($tokentype === T_REQUIRE_ONCE) {
-                $error  = 'File is being conditionally included; ';
-                $error .= 'use "include_once" instead';
-                $file->addError($error, $stackptr, 'UseIncludeOnce');
-            } else if ($tokentype === T_REQUIRE) {
-                $error  = 'File is being conditionally included; ';
-                $error .= 'use "include" instead';
-                $file->addError($error, $stackptr, 'UseInclude');
-            }
-
-        } else {
-            // We are unconditionally including, we need a require_once.
+        if ($incondition !== true) {
+            // We are unconditionally including, we should use require_once.
             if ($tokentype === T_INCLUDE_ONCE) {
                 $error  = 'File is being unconditionally included; ';
                 $error .= 'use "require_once" instead';

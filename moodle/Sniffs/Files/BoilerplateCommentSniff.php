@@ -55,7 +55,7 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
     public function process(PHP_CodeSniffer_File $file, $stackptr) {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $stackptr - 1);
-        if ($prevopentag) {
+        if ($prevopentag !== false) {
             return;
         }
 

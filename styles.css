@@ -17,6 +17,7 @@
 #page-local-codechecker-index .fail.warning {
     color: #996600;
     font-weight: normal;
+    font-style: normal;
 }
 #page-local-codechecker-index .good {
     color: #006600;

@@ -39,7 +39,6 @@
 
     <rule ref="Squiz.Functions.LowercaseFunctionKeywords"/>
 
-    <rule ref="Squiz.PHP.CommentedOutCode"/>
     <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
 
     <rule ref="Squiz.Scope.MemberVarScope"/>

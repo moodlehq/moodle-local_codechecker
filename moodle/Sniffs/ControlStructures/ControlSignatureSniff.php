@@ -43,10 +43,10 @@ class moodle_Sniffs_ControlStructures_ControlSignatureSniff
 
     public function __construct() {
         parent::__construct(true);
+        $this->supportedTokenizers = array('PHP', 'JS');
     }
 
     /** @var array A list of tokenizers this sniff supports. */
-    public $supportedTokenizers = array('PHP', 'JS');
 
     protected function getPatterns() {
         return array(
