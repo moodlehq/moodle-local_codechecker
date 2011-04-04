@@ -75,6 +75,7 @@ if ($path) {
         $phpcs->process($fullpath,
                 $CFG->dirroot . '/local/codechecker/moodle');
         $problems = $phpcs->getFilesErrors();
+        ksort($problems);
 
         $errors = 0;
         $warnings = 0;
