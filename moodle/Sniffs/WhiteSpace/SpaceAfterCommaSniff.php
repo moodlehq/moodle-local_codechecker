@@ -48,19 +48,8 @@ class moodle_Sniffs_WhiteSpace_SpaceAfterCommaSniff implements PHP_CodeSniffer_S
     public function process(PHP_CodeSniffer_File $file, $stackptr) {
         $tokens = $file->getTokens();
 
-        if ($tokens[$stackptr + 1]['code'] === T_WHITESPACE) {
-            $content       = $tokens[($stackptr + 1)]['content'];
-            $contentlength = strlen($content);
-            if ($contentlength !== 1) {
-                $error = 'Commas (,) must be followed by a single space; ' .
-                        'expected 1 space but found %s';
-                $data  = array($contentlength);
-                $file->addError($error, $stackptr, 'ExtraSpace', $data);
-            }
-
-        } else {
-            $error = 'Commas (,) must be followed by a single space; ' .
-                    'expected 1 space but found none';
+        if ($tokens[$stackptr + 1]['code'] !== T_WHITESPACE) {
+            $error = 'Commas (,) must be followed by white space.';
             $file->addError($error, $stackptr, 'NoSpace');
         }
     }
