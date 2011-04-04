@@ -51,5 +51,5 @@ $string['numerrorswarnings'] = '{$a->numErrors} error(s) and {$a->numWarnings} w
 $string['path'] = 'Path to check';
 $string['pluginname'] = 'Code checker';
 $string['success'] = 'Well done!';
-$string['summary'] = '{$a} error(s)';
+$string['summary'] = 'Total: {$a}';
 $string['wholefile'] = 'File';

@@ -40,7 +40,8 @@ class moodle_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengt
 
     public function process(PHP_CodeSniffer_File $file, $stackptr) {
         // Lang files are allowed to have long lines.
-        if (strpos($file->getFilename(), '/lang/') !== false) {
+        if (strpos($file->getFilename(),
+                DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR) !== false) {
             return;
         }
         parent::process($file, $stackptr);

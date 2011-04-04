@@ -76,7 +76,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
      */
     public function summary_end($numfiles, $totalproblems) {
         $output = html_writer::end_tag('ul');
-        if ($totalproblems > 0) {
+        if ($totalproblems) {
             $output .= html_writer::tag('p', get_string('summary', 'local_codechecker',
                     $totalproblems), array('class' => 'fail'));
         } else {
@@ -96,7 +96,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
                 'invalidpath', 'local_codechecker', s($path)));
     }
 
-    public function cs_report(array $problems, PHP_CodeSniffer $phpcs, $numerrors) {
+    public function report(array $problems, PHP_CodeSniffer $phpcs, $totalproblems) {
         $output = '';
 
         $numfiles = count($problems);
@@ -113,7 +113,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
 
             $output .= $this->summary_line($index, local_codechecker_pretty_path($file), $summary);
         }
-        $output .= $this->summary_end($numfiles, $numerrors);
+        $output .= $this->summary_end($numfiles, $totalproblems);
 
         $index = 0;
         foreach ($problems as $file => $info) {
@@ -123,7 +123,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
                 continue;
             }
 
-            $output .= $this->cs_problems($index, local_codechecker_pretty_path($file), $info);
+            $output .= $this->problems($index, local_codechecker_pretty_path($file), $info);
         }
 
         return $output;
@@ -137,14 +137,14 @@ class local_codechecker_renderer extends plugin_renderer_base {
      * @param array $problems the problems found.
      * @return string HTML to output.
      */
-    public function cs_problems($fileindex, $prettypath, $info) {
+    public function problems($fileindex, $prettypath, $info) {
         $output = html_writer::start_tag('div',
                 array('class'=>'resultfile', 'id'=>'file' . $fileindex));
         $output .= html_writer::tag('h3', s($prettypath));
         $output .= html_writer::start_tag('ul');
 
-        $output .= $this->cs_problem_list('error', $info['errors'], $prettypath);
-        $output .= $this->cs_problem_list('warning', $info['warnings'], $prettypath);
+        $output .= $this->problem_list('error', $info['errors'], $prettypath);
+        $output .= $this->problem_list('warning', $info['warnings'], $prettypath);
 
         $output .= html_writer::end_tag('ul');
         $output .= html_writer::end_tag('div');
@@ -152,12 +152,12 @@ class local_codechecker_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function cs_problem_list($level, $problems, $prettypath) {
+    public function problem_list($level, $problems, $prettypath) {
         $output = '';
         foreach ($problems as $line => $lineproblems) {
             foreach ($lineproblems as $char => $charproblems) {
                 foreach ($charproblems as $problem) {
-                    $output .= $this->cs_problem_message(
+                    $output .= $this->problem_message(
                             $line, $char, $level, $problem, $prettypath);
                 }
             }
@@ -165,15 +165,15 @@ class local_codechecker_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function cs_problem_message($line, $char, $level, $problem, $prettypath) {
+    public function problem_message($line, $char, $level, $problem, $prettypath) {
         $sourceclass = str_replace('.', '_', $problem['source']);
         $info = html_writer::tag('div', html_writer::tag('strong', $line) . ': ' .
-                $problem['message'], array('class'=>'info ' . $sourceclass));
+                s($problem['message']), array('class'=>'info ' . $sourceclass));
 
-        $info = html_writer::tag('pre', str_replace(
+        $code = html_writer::tag('pre', str_replace(
                 array_keys($this->replaces), array_values($this->replaces),
-                s(local_codechecker_get_line_of_code($line, $prettypath)))) . $info;
+                s(local_codechecker_get_line_of_code($line, $prettypath))));
 
-        return html_writer::tag('li', $info, array('class' => 'fail ' . $level));
+        return html_writer::tag('li', $code . $info, array('class' => 'fail ' . $level));
     }
 }

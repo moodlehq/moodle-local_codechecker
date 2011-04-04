@@ -72,10 +72,24 @@ if ($path) {
         $phpcs = new PHP_CodeSniffer();
         $phpcs->setCli(new local_codechecker_codesniffer_cli());
         $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
-        $numerrors = $phpcs->process($fullpath,
+        $phpcs->process($fullpath,
                 $CFG->dirroot . '/local/codechecker/moodle');
         $problems = $phpcs->getFilesErrors();
-        echo $output->cs_report($problems, $phpcs, $numerrors);
+
+        $errors = 0;
+        $warnings = 0;
+        foreach ($problems as $file => $info) {
+            $errors += $info['numErrors'];
+            $warnings += $info['numWarnings'];
+        }
+        if ($errors + $warnings > 0) {
+            $summary = get_string('numerrorswarnings', 'local_codechecker',
+                    array('numErrors' => $errors, 'numWarnings' => $warnings));
+        } else {
+            $summary = '';
+        }
+
+        echo $output->report($problems, $phpcs, $summary);
 
     } else {
         echo $output->invald_path_message($path);
