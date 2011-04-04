@@ -30,10 +30,9 @@ require(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
+
 // Get the command-line options.
-list($options, $unrecognized) = cli_get_params(array(
-        'help' => false, 'verbose' => false),
-        array('h' => 'help', 'v' => 'verbose'));
+list($options, $unrecognized) = cli_get_params(array('help' => false), array('h' => 'help'));
 
 if (count($unrecognized) != 1) {
     $options['help'] = true;
@@ -46,19 +45,15 @@ if ($options['help']) {
     die();
 }
 
-$output = $PAGE->get_renderer('local_codechecker', null, RENDERER_TARGET_CLI);
-$checker = local_codechecker::create($CFG->dirroot, trim($path, '/'));
+raise_memory_limit(MEMORY_HUGE);
 
-if ($checker->get_num_files() == 0) {
-    echo $output->invald_path_message($path);
+$standard = $CFG->dirroot . str_replace('/', DIRECTORY_SEPARATOR, '/local/codechecker/moodle');
 
-} else if ($checker->get_num_files() == 1) {
-    $checker->check($output, true);
+$phpcs = new PHP_CodeSniffer(1);
+$phpcs->setCli(new local_codechecker_codesniffer_cli());
+$phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
+$numerrors = $phpcs->process($CFG->dirroot . '/' . trim($path, '/'), $standard);
 
-} else {
-
-    $totalproblems = $checker->summary($output);
-    if ($totalproblems) {
-        $checker->check($output);
-    }
-}
+$reporting       = new PHP_CodeSniffer_Reporting();
+$problems = $phpcs->getFilesErrors();
+$reporting->printReport('full', $problems, false, null);

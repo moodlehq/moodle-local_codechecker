@@ -45,6 +45,8 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname. ': ' . $pagename);
 $PAGE->navbar->add($pagename);
 
+raise_memory_limit(MEMORY_HUGE);
+
 require_login();
 require_capability('moodle/site:config', $context);
 
@@ -54,17 +56,26 @@ if ($data = $mform->get_data()) {
     redirect('./?path=' . urlencode($data->path));
 }
 
+if ($path) {
+    $fullpath = $CFG->dirroot . '/' . trim($path, '/');
+    if (!is_file($fullpath) && !is_dir($fullpath)) {
+        $fullpath = null;
+    }
+}
+
 $output = $PAGE->get_renderer('local_codechecker');
-$checker = local_codechecker::create($CFG->dirroot, trim($path, '/'));
 
 echo $OUTPUT->header();
 
 if ($path) {
-    if ($checker->get_num_files() > 0) {
-        $totalproblems = $checker->summary($output);
-        if ($totalproblems) {
-            $checker->check($output);
-        }
+    if ($fullpath) {
+        $phpcs = new PHP_CodeSniffer();
+        $phpcs->setCli(new local_codechecker_codesniffer_cli());
+        $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
+        $numerrors = $phpcs->process($fullpath,
+                $CFG->dirroot . '/local/codechecker/moodle');
+        $problems = $phpcs->getFilesErrors();
+        echo $output->cs_report($problems, $phpcs, $numerrors);
 
     } else {
         echo $output->invald_path_message($path);

@@ -10,11 +10,11 @@
     margin: 0.5em 0;
     padding: 0;
 }
-#page-local-codechecker-index .fail .info,
+#page-local-codechecker-index .fail.error .info,
 #page-local-codechecker-index .region-content .fail {
     color: #660000;
 }
-#page-local-codechecker-index .fail.warning .info {
+#page-local-codechecker-index .fail.warning {
     color: #996600;
     font-weight: normal;
 }

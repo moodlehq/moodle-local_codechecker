@@ -96,49 +96,6 @@ class local_codechecker_renderer extends plugin_renderer_base {
                 'invalidpath', 'local_codechecker', s($path)));
     }
 
-    /**
-     * Display the full results of checking a file. Will only be called if
-     * $problems is a non-empty array.
-     * @param int $fileindex unique index of this file.
-     * @param string $prettypath the name of the file checked.
-     * @param array $problems of {@link local_codechecker_problem}s. The problems found.
-     * @return string HTML to output.
-     */
-    public function problems($fileindex, $prettypath, $problems) {
-        $output = html_writer::start_tag('div',
-                array('class'=>'resultfile', 'id'=>'file' . $fileindex));
-        $output .= html_writer::tag('h3', s($prettypath));
-        $output .= html_writer::start_tag('ul');
-
-        foreach ($problems as $problem) {
-            $output .= $this->problem_message($problem);
-        }
-
-        $output .= html_writer::end_tag('ul');
-        $output .= html_writer::tag('p', get_string('summary', 'local_codechecker',
-                count($problems)), array('class'=>'fail'));
-        $output .= html_writer::end_tag('div');
-
-        return $output;
-    }
-
-    /**
-     * Display the message about one particular problem.
-     * @param local_codechecker_problem $problem
-     */
-    public function problem_message(local_codechecker_problem $problem) {
-        $info = html_writer::tag('div', html_writer::tag('strong', $problem->get_line()) . ': ' .
-                $problem->get_message(), array('class'=>'info'));
-
-        if ($problem->code) {
-            $info = html_writer::tag('pre', str_replace(
-                    array_keys($this->replaces), array_values($this->replaces),
-                    s($problem->code))) . $info;
-        }
-
-        return html_writer::tag('li', $info, array('class' => 'fail ' . $problem->shortname));
-    }
-
     public function cs_report(array $problems, PHP_CodeSniffer $phpcs, $numerrors) {
         $output = '';
 
@@ -177,7 +134,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
      * $problems is a non-empty array.
      * @param int $fileindex unique index of this file.
      * @param string $prettypath the name of the file checked.
-     * @param array $problems of {@link local_codechecker_problem}s. The problems found.
+     * @param array $problems the problems found.
      * @return string HTML to output.
      */
     public function cs_problems($fileindex, $prettypath, $info) {
@@ -186,8 +143,8 @@ class local_codechecker_renderer extends plugin_renderer_base {
         $output .= html_writer::tag('h3', s($prettypath));
         $output .= html_writer::start_tag('ul');
 
-        $output .= $this->cs_problem_list('error', $info['errors']);
-        $output .= $this->cs_problem_list('warning', $info['warnings']);
+        $output .= $this->cs_problem_list('error', $info['errors'], $prettypath);
+        $output .= $this->cs_problem_list('warning', $info['warnings'], $prettypath);
 
         $output .= html_writer::end_tag('ul');
         $output .= html_writer::end_tag('div');
@@ -195,107 +152,28 @@ class local_codechecker_renderer extends plugin_renderer_base {
         return $output;
     }
 
-    public function cs_problem_list($level, $problems) {
+    public function cs_problem_list($level, $problems, $prettypath) {
         $output = '';
         foreach ($problems as $line => $lineproblems) {
             foreach ($lineproblems as $char => $charproblems) {
                 foreach ($charproblems as $problem) {
-                    $output .= $this->cs_problem_message($line, $char, $level, $problem);
+                    $output .= $this->cs_problem_message(
+                            $line, $char, $level, $problem, $prettypath);
                 }
             }
         }
         return $output;
     }
 
-    public function cs_problem_message($line, $char, $level, $problem) {
+    public function cs_problem_message($line, $char, $level, $problem, $prettypath) {
         $sourceclass = str_replace('.', '_', $problem['source']);
         $info = html_writer::tag('div', html_writer::tag('strong', $line) . ': ' .
                 $problem['message'], array('class'=>'info ' . $sourceclass));
+
+        $info = html_writer::tag('pre', str_replace(
+                array_keys($this->replaces), array_values($this->replaces),
+                s(local_codechecker_get_line_of_code($line, $prettypath)))) . $info;
+
         return html_writer::tag('li', $info, array('class' => 'fail ' . $level));
-    }
-}
-
-
-/**
- * Renderer for displaying code-checker reports on the command line.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class local_codechecker_renderer_cli extends local_codechecker_renderer {
-    /** @var array string replaces used to clean up the input line for display. */
-    protected $replaces = array(
-        "\t" => '\t',
-        ' '  => '·',
-    );
-
-    /**
-     * Display the start of the list of the files checked.
-     * @param int $numfiles the number of files checked.
-     * @return string HTML to output.
-     */
-    public function summary_start($numfiles) {
-        return get_string('filesfound', 'local_codechecker', $numfiles) . "\n";
-    }
-
-    /**
-     * Display an entry in the list of the files checked.
-     * @param int $fileindex unique index of this file.
-     * @param string $prettypath the name of the file checked.
-     * @param int $numproblems the number of problems found in this file.
-     * @return string HTML to output.
-     */
-    public function summary_line($fileindex, $prettypath, $numproblems) {
-        return '  ' . get_string('filesummary', 'local_codechecker',
-                        array('path' => s($prettypath), 'count' => $numproblems)) . "\n";
-    }
-
-    /**
-     * Display the end of the list of the files checked.
-     * @param int $numfiles the number of files checked.
-     * @param int $totalproblems the total number of problems found.
-     * @return string HTML to output.
-     */
-    public function summary_end($numfiles, $totalproblems) {
-        if ($totalproblems) {
-            return get_string('summary', 'local_codechecker', $totalproblems) . "\n";
-        }
-        return '';
-    }
-
-    /**
-     * Display a message about the path being invalid.
-     * @param string $path the invaid path.
-     * @return string HTML to output.
-     */
-    public function invald_path_message($path) {
-        return get_string('invalidpath', 'local_codechecker', $path) . "\n";
-    }
-
-    /**
-     * Display the full results of checking a file. Will only be called if
-     * $problems is a non-empty array.
-     * @param int $fileindex unique index of this file.
-     * @param string $prettypath the name of the file checked.
-     * @param array $problems of {@link local_codechecker_problem}s. The problems found.
-     * @return string HTML to output.
-     */
-    public function problems($fileindex, $prettypath, $problems) {
-        $output = "\n" . $prettypath . "\n";
-        foreach ($problems as $problem) {
-            $output .= $this->problem_message($problem);
-        }
-        $output .= get_string('summary', 'local_codechecker', count($problems)) . "\n";
-        return $output;
-    }
-
-    /**
-     * Display the message about one particular problem.
-     * @param local_codechecker_problem $problem
-     */
-    public function problem_message(local_codechecker_problem $problem) {
-        $info = $problem->get_line() . ': ' . $problem->get_message() . "\n";
-
-        return '  ' . $info;
     }
 }
