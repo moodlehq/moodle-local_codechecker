@@ -41,11 +41,7 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
 class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         extends PHP_CodeSniffer_Standards_AbstractScopeSniff {
 
-    /**
-     * A list of all PHP magic methods.
-     *
-     * @var array
-     */
+    /** @var array A list of all PHP magic methods. */
     private $magicmethods = array(
         'construct',
         'destruct',
@@ -62,12 +58,15 @@ class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         'clone',
     );
 
-    /**
-     * A list of all PHP magic functions.
-     *
-     * @var array
-     */
-    private $magicfunctions = array('autoload');
+    /** @var array A list of all PHP magic functions. */
+    private $magicfunctions = array(
+        'autoload'
+    );
+
+    private $permittedmethods = array(
+        'setUp',
+        'tearDown', // Used by simpletest.
+    );
 
     /**
      * Constructs a moodle_sniffs_namingconventions_validfunctionnamesniff.
@@ -95,7 +94,7 @@ class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         if (preg_match('|^__|', $methodname) !== 0) {
             $magicpart = substr($methodname, 2);
 
-            if (in_array($magicpart, $this->magicmethods) === false) {
+            if (!in_array($magicpart, $this->magicmethods)) {
                  $error = "method name \"$classname::$methodname\" is invalid; " .
                           'only PHP magic methods should be prefixed with a double underscore';
                  $phpcsfile->addError($error, $stackptr);
@@ -105,12 +104,12 @@ class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         }
 
         $methodprops    = $phpcsfile->getMethodProperties($stackptr);
-        $ispublic       = ($methodprops['scope'] === 'private') ? false : true;
         $scope          = $methodprops['scope'];
         $scopespecified = $methodprops['scope_specified'];
 
         // Only lower-case accepted
-        if (preg_match('/[A-Z]+/', $methodname)) {
+        if (preg_match('/[A-Z]+/', $methodname) &&
+                !in_array($methodname, $this->permittedmethods)) {
 
             if ($scopespecified === true) {
                 $error = ucfirst($scope) . ' method name "' . $classname . '::' .
