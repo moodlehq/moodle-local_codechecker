@@ -41,7 +41,6 @@
 
     <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
 
-    <rule ref="Squiz.Scope.MemberVarScope"/>
     <rule ref="Squiz.Scope.MethodScope"/>
     <rule ref="Squiz.Scope.StaticThisUsage"/>
 
