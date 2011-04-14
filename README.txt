@@ -1,11 +1,11 @@
-This is a simple script to check that code follows the Moodle coding guidelines.
-    http://docs.moodle.org/en/Development:Coding_style
+This Moodle plugin uses the Pear CodeSniffer library to check that code follows
+the Moodle coding guidelines http://docs.moodle.org/en/Development:Coding_style
 
-It was originally written by sam marshall of the Open University, the completely
-rewritted by Tim Hunt to use the Pear CodeSniffer library.
+It was created by developers at the Open University, including sam marshall,
+Tim Hunt and Jenny Gray.
 
 To install using git, type this command in the root of your Moodle install
-    git clone -b experiment git://github.com/timhunt/moodle-local_codechecker.git local/codechecker
+    git clone git://github.com/timhunt/moodle-local_codechecker.git local/codechecker
 Then add /local/codechecker to your git ignore.
 
 Alternatively, download the zip from
