@@ -70,7 +70,7 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
         // count enough to see if the number is right.
         // Note that the opening PHP tag includes one newline.
         $numnewlines = 0;
-        for ($i = 1; $i <= 2; ++$i) {
+        for ($i = 1; $i <= 5; ++$i) {
             if ($tokens[$i]['code'] == T_WHITESPACE && $tokens[$i]['content'] == "\n") {
                 $numnewlines = $i;
             } else {
@@ -78,8 +78,8 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
             }
         }
 
-        if ($numnewlines > 1) {
-            $file->addError('The opening <?php tag must be followed by one or two newlines.',
+        if ($numnewlines > 0) {
+            $file->addError('The opening <?php tag must be followed by exactly one newline.',
                     1, 'WrongWhitespace');
             return;
         }
