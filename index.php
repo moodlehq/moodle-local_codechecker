@@ -25,8 +25,8 @@
  */
 
 require_once(dirname(__FILE__) . '/../../config.php');
+require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
-
 
 $path = optional_param('path', '', PARAM_PATH);
 if ($path) {
@@ -35,21 +35,16 @@ if ($path) {
     $pageparams = array();
 }
 
-$context = get_context_instance(CONTEXT_SYSTEM);
-$pagename = get_string('pluginname', 'local_codechecker');
+require_login();
+require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
 
-$PAGE->set_url(new moodle_url('/local/codechecker/', $pageparams));
-$PAGE->set_context($context);
-$PAGE->set_pagelayout('admin');
+admin_externalpage_setup('local_codechecker', '', $pageparams);
+
 $PAGE->set_heading($SITE->fullname);
-$PAGE->set_title($SITE->fullname. ': ' . $pagename);
-$PAGE->navbar->add($pagename);
+$PAGE->set_title($SITE->fullname . ': ' . get_string('pluginname', 'local_codechecker'));
 
 raise_memory_limit(MEMORY_HUGE);
 set_time_limit(300);
-
-require_login();
-require_capability('moodle/site:config', $context);
 
 $mform = new local_codechecker_form(new moodle_url('/local/codechecker/'));
 $mform->set_data((object) array('path' => $path));
