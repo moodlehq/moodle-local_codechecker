@@ -1,37 +1,37 @@
-#page-local-codechecker-index .region-content ul {
+#page-admin-local-codechecker-index .region-content ul {
     display: block;
     list-style-type: none;
     margin: 1em 0;
     padding: 0;
 }
-#page-local-codechecker-index .region-content li {
+#page-admin-local-codechecker-index .region-content li {
     display: block;
     list-style-type: none;
     margin: 0.5em 0;
     padding: 0;
 }
-#page-local-codechecker-index .fail.error .info,
-#page-local-codechecker-index .region-content .fail {
+#page-admin-local-codechecker-index .fail.error .info,
+#page-admin-local-codechecker-index .region-content .fail {
     color: #660000;
 }
-#page-local-codechecker-index .fail.warning {
+#page-admin-local-codechecker-index .fail.warning {
     color: #996600;
     font-weight: normal;
     font-style: normal;
 }
-#page-local-codechecker-index .good {
+#page-admin-local-codechecker-index .good {
     color: #006600;
 }
-#page-local-codechecker-index tt {
+#page-admin-local-codechecker-index tt {
     display: inline; /* Override silly rule in Canvas theme. */
 }
-#page-local-codechecker-index pre {
+#page-admin-local-codechecker-index pre {
     margin-bottom: 0;
 }
-#page-local-codechecker-index pre span {
+#page-admin-local-codechecker-index pre span {
     color: #888;
 }
-#page-local-codechecker-index .checkresults {
+#page-admin-local-codechecker-index .checkresults {
     padding:5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -39,7 +39,7 @@
     background-color:#f2f2f2;
     margin: 1em 0;
 }
-#page-local-codechecker-index h3 :link,
-#page-local-codechecker-index h3 :visited {
+#page-admin-local-codechecker-index h3 :link,
+#page-admin-local-codechecker-index h3 :visited {
     color: inherit;
 }
