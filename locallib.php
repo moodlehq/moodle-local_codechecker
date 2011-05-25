@@ -91,10 +91,11 @@ function local_codesniffer_get_ignores() {
 
     $thirdparty = simplexml_load_file($CFG->libdir . '/thirdpartylibs.xml');
     foreach ($thirdparty->xpath('/libraries/library/location') as $lib) {
-        $paths[] = preg_quote('/lib/' . $lib);
+        $paths[] = preg_quote(local_codechecker_clean_path('/lib/' . $lib));
     }
 
-    $paths[] = preg_quote('/local/codechecker' . DIRECTORY_SEPARATOR . 'pear');
+    $paths[] = preg_quote(local_codechecker_clean_path(
+            '/local/codechecker' . DIRECTORY_SEPARATOR . 'pear'));
     return $paths;
 }
 
@@ -110,4 +111,16 @@ function local_codechecker_get_line_of_code($line, $prettypath) {
     }
 
     return $file[$line - 1];
+}
+
+/**
+ * The code-checker code assumes that paths always use DIRECTORY_SEPARATOR,
+ * whereas Moodle is more relaxed than that. This method cleans up file paths by
+ * converting all / and \ to DIRECTORY_SEPARATOR. It should be used whenever a
+ * path is passed to the CodeSniffer library.
+ * @param string $path a file path
+ * @return the path with all directory separators changed to DIRECTORY_SEPARATOR.
+ */
+function local_codechecker_clean_path($path) {
+    return str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $path);
 }

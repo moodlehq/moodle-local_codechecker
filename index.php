@@ -49,7 +49,7 @@ set_time_limit(300);
 $mform = new local_codechecker_form(new moodle_url('/local/codechecker/'));
 $mform->set_data((object) array('path' => $path));
 if ($data = $mform->get_data()) {
-    redirect('./?path=' . urlencode($data->path));
+    redirect(new moodle_url('/local/codechecker/', array('path' => $data->path)));
 }
 
 if ($path) {
@@ -68,8 +68,8 @@ if ($path) {
         $phpcs = new PHP_CodeSniffer();
         $phpcs->setCli(new local_codechecker_codesniffer_cli());
         $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
-        $phpcs->process($fullpath,
-                $CFG->dirroot . '/local/codechecker/moodle');
+        $phpcs->process(local_codechecker_clean_path($fullpath),
+                local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
         $problems = $phpcs->getFilesErrors();
         ksort($problems);
 
