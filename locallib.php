@@ -123,3 +123,148 @@ function local_codechecker_get_line_of_code($line, $prettypath) {
 function local_codechecker_clean_path($path) {
     return str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $path);
 }
+
+/**
+ * Recursively finds all files within a folder that match particular extensions.
+ * @param array &$arr Array to add file paths to
+ * @param string $folder Path to search (or may be a single file)
+ * @param string $extensions File extensions to include (not including .)
+ */
+function local_codechecker_find_other_files(&$arr, $folder,
+        $extensions = array('txt', 'html', 'xml', 'csv')) {
+    $regex = '~\.(' . implode('|', $extensions) . ')$~';
+
+    // Handle if this is called directly with a file and not folder
+    if (is_file($folder)) {
+        if (preg_match($regex, $folder)) {
+            $arr[] = $folder;
+        }
+        return;
+    }
+    if ($handle = opendir($folder)) {
+        while (($file = readdir($handle)) !== false) {
+            $fullpath = $folder . '/' . $file;
+            if ($file === '.' || $file === '..') {
+                continue;
+            } else if (is_file($fullpath)) {
+                if (preg_match($regex, $fullpath)) {
+                    $arr[] = $fullpath;
+                }
+            } else if (is_dir($fullpath)) {
+                local_codechecker_find_other_files($arr, $fullpath);
+            }
+        }
+        closedir($handle);
+    } else {
+        throw new moodle_exception('error_find', 'local_codechecker');
+    }
+}
+
+/**
+ * Adds a problem report with a given file.
+ * @param array $problems Existing problem structure from PHPCodeSniffer
+ *   to which new problem will be added
+ * @param string $file File path
+ * @param int $line Line number (1-based)
+ * @param string $key Key within language file ('other_' will be prepended)
+ * @param bool $warning If true is warning, otherwise error
+ */
+function local_codechecker_add_problem(&$problems, $file, $line, $key, $warning=false) {
+    // Build new problem structure
+    $newproblem = array(
+        'message' => get_string('other_' . $key, 'local_codechecker'),
+        'source' => 'other.' . $key,
+        'severity' => $warning? PHPCS_DEFAULT_WARN_SEV : PHPCS_DEFAULT_ERROR_SEV
+    );
+
+    // Find appropriate place and add new problem
+    if ($warning) {
+        $problems[$file]['numWarnings']++;
+        $inner =& $problems[$file]['warnings'];
+    } else {
+        $problems[$file]['numErrors']++;
+        $inner =& $problems[$file]['errors'];
+    }
+
+    if (!array_key_exists($line, $inner)) {
+        $inner[$line] = array();
+    }
+    if (!array_key_exists(1, $inner[$line])) {
+        $inner[$line][1] = array();
+    }
+
+    $inner[$line][1][] = $newproblem;
+}
+
+/**
+ * Checks an individual other file and adds basic problems to result.
+ * @param string $file File to check
+ * @param array $problems Existing problem structure from PHPCodeSniffer
+ *   to which new problems will be added
+ */
+function local_codechecker_check_other_file($file, &$problems) {
+    if (!array_key_exists($file, $problems)) {
+        $problems[$file] = array('warnings' => array(), 'errors' => array(),
+                'numWarnings' => 0, 'numErrors' => 0);
+    }
+
+    // Certain files are permitted lines of any length because they are
+    // auto-generated
+    $allowanylength = in_array(basename($file), array('install.xml'));
+
+    $lines = file($file);
+    $index = 0;
+    $blankrun = 0;
+    foreach ($lines as $l) {
+        $index++;
+        // Incorrect [Windows] line ending
+        if ((strpos($l, "\r\n") !== false) && empty($donecrlf)) {
+            local_codechecker_add_problem($problems, $file, $index, 'crlf');
+            $donecrlf = true;
+        }
+        // Missing line ending (at EOF presumably)
+        if (strpos($l, "\n") === false) {
+            local_codechecker_add_problem($problems, $file, $index, 'missinglf');
+        }
+        $l = rtrim($l);
+        if ($l === '') {
+            $blankrun++;
+        } else {
+            $blankrun = 0;
+        }
+
+        // Whitespace at EOL
+        if (preg_match('~ +$~', $l)) {
+            local_codechecker_add_problem($problems, $file, $index, 'eol');
+        }
+        // Tab anywhere in line
+        if (preg_match('~\t~', $l)) {
+            local_codechecker_add_problem($problems, $file, $index, 'tab');
+        }
+        if (strlen($l) > 140 && !$allowanylength) {
+            // Line length > 140
+            local_codechecker_add_problem($problems, $file, $index, 'toolong');
+        } else if (strlen($l) > 100 && !$allowanylength) {
+            // Line length > 100
+            local_codechecker_add_problem($problems, $file, $index, 'ratherlong', true);
+        }
+    }
+    if ($blankrun > 0) {
+        local_codechecker_add_problem($problems, $file, $index - $blankrun, 'extralfs');
+    }
+}
+
+/**
+ * Checking the parts that PHPCodeSniffer can't reach (i.e. anything except
+ * php, css, js) for basic whitespace problems.
+ * @param string $path Path to search (may be file or folder)
+ * @param array $problems Existing problem structure from PHPCodeSniffer
+ *   to which new problems will be added
+ */
+function local_codechecker_check_other_files($path, &$problems) {
+    $files = array();
+    local_codechecker_find_other_files($files, $path);
+    foreach ($files as $file) {
+        local_codechecker_check_other_file($file, $problems);
+    }
+}

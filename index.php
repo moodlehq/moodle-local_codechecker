@@ -70,6 +70,7 @@ if ($path) {
         $phpcs->process(local_codechecker_clean_path($fullpath),
                 local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
         $problems = $phpcs->getFilesErrors();
+        local_codechecker_check_other_files(local_codechecker_clean_path($fullpath), $problems);
         ksort($problems);
 
         $errors = 0;

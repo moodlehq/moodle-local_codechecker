@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die;
 class local_codechecker_renderer extends plugin_renderer_base {
     /** @var array string replaces used to clean up the input line for display. */
     protected $replaces = array(
-        "\t" => '<span>&#2192;</span>',
+        "\t" => '<span>&#x25b6;</span>',
         ' '  => '<span>&#183;</span>',
     );
 

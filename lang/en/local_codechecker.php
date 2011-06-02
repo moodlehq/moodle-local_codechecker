@@ -29,17 +29,13 @@ $string['clihelp'] = 'Check some PHP code against the Moodle coding guidelines.
 Example:
   php run.php local/codechecker';
 $string['error_find'] = 'Folder search failed';
-$string['fail_eol'] = 'Whitespace at end of line';
-$string['fail_tab'] = 'Tab in line';
-$string['fail_keywordspace'] = 'Missing space after language keyword and before (';
-$string['fail_spacebeforebrace'] = 'Missing space between ) and {';
-$string['fail_spaceaftercomma'] = 'Missing space after a comma';
-$string['fail_closephp'] = 'Closing PHP tag not permitted';
-$string['fail_windows'] = 'File contains Windows line endings (fix with Eclipse File / Convert Line Delimiters To)';
-$string['fail_noheader'] = 'Does not precisely contain standard header (the // part)';
-$string['fail_eoflf'] = 'File must end with precisely one line feed';
-$string['fail_toolong'] = 'Lines should not be longer than {$a->max} characters (actual length {$a->actual})';
-$string['fail_varname'] = 'Variable names must be all lower case, no _ ({$a})';
+$string['other_eol'] = 'Whitespace at end of line';
+$string['other_tab'] = 'Tab character not permitted';
+$string['other_toolong'] = 'Line longer than maximum 140 characters';
+$string['other_ratherlong'] = 'Line longer than recommended 100 characters';
+$string['other_crlf'] = 'Windows (CRLF) line ending instead of just LF (reporting only first occurrence)';
+$string['other_missinglf'] = 'Missing LF at end of file (use exactly one)';
+$string['other_extralfs'] = 'Extra blank line(s) at end of file (use exactly one)';
 $string['filesfound'] = 'Files found: {$a}';
 $string['filesummary'] = '{$a->path} - {$a->count}';
 $string['info'] = '<p>Checks code against some aspects of the {$a->link}.</p>
