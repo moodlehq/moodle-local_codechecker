@@ -40,7 +40,8 @@ class moodle_Sniffs_WhiteSpace_WhiteSpaceInStringsSniff implements PHP_CodeSniff
         return array(
         T_CONSTANT_ENCAPSED_STRING,
         T_DOUBLE_QUOTED_STRING,
-        T_HEREDOC
+        T_HEREDOC,
+        T_WHITESPACE
         );
     }
 
@@ -55,10 +56,24 @@ class moodle_Sniffs_WhiteSpace_WhiteSpaceInStringsSniff implements PHP_CodeSniff
      */
     public function process(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
-        preg_match('~\s[\r\n]~', $tokens[$stackptr]['content'], $matches);
-        if (!empty($matches)) {
-            $error = 'Whitespace found at end of line within string';
-            $phpcsfile->addError($error, $stackptr, 'EndLine');
+        // Look for final whitespace endings but not in whitespace tokens
+        // (not sure which cases are covered by this, because it seems to
+        // conflict/dupe {@link SuperfluousWhitespaceSniff} but, it's kept
+        // working for any registered token but T_WHITESPACE, that is handled
+        // by other regexps
+        if ($tokens[$stackptr]['type'] != 'T_WHITESPACE') {
+            preg_match('~\s[\r\n]~', $tokens[$stackptr]['content'], $matches);
+            if (!empty($matches)) {
+                $error = 'Whitespace found at end of line within string';
+                $phpcsfile->addError($error, $stackptr, 'EndLine');
+            }
+        // Other tests within T_WHITESPACE tokens
+        } else {
+            // Look for tabs only in whitespace tokens
+            if (strpos($tokens[$stackptr]['content'], "\t") !== false) {
+                $error = 'Tab found within whitespace';
+                $phpcsfile->addError($error, $stackptr, 'TabWhitespace');
+            }
         }
     }
 }
