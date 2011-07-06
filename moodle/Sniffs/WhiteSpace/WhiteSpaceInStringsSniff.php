@@ -70,9 +70,8 @@ class moodle_Sniffs_WhiteSpace_WhiteSpaceInStringsSniff implements PHP_CodeSniff
         // Other tests within T_WHITESPACE tokens
         } else {
             // Look for tabs only in whitespace tokens
-            preg_match('~\t~', $tokens[$stackptr]['content'], $matches);
-            if (!empty($matches)) {
-                $error = 'Tabs found in whitespace within string';
+            if (strpos($tokens[$stackptr]['content'], "\t") !== false) {
+                $error = 'Tab found within whitespace';
                 $phpcsfile->addError($error, $stackptr, 'TabWhitespace');
             }
         }
