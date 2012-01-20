@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Checks that lines are no more than 140 chars, ideally 100.
+ * Checks that lines are no more than 180 chars, ideally 132.
  *
  * @package    local
  * @subpackage codechecker
@@ -25,7 +25,7 @@
 
 
 /**
- * Checks that lines are no more than 140 chars, ideally 100.
+ * Checks that lines are no more than 180 chars, ideally 132.
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -33,8 +33,8 @@
 class moodle_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengthSniff {
     /** Constructor. */
     public function __construct() {
-        $this->lineLimit = 100;
-        $this->absoluteLineLimit = 140;
+        $this->lineLimit = 132;
+        $this->absoluteLineLimit = 180;
     }
 
     public function process(PHP_CodeSniffer_File $file, $stackptr) {
