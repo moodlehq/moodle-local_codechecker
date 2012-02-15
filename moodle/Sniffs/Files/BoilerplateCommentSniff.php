@@ -87,8 +87,16 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
         // Now check the text of the comment.
         foreach (self::$comment as $lineindex => $line) {
             $tokenptr = $offset + $lineindex;
+
+            if (!array_key_exists($tokenptr, $tokens)) {
+                $file->addError('Reached the end of the file before finding ' .
+                        'all of the opening comment.', $tokenptr - 1, 'FileTooShort');
+                return;
+            }
+
             if ($tokens[$tokenptr]['code'] != T_COMMENT ||
-                strpos($tokens[$tokenptr]['content'], $line) !== 0) {
+                    strpos($tokens[$tokenptr]['content'], $line) !== 0) {
+
                 $file->addError('Line %s of the opening comment must start "%s".',
                         $tokenptr, 'WrongLine', array($lineindex + 1, $line));
             }
