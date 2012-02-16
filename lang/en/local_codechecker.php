@@ -26,8 +26,30 @@
 
 $string['check'] = 'Check code';
 $string['clihelp'] = 'Check some PHP code against the Moodle coding guidelines.
-Example:
-  php run.php local/codechecker';
+useage: php run.php [options] [file/folder]
+
+examples:
+
+php run.php /local/codechecker
+php run.php --type=xml --loglvl=1 /local/codechecker
+php run.php --type=checkstyle --file=checkstyle.xml /local/codechecker
+php run.php --file=fullreport/full.txt /local/codechecker
+
+-h, --help     Displays this help text
+-t, --type     The type of report to output
+               Default       full: Text format for CLI.
+                              xml: XML format.
+                       checkstyle: Checkstyle XML format.
+-l, --loglvl   The level of verboseness to display
+               Default for xml/checkstyle type   0: No Logging.
+               Default for full type             1: Print progress information.
+                                                 2: Print developer debug information.
+-f, --file     The file to save the reporting output to (logging information is still written to stdout)
+               Will be relative to $CFG->dataroot/codechecker. Will create folder if it doesn\'t exist.
+';
+
+$string['clihelp2'] = 'Run complete codebase against codechecker and saves checkstyle xml output.
+useage: php runcheckstyle.php';
 $string['error_find'] = 'Folder search failed';
 $string['other_eol'] = 'Whitespace at end of line';
 $string['other_tab'] = 'Tab character not permitted';
