@@ -94,8 +94,9 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
                 return;
             }
 
+            $regex = str_replace('Moodle', '.*', '/^' . preg_quote($line, '/') . '/');
             if ($tokens[$tokenptr]['code'] != T_COMMENT ||
-                    strpos($tokens[$tokenptr]['content'], $line) !== 0) {
+                    !preg_match($regex, $tokens[$tokenptr]['content'])) {
 
                 $file->addError('Line %s of the opening comment must start "%s".',
                         $tokenptr, 'WrongLine', array($lineindex + 1, $line));
