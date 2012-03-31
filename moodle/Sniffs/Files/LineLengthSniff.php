@@ -17,19 +17,11 @@
 /**
  * Checks that lines are no more than 180 chars, ideally 132.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-/**
- * Checks that lines are no more than 180 chars, ideally 132.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengthSniff {
     /** Constructor. */
     public function __construct() {

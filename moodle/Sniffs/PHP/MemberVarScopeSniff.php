@@ -18,10 +18,13 @@
  * Verifies that class members have scope modifiers. Created by sam marshall,
  * based on a sniff by Greg Sherwood and Marc McIntyre.
  *
- * @package    local
- * @subpackage codechecker
- * @copyright  2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license    http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @package   local_codechecker
+ * @author    Greg Sherwood <gsherwood@squiz.net>
+ * @author    Marc McIntyre <mmcintyre@squiz.net>
+ * @author    sam marshall <s.marshall@open.ac.uk>
+ * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2011 The Open University
+ * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
  */
 
 
@@ -30,20 +33,6 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === fa
             'Class PHP_CodeSniffer_Standards_AbstractVariableSniff not found');
 }
 
-/**
- * Verifies that class members have scope modifiers.
- *
- * @category  PHP
- * @package   PHP_CodeSniffer
- * @author    Greg Sherwood <gsherwood@squiz.net>
- * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @author    sam marshall <s.marshall@open.ac.uk>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
- * @copyright 2011 The Open University
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
- * @link      http://pear.php.net/package/PHP_CodeSniffer
- */
 class moodle_Sniffs_PHP_MemberVarScopeSniff
         extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
 

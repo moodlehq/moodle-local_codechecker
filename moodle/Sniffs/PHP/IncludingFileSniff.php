@@ -20,24 +20,13 @@
  *
  * Checks that brackets surround the file being included.
  *
- * @package    local
- * @subpackage codechecker
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
-/**
- * Checks that the include_once is used in conditional situations, and
- * require_once is used elsewhere.
- *
- * Checks that brackets surround the file being included.
- *
  * Based on {@link PEAR_Sniffs_Files_IncludingFileSniff}.
  *
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 class moodle_Sniffs_PHP_IncludingFileSniff implements PHP_CodeSniffer_Sniff {
     public function register() {
         return array(T_INCLUDE_ONCE, T_REQUIRE_ONCE, T_REQUIRE, T_INCLUDE);

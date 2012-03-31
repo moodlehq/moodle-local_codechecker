@@ -17,18 +17,11 @@
 /**
  * Checks that each string does not have extra whitespace at end of line
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Checks that each string does not have extra whitespace at end of line
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_WhiteSpace_WhiteSpaceInStringsSniff implements PHP_CodeSniffer_Sniff   {
 
     /**

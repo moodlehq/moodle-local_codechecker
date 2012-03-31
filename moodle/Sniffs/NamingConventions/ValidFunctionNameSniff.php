@@ -17,8 +17,10 @@
 /**
  * moodle_sniffs_namingconventions_validfunctionnamesniff.
  *
- * @package    local
- * @subpackage codechecker
+ * Ensures method names are correct depending on whether they are public
+ * or private, and that functions are named correctly.
+ *
+ * @package    local_codechecker
  * @copyright  2009 Nicolas Connault
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,15 +30,6 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
             'Class PHP_CodeSniffer_Standards_AbstractScopeSniff not found');
 }
 
-/**
- * moodle_sniffs_namingconventions_validfunctionnamesniff.
- *
- * Ensures method names are correct depending on whether they are public
- * or private, and that functions are named correctly.
- *
- * @copyright 2009 Nicolas Connault
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         extends PHP_CodeSniffer_Standards_AbstractScopeSniff {
 

@@ -17,23 +17,11 @@
 /**
  * Sniff for detecting commented-out code.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-/**
- * Sniff for detecting commented-out code.
- *
- * Based on Squiz_Sniffs_PHP_CommentedOutCodeSniff.
- *
- * @package    local
- * @subpackage codechecker
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_PHP_CommentedOutCodeSniff implements PHP_CodeSniffer_Sniff {
     public function __construct() {
         $this->supportedTokenizers = array('PHP', 'CSS');

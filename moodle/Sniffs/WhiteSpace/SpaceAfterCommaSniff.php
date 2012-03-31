@@ -17,19 +17,11 @@
 /**
  * Verify there is a single space after a comma.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-/**
- * Verify there is a single space after a comma.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_WhiteSpace_SpaceAfterCommaSniff implements PHP_CodeSniffer_Sniff {
     public function register() {
         return array(T_COMMA);

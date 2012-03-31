@@ -17,19 +17,11 @@
 /**
  * Checks that each file contains the standard GPL comment.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-/**
- * Checks that each file contains the standard GPL comment.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sniff {
     protected static $comment = array(
         "// This file is part of",

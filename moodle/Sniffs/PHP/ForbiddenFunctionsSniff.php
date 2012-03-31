@@ -17,8 +17,7 @@
 /**
  * Sniff for debugging and other functions that we don't want used in finished code.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,12 +27,6 @@ if (class_exists('Generic_Sniffs_PHP_ForbiddenFunctionsSniff', true) === false) 
             'Class Generic_Sniffs_PHP_ForbiddenFunctionsSniff not found');
 }
 
-/**
- * Discourages the use of debug functions.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class Moodle_Sniffs_PHP_ForbiddenFunctionsSniff
         extends Generic_Sniffs_PHP_ForbiddenFunctionsSniff {
     /** Constructor. */

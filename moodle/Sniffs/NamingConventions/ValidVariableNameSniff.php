@@ -17,8 +17,7 @@
 /**
  * Checks variable names are all lower-case, no underscores.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2009 Nicolas Connault
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,12 +27,6 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === fa
     throw new PHP_CodeSniffer_Exception($error);
 }
 
-/**
- * Checks variable names are all lower-case, no underscores.
- *
- * @copyright 2009 Nicolas Connault
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
         extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
 

@@ -17,10 +17,9 @@
 /**
  * Verifies that control statements conform to their coding standards.
  *
- * Based on Squiz_Sniffs_ControlStructures_ControlSignatureSniff.
+ * Based on {@link Squiz_Sniffs_ControlStructures_ControlSignatureSniff}.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,13 +29,6 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractPatternSniff', true) === fal
     throw new PHP_CodeSniffer_Exception($error);
 }
 
-
-/**
- * Verifies that control statements conform to their coding standards.
- *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class moodle_Sniffs_ControlStructures_ControlSignatureSniff
         extends PHP_CodeSniffer_Standards_AbstractPatternSniff {
 
