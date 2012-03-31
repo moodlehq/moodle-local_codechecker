@@ -9,9 +9,8 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: IsCamelCapsTest.php 240585 2007-08-02 00:05:40Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Reports_Checkstyle implements PHP_CodeSniffer_Report
@@ -42,44 +41,58 @@ class PHP_CodeSniffer_Reports_Checkstyle implements PHP_CodeSniffer_Report
      * @param array   $report      Prepared report.
      * @param boolean $showSources Show sources?
      * @param int     $width       Maximum allowed lne width.
-     * 
-     * @return string 
+     * @param boolean $toScreen    Is the report being printed to screen?
+     *
+     * @return string
      */
     public function generate(
         $report,
         $showSources=false,
-        $width=80
+        $width=80,
+        $toScreen=true
     ) {
-        echo '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
-        echo '<checkstyle version="1.3.0">'.PHP_EOL;
+        $out = new XMLWriter;
+        $out->openMemory();
+        $out->setIndent(true);
+        $out->startDocument('1.0', 'UTF-8');
+        $out->startElement('checkstyle');
+        $out->writeAttribute('version', '1.3.3');
 
         $errorsShown = 0;
         foreach ($report['files'] as $filename => $file) {
-            echo ' <file name="'.$filename.'">'.PHP_EOL;
+            if (count($file['messages']) === 0) {
+                continue;
+            }
+
+            $out->startElement('file');
+            $out->writeAttribute('name', $filename);
 
             foreach ($file['messages'] as $line => $lineErrors) {
                 foreach ($lineErrors as $column => $colErrors) {
                     foreach ($colErrors as $error) {
-                        $error['type']    = strtolower($error['type']);
-                        $error['message'] = htmlspecialchars($error['message']);
+                        $error['type'] = strtolower($error['type']);
                         if (PHP_CODESNIFFER_ENCODING !== 'utf-8') {
                             $error['message'] = iconv(PHP_CODESNIFFER_ENCODING, 'utf-8', $error['message']);
                         }
 
-                        echo '  <error line="'.$line.'" column="'.$column.'"';
-                        echo ' severity="'.$error['type'].'"';
-                        echo ' message="'.$error['message'].'"';
-                        echo ' source="'.$error['source'].'"';
-                        echo '/>'.PHP_EOL;
+                        $out->startElement('error');
+                        $out->writeAttribute('line', $line);
+                        $out->writeAttribute('column', $column);
+                        $out->writeAttribute('severity', $error['type']);
+                        $out->writeAttribute('message', $error['message']);
+                        $out->writeAttribute('source', $error['source']);
+                        $out->endElement();
+
                         $errorsShown++;
                     }
                 }
             }//end foreach
 
-            echo ' </file>'.PHP_EOL;
+            $out->endElement();
         }//end foreach
 
-        echo '</checkstyle>'.PHP_EOL;
+        $out->endElement();
+        echo $out->flush();
 
         return $errorsShown;
 

@@ -7,9 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer_MySource
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: AssignThisSniff.php 301632 2010-07-28 01:57:56Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -19,9 +18,9 @@
  * @category  PHP
  * @package   PHP_CodeSniffer_MySource
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class MySource_Sniffs_Objects_AssignThisSniff implements PHP_CodeSniffer_Sniff
@@ -82,8 +81,8 @@ class MySource_Sniffs_Objects_AssignThisSniff implements PHP_CodeSniffer_Sniff
         }
 
         // We can only assign "this" to a var called "self".
-        if ($tokens[$prev]['content'] !== 'self') {
-            $error = 'Keyword "this" can only be assigned to a variable called "self"';
+        if ($tokens[$prev]['content'] !== 'self' && $tokens[$prev]['content'] !== '_self') {
+            $error = 'Keyword "this" can only be assigned to a variable called "self" or "_self"';
             $phpcsFile->addError($error, $prev, 'NotSelf');
         }
 

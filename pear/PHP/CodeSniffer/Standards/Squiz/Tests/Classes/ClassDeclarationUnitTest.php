@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ClassDeclarationUnitTest.php 247874 2007-12-10 03:30:14Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_Classes_ClassDeclarationUnitTest extends AbstractSniffUnitTest
@@ -44,34 +43,35 @@ class Squiz_Tests_Classes_ClassDeclarationUnitTest extends AbstractSniffUnitTest
     public function getErrorList()
     {
         return array(
-                10 => 1,
-                15 => 2,
-                18 => 1,
-                22 => 3,
-                23 => 3,
-                24 => 3,
-                27 => 2,
-                28 => 1,
-                30 => 2,
-                34 => 1,
-                35 => 1,
-                39 => 1,
-                42 => 2,
-                45 => 1,
-                48 => 1,
-                50 => 2,
-                55 => 1,
-                59 => 4,
-                63 => 1,
-                65 => 1,
-                69 => 2,
-                74 => 2,
-                77 => 1,
-                80 => 1,
-                85 => 1,
-                88 => 1,
-                93 => 1,
-                96 => 1,
+                10  => 1,
+                15  => 2,
+                18  => 1,
+                22  => 3,
+                23  => 3,
+                24  => 3,
+                27  => 2,
+                28  => 1,
+                30  => 2,
+                34  => 1,
+                35  => 1,
+                39  => 1,
+                42  => 2,
+                45  => 1,
+                48  => 1,
+                50  => 2,
+                55  => 1,
+                59  => 4,
+                63  => 1,
+                65  => 1,
+                69  => 2,
+                74  => 2,
+                77  => 1,
+                80  => 1,
+                85  => 2,
+                89  => 1,
+                92  => 1,
+                97  => 1,
+                100 => 1,
                );
 
     }//end getErrorList()

@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: FunctionCommentSniff.php 307869 2011-01-31 03:56:50Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -43,9 +42,9 @@ if (class_exists('PHP_CodeSniffer_CommentParser_FunctionCommentParser', true) ==
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_Sniff
@@ -140,8 +139,17 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff implements PHP_CodeSniffer_Sn
         $code = $tokens[$commentEnd]['code'];
 
         if ($code === T_COMMENT) {
-            $error = 'You must use "/**" style comments for a function comment';
-            $phpcsFile->addError($error, $stackPtr, 'WrongStyle');
+            // The function might actually be missing a comment, and this last comment
+            // found is just commenting a bit of code on a line. So if it is not the
+            // only thing on the line, assume we found nothing.
+            $prevContent = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, $commentEnd);
+            if ($tokens[$commentEnd]['line'] === $tokens[$commentEnd]['line']) {
+                $error = 'Missing function doc comment';
+                $phpcsFile->addError($error, $stackPtr, 'Missing');
+            } else {
+                $error = 'You must use "/**" style comments for a function comment';
+                $phpcsFile->addError($error, $stackPtr, 'WrongStyle');
+            }
             return;
         } else if ($code !== T_DOC_COMMENT) {
             $error = 'Missing function doc comment';

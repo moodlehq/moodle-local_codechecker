@@ -96,6 +96,38 @@ function myFunction()
 
 }//end myFunction()
 
+function myFunction()
+{
+    return uksort(
+        $array,
+        function() {
+            return mt_rand(-1, 1);
+            echo 'done';
+        }
+    );
+
+}//end myFunction()
+
+function myFunction()
+{
+    if ($something === TRUE) {
+        throw new Exception('exception');
+    }
+
+    throw new Exception('exception');
+    echo 'non-executable';
+}//end myFunction()
+
+switch ($var) {
+    case 1: {
+        return '1';
+    }
+
+    case 2: {
+        return '2';
+    }
+}
+
 exit();
 
 // Errors are thrown from here down from the exit() above.

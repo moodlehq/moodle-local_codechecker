@@ -7,9 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: PHP.php 307870 2011-01-31 04:01:45Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -19,9 +18,9 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Tokenizers_PHP
@@ -97,7 +96,7 @@ class PHP_CodeSniffer_Tokenizers_PHP
                             T_FUNCTION      => array(
                                                 'start'  => array(T_OPEN_CURLY_BRACKET),
                                                 'end'    => array(T_CLOSE_CURLY_BRACKET),
-                                                'strict' => false,
+                                                'strict' => true,
                                                 'shared' => false,
                                                 'with'   => array(),
                                                ),
@@ -105,6 +104,13 @@ class PHP_CodeSniffer_Tokenizers_PHP
                                                 'start'  => array(T_OPEN_CURLY_BRACKET),
                                                 'end'    => array(T_CLOSE_CURLY_BRACKET),
                                                 'strict' => true,
+                                                'shared' => false,
+                                                'with'   => array(),
+                                               ),
+                            T_NAMESPACE     => array(
+                                                'start'  => array(T_OPEN_CURLY_BRACKET),
+                                                'end'    => array(T_CLOSE_CURLY_BRACKET),
+                                                'strict' => false,
                                                 'shared' => false,
                                                 'with'   => array(),
                                                ),
@@ -301,6 +307,16 @@ class PHP_CodeSniffer_Tokenizers_PHP
                 // Add the start heredoc token to the final array.
                 $finalTokens[$newStackPtr]
                     = PHP_CodeSniffer::standardiseToken($token);
+
+                // Check if this is actually a nowdoc and use a different token
+                // to help the sniffs.
+                $nowdoc = false;
+                if ($token[1][3] === "'") {
+                    $finalTokens[$newStackPtr]['code'] = T_START_NOWDOC;
+                    $finalTokens[$newStackPtr]['type'] = 'T_START_NOWDOC';
+                    $nowdoc = true;
+                }
+
                 $newStackPtr++;
 
                 $tokenContent = '';
@@ -338,8 +354,14 @@ class PHP_CodeSniffer_Tokenizers_PHP
                         $newToken['content'] .= $eolChar;
                     }
 
-                    $newToken['code']          = T_HEREDOC;
-                    $newToken['type']          = 'T_HEREDOC';
+                    if ($nowdoc === true) {
+                        $newToken['code'] = T_NOWDOC;
+                        $newToken['type'] = 'T_NOWDOC';
+                    } else {
+                        $newToken['code'] = T_HEREDOC;
+                        $newToken['type'] = 'T_HEREDOC';
+                    }
+
                     $finalTokens[$newStackPtr] = $newToken;
                     $newStackPtr++;
                 }
@@ -347,6 +369,13 @@ class PHP_CodeSniffer_Tokenizers_PHP
                 // Add the end heredoc token to the final array.
                 $finalTokens[$newStackPtr]
                     = PHP_CodeSniffer::standardiseToken($tokens[$stackPtr]);
+
+                if ($nowdoc === true) {
+                    $finalTokens[$newStackPtr]['code'] = T_END_NOWDOC;
+                    $finalTokens[$newStackPtr]['type'] = 'T_END_NOWDOC';
+                    $nowdoc = true;
+                }
+
                 $newStackPtr++;
 
                 // Continue, as we're done with this token.
@@ -435,7 +464,7 @@ class PHP_CodeSniffer_Tokenizers_PHP
         $numTokens = count($tokens);
         for ($i = ($numTokens - 1); $i >= 0; $i--) {
             // Looking for functions that are actually closures.
-            if ($tokens[$i]['code'] === T_FUNCTION) {
+            if ($tokens[$i]['code'] === T_FUNCTION && isset($tokens[$i]['scope_opener']) === true) {
                 for ($x = ($i + 1); $x < $numTokens; $x++) {
                     if (in_array($tokens[$x]['code'], PHP_CodeSniffer_Tokens::$emptyTokens) === false) {
                         break;
@@ -444,9 +473,22 @@ class PHP_CodeSniffer_Tokenizers_PHP
 
                 if ($tokens[$x]['code'] === T_OPEN_PARENTHESIS) {
                     $tokens[$i]['code'] = T_CLOSURE;
+                    $tokens[$i]['type'] = 'T_CLOSURE';
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $line = $tokens[$i]['line'];
                         echo "\t* token $i on line $line changed from T_FUNCTION to T_CLOSURE".PHP_EOL;
+                    }
+
+                    for ($x = ($tokens[$i]['scope_opener'] + 1); $x < $tokens[$i]['scope_closer']; $x++) {
+                        if (isset($tokens[$x]['conditions'][$i]) === false) {
+                            continue;
+                        }
+
+                        $tokens[$x]['conditions'][$i] = T_CLOSURE;
+                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                            $type = $tokens[$x]['type'];
+                            echo "\t\t* cleaned $x ($type) *".PHP_EOL;
+                        }
                     }
                 }
 

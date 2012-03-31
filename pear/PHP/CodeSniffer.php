@@ -9,9 +9,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: CodeSniffer.php 308981 2011-03-06 21:54:08Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -61,7 +60,7 @@ if (interface_exists('PHP_CodeSniffer_MultiFileSniff', true) === false) {
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
@@ -113,16 +112,6 @@ class PHP_CodeSniffer
      * @var array
      */
     protected $ruleset = array();
-
-    /**
-     * The path that that PHP_CodeSniffer is being run from.
-     *
-     * Stored so that the path can be restored after it is changed
-     * in the constructor.
-     *
-     * @var string
-     */
-    private $_cwd = null;
 
     /**
      * The listeners array, indexed by token type.
@@ -220,7 +209,10 @@ class PHP_CodeSniffer
 
         // Change into a directory that we know about to stop any
         // relative path conflicts.
-        $this->_cwd = getcwd();
+        if (defined('PHPCS_CWD') === false) {
+            define('PHPCS_CWD', getcwd());
+        }
+
         chdir(dirname(__FILE__).'/CodeSniffer/');
 
         // Set default CLI object in case someone is running us
@@ -242,7 +234,7 @@ class PHP_CodeSniffer
      */
     public function __destruct()
     {
-        chdir($this->_cwd);
+        chdir(PHPCS_CWD);
 
     }//end __destruct()
 
@@ -430,8 +422,8 @@ class PHP_CodeSniffer
                 if ($ruleset !== false) {
                     $standardName = (string) $ruleset['name'];
                 }
-            } else if (is_file(realpath($this->_cwd.'/'.$standard)) === true) {
-                $ruleset = simplexml_load_file(realpath($this->_cwd.'/'.$standard));
+            } else if (is_file(realpath(PHPCS_CWD.'/'.$standard)) === true) {
+                $ruleset = simplexml_load_file(realpath(PHPCS_CWD.'/'.$standard));
                 if ($ruleset !== false) {
                     $standardName = (string) $ruleset['name'];
                 }
@@ -604,7 +596,7 @@ class PHP_CodeSniffer
             if (is_dir($this->standardDir) === false) {
                 // This isn't looking good. Let's see if this
                 // is a relative path to a custom standard.
-                $path = realpath($this->_cwd.'/'.$standard);
+                $path = realpath(PHPCS_CWD.'/'.$standard);
                 if (is_dir($path) === true) {
                     // This is a relative path to a custom standard.
                     $this->standardDir = $path;
@@ -735,11 +727,11 @@ class PHP_CodeSniffer
             }
 
             foreach ($ruleset->rule as $rule) {
-                $includedSniffs = array_merge($includedSniffs, self::_expandRulesetReference($rule['ref']));
+                $includedSniffs = array_merge($includedSniffs, $this->_expandRulesetReference($rule['ref']));
 
                 if (isset($rule->exclude) === true) {
                     foreach ($rule->exclude as $exclude) {
-                        $excludedSniffs = array_merge($excludedSniffs, self::_expandRulesetReference($exclude['name']));
+                        $excludedSniffs = array_merge($excludedSniffs, $this->_expandRulesetReference($exclude['name']));
                     }
                 }
             }//end foreach
@@ -1027,6 +1019,10 @@ class PHP_CodeSniffer
                     $files[] = $file->getPathname();
                 }//end foreach
             } else {
+                if ($this->shouldIgnoreFile($path) === true) {
+                    continue;
+                }
+
                 $files[] = $path;
             }//end if
         }//end foreach
@@ -1049,18 +1045,46 @@ class PHP_CodeSniffer
     {
         // Check that the file's extension is one we are checking.
         // We are strict about checking the extension and we don't
-        // let files through with no extension.
-        $fileParts = explode('.', $path);
-        $extension = array_pop($fileParts);
-        if ($extension === $path) {
+        // let files through with no extension or that start with a dot.
+        $fileName  = basename($path);
+        $fileParts = explode('.', $fileName);
+        if ($fileParts[0] === $fileName || $fileParts[0] === '') {
             return false;
         }
 
-        if (isset($this->allowedFileExtensions[$extension]) === false) {
+        // Checking multi-part file extensions, so need to create a
+        // complete extension list and make sure one is allowed.
+        $extensions = array();
+        array_shift($fileParts);
+        foreach ($fileParts as $part) {
+            $extensions[implode('.', $fileParts)] = 1;
+            array_shift($fileParts);
+        }
+
+        $matches = array_intersect_key($extensions, $this->allowedFileExtensions);
+        if (empty($matches) === true) {
             return false;
         }
 
         // If the file's path matches one of our ignore patterns, skip it.
+        if ($this->shouldIgnoreFile($path) === true) {
+            return false;
+        }
+
+        return true;
+
+    }//end shouldProcessFile()
+
+
+    /**
+     * Checks filtering rules to see if a file should be ignored.
+     *
+     * @param string $path The path to the file being checked.
+     *
+     * @return bool
+     */
+    public function shouldIgnoreFile($path)
+    {
         foreach ($this->ignorePatterns as $pattern) {
             if (is_array($pattern) === true) {
                 // A sniff specific ignore pattern.
@@ -1074,13 +1098,13 @@ class PHP_CodeSniffer
 
             $pattern = strtr($pattern, $replacements);
             if (preg_match("|{$pattern}|i", $path) === 1) {
-                return false;
+                return true;
             }
         }//end foreach
 
-        return true;
+        return false;
 
-    }//end shouldProcessFile()
+    }//end shouldIgnoreFile()
 
 
     /**
@@ -1105,6 +1129,9 @@ class PHP_CodeSniffer
         }
 
         $filePath = realpath($file);
+        if ($filePath === false) {
+            $filePath = $file;
+        }
 
         // Before we go and spend time tokenizing this file, just check
         // to see if there is a tag up top to indicate that the whole
@@ -1313,7 +1340,9 @@ class PHP_CodeSniffer
      */
     public function generateDocs($standard, array $sniffs=array(), $generator='Text')
     {
-        include_once 'PHP/CodeSniffer/DocGenerators/'.$generator.'.php';
+        if (class_exists('PHP_CodeSniffer_DocGenerators_'.$generator, true) === false) {
+            throw new PHP_CodeSniffer_Exception('Class PHP_CodeSniffer_DocGenerators_'.$generator.' not found');
+        }
 
         $class     = "PHP_CodeSniffer_DocGenerators_$generator";
         $generator = new $class($standard, $sniffs);
@@ -1535,6 +1564,9 @@ class PHP_CodeSniffer
             break;
         case '$':
             $newToken['type'] = 'T_DOLLAR';
+            break;
+        case '`':
+            $newToken['type'] = 'T_BACKTICK';
             break;
         default:
             $newToken['type'] = 'T_NONE';

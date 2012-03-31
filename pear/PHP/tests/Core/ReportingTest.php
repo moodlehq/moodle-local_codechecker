@@ -9,9 +9,8 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: IsCamelCapsTest.php 240585 2007-08-02 00:05:40Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Core_ReportingTest extends PHPUnit_Framework_TestCase
@@ -126,8 +125,8 @@ class Core_ReportingTest extends PHPUnit_Framework_TestCase
     {
         $type        = 'checkstyle';
         $reportClass = $this->reporting->factory($type);
-        $this->assertType('PHP_CodeSniffer_Report', $reportClass);
-        $this->assertType('PHP_CodeSniffer_Reports_Checkstyle', $reportClass);
+        $this->assertInstanceOf('PHP_CodeSniffer_Report', $reportClass);
+        $this->assertInstanceOf('PHP_CodeSniffer_Reports_Checkstyle', $reportClass);
 
         $this->setExpectedException('PHP_CodeSniffer_Exception');
         $type        = 'foo';

@@ -85,4 +85,23 @@ array_map(
      },
     $array
 );
+
+$bar = new stdClass(
+    4,
+    5,
+    6
+   
+);
+
+$bar = new stdClass(
+    4,
+    5,
+    6
+
+);
+
+$foo = new stdClass(
+    1,
+    2,
+    3);
 ?>

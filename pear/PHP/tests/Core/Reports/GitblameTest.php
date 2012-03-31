@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Ben Selby <benmatselby@gmail.com>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: IsCamelCapsTest.php 240585 2007-08-02 00:05:40Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -32,9 +31,9 @@ if (is_file(dirname(__FILE__).'/../../../CodeSniffer.php') === true) {
  * @package   PHP_CodeSniffer
  * @author    Ben Selby <benmatselby@gmail.com>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Core_Reports_GitblameTest extends Core_Reports_AbstractTestCase

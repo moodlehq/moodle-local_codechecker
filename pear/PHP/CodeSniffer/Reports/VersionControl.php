@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Ben Selby <benmatselby@gmail.com>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: IsCamelCapsTest.php 240585 2007-08-02 00:05:40Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -23,7 +22,7 @@
  * @package   PHP_CodeSniffer
  * @author    Ben Selby <benmatselby@gmail.com>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
  * @version   Release: 1.2.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
@@ -42,18 +41,18 @@ abstract class PHP_CodeSniffer_Reports_VersionControl implements PHP_CodeSniffer
     /**
      * Prints the author of all errors and warnings, as given by "version control blame".
      *
-     * @param array   $report       Prepared report.
-     * @param boolean $showWarnings Show warnings?
-     * @param boolean $showSources  Show sources?
-     * @param integer $width        Maximum allowed lne width.
+     * @param array   $report      Prepared report.
+     * @param boolean $showSources Show sources?
+     * @param integer $width       Maximum allowed lne width.
+     * @param boolean $toScreen    Is the report being printed to screen?
      *
      * @return string
      */
     public function generate(
         $report,
-        $showWarnings=true,
         $showSources=false,
-        $width=80
+        $width=80,
+        $toScreen=true
     ) {
         $authors = array();
         $praise  = array();
@@ -180,7 +179,8 @@ abstract class PHP_CodeSniffer_Reports_VersionControl implements PHP_CodeSniffer
         echo 'WERE COMMITTED BY '.count($authors).' AUTHOR(S)'.PHP_EOL;
         echo str_repeat('-', $width).PHP_EOL.PHP_EOL;
 
-        if (PHP_CODESNIFFER_INTERACTIVE === false
+        if ($toScreen === true
+            && PHP_CODESNIFFER_INTERACTIVE === false
             && class_exists('PHP_Timer', false) === true
         ) {
             echo PHP_Timer::resourceUsage().PHP_EOL.PHP_EOL;

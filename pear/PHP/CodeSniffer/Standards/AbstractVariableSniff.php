@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: AbstractVariableSniff.php 308521 2011-02-21 00:56:09Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -32,9 +31,9 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 abstract class PHP_CodeSniffer_Standards_AbstractVariableSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
@@ -67,18 +66,19 @@ abstract class PHP_CodeSniffer_Standards_AbstractVariableSniff extends PHP_CodeS
      */
     public function __construct()
     {
-        $listen = array(
+        $scopes = array(
                    T_CLASS,
                    T_INTERFACE,
                   );
 
-        $scopes = array(
+        $listen = array(
                    T_FUNCTION,
                    T_VARIABLE,
                    T_DOUBLE_QUOTED_STRING,
+                   T_HEREDOC,
                   );
 
-        parent::__construct($listen, $scopes, true);
+        parent::__construct($scopes, $listen, true);
 
     }//end __construct()
 
@@ -133,21 +133,24 @@ abstract class PHP_CodeSniffer_Standards_AbstractVariableSniff extends PHP_CodeS
 
                 $this->_endFunction = $tokens[$stackPtr]['scope_closer'];
             }
+        }
 
+        if ($tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING
+            || $tokens[$stackPtr]['code'] === T_HEREDOC
+        ) {
+            // Check to see if this string has a variable in it.
+            $pattern = '|(?<!\\\\)(?:\\\\{2})*\${?[a-zA-Z0-9_]+}?|';
+            if (preg_match($pattern, $tokens[$stackPtr]['content']) !== 0) {
+                $this->processVariableInString($phpcsFile, $stackPtr);
+            }
+
+            return;
         }
 
         if ($this->_functionOpen === true) {
             if ($tokens[$stackPtr]['code'] === T_VARIABLE) {
                 $this->processVariable($phpcsFile, $stackPtr);
-            } else if ($tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING) {
-                // Check to see if this string has a variable in it.
-                $pattern = '|[^\\\]\${?[a-zA-Z0-9_]+}?|';
-                if (preg_match($pattern, $tokens[$stackPtr]['content']) !== 0) {
-                    $this->processVariableInString($phpcsFile, $stackPtr);
-                }
             }
-
-            return;
         } else {
             // What if we assign a member variable to another?
             // ie. private $_count = $this->_otherCount + 1;.
@@ -174,8 +177,14 @@ abstract class PHP_CodeSniffer_Standards_AbstractVariableSniff extends PHP_CodeS
         // These variables are not member vars.
         if ($tokens[$stackPtr]['code'] === T_VARIABLE) {
             $this->processVariable($phpcsFile, $stackPtr);
-        } else {
-            $this->processVariableInString($phpcsFile, $stackPtr);
+        } else if ($tokens[$stackPtr]['code'] === T_DOUBLE_QUOTED_STRING
+            || $tokens[$stackPtr]['code'] === T_HEREDOC
+        ) {
+            // Check to see if this string has a variable in it.
+            $pattern = '|(?<!\\\\)(?:\\\\{2})*\${?[a-zA-Z0-9_]+}?|';
+            if (preg_match($pattern, $tokens[$stackPtr]['content']) !== 0) {
+                $this->processVariableInString($phpcsFile, $stackPtr);
+            }
         }
 
     }//end processTokenOutsideScope()
@@ -212,10 +221,10 @@ abstract class PHP_CodeSniffer_Standards_AbstractVariableSniff extends PHP_CodeS
 
 
     /**
-     * Called to process variables found in duoble quoted strings.
+     * Called to process variables found in duoble quoted strings or heredocs.
      *
      * Note that there may be more than one variable in the string, which will
-     * result only in one call for the string.
+     * result only in one call for the string or one call per line for heredocs.
      *
      * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where this
      *                                        token was found.

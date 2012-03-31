@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ArrayDeclarationSniff.php 301632 2010-07-28 01:57:56Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -21,9 +20,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
@@ -89,12 +88,19 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
             // Single line array.
             // Check if there are multiple values. If so, then it has to be multiple lines
             // unless it is contained inside a function call or condition.
-            $nextComma  = $arrayStart;
             $valueCount = 0;
             $commas     = array();
-            while (($nextComma = $phpcsFile->findNext(array(T_COMMA), ($nextComma + 1), $arrayEnd)) !== false) {
-                $valueCount++;
-                $commas[] = $nextComma;
+            for ($i = ($arrayStart + 1); $i < $arrayEnd; $i++) {
+                // Skip bracketed statements, like function calls.
+                if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS) {
+                    $i = $tokens[$i]['parenthesis_closer'];
+                    continue;
+                }
+
+                if ($tokens[$i]['code'] === T_COMMA) {
+                    $valueCount++;
+                    $commas[] = $i;
+                }
             }
 
             // Now check each of the double arrows (if any).
@@ -184,7 +190,7 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
         }//end if
 
         // Check the closing bracket is on a new line.
-        $lastContent = $phpcsFile->findPrevious(array(T_WHITESPACE), ($arrayEnd - 1), $arrayStart, true);
+        $lastContent = $phpcsFile->findPrevious(T_WHITESPACE, ($arrayEnd - 1), $arrayStart, true);
         if ($tokens[$lastContent]['line'] !== ($tokens[$arrayEnd]['line'] - 1)) {
             $error = 'Closing parenthesis of array declaration must be on a new line';
             $phpcsFile->addError($error, $arrayEnd, 'CloseBraceNewLine');
@@ -466,7 +472,20 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
 
             // Check each line ends in a comma.
             if ($tokens[$index['value']]['code'] !== T_ARRAY) {
-                $nextComma = $phpcsFile->findNext(array(T_COMMA), ($index['value'] + 1));
+                $nextComma = false;
+                for ($i = ($index['value'] + 1); $i < $arrayEnd; $i++) {
+                    // Skip bracketed statements, like function calls.
+                    if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS) {
+                        $i = $tokens[$i]['parenthesis_closer'];
+                        continue;
+                    }
+
+                    if ($tokens[$i]['code'] === T_COMMA) {
+                        $nextComma = $i;
+                        break;
+                    }
+                }
+
                 if (($nextComma === false) || ($tokens[$nextComma]['line'] !== $tokens[$index['value']]['line'])) {
                     $error = 'Each line in an array declaration must end in a comma';
                     $phpcsFile->addError($error, $index['value'], 'NoComma');

@@ -71,4 +71,18 @@ class mpgResponse{
        }
    }//end characterHandler
 }//end class mpgResponse
+
+class foo
+{
+    const bar = <<<BAZ
+qux
+BAZ;
+}
+
+class foo
+{
+    var $c = <<<C
+ccc
+C;
+}
 ?>

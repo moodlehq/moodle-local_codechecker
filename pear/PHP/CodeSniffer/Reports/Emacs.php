@@ -9,9 +9,8 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: IsCamelCapsTest.php 240585 2007-08-02 00:05:40Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Reports_Emacs implements PHP_CodeSniffer_Report
@@ -36,17 +35,19 @@ class PHP_CodeSniffer_Reports_Emacs implements PHP_CodeSniffer_Report
 
     /**
      * Generates an emacs report.
-     * 
+     *
      * @param array   $report      Prepared report.
      * @param boolean $showSources Show sources?
      * @param int     $width       Maximum allowed lne width.
-     * 
-     * @return string 
+     * @param boolean $toScreen    Is the report being printed to screen?
+     *
+     * @return string
      */
     public function generate(
         $report,
         $showSources=false,
-        $width=80
+        $width=80,
+        $toScreen=true
     ) {
         $errorsShown = 0;
 
@@ -55,7 +56,11 @@ class PHP_CodeSniffer_Reports_Emacs implements PHP_CodeSniffer_Report
                 foreach ($lineErrors as $column => $colErrors) {
                     foreach ($colErrors as $error) {
                         $message = $error['message'];
-                        $type    = strtolower($error['type']);
+                        if ($showSources === true) {
+                            $message .= ' ('.$error['source'].')';
+                        }
+
+                        $type = strtolower($error['type']);
                         echo $filename.':'.$line.':'.$column.': '.$type.' - '.$message.PHP_EOL;
                         $errorsShown++;
                     }

@@ -82,4 +82,21 @@ echo "{$_SERVER['HOSTNAME']} $var_name";
 
 // Need to be the last thing in this test file.
 $obj->$classVar = $prefix.'-'.$type;
+
+class foo
+{
+    const bar = <<<BAZ
+qux
+BAZ;
+}
+
+$foo = <<<'BAR'
+$123
+"$456"
+BAR;
+
+$foo = <<<BAR
+$123
+"$456"
+BAR;
 ?>

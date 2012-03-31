@@ -9,9 +9,8 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: IsCamelCapsTest.php 240585 2007-08-02 00:05:40Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Reports_Xml implements PHP_CodeSniffer_Report
@@ -42,16 +41,22 @@ class PHP_CodeSniffer_Reports_Xml implements PHP_CodeSniffer_Report
      * @param array   $report      Prepared report.
      * @param boolean $showSources Show sources?
      * @param int     $width       Maximum allowed lne width.
-     * 
-     * @return string 
+     * @param boolean $toScreen    Is the report being printed to screen?
+     *
+     * @return string
      */
     public function generate(
         $report,
         $showSources=false,
-        $width=80
+        $width=80,
+        $toScreen=true
     ) {
-        echo '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
-        echo '<phpcs version="1.3.0">'.PHP_EOL;
+        $out = new XMLWriter;
+        $out->openMemory();
+        $out->setIndent(true);
+        $out->startDocument('1.0', 'UTF-8');
+        $out->startElement('phpcs');
+        $out->writeAttribute('version', '1.3.3');
 
         $errorsShown = 0;
 
@@ -60,28 +65,37 @@ class PHP_CodeSniffer_Reports_Xml implements PHP_CodeSniffer_Report
                 continue;
             }
 
-            echo ' <file name="'.$filename.'" errors="'.$file['errors'].'" warnings="'.$file['warnings'].'">'.PHP_EOL;
+            $out->startElement('file');
+            $out->writeAttribute('name', $filename);
+            $out->writeAttribute('errors', $file['errors']);
+            $out->writeAttribute('warnings', $file['warnings']);
 
             foreach ($file['messages'] as $line => $lineErrors) {
                 foreach ($lineErrors as $column => $colErrors) {
                     foreach ($colErrors as $error) {
-                        $error['type']    = strtolower($error['type']);
-                        $error['message'] = htmlspecialchars($error['message']);
+                        $error['type'] = strtolower($error['type']);
                         if (PHP_CODESNIFFER_ENCODING !== 'utf-8') {
                             $error['message'] = iconv(PHP_CODESNIFFER_ENCODING, 'utf-8', $error['message']);
                         }
 
-                        echo '  <'.$error['type'].' line="'.$line.'" column="'.$column.'" source="'.$error['source'].'" severity="'.$error['severity'].'">';
-                        echo $error['message'].'</'.$error['type'].'>'.PHP_EOL;
+                        $out->startElement($error['type']);
+                        $out->writeAttribute('line', $line);
+                        $out->writeAttribute('column', $column);
+                        $out->writeAttribute('source', $error['source']);
+                        $out->writeAttribute('severity', $error['severity']);
+                        $out->text($error['message']);
+                        $out->endElement();
+
                         $errorsShown++;
                     }
                 }
             }//end foreach
 
-            echo ' </file>'.PHP_EOL;
+            $out->endElement();
         }//end foreach
 
-        echo '</phpcs>'.PHP_EOL;
+        $out->endElement();
+        echo $out->flush();
 
         return $errorsShown;
 

@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: SelfMemberReferenceSniff.php 301632 2010-07-28 01:57:56Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -33,9 +32,9 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Classes_SelfMemberReferenceSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
@@ -77,10 +76,13 @@ class Squiz_Sniffs_Classes_SelfMemberReferenceSniff extends PHP_CodeSniffer_Stan
             // Make sure this is another class reference.
             $declarationName = $phpcsFile->getDeclarationName($currScope);
             if ($declarationName === $tokens[$className]['content']) {
-                // Class name is the same as the current class.
-                $error = 'Must use "self::" for local static member reference';
-                $phpcsFile->addError($error, $className, 'NotUsed');
-                return;
+                // Class name is the same as the current class, which is not allowed
+                // except if being used inside a closure.
+                if ($phpcsFile->hasCondition($stackPtr, T_CLOSURE) === false) {
+                    $error = 'Must use "self::" for local static member reference';
+                    $phpcsFile->addError($error, $className, 'NotUsed');
+                    return;
+                }
             }
         }
 

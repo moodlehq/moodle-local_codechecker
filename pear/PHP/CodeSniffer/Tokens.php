@@ -9,9 +9,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: Tokens.php 307870 2011-01-31 04:01:45Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -61,14 +60,18 @@ define('T_ASPERAND', 1042);
 define('T_DOLLAR', 1043);
 define('T_TYPEOF', 1044);
 define('T_CLOSURE', 1045);
+define('T_BACKTICK', 1046);
+define('T_START_NOWDOC', 1047);
+define('T_NOWDOC', 1048);
+define('T_END_NOWDOC', 1049);
 
 // Some PHP 5.3 tokens, replicated for lower versions.
 if (defined('T_NAMESPACE') === false) {
-    define('T_NAMESPACE', 1046);
+    define('T_NAMESPACE', 1050);
 }
 
 if (defined('T_NS_SEPARATOR') === false) {
-    define('T_NS_SEPARATOR', 1047);
+    define('T_NS_SEPARATOR', 1051);
 }
 
 /**
@@ -82,9 +85,9 @@ if (defined('T_NS_SEPARATOR') === false) {
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 final class PHP_CodeSniffer_Tokens
@@ -97,6 +100,8 @@ final class PHP_CodeSniffer_Tokens
      */
     public static $weightings = array(
                                  T_CLASS               => 1000,
+                                 T_INTERFACE           => 1000,
+                                 T_NAMESPACE           => 1000,
                                  T_FUNCTION            => 100,
                                  T_CLOSURE             => 100,
 
@@ -261,6 +266,7 @@ final class PHP_CodeSniffer_Tokens
     public static $scopeOpeners = array(
                                    T_CLASS,
                                    T_INTERFACE,
+                                   T_NAMESPACE,
                                    T_FUNCTION,
                                    T_CLOSURE,
                                    T_IF,
@@ -318,7 +324,7 @@ final class PHP_CodeSniffer_Tokens
                                       );
 
     /**
-     * Tokens that perform operations.
+     * Tokens that open code blocks.
      *
      * @var array(int)
      */
@@ -359,6 +365,20 @@ final class PHP_CodeSniffer_Tokens
     public static $stringTokens = array(
                                    T_CONSTANT_ENCAPSED_STRING,
                                    T_DOUBLE_QUOTED_STRING,
+                                  );
+
+    /**
+     * Tokens that represent brackets and parenthesis.
+     *
+     * @var array(int)
+     */
+    public static $bracketTokens = array(
+                                    T_OPEN_CURLY_BRACKET,
+                                    T_CLOSE_CURLY_BRACKET,
+                                    T_OPEN_SQUARE_BRACKET,
+                                    T_CLOSE_SQUARE_BRACKET,
+                                    T_OPEN_PARENTHESIS,
+                                    T_CLOSE_PARENTHESIS,
                                   );
 
     /**

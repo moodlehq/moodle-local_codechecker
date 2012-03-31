@@ -9,9 +9,8 @@
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: Reporting.php 287726 2009-08-26 05:13:12Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -29,9 +28,9 @@ if (is_file(dirname(__FILE__).'/../CodeSniffer.php') === true) {
  * @author    Gabriele Santini <gsantini@sqli.com>
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2009 SQLI <www.sqli.com>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Reporting
@@ -83,14 +82,30 @@ class PHP_CodeSniffer_Reporting
         $reportFile='',
         $reportWidth=80
     ) {
+        if ($reportFile !== null) {
+            $reportDir = dirname($reportFile);
+            if ($reportDir === '.') {
+                // Passed report file is a filename in the current directory.
+                $reportFile = PHPCS_CWD.'/'.basename($reportFile);
+            } else {
+                $reportDir = realpath(PHPCS_CWD.'/'.$reportDir);
+                if ($reportDir !== false) {
+                    // Report file path is relative.
+                    $reportFile = $reportDir.'/'.basename($reportFile);
+                }
+            }
+        }
+
         $reportClass = self::factory($report);
         $reportData  = $this->prepare($filesViolations);
 
+        $toScreen = true;
         if ($reportFile !== null) {
+            $toScreen = false;
             ob_start();
         }
 
-        $numErrors = $reportClass->generate($reportData, $showSources, $reportWidth);
+        $numErrors = $reportClass->generate($reportData, $showSources, $reportWidth, $toScreen);
 
         if ($reportFile !== null) {
             $generatedReport = ob_get_contents();

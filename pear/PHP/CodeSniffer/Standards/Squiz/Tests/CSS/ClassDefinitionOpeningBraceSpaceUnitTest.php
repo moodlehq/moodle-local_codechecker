@@ -7,9 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ClassDefinitionOpeningBraceSpaceUnitTest.php 268066 2008-10-31 05:36:54Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -22,9 +21,9 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_CSS_ClassDefinitionOpeningBraceSpaceUnitTest extends AbstractSniffUnitTest
@@ -46,6 +45,7 @@ class Squiz_Tests_CSS_ClassDefinitionOpeningBraceSpaceUnitTest extends AbstractS
                 7  => 1,
                 10 => 1,
                 13 => 1,
+                26 => 1,
                );
 
     }//end getErrorList()

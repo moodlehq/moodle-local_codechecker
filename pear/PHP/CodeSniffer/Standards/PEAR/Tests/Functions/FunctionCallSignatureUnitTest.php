@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: FunctionCallSignatureUnitTest.php 306394 2010-12-15 22:34:34Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PEAR_Tests_Functions_FunctionCallSignatureUnitTest extends AbstractSniffUnitTest
@@ -44,22 +43,25 @@ class PEAR_Tests_Functions_FunctionCallSignatureUnitTest extends AbstractSniffUn
     public function getErrorList()
     {
         return array(
-                5  => 1,
-                6  => 1,
-                7  => 1,
-                8  => 1,
-                9  => 2,
-                10 => 3,
-                17 => 1,
-                18 => 1,
-                31 => 1,
-                34 => 1,
-                43 => 1,
-                57 => 1,
-                59 => 1,
-                63 => 1,
-                64 => 1,
-                82 => 1,
+                5   => 1,
+                6   => 1,
+                7   => 1,
+                8   => 1,
+                9   => 2,
+                10  => 3,
+                17  => 1,
+                18  => 1,
+                31  => 1,
+                34  => 1,
+                43  => 1,
+                57  => 1,
+                59  => 1,
+                63  => 1,
+                64  => 1,
+                82  => 1,
+                93  => 1,
+                100 => 1,
+                106 => 1,
                );
 
     }//end getErrorList()

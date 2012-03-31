@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: ScopeIndentSniff.php 307364 2011-01-11 05:34:03Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
@@ -121,7 +120,13 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
         // indent that we expect this current content to be.
         $expectedIndent = $this->calculateExpectedIndent($tokens, $firstToken);
 
-        if ($tokens[$firstToken]['column'] !== $expectedIndent) {
+        // Don't process the first token if it is a closure because they have
+        // different indentation rules as they are often used as function arguments
+        // for multi-line function calls. But continue to process the content of the
+        // closure because it should be indented as normal.
+        if ($tokens[$firstToken]['code'] !== T_CLOSURE
+            && $tokens[$firstToken]['column'] !== $expectedIndent
+        ) {
             $error = 'Line indented incorrectly; expected %s spaces, found %s';
             $data  = array(
                       ($expectedIndent - 1),
@@ -144,7 +149,7 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
         $commentOpen = false;
         $inHereDoc   = false;
 
-        // Only loop over the content beween the opening and closing brace, not
+        // Only loop over the content between the opening and closing brace, not
         // the braces themselves.
         for ($i = ($scopeOpener + 1); $i < $scopeCloser; $i++) {
 
@@ -174,7 +179,7 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
                 }
 
                 continue;
-            }
+            }//end if
 
             // If this is a HEREDOC then we need to ignore it as the
             // whitespace before the contents within the HEREDOC are
@@ -294,6 +299,9 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
     /**
      * Calculates the expected indent of a token.
      *
+     * Returns the column at which the token should be indented to, so 1 means
+     * that the token should not be indented at all.
+     *
      * @param array $tokens   The stack of tokens for this file.
      * @param int   $stackPtr The position of the token to get indent for.
      *
@@ -327,7 +335,8 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
             }
         }
 
-        return ((count($conditionStack) * $this->indent) + 1);
+        $indent = ((count($conditionStack) * $this->indent) + 1);
+        return $indent;
 
     }//end calculateExpectedIndent()
 

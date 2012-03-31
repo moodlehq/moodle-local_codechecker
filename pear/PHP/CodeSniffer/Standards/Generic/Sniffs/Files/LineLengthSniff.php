@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: LineLengthSniff.php 306530 2010-12-21 04:08:20Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_Files_LineLengthSniff implements PHP_CodeSniffer_Sniff
@@ -76,7 +75,7 @@ class Generic_Sniffs_Files_LineLengthSniff implements PHP_CodeSniffer_Sniff
         $tokens = $phpcsFile->getTokens();
 
         // Make sure this is the first open tag.
-        $previousOpenTag = $phpcsFile->findPrevious(array(T_OPEN_TAG), ($stackPtr - 1));
+        $previousOpenTag = $phpcsFile->findPrevious(T_OPEN_TAG, ($stackPtr - 1));
         if ($previousOpenTag !== false) {
             return;
         }
@@ -85,17 +84,19 @@ class Generic_Sniffs_Files_LineLengthSniff implements PHP_CodeSniffer_Sniff
         $currentLineContent = '';
         $currentLine        = 1;
 
+        $trim = (strlen($phpcsFile->eolChar) * -1);
         for (; $tokenCount < $phpcsFile->numTokens; $tokenCount++) {
             if ($tokens[$tokenCount]['line'] === $currentLine) {
                 $currentLineContent .= $tokens[$tokenCount]['content'];
             } else {
-                $currentLineContent = trim($currentLineContent, $phpcsFile->eolChar);
+                $currentLineContent = substr($currentLineContent, 0, $trim);
                 $this->checkLineLength($phpcsFile, ($tokenCount - 1), $currentLineContent);
                 $currentLineContent = $tokens[$tokenCount]['content'];
                 $currentLine++;
             }
         }
 
+        $currentLineContent = substr($currentLineContent, 0, $trim);
         $this->checkLineLength($phpcsFile, ($tokenCount - 1), $currentLineContent);
 
     }//end process()
@@ -115,44 +116,46 @@ class Generic_Sniffs_Files_LineLengthSniff implements PHP_CodeSniffer_Sniff
         // If the content is a CVS or SVN id in a version tag, or it is
         // a license tag with a name and URL, there is nothing the
         // developer can do to shorten the line, so don't throw errors.
-        if (preg_match('|@version[^\$]+\$Id|', $lineContent) === 0
-            && preg_match('|@license|', $lineContent) === 0
-        ) {
-            if (PHP_CODESNIFFER_ENCODING !== 'iso-8859-1') {
-                // Not using the detault encoding, so take a bit more care.
-                $lineLength = iconv_strlen($lineContent, PHP_CODESNIFFER_ENCODING);
-                if ($lineLength === false) {
-                    // String contained invalid characters, so revert to default.
-                    $lineLength = strlen($lineContent);
-                }
-            } else {
-                $lineLength = strlen($lineContent);
-            }
-
-            if ($this->absoluteLineLimit > 0
-                && $lineLength > $this->absoluteLineLimit
-            ) {
-                $data = array(
-                         $this->absoluteLineLimit,
-                         $lineLength,
-                        );
-
-                $error = 'Line exceeds maximum limit of %s characters; contains %s characters';
-                $phpcsFile->addError($error, $stackPtr, 'MaxExceeded', $data);
-            } else if ($lineLength > $this->lineLimit) {
-                $data = array(
-                         $this->lineLimit,
-                         $lineLength,
-                        );
-
-                $warning = 'Line exceeds %s characters; contains %s characters';
-                $phpcsFile->addWarning($warning, $stackPtr, 'TooLong', $data);
-            }
+        if (preg_match('|@version[^\$]+\$Id|', $lineContent) !== 0) {
+            return;
         }
 
+        if (preg_match('|@license|', $lineContent) !== 0) {
+            return;
+        }
+
+        if (PHP_CODESNIFFER_ENCODING !== 'iso-8859-1') {
+            // Not using the detault encoding, so take a bit more care.
+            $lineLength = iconv_strlen($lineContent, PHP_CODESNIFFER_ENCODING);
+            if ($lineLength === false) {
+                // String contained invalid characters, so revert to default.
+                $lineLength = strlen($lineContent);
+            }
+        } else {
+            $lineLength = strlen($lineContent);
+        }
+
+        if ($this->absoluteLineLimit > 0
+            && $lineLength > $this->absoluteLineLimit
+        ) {
+            $data = array(
+                     $this->absoluteLineLimit,
+                     $lineLength,
+                    );
+
+            $error = 'Line exceeds maximum limit of %s characters; contains %s characters';
+            $phpcsFile->addError($error, $stackPtr, 'MaxExceeded', $data);
+        } else if ($lineLength > $this->lineLimit) {
+            $data = array(
+                     $this->lineLimit,
+                     $lineLength,
+                    );
+
+            $warning = 'Line exceeds %s characters; contains %s characters';
+            $phpcsFile->addWarning($warning, $stackPtr, 'TooLong', $data);
+        }
     }//end checkLineLength()
 
 
 }//end class
 
-?>

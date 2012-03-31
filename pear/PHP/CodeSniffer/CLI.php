@@ -7,9 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: CLI.php 307425 2011-01-12 22:23:07Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +24,9 @@ if (is_file(dirname(__FILE__).'/../CodeSniffer.php') === true) {
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_CLI
@@ -296,7 +295,7 @@ class PHP_CodeSniffer_CLI
             exit(0);
             break;
         case 'version':
-            echo 'PHP_CodeSniffer version 1.3.0 (stable) ';
+            echo 'PHP_CodeSniffer version 1.3.3 (stable) ';
             echo 'by Squiz Pty Ltd. (http://www.squiz.net)'.PHP_EOL;
             exit(0);
             break;
@@ -383,6 +382,7 @@ class PHP_CodeSniffer_CLI
                                      'summary',
                                      'svnblame',
                                      'gitblame',
+                                     'hgblame',
                                     );
 
                 if (in_array($report, $validReports) === false) {
@@ -486,10 +486,19 @@ class PHP_CodeSniffer_CLI
             exit(0);
         }
 
+        $fileContents = '';
         if (empty($values['files']) === true) {
-            echo 'ERROR: You must supply at least one file or directory to process.'.PHP_EOL.PHP_EOL;
-            $this->printUsage();
-            exit(2);
+            // Check if they passing in the file contents.
+            $handle       = fopen('php://stdin', 'r');
+            $fileContents = stream_get_contents($handle);
+            fclose($handle);
+
+            if ($fileContents === '') {
+                // No files and no content passed in.
+                echo 'ERROR: You must supply at least one file or directory to process.'.PHP_EOL.PHP_EOL;
+                $this->printUsage();
+                exit(2);
+            }
         }
 
         $values['standard'] = $this->validateStandard($values['standard']);
@@ -541,6 +550,10 @@ class PHP_CodeSniffer_CLI
             $values['local']
         );
 
+        if ($fileContents !== '') {
+            $phpcs->processFile('STDIN', $fileContents);
+        }
+
         return $this->printErrorReport(
             $phpcs,
             $values['reports'],
@@ -582,13 +595,21 @@ class PHP_CodeSniffer_CLI
             $reports['full'] = $reportFile;
         }
 
-        $errors = 0;
+        $errors   = 0;
+        $toScreen = false;
 
         foreach ($reports as $report => $output) {
             if ($output === null) {
                 $output = $reportFile;
             }
 
+            if ($reportFile === null) {
+                $toScreen = true;
+            }
+
+            // We don't add errors here because the number of
+            // errors reported by each report type will always be the
+            // same, so we really just need 1 number.
             $errors = $reporting->printReport(
                 $report,
                 $filesViolations,
@@ -596,6 +617,18 @@ class PHP_CodeSniffer_CLI
                 $output,
                 $reportWidth
             );
+        }
+
+        // Only print PHP_Timer output if no reports were
+        // printed to the screen so we don't put additional output
+        // in something like an XML report. If we are printing to screen,
+        // the report types would have already worked out who should
+        // print the timer info.
+        if ($toScreen === false
+            && PHP_CODESNIFFER_INTERACTIVE === false
+            && class_exists('PHP_Timer', false) === true
+        ) {
+            echo PHP_Timer::resourceUsage().PHP_EOL.PHP_EOL;
         }
 
         // They should all return the same value, so it
@@ -680,7 +713,7 @@ class PHP_CodeSniffer_CLI
         echo '        <generator>   The name of a doc generator to use'.PHP_EOL;
         echo '                      (forces doc generation instead of checking)'.PHP_EOL;
         echo '        <report>      Print either the "full", "xml", "checkstyle", "csv", "emacs"'.PHP_EOL;
-        echo '                      "source", "summary", "svnblame" or "gitblame" report'.PHP_EOL;
+        echo '                      "source", "summary", "svnblame", "gitblame" or "hgblame" report'.PHP_EOL;
         echo '                      (the "full" report is printed by default)'.PHP_EOL;
         echo '        <reportfile>  Write the report to the specified file path'.PHP_EOL;
         echo '        <reportWidth> How many columns wide screen reports should be printed'.PHP_EOL;

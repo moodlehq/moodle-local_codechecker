@@ -17,13 +17,13 @@
 /**
  * Version details.
  *
- * @package    local
- * @subpackage codechecker
+ * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2011040400;
-$plugin->requires = 2010080300;
+$plugin->version   = 2012030100;
+$plugin->requires  = 2011120500; // Moodle 2.2 release and upwards
+$module->component = 'local_codechecker';

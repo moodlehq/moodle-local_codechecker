@@ -7,9 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: JSLintUnitTest.php 268848 2008-11-12 04:44:15Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -22,9 +21,9 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_Debug_JSLintUnitTest extends AbstractSniffUnitTest
@@ -71,6 +70,7 @@ class Squiz_Tests_Debug_JSLintUnitTest extends AbstractSniffUnitTest
     {
         return array(
                 1 => 2,
+                2 => 1,
                );
 
     }//end getWarningList()

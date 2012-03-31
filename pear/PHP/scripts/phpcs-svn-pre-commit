@@ -9,9 +9,8 @@
  * @package   PHP_CodeSniffer
  * @author    Jack Bates <ms419@freezone.co.uk>
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: phpcs-svn-pre-commit 307326 2011-01-10 05:10:59Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -31,7 +30,7 @@ define('PHP_CODESNIFFER_SVNLOOK', '/usr/bin/svnlook');
  * @package   PHP_CodeSniffer
  * @author    Jack Bates <ms419@freezone.co.uk>
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
  * @version   Release: @package_version@
  * @link      http://pear.php.net/package/PHP_CodeSniffer
@@ -69,7 +68,7 @@ class PHP_CodeSniffer_SVN_Hook extends PHP_CodeSniffer_CLI
      */
     public function processUnknownArgument($arg, $pos, $values)
     {
-        $values['svnArgs'][] = $arg;
+        $values['svnArgs'][] = escapeshellarg($arg);
         return $values;
 
     }//end processUnknownArgument()
@@ -165,7 +164,7 @@ class PHP_CodeSniffer_SVN_Hook extends PHP_CodeSniffer_CLI
             }
 
             // Get the contents of each file, as it would be after this transaction.
-            $command = PHP_CODESNIFFER_SVNLOOK.' cat '.implode(' ', $values['svnArgs']).' '.$path;
+            $command = PHP_CODESNIFFER_SVNLOOK.' cat '.implode(' ', $values['svnArgs']).' '.escapeshellarg($path);
             $handle  = popen($command, 'r');
             if ($handle === false) {
                 echo 'ERROR: Could not execute "'.$command.'"'.PHP_EOL.PHP_EOL;

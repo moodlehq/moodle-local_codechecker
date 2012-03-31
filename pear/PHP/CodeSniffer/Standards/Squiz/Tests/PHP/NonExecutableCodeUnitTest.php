@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: NonExecutableCodeUnitTest.php 304170 2010-10-06 23:16:19Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_PHP_NonExecutableCodeUnitTest extends AbstractSniffUnitTest
@@ -64,12 +63,10 @@ class Squiz_Tests_PHP_NonExecutableCodeUnitTest extends AbstractSniffUnitTest
                 17  => 1,
                 18  => 1,
                 19  => 2,
-                20  => 1,
                 28  => 1,
                 32  => 1,
                 33  => 2,
                 34  => 2,
-                35  => 2,
                 42  => 1,
                 45  => 1,
                 54  => 1,
@@ -77,13 +74,13 @@ class Squiz_Tests_PHP_NonExecutableCodeUnitTest extends AbstractSniffUnitTest
                 73  => 1,
                 83  => 1,
                 95  => 1,
-                102 => 1,
-                103 => 1,
-                104 => 1,
-                105 => 2,
-                106 => 1,
-                107 => 1,
-                109 => 1,
+                105 => 1,
+                118 => 1,
+                134 => 1,
+                135 => 1,
+                136 => 1,
+                137 => 2,
+                141 => 1,
                );
 
     }//end getWarningList()

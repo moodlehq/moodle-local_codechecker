@@ -10,9 +10,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: FunctionCommentThrowTagSniff.php 308073 2011-02-07 05:20:21Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -30,9 +29,9 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
@@ -67,9 +66,27 @@ class Squiz_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSniff
             return;
         }
 
-        // Parse the function comment.
-        $tokens       = $phpcsFile->getTokens();
-        $commentEnd   = $phpcsFile->findPrevious(T_DOC_COMMENT, ($currScope - 1));
+        $tokens = $phpcsFile->getTokens();
+
+        $find = array(
+                 T_COMMENT,
+                 T_DOC_COMMENT,
+                 T_CLASS,
+                 T_FUNCTION,
+                 T_OPEN_TAG,
+                );
+
+        $commentEnd = $phpcsFile->findPrevious($find, ($currScope - 1));
+
+        if ($commentEnd === false) {
+            return;
+        }
+
+        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT) {
+            // Function doesn't have a comment. Let someone else warn about that.
+            return;
+        }
+
         $commentStart = ($phpcsFile->findPrevious(T_DOC_COMMENT, ($commentEnd - 1), null, true) + 1);
         $comment      = $phpcsFile->getTokensAsString($commentStart, ($commentEnd - $commentStart + 1));
 
@@ -103,14 +120,41 @@ class Squiz_Sniffs_Commenting_FunctionCommentThrowTagSniff extends PHP_CodeSniff
 
                 $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($currPos + 1), null, true);
                 if ($tokens[$nextToken]['code'] === T_NEW) {
-                    $currException = $phpcsFile->findNext(T_STRING, $currPos, $currScopeEnd, false, null, true);
+                    $currException = $phpcsFile->findNext(
+                        array(
+                         T_NS_SEPARATOR,
+                         T_STRING,
+                        ),
+                        $currPos,
+                        $currScopeEnd,
+                        false,
+                        null,
+                        true
+                    );
+
                     if ($currException !== false) {
-                        $throwTokens[] = $tokens[$currException]['content'];
-                    }
-                }
+                        $endException = $phpcsFile->findNext(
+                            array(
+                             T_NS_SEPARATOR,
+                             T_STRING,
+                            ),
+                            ($currException + 1),
+                            $currScopeEnd,
+                            true,
+                            null,
+                            true
+                        );
+
+                        if ($endException === false) {
+                            $throwTokens[] = $tokens[$currException]['content'];
+                        } else {
+                            $throwTokens[] = $phpcsFile->getTokensAsString($currException, ($endException - $currException));
+                        }
+                    }//end if
+                }//end if
 
                 $currPos = $phpcsFile->findNext(T_THROW, ($currPos + 1), $currScopeEnd);
-            }
+            }//end while
         }//end if
 
         // Only need one @throws tag for each type of exception thrown.

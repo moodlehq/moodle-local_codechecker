@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: AbstractSniffUnitTest.php 302284 2010-08-16 01:16:37Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -27,9 +26,9 @@ require_once 'PHPUnit/Framework/TestCase.php';
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
@@ -94,10 +93,10 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
         if (is_file(dirname(__FILE__).'/../../CodeSniffer.php') === true) {
             // We have not been installed.
             $standardsDir = realpath(dirname(__FILE__).'/../../CodeSniffer/Standards');
-            $testFileBase = $standardsDir.'/'.str_replace('_', '/', $basename).'UnitTest.';
+            $testFileBase = $standardsDir.DIRECTORY_SEPARATOR.str_replace('_', DIRECTORY_SEPARATOR, $basename).'UnitTest.';
         } else {
             // The name of the dummy file we are testing.
-            $testFileBase = dirname(__FILE__).'/'.str_replace('_', '/', $basename).'UnitTest.';
+            $testFileBase = dirname(__FILE__).DIRECTORY_SEPARATOR.str_replace('_', DIRECTORY_SEPARATOR, $basename).'UnitTest.';
         }
 
         // Get a list of all test files to check. These will have the same base
@@ -105,7 +104,7 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
         // class.
         $testFiles = array();
 
-        $dir = substr($testFileBase, 0, strrpos($testFileBase, '/'));
+        $dir = substr($testFileBase, 0, strrpos($testFileBase, DIRECTORY_SEPARATOR));
         $di  = new DirectoryIterator($dir);
 
         foreach ($di as $file) {
@@ -279,12 +278,17 @@ abstract class AbstractSniffUnitTest extends PHPUnit_Framework_TestCase
                                           );
                 }
 
+                $foundWarningsTemp = array();
+                foreach ($allProblems[$line]['found_warnings'] as $foundWarning) {
+                    $foundWarningsTemp[] = $foundWarning;
+                }
+
                 $warningsTemp = array();
                 foreach ($warnings as $warning) {
                     $warningsTemp[] = $warning['message'];
                 }
 
-                $allProblems[$line]['found_warnings'] = $warningsTemp;
+                $allProblems[$line]['found_warnings'] = array_merge($foundWarningsTemp, $warningsTemp);
             }
 
             if (isset($expectedWarnings[$line]) === true) {

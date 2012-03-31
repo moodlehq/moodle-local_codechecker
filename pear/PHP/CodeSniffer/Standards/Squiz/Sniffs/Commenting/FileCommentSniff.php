@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: FileCommentSniff.php 302756 2010-08-25 05:12:37Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -37,9 +36,9 @@ if (class_exists('PHP_CodeSniffer_CommentParser_ClassCommentParser', true) === f
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -448,7 +447,7 @@ class Squiz_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                 $this->currentFile->addError($error, $errorPos, 'MissingPackage');
             } else if (PHP_CodeSniffer::isUnderscoreName($content) !== true) {
                 // Package name must be properly camel-cased.
-                $nameBits = explode('_', $content);
+                $nameBits = explode('_', str_replace(' ', '', $content));
                 $firstBit = array_shift($nameBits);
                 $newName  = strtoupper($firstBit{0}).substr($firstBit, 1).'_';
                 foreach ($nameBits as $bit) {
@@ -461,6 +460,15 @@ class Squiz_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                           trim($newName, '_'),
                          );
                 $this->currentFile->addError($error, $errorPos, 'IncorrectPackage', $data);
+            } else if (strpos($content, 'Squiz') === 0) {
+                // Package name must not start with Squiz.
+                $newName = substr($content, 5);
+                $error   = 'Package name "%s" is not valid; consider "%s" instead';
+                $data    = array(
+                            $content,
+                            $newName,
+                           );
+                $this->currentFile->addError($error, $errorPos, 'SquizPackage', $data);
             }
         }
 

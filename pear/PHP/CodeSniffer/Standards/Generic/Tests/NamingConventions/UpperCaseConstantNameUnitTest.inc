@@ -1,5 +1,5 @@
 <?php
-use Exception as My_Exception;
+use Exception as My_Exception, foo\bar, baz;
 namespace foo;
 namespace foo\bar;
 namespace bar\foo\baz;
@@ -92,4 +92,18 @@ $foo->getBar()->define('foo');
 if (PHPUnit_MAIN_METHOD == 'PHP_Shell_AllTests::main') {
     PHP_Shell_AllTests::main();
 }
+
+class ConstTest {
+    const TESTER = '1';
+    public function __construct() {
+        echo constant('self::TESTER');
+        echo constant('self::tester');
+    }
+}
+
+class A {
+    public static function constant($x) {}
+}
+
+A::constant('anything-not-in-uppercase');
 ?>

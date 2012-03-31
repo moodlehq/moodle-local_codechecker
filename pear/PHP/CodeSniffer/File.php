@@ -9,9 +9,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: File.php 306530 2010-12-21 04:08:20Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -110,9 +109,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_File
@@ -2193,7 +2192,7 @@ class PHP_CodeSniffer_File
 
     /**
      * Returns the visibility and implementation properies of the class member
-     * variable found  at the specified position in the stack.
+     * variable found at the specified position in the stack.
      *
      * The format of the array is:
      *
@@ -2397,8 +2396,22 @@ class PHP_CodeSniffer_File
             $lastBracket = array_pop($brackets);
             if (isset($this->_tokens[$lastBracket]['parenthesis_owner']) === true) {
                 $owner = $this->_tokens[$this->_tokens[$lastBracket]['parenthesis_owner']];
-                if ($owner['code'] === T_FUNCTION || $owner['code'] === T_ARRAY) {
+                if ($owner['code'] === T_FUNCTION
+                    || $owner['code'] === T_CLOSURE
+                    || $owner['code'] === T_ARRAY
+                ) {
                     // Inside a function or array declaration, this is a reference.
+                    return true;
+                }
+            } else {
+                $prev = $this->findPrevious(
+                    array(T_WHITESPACE),
+                    ($this->_tokens[$lastBracket]['parenthesis_opener'] - 1),
+                    null,
+                    true
+                );
+
+                if ($prev !== false && $this->_tokens[$prev]['code'] === T_USE) {
                     return true;
                 }
             }
@@ -2518,7 +2531,7 @@ class PHP_CodeSniffer_File
      *                           If value is ommited, tokens with any value will
      *                           be returned.
      * @param bool      $local   If true, tokens outside the current statement
-     *                           will not be cheked. IE. checking will stop
+     *                           will not be checked. i.e., checking will stop
      *                           at the next semi-colon found.
      *
      * @return int | bool

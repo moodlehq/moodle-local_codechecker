@@ -8,9 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   CVS: $Id: UpperCaseConstantNameUnitTest.php 295617 2010-03-01 03:40:05Z squiz $
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.0
+ * @version   Release: 1.3.3
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Tests_NamingConventions_UpperCaseConstantNameUnitTest extends AbstractSniffUnitTest
@@ -44,16 +43,17 @@ class Generic_Tests_NamingConventions_UpperCaseConstantNameUnitTest extends Abst
     public function getErrorList()
     {
         return array(
-                8  => 1,
-                10 => 1,
-                15 => 1,
-                25 => 1,
-                26 => 1,
-                27 => 1,
-                28 => 1,
-                29 => 1,
-                32 => 1,
-                35 => 1,
+                8   => 1,
+                10  => 1,
+                15  => 1,
+                25  => 1,
+                26  => 1,
+                27  => 1,
+                28  => 1,
+                29  => 1,
+                32  => 1,
+                35  => 1,
+                100 => 1,
                );
 
     }//end getErrorList()
