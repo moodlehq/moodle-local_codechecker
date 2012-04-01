@@ -165,14 +165,18 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
         }
 
+        // rtrim parenthesis and quotes, English can have the full-stop
+        // within them if they are full sentences. Epic wrong rule, IMO :-)
+        $commentText = rtrim($commentText, "'\")");
+
         if ($commentText === '') {
             $error = 'Blank comments are not allowed';
             $phpcsFile->addError($error, $stackPtr, 'Empty');
             return;
         }
 
-        if (preg_match('|[A-Z]|', $commentText[0]) === 0) {
-            $error = 'Inline comments must start with a capital letter';
+        if (preg_match('!^([A-Z]|\.{3})!', $commentText) === 0) {
+            $error = 'Inline comments must start with a capital letter or 3-dots sequence';
             $phpcsFile->addWarning($error, $topComment, 'NotCapital');
         }
 
