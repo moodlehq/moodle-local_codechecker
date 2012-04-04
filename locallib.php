@@ -209,7 +209,8 @@ function local_codechecker_check_other_file($file, &$problems) {
 
     // Certain files are permitted lines of any length because they are
     // auto-generated
-    $allowanylength = in_array(basename($file), array('install.xml'));
+    $allowanylength = in_array(basename($file), array('install.xml')) ||
+            substr($file, -4, 4) === '.csv';
 
     $lines = file($file);
     $index = 0;
@@ -240,11 +241,12 @@ function local_codechecker_check_other_file($file, &$problems) {
         if (preg_match('~\t~', $l)) {
             local_codechecker_add_problem($problems, $file, $index, 'tab');
         }
-        if (strlen($l) > 140 && !$allowanylength) {
-            // Line length > 140
+
+        if (strlen($l) > 180 && !$allowanylength) {
+            // Line length > 180
             local_codechecker_add_problem($problems, $file, $index, 'toolong');
-        } else if (strlen($l) > 100 && !$allowanylength) {
-            // Line length > 100
+        } else if (strlen($l) > 132 && !$allowanylength) {
+            // Line length > 132
             local_codechecker_add_problem($problems, $file, $index, 'ratherlong', true);
         }
     }
