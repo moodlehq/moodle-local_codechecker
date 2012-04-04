@@ -175,8 +175,8 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             return;
         }
 
-        if (preg_match('!^([A-Z]|\.{3})!', $commentText) === 0) {
-            $error = 'Inline comments must start with a capital letter or 3-dots sequence';
+        if (preg_match('!^([A-Z0-9]|\.{3})!', $commentText) === 0) {
+            $error = 'Inline comments must start with a capital letter, digit or 3-dots sequence';
             $phpcsFile->addWarning($error, $topComment, 'NotCapital');
         }
 

@@ -31,8 +31,8 @@ Example:
 $string['error_find'] = 'Folder search failed';
 $string['other_eol'] = 'Whitespace at end of line';
 $string['other_tab'] = 'Tab character not permitted';
-$string['other_toolong'] = 'Line longer than maximum 140 characters';
-$string['other_ratherlong'] = 'Line longer than recommended 100 characters';
+$string['other_toolong'] = 'Line longer than maximum 180 characters';
+$string['other_ratherlong'] = 'Line longer than recommended 132 characters';
 $string['other_crlf'] = 'Windows (CRLF) line ending instead of just LF (reporting only first occurrence)';
 $string['other_missinglf'] = 'Missing LF at end of file (use exactly one)';
 $string['other_extralfs'] = 'Extra blank line(s) at end of file (use exactly one)';
