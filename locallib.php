@@ -130,7 +130,7 @@ function local_codechecker_clean_path($path) {
  * @param string $extensions File extensions to include (not including .)
  */
 function local_codechecker_find_other_files(&$arr, $folder,
-        $extensions = array('txt', 'html', 'xml', 'csv')) {
+        $extensions = array('txt', 'html', 'csv')) {
     $regex = '~\.(' . implode('|', $extensions) . ')$~';
 
     // Handle if this is called directly with a file and not folder
