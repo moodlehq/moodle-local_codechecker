@@ -184,6 +184,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         $acceptedClosers = array(
                             'full-stops'        => '.',
                             'exclamation marks' => '!',
+                            'colons'            => ':',
                             'or question marks' => '?',
                            );
 
