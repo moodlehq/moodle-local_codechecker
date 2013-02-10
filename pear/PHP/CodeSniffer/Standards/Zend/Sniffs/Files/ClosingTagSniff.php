@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -22,9 +22,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Zend_Sniffs_Files_ClosingTagSniff implements PHP_CodeSniffer_Sniff
@@ -56,8 +56,22 @@ class Zend_Sniffs_Files_ClosingTagSniff implements PHP_CodeSniffer_Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-        if ($next === false) {
+        $next = $phpcsFile->findNext(T_INLINE_HTML, ($stackPtr + 1), null, true);
+        if ($next !== false) {
+            return;
+        }
+
+        // We've found the last closing tag in the file so the only thing
+        // potentially remaining is inline HTML. Now we need to figure out
+        // whether or not it's just a bunch of whitespace.
+        $content = '';
+        for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
+            $content .= $tokens[$i]['content'];
+        }
+
+        // Check if the remaining inline HTML is just whitespace.
+        $content = trim($content);
+        if (empty($content) === true) {
             $error = 'A closing tag is not permitted at the end of a PHP file';
             $phpcsFile->addError($error, $stackPtr, 'NotAllowed');
         }

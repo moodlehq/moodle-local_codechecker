@@ -372,4 +372,68 @@ class a {
         );
     }
 }
+
+some_function(
+    function() {
+        $a = 403;
+        if ($a === 404) {
+        $a = 403;
+        }
+    }
+);
+
+some_function(
+   function() {
+      $a = 403;
+       if ($a === 404) {
+           $a = 403;
+       }
+    }
+);
+
+$myFunction = function() {
+    $a = 403;
+    if ($a === 404) {
+       $a = 403;
+    }
+}
+
+class Whatever
+{
+    protected $_protectedArray = array(
+        'normalString' => 'That email address is already in use!',
+        'offendingString' => <<<'STRING'
+Each line of this string is always said to be at column 0, 
+    no matter how many spaces are placed
+                at the beginning of each line
+and the ending STRING on the next line is reported as having to be indented.
+STRING
+    );
+}
+
+$var = call_user_func(
+    $new_var = function () use (&$a) {
+        if ($a > 0) {
+            return $a++;
+        } else {
+            return $a--;
+        }
+    }
+);
+
+class AnonymousFn
+{
+    public function getAnonFn()
+    {
+        return array(
+            'functions' => Array(
+                'function1' => function ($a, $b, $c) {
+                    $a = $b + $c;
+                    $b = $c / 2;
+                    return Array($a, $b, $c);
+                },
+            ),
+        );
+    }
+}
 ?>

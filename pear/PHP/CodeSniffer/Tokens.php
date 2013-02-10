@@ -1,7 +1,7 @@
 <?php
 /**
  * The Tokens class contains weightings for tokens based on their
- * probability of occurance in a file.
+ * probability of occurrence in a file.
  *
  * PHP version 5
  *
@@ -9,8 +9,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,11 +24,12 @@ define('T_CLOSE_PARENTHESIS', 1005);
 define('T_COLON', 1006);
 define('T_STRING_CONCAT', 1007);
 define('T_INLINE_THEN', 1008);
-define('T_NULL', 1009);
-define('T_FALSE', 1010);
-define('T_TRUE', 1011);
-define('T_SEMICOLON', 1012);
-define('T_EQUAL', 1013);
+define('T_INLINE_ELSE', 1009);
+define('T_NULL', 1010);
+define('T_FALSE', 1011);
+define('T_TRUE', 1012);
+define('T_SEMICOLON', 1013);
+define('T_EQUAL', 1014);
 define('T_MULTIPLY', 1015);
 define('T_DIVIDE', 1016);
 define('T_PLUS', 1017);
@@ -64,30 +65,50 @@ define('T_BACKTICK', 1046);
 define('T_START_NOWDOC', 1047);
 define('T_NOWDOC', 1048);
 define('T_END_NOWDOC', 1049);
+define('T_OPEN_SHORT_ARRAY', 1050);
+define('T_CLOSE_SHORT_ARRAY', 1051);
 
 // Some PHP 5.3 tokens, replicated for lower versions.
 if (defined('T_NAMESPACE') === false) {
-    define('T_NAMESPACE', 1050);
+    define('T_NAMESPACE', 1052);
 }
 
 if (defined('T_NS_SEPARATOR') === false) {
-    define('T_NS_SEPARATOR', 1051);
+    define('T_NS_SEPARATOR', 1053);
+}
+
+if (defined('T_GOTO') === false) {
+    define('T_GOTO', 1054);
+}
+
+// Some PHP 5.4 tokens, replicated for lower versions.
+if (defined('T_TRAIT') === false) {
+    define('T_TRAIT', 1055);
+}
+
+if (defined('T_INSTEADOF') === false) {
+    define('T_INSTEADOF', 1056);
+}
+
+// Some PHP 5.5 tokens, replicated for lower versions.
+if (defined('T_FINALLY') === false) {
+    define('T_FINALLY', 1057);
 }
 
 /**
  * The Tokens class contains weightings for tokens based on their
- * probability of occurance in a file.
+ * probability of occurrence in a file.
  *
- * The less the chance of a high occurance of an abitrary token, the higher
+ * The less the chance of a high occurrence of an arbitrary token, the higher
  * the weighting.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 final class PHP_CodeSniffer_Tokens
@@ -101,6 +122,7 @@ final class PHP_CodeSniffer_Tokens
     public static $weightings = array(
                                  T_CLASS               => 1000,
                                  T_INTERFACE           => 1000,
+                                 T_TRAIT               => 1000,
                                  T_NAMESPACE           => 1000,
                                  T_FUNCTION            => 100,
                                  T_CLOSURE             => 100,
@@ -241,7 +263,7 @@ final class PHP_CodeSniffer_Tokens
                                 );
 
     /**
-     * Token types that open parethesis.
+     * Token types that open parenthesis.
      *
      * @var array(int)
      */
@@ -266,6 +288,7 @@ final class PHP_CodeSniffer_Tokens
     public static $scopeOpeners = array(
                                    T_CLASS,
                                    T_INTERFACE,
+                                   T_TRAIT,
                                    T_NAMESPACE,
                                    T_FUNCTION,
                                    T_CLOSURE,
@@ -292,6 +315,20 @@ final class PHP_CodeSniffer_Tokens
                                      T_PRIVATE,
                                      T_PUBLIC,
                                      T_PROTECTED,
+                                    );
+
+    /**
+     * Tokens that can prefix a method name
+     *
+     * @var array(int)
+     */
+    public static $methodPrefixes = array(
+                                     T_PRIVATE,
+                                     T_PUBLIC,
+                                     T_PROTECTED,
+                                     T_ABSTRACT,
+                                     T_STATIC,
+                                     T_FINAL,
                                     );
 
     /**
@@ -421,7 +458,7 @@ final class PHP_CodeSniffer_Tokens
      *
      * Tokens are weighted by their approximate frequency of appearance in code
      * - the less frequently they appear in the code, the higher the weighting.
-     * For example T_CLASS tokens apprear very infrequently in a file, and
+     * For example T_CLASS tokens appear very infrequently in a file, and
      * therefore have a high weighting.
      *
      * Returns false if there are no weightings for any of the specified tokens.

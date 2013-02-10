@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -25,9 +25,9 @@ if (class_exists('PHP_CodeSniffer_CommentParser_AbstractDocElement', true) === f
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_CommentParser_ParameterElement extends PHP_CodeSniffer_CommentParser_AbstractDocElement
@@ -193,7 +193,7 @@ class PHP_CodeSniffer_CommentParser_ParameterElement extends PHP_CodeSniffer_Com
     /**
      * Returns the whitespace before the variable type.
      *
-     * @return stirng
+     * @return string
      * @see getWhiteSpaceBeforeVarName()
      * @see getWhiteSpaceBeforeComment()
      */
@@ -233,7 +233,7 @@ class PHP_CodeSniffer_CommentParser_ParameterElement extends PHP_CodeSniffer_Com
 
 
     /**
-     * Returns the postition of this parameter are it appears in the comment.
+     * Returns the position of this parameter are it appears in the comment.
      *
      * This method differs from getOrder as it is only relative to method
      * parameters.
@@ -291,6 +291,10 @@ class PHP_CodeSniffer_CommentParser_ParameterElement extends PHP_CodeSniffer_Com
         PHP_CodeSniffer_CommentParser_ParameterElement $other
     ) {
         // Compares the index before param comment.
+        if (strlen($other->_commentWhitespace) === 0 && strlen($this->_commentWhitespace) === 0) {
+            return true;
+        }
+
         $otherComment
             = (strlen($other->_varName) + strlen($other->_commentWhitespace));
         $thisComment

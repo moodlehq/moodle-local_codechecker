@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -20,13 +20,27 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffer_Sniff
 {
+
+    /**
+     * The number of spaces code should be indented.
+     *
+     * @var int
+     */
+    public $indent = 4;
+
+    /**
+     * If TRUE, multiple arguments can be defined per line in a multi-line call.
+     *
+     * @var bool
+     */
+    public $allowMultipleArguments = true;
 
 
     /**
@@ -108,7 +122,7 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
      * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
      * @param int                  $stackPtr    The position of the current token
      *                                          in the stack passed in $tokens.
-     * @param int                  $openBracket The position of the openning bracket
+     * @param int                  $openBracket The position of the opening bracket
      *                                          in the stack passed in $tokens.
      * @param array                $tokens      The stack of tokens that make up
      *                                          the file.
@@ -173,7 +187,7 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
             $functionIndent = strlen($tokens[$i]['content']);
         }
 
-        // Each line between the parenthesis should be indented 4 spaces.
+        // Each line between the parenthesis should be indented n spaces.
         $closeBracket = $tokens[$openBracket]['parenthesis_closer'];
         $lastLine     = $tokens[$openBracket]['line'];
         for ($i = ($openBracket + 1); $i < $closeBracket; $i++) {
@@ -202,10 +216,20 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
                 // We changed lines, so this should be a whitespace indent token, but first make
                 // sure it isn't a blank line because we don't need to check indent unless there
                 // is actually some code to indent.
-                $nextCode = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), ($closeBracket + 1), true);
-                if ($tokens[$nextCode]['line'] !== $lastLine) {
-                    $error = 'Empty lines are not allowed in multi-line function calls';
-                    $phpcsFile->addError($error, $i, 'EmptyLine');
+                if ($tokens[$i]['code'] === T_WHITESPACE) {
+                    $nextCode = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), ($closeBracket + 1), true);
+                    if ($tokens[$nextCode]['line'] !== $lastLine) {
+                        $error = 'Empty lines are not allowed in multi-line function calls';
+                        $phpcsFile->addError($error, $i, 'EmptyLine');
+                        continue;
+                    }
+                } else {
+                    $nextCode = $i;
+                }
+
+                // Check if the next line contains an object operator, if so rely on
+                // the ObjectOperatorIndentSniff to test the indent.
+                if ($tokens[$nextCode]['type'] === 'T_OBJECT_OPERATOR') {
                     continue;
                 }
 
@@ -214,11 +238,20 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
                     // as the function call.
                     $expectedIndent = $functionIndent;
                 } else {
-                    $expectedIndent = ($functionIndent + 4);
+                    $expectedIndent = ($functionIndent + $this->indent);
                 }
 
                 if ($tokens[$i]['code'] !== T_WHITESPACE) {
-                    $foundIndent = 0;
+                    // Just check if it is a multi-line block comment. If so, we can
+                    // calculate the indent from the whitespace before the content.
+                    if ($tokens[$i]['code'] === T_COMMENT
+                        && $tokens[($i - 1)]['code'] === T_COMMENT
+                    ) {
+                        $trimmed     = ltrim($tokens[$i]['content']);
+                        $foundIndent = (strlen($tokens[$i]['content']) - strlen($trimmed));
+                    } else {
+                        $foundIndent = 0;
+                    }
                 } else {
                     $foundIndent = strlen($tokens[$i]['content']);
                 }
@@ -238,6 +271,24 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
                 $i        = $tokens[$i]['scope_closer'];
                 $lastLine = $tokens[$i]['line'];
                 continue;
+            }
+
+            // Skip the rest of a short array.
+            if ($tokens[$i]['code'] === T_OPEN_SHORT_ARRAY) {
+                $i        = $tokens[$i]['bracket_closer'];
+                $lastLine = $tokens[$i]['line'];
+                continue;
+            }
+
+            if ($this->allowMultipleArguments === false && $tokens[$i]['code'] === T_COMMA) {
+                // Comma has to be the last token on the line.
+                $next = $phpcsFile->findNext(array(T_WHITESPACE, T_COMMENT), ($i + 1), $closeBracket, true);
+                if ($next !== false
+                    && $tokens[$i]['line'] === $tokens[$next]['line']
+                ) {
+                    $error = 'Only one argument is allowed per line in a multi-line function call';
+                    $phpcsFile->addError($error, $next, 'MultipleArguments');
+                }
             }
         }//end for
 

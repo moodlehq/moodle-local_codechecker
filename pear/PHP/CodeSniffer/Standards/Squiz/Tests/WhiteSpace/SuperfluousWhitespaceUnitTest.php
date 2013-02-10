@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -23,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_WhiteSpace_SuperfluousWhitespaceUnitTest extends AbstractSniffUnitTest
@@ -55,10 +55,10 @@ class Squiz_Tests_WhiteSpace_SuperfluousWhitespaceUnitTest extends AbstractSniff
                     16 => 1,
                     23 => 1,
                     30 => 1,
-                    36 => 1,
+                    48 => 1,
                    );
             break;
-        case 'SuperfluousWhitespaceUnitTest.js':
+        case 'SuperfluousWhitespaceUnitTest.1.js':
             return array(
                     1  => 1,
                     3  => 1,
@@ -68,15 +68,16 @@ class Squiz_Tests_WhiteSpace_SuperfluousWhitespaceUnitTest extends AbstractSniff
                     15 => 1,
                     22 => 1,
                     29 => 1,
-                    35 => 1,
+                    47 => 1,
                    );
             break;
-        case 'SuperfluousWhitespaceUnitTest.css':
+        case 'SuperfluousWhitespaceUnitTest.1.css':
             return array(
                     1  => 1,
                     8  => 1,
                     9  => 1,
-                    14 => 1,
+                    11 => 1,
+                    25 => 1,
                    );
             break;
         default:

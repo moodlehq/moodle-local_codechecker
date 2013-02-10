@@ -7,8 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Jack Bates <ms419@freezone.co.uk>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -20,9 +20,9 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Jack Bates <ms419@freezone.co.uk>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_VersionControl_SubversionPropertiesSniff implements PHP_CodeSniffer_Sniff
@@ -82,8 +82,8 @@ class Generic_Sniffs_VersionControl_SubversionPropertiesSniff implements PHP_Cod
             return;
         }
 
-        $properties += $this->properties;
-        foreach ($properties as $key => $value) {
+        $allProperties = $properties + $this->properties;
+        foreach ($allProperties as $key => $value) {
             if (isset($properties[$key]) === true
                 && isset($this->properties[$key]) === false
             ) {

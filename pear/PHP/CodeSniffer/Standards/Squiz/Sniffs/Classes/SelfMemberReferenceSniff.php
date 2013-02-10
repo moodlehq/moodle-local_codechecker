@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -32,9 +32,9 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Classes_SelfMemberReferenceSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
@@ -74,8 +74,19 @@ class Squiz_Sniffs_Classes_SelfMemberReferenceSniff extends PHP_CodeSniffer_Stan
             }
         } else if ($tokens[$className]['code'] === T_STRING) {
             // Make sure this is another class reference.
-            $declarationName = $phpcsFile->getDeclarationName($currScope);
-            if ($declarationName === $tokens[$className]['content']) {
+            $declarationName        = $phpcsFile->getDeclarationName($currScope);
+            $fullQualifiedClassName = $tokens[$className]['content'];
+
+            // If the class is called with a namespace prefix, build fully qualified
+            // namespace calls for both current scope class and requested class.
+            if ($tokens[($className - 1)]['code'] === T_NS_SEPARATOR) {
+                $declarationName         = $this->getDeclarationNameWithNamespace($tokens, $className);
+                $declarationName         = substr($declarationName, 1);
+                $fullQualifiedClassName  = $this->getNamespaceOfScope($phpcsFile, $currScope);
+                $fullQualifiedClassName .= '\\'.$tokens[$className]['content'];
+            }
+
+            if ($declarationName === $fullQualifiedClassName) {
                 // Class name is the same as the current class, which is not allowed
                 // except if being used inside a closure.
                 if ($phpcsFile->hasCondition($stackPtr, T_CLOSURE) === false) {
@@ -84,7 +95,7 @@ class Squiz_Sniffs_Classes_SelfMemberReferenceSniff extends PHP_CodeSniffer_Stan
                     return;
                 }
             }
-        }
+        }//end if
 
         if ($tokens[($stackPtr - 1)]['code'] === T_WHITESPACE) {
             $found = strlen($tokens[($stackPtr - 1)]['content']);
@@ -101,6 +112,58 @@ class Squiz_Sniffs_Classes_SelfMemberReferenceSniff extends PHP_CodeSniffer_Stan
         }
 
     }//end processTokenWithinScope()
+
+
+    /**
+     * Returns the declaration names for classes/interfaces/functions with a namespace.
+     *
+     * @param array $tokens   Token stack for this file
+     * @param int   $stackPtr The position where the namespace building will start.
+     *
+     * @return string
+     */
+    protected function getDeclarationNameWithNamespace(array $tokens, $stackPtr)
+    {
+        $nameParts      = array();
+        $currentPointer = $stackPtr;
+        while ($tokens[$currentPointer]['code'] === T_NS_SEPARATOR
+            || $tokens[$currentPointer]['code'] === T_STRING
+        ) {
+            $nameParts[] = $tokens[$currentPointer]['content'];
+            $currentPointer--;
+        }
+
+        $nameParts = array_reverse($nameParts);
+        return implode('', $nameParts);
+
+    }//end getDeclarationNameWithNamespace()
+
+
+    /**
+     * Returns the namespace declaration of a file.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file where this token was found.
+     * @param int                  $stackPtr  The position where the search for the
+     *                                        namespace declaration will start.
+     *
+     * @return string
+     */
+    protected function getNamespaceOfScope(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $namespace = '\\';
+        $namespaceDeclaration = $phpcsFile->findPrevious(T_NAMESPACE, $stackPtr);
+
+        if ($namespaceDeclaration !== false) {
+            $endOfNamespaceDeclaration = $phpcsFile->findNext(T_SEMICOLON, $namespaceDeclaration);
+            $namespace = $this->getDeclarationNameWithNamespace(
+                $phpcsFile->getTokens(),
+                ($endOfNamespaceDeclaration - 1)
+            );
+        }
+
+        return $namespace;
+
+    }//end getNamespaceOfScope
 
 
 }//end class

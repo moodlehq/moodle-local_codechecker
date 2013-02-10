@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -27,13 +27,20 @@ if (class_exists('PHP_CodeSniffer_Standards_IncorrectPatternException', true) ==
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_CodeSniffer_Sniff
 {
+
+    /**
+     * If true, comments will be ignored if they are found in the code.
+     *
+     * @var boolean
+     */
+    public $ignoreComments = false;
 
     /**
      * The current file being checked.
@@ -59,14 +66,7 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
     private $_supplementaryTokens = array();
 
     /**
-     * If true, comments will be ignored if they are found in the code.
-     *
-     * @var boolean
-     */
-    private $_ignoreComments = false;
-
-    /**
-     * Positions in the stack where errors have occured.
+     * Positions in the stack where errors have occurred.
      *
      * @var array()
      */
@@ -78,9 +78,13 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
      *
      * @param boolean $ignoreComments If true, comments will be ignored.
      */
-    public function __construct($ignoreComments=false)
+    public function __construct($ignoreComments=null)
     {
-        $this->_ignoreComments      = $ignoreComments;
+        // This is here for backwards compatibility.
+        if ($ignoreComments !== null) {
+            $this->ignoreComments = $ignoreComments;
+        }
+
         $this->_supplementaryTokens = $this->registerSupplementary();
 
     }//end __construct()
@@ -280,8 +284,7 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
         $found       = '';
 
         $ignoreTokens = array(T_WHITESPACE);
-
-        if ($this->_ignoreComments === true) {
+        if ($this->ignoreComments === true) {
             $ignoreTokens
                 = array_merge($ignoreTokens, PHP_CodeSniffer_Tokens::$commentTokens);
         }
@@ -326,13 +329,12 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
 
                         // If we skipped past some whitespace tokens, then add them
                         // to the found string.
-                        if (($stackPtr - $prev) > 1) {
-                            for ($j = ($stackPtr - 1); $j > $prev; $j--) {
-                                $found = $tokens[$j]['content'].$found;
-                            }
-                        }
+                        $tokenContent = $phpcsFile->getTokensAsString(
+                            ($prev + 1),
+                            ($stackPtr - $prev - 1)
+                        );
 
-                        $found = $tokens[$prev]['content'].$found;
+                        $found = $tokens[$prev]['content'].$tokenContent.$found;
 
                         if (isset($pattern[($i - 1)]) === true
                             && $pattern[($i - 1)]['type'] === 'skip'
@@ -377,6 +379,29 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
                 } else if ($pattern[$i]['type'] === 'string') {
                     $found = 'abc';
                 } else if ($pattern[$i]['type'] === 'newline') {
+                    if ($this->ignoreComments === true
+                        && in_array($tokens[$stackPtr]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === true
+                    ) {
+                        $startComment = $phpcsFile->findPrevious(
+                            PHP_CodeSniffer_Tokens::$commentTokens,
+                            ($stackPtr - 1),
+                            null,
+                            true
+                        );
+
+                        if ($tokens[$startComment]['line'] !== $tokens[($startComment + 1)]['line']) {
+                            $startComment++;
+                        }
+
+                        $tokenContent = $phpcsFile->getTokensAsString(
+                            $startComment,
+                            ($stackPtr - $startComment + 1)
+                        );
+
+                        $found    = $tokenContent.$found;
+                        $stackPtr = ($startComment - 1);
+                    }
+
                     if ($tokens[$stackPtr]['code'] === T_WHITESPACE) {
                         if ($tokens[$stackPtr]['content'] !== $phpcsFile->eolChar) {
                             $found = $tokens[$stackPtr]['content'].$found;
@@ -386,6 +411,8 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
                             // can ignore the error here.
                             if ($tokens[($stackPtr - 1)]['content'] !== $phpcsFile->eolChar) {
                                 $hasError = true;
+                            } else {
+                                $stackPtr--;
                             }
                         } else {
                             $found = 'EOL'.$found;
@@ -393,6 +420,14 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
                     } else {
                         $found    = $tokens[$stackPtr]['content'].$found;
                         $hasError = true;
+                    }
+
+                    if ($hasError === false && $pattern[($i - 1)]['type'] !== 'newline') {
+                        // Make sure they only have 1 newline.
+                        $prev = $phpcsFile->findPrevious($ignoreTokens, ($stackPtr - 1), null, true);
+                        if ($prev !== false && $tokens[$prev]['line'] !== $tokens[$stackPtr]['line']) {
+                            $hasError = true;
+                        }
                     }
                 }//end if
             }//end for
@@ -405,7 +440,7 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
         for ($i = $patternInfo['listen_pos']; $i < $patternLen; $i++) {
             if ($pattern[$i]['type'] === 'token') {
                 if ($pattern[$i]['token'] === T_WHITESPACE) {
-                    if ($this->_ignoreComments === true) {
+                    if ($this->ignoreComments === true) {
                         // If we are ignoring comments, check to see if this current
                         // token is a comment. If so skip it.
                         if (in_array($tokens[$stackPtr]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === true) {
@@ -525,8 +560,8 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
                         // whitespace or comment is not allowed. If we are
                         // ignoring comments, there needs to be at least one
                         // comment for this to be allowed.
-                        if ($this->_ignoreComments === false
-                            || ($this->_ignoreComments === true
+                        if ($this->ignoreComments === false
+                            || ($this->ignoreComments === true
                             && $hasComment === false)
                         ) {
                             $hasError = true;
@@ -619,7 +654,7 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
                     $next     = ($phpcsFile->numTokens - 1);
                     $hasError = true;
                 } else {
-                    if ($this->_ignoreComments === false) {
+                    if ($this->ignoreComments === false) {
                         // The newline character cannot be part of a comment.
                         if (in_array($tokens[$newline]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === true) {
                             $hasError = true;
@@ -734,7 +769,6 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
         PHP_CodeSniffer_File $phpcsFile,
         $stackPtr
     ) {
-         return;
 
     }//end processSupplementary()
 

@@ -7,8 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer_MySource
  * @author    Sertan Danis <sdanis@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -18,9 +18,9 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Sertan Danis <sdanis@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Objects_DisallowObjectStringIndexSniff implements PHP_CodeSniffer_Sniff
@@ -71,7 +71,7 @@ class Squiz_Sniffs_Objects_DisallowObjectStringIndexSniff implements PHP_CodeSni
             return;
         }
 
-        // Allow indxes that have dots in them because we can't write
+        // Allow indexes that have dots in them because we can't write
         // them in dot notation.
         $content = trim($tokens[$index]['content'], '"\' ');
         if (strpos($content, '.') !== false) {

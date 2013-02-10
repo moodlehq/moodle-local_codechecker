@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -23,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Tests_NamingConventions_UpperCaseConstantNameUnitTest extends AbstractSniffUnitTest
@@ -42,19 +42,27 @@ class Generic_Tests_NamingConventions_UpperCaseConstantNameUnitTest extends Abst
      */
     public function getErrorList()
     {
-        return array(
-                8   => 1,
-                10  => 1,
-                15  => 1,
-                25  => 1,
-                26  => 1,
-                27  => 1,
-                28  => 1,
-                29  => 1,
-                32  => 1,
-                35  => 1,
-                100 => 1,
-               );
+        $errors = array(
+                   8   => 1,
+                   10  => 1,
+                   15  => 1,
+                   25  => 1,
+                   26  => 1,
+                   27  => 1,
+                   28  => 1,
+                   29  => 1,
+                   32  => 1,
+                   35  => 1,
+                   100 => 1,
+                  );
+
+        // The trait insteadof test will only work in PHP version where traits exist
+        // and will throw errors in earlier versions.
+        if (version_compare(PHP_VERSION, '5.4.0') < 0) {
+            $errors[131] = 3;
+        }
+
+        return $errors;
 
     }//end getErrorList()
 

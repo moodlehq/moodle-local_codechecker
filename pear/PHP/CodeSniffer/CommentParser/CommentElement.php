@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -39,9 +39,9 @@ if (class_exists('PHP_CodeSniffer_CommentParser_SingleElement', true) === false)
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_CommentParser_CommentElement extends PHP_CodeSniffer_CommentParser_SingleElement
@@ -51,19 +51,19 @@ class PHP_CodeSniffer_CommentParser_CommentElement extends PHP_CodeSniffer_Comme
     /**
      * Constructs a PHP_CodeSniffer_CommentParser_CommentElement.
      *
-     * @param PHP_CodeSniffer_CommentParser_DocElemement $previousElement The element
-     *                                                                    that
-     *                                                                    appears
-     *                                                                    before this
-     *                                                                    element.
-     * @param array                                      $tokens          The tokens
-     *                                                                    that make
-     *                                                                    up this
-     *                                                                    element.
-     * @param PHP_CodeSniffer_File                       $phpcsFile       The file
-     *                                                                    that this
-     *                                                                    element is
-     *                                                                    in.
+     * @param PHP_CodeSniffer_CommentParser_DocElement $previousElement The element
+     *                                                                  that
+     *                                                                  appears
+     *                                                                  before this
+     *                                                                  element.
+     * @param array                                    $tokens          The tokens
+     *                                                                  that make
+     *                                                                  up this
+     *                                                                  element.
+     * @param PHP_CodeSniffer_File                     $phpcsFile       The file
+     *                                                                  that this
+     *                                                                  element is
+     *                                                                  in.
      */
     public function __construct(
         $previousElement,

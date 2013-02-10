@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -23,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_Commenting_BlockCommentUnitTest extends AbstractSniffUnitTest
@@ -42,34 +42,46 @@ class Squiz_Tests_Commenting_BlockCommentUnitTest extends AbstractSniffUnitTest
      */
     public function getErrorList()
     {
-        return array(
-                8  => 1,
-                19 => 1,
-                20 => 1,
-                24 => 1,
-                30 => 1,
-                31 => 1,
-                34 => 1,
-                40 => 1,
-                45 => 1,
-                49 => 1,
-                51 => 1,
-                53 => 1,
-                57 => 1,
-                60 => 1,
-                61 => 1,
-                63 => 1,
-                65 => 1,
-                68 => 1,
-                70 => 1,
-                75 => 1,
-                84 => 1,
-                85 => 2,
-                86 => 1,
-                87 => 1,
-                89 => 1,
-                92 => 1,
-               );
+        $errors = array(
+                   8   => 1,
+                   19  => 1,
+                   20  => 1,
+                   24  => 1,
+                   30  => 1,
+                   31  => 1,
+                   34  => 1,
+                   40  => 1,
+                   45  => 1,
+                   49  => 1,
+                   51  => 1,
+                   53  => 1,
+                   57  => 1,
+                   60  => 1,
+                   61  => 1,
+                   63  => 1,
+                   65  => 1,
+                   68  => 1,
+                   70  => 1,
+                   75  => 1,
+                   84  => 1,
+                   85  => 2,
+                   86  => 1,
+                   87  => 1,
+                   89  => 1,
+                   92  => 1,
+                   111 => 1,
+                   159 => 1,
+                  );
+
+        // The trait tests will only work in PHP version where traits exist and
+        // will throw errors in earlier versions.
+        if (version_compare(PHP_VERSION, '5.4.0') < 0) {
+            $errors[170] = 2;
+            $errors[171] = 1;
+            $errors[172] = 2;
+        }
+
+        return $errors;
 
     }//end getErrorList()
 

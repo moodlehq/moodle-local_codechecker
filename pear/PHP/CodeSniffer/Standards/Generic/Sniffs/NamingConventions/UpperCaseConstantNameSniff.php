@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -22,9 +22,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_NamingConventions_UpperCaseConstantNameSniff implements PHP_CodeSniffer_Sniff
@@ -71,12 +71,18 @@ class Generic_Sniffs_NamingConventions_UpperCaseConstantNameSniff implements PHP
         // is not an opening parenthesis then it is not a function call.
         $openBracket = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
         if ($tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
-            $functionKeyword = $phpcsFile->findPrevious(array(T_WHITESPACE, T_COMMA, T_COMMENT, T_STRING, T_NS_SEPARATOR), ($stackPtr - 1), null, true);
+            $functionKeyword = $phpcsFile->findPrevious(
+                array(T_WHITESPACE, T_COMMA, T_COMMENT, T_STRING, T_NS_SEPARATOR),
+                ($stackPtr - 1),
+                null,
+                true
+            );
 
             $declarations = array(
                              T_FUNCTION,
                              T_CLASS,
                              T_INTERFACE,
+                             T_TRAIT,
                              T_IMPLEMENTS,
                              T_EXTENDS,
                              T_INSTANCEOF,
@@ -84,6 +90,8 @@ class Generic_Sniffs_NamingConventions_UpperCaseConstantNameSniff implements PHP
                              T_NAMESPACE,
                              T_USE,
                              T_AS,
+                             T_GOTO,
+                             T_INSTEADOF,
                             );
 
             if (in_array($tokens[$functionKeyword]['code'], $declarations) === true) {
@@ -116,6 +124,11 @@ class Generic_Sniffs_NamingConventions_UpperCaseConstantNameSniff implements PHP
                 return;
             }
 
+            // Is this an insteadof name?
+            if ($tokens[$nextPtr]['code'] === T_INSTEADOF) {
+                return;
+            }
+
             // Is this a type hint?
             if ($tokens[$nextPtr]['code'] === T_VARIABLE
                 || $phpcsFile->isReference($nextPtr) === true
@@ -129,15 +142,30 @@ class Generic_Sniffs_NamingConventions_UpperCaseConstantNameSniff implements PHP
                 return;
             }
 
+            // Is this a variable name, in the form ${varname} ?
+            if ($tokens[$prevPtr]['code'] === T_OPEN_CURLY_BRACKET) {
+                $nextPtr = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
+                if ($tokens[$nextPtr]['code'] === T_CLOSE_CURLY_BRACKET) {
+                    return;
+                }
+            }
+
             // Is this a namespace name?
             if ($tokens[$prevPtr]['code'] === T_NS_SEPARATOR) {
                 return;
             }
 
             // Is this an instance of declare()
-            $prevPtr = $phpcsFile->findPrevious(array(T_WHITESPACE, T_OPEN_PARENTHESIS), ($stackPtr - 1), null, true);
-            if ($tokens[$prevPtr]['code'] === T_DECLARE) {
+            $prevPtrDeclare = $phpcsFile->findPrevious(array(T_WHITESPACE, T_OPEN_PARENTHESIS), ($stackPtr - 1), null, true);
+            if ($tokens[$prevPtrDeclare]['code'] === T_DECLARE) {
                 return;
+            }
+
+            // Is this a goto label target?
+            if ($tokens[$nextPtr]['code'] === T_COLON) {
+                if (in_array($tokens[$prevPtr]['code'], array(T_SEMICOLON, T_OPEN_CURLY_BRACKET, T_COLON), true)) {
+                    return;
+                }
             }
 
             // This is a real constant.

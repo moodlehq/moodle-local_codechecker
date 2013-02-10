@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -23,9 +23,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PEAR_Tests_Functions_FunctionDeclarationUnitTest extends AbstractSniffUnitTest
@@ -43,17 +43,22 @@ class PEAR_Tests_Functions_FunctionDeclarationUnitTest extends AbstractSniffUnit
     public function getErrorList()
     {
         return array(
-                3  => 1,
-                4  => 1,
-                5  => 1,
-                9  => 1,
-                10 => 1,
-                11 => 1,
-                14 => 1,
-                27 => 1,
-                44 => 2,
-                51 => 1,
-                61 => 1,
+                3   => 1,
+                4   => 1,
+                5   => 1,
+                9   => 1,
+                10  => 1,
+                11  => 1,
+                14  => 1,
+                17  => 1,
+                27  => 1,
+                44  => 1,
+                51  => 1,
+                61  => 2,
+                86  => 1,
+                98  => 2,
+                108 => 1,
+                109 => 1,
                );
 
     }//end getErrorList()

@@ -90,4 +90,24 @@ final class MyClass
      */
     final public function test() {}
 }
+
+// 这是一条测试评论
+//     -> One
+//         -> One.One
+//     -> Two
+
+/*
+    Here is some inline example code:
+        -> One
+            -> One.One
+        -> Two
+*/
+
+/**
+ * Comment should be ignored in PHP 5.4.
+ *
+ */
+trait MyTrait {
+
+}
 ?>

@@ -142,4 +142,40 @@ final class MyClass
      */
     final public function test() {}
 }
+
+switch ($var) {
+    case 'foo':
+        /*
+            Foo comment.
+            This is a multiple
+            line comment for Foo.
+        */
+
+        echo 'Foo';
+    break;
+
+    default:
+
+        /*
+            Foo comment.
+            This is a multiple
+            line comment for Foo.
+        */
+
+        echo 'Default';
+    break;
+}//end switch
+
+/**
+ * Comment should be ignored in PHP 5.4.
+ *
+ */
+trait MyTrait {
+
+}
+
+/*
+    这是一条测试评论.
+*/
+
 ?>

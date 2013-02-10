@@ -8,7 +8,7 @@
  * @package   PHP_CodeSniffer
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009 Florian Grandel
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -21,8 +21,8 @@
  * @package   PHP_CodeSniffer
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009 Florian Grandel
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_Functions_CallTimePassByReferenceSniff implements PHP_CodeSniffer_Sniff
@@ -121,7 +121,7 @@ class Generic_Sniffs_Functions_CallTimePassByReferenceSniff implements PHP_CodeS
 
                 // We have to exclude all uses of T_BITWISE_AND that are not
                 // references. We use a blacklist approach as we prefer false
-                // positives to not identifiying a pass-by-reference call at all.
+                // positives to not identifying a pass-by-reference call at all.
                 // The blacklist may not yet be complete.
                 switch ($tokens[$tokenBefore]['code']) {
                 case T_VARIABLE:
@@ -129,7 +129,6 @@ class Generic_Sniffs_Functions_CallTimePassByReferenceSniff implements PHP_CodeS
                     // In these cases T_BITWISE_AND represents
                     // the bitwise and operator.
                     continue;
-                    break;
 
                 default:
                     // T_BITWISE_AND represents a pass-by-reference.

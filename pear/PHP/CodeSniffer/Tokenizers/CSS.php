@@ -7,8 +7,8 @@
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -22,9 +22,9 @@ if (class_exists('PHP_CodeSniffer_Tokenizers_PHP', true) === false) {
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
@@ -43,7 +43,17 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
      */
     public function tokenizeString($string, $eolChar='\n')
     {
-        $tokens      = parent::tokenizeString('<?php '.$string.' ?>', $eolChar);
+        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+            echo "\t*** START CSS TOKENIZING ***".PHP_EOL;
+        }
+
+        // If the content doesn't have an EOl char on the end, add one so
+        // the open and close tags we add are parsed correctly.
+        if (substr($string, 0, (strlen($eolChar) * -1)) !== $eolChar) {
+            $string .= $eolChar;
+        }
+
+        $tokens      = parent::tokenizeString('<?php '.$string.'?>', $eolChar);
         $finalTokens = array();
 
         $newStackPtr      = 0;
@@ -51,6 +61,58 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
         $multiLineComment = false;
         for ($stackPtr = 0; $stackPtr < $numTokens; $stackPtr++) {
             $token = $tokens[$stackPtr];
+
+            if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                $type    = $token['type'];
+                $content = str_replace($eolChar, '\n', $token['content']);
+                echo "\tProcess token $stackPtr: $type => $content".PHP_EOL;
+            }
+
+            // Sometimes, there are PHP tags embedded in the code, which causes issues
+            // with how PHP tokenizeses the string. After the first closing tag is found,
+            // everything outside PHP tags is set as inline HTML tokens (1 for each line).
+            // So we need to go through and find these tokens so we can re-tokenize them.
+            if ($token['code'] === T_CLOSE_TAG && $stackPtr !== ($numTokens - 1)) {
+                $content = '<?php ';
+                for ($x = ($stackPtr + 1); $x < $numTokens; $x++) {
+                    if ($tokens[$x]['code'] === T_INLINE_HTML) {
+                        $content .= $tokens[$x]['content'];
+                    } else {
+                        $x--;
+                        break;
+                    }
+                }
+
+                if ($x < ($numTokens - 1)) {
+                    // This is not the last closing tag in the file, so we
+                    // have to add another closing tag here. If it is the last closing
+                    // tag, this additional one would have been added during the
+                    // original tokenize call.
+                    $content .= ' ?>';
+                }
+
+                if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                    echo "\t\t=> Found premature closing tag at $stackPtr".PHP_EOL;
+                    $cleanContent = str_replace($eolChar, '\n', $content);
+                    echo "\t\tcontent: $cleanContent".PHP_EOL;
+                    $oldNumTokens = $numTokens;
+                }
+
+                // Tokenize the string and remove the extra PHP tags we don't need.
+                $moreTokens = parent::tokenizeString($content, $eolChar);
+                array_shift($moreTokens);
+                array_pop($moreTokens);
+                array_pop($moreTokens);
+
+                // Rebuild the tokens array.
+                array_splice($tokens, ($stackPtr + 1), ($x - $stackPtr), $moreTokens);
+                $numTokens = count($tokens);
+                if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                    $count = count($moreTokens);
+                    $diff  = ($x - $stackPtr);
+                    echo "\t\t* added $count tokens, replaced $diff; size changed from $oldNumTokens to $numTokens *".PHP_EOL;
+                }
+            }//end if
 
             if ($token['code'] === T_FUNCTION) {
                 // There are no functions in CSS, so convert this to a string.
@@ -279,6 +341,10 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
             }//end switch
         }//end for
 
+        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+            echo "\t*** END CSS TOKENIZING ***".PHP_EOL;
+        }
+
         return $finalTokens;
 
     }//end tokenizeString()
@@ -287,7 +353,7 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
     /**
      * Performs additional processing after main tokenizing.
      *
-     * This additional processsing converts T_LIST tokens to T_STRING
+     * This additional processing converts T_LIST tokens to T_STRING
      * because there are no list constructs in CSS and list-* styles
      * look like lists to the PHP tokenizer.
      *
@@ -299,7 +365,7 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
     public function processAdditional(&$tokens, $eolChar)
     {
         if (PHP_CODESNIFFER_VERBOSITY > 1) {
-            echo "\t*** START ADDITIONAL JS PROCESSING ***".PHP_EOL;
+            echo "\t*** START ADDITIONAL CSS PROCESSING ***".PHP_EOL;
         }
 
         $numTokens  = (count($tokens) - 1);
@@ -438,7 +504,7 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
         }
 
         if (PHP_CODESNIFFER_VERBOSITY > 1) {
-            echo "\t*** END ADDITIONAL JS PROCESSING ***".PHP_EOL;
+            echo "\t*** END ADDITIONAL CSS PROCESSING ***".PHP_EOL;
         }
 
     }//end processAdditional()

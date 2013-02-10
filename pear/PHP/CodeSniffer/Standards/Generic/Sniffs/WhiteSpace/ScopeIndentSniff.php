@@ -8,8 +8,8 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -24,9 +24,9 @@
  * @package   PHP_CodeSniffer
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
- * @copyright 2006-2011 Squiz Pty Ltd (ABN 77 084 670 600)
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
- * @version   Release: 1.3.3
+ * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ * @version   Release: 1.4.4
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Sniff
@@ -42,8 +42,8 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
     /**
      * Does the indent need to be exactly right.
      *
-     * If TRUE, indent needs to be exactly $ident spaces. If FALSE,
-     * indent needs to be at least $ident spaces (but can be more).
+     * If TRUE, indent needs to be exactly $indent spaces. If FALSE,
+     * indent needs to be at least $indent spaces (but can be more).
      *
      * @var bool
      */
@@ -127,13 +127,24 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
         if ($tokens[$firstToken]['code'] !== T_CLOSURE
             && $tokens[$firstToken]['column'] !== $expectedIndent
         ) {
-            $error = 'Line indented incorrectly; expected %s spaces, found %s';
-            $data  = array(
-                      ($expectedIndent - 1),
-                      ($tokens[$firstToken]['column'] - 1),
-                     );
-            $phpcsFile->addError($error, $stackPtr, 'Incorrect', $data);
-        }
+            // If the scope opener is a closure but it is not the first token on the
+            // line, then the first token may be a variable or array index as so
+            // should not require exact indentation unless the exact member var
+            // is set to TRUE.
+            $exact = true;
+            if ($tokens[$stackPtr]['code'] === T_CLOSURE) {
+                $exact = $this->exact;
+            }
+
+            if ($exact === true || $tokens[$firstToken]['column'] < $expectedIndent) {
+                $error = 'Line indented incorrectly; expected %s spaces, found %s';
+                $data  = array(
+                          ($expectedIndent - 1),
+                          ($tokens[$firstToken]['column'] - 1),
+                         );
+                $phpcsFile->addError($error, $stackPtr, 'Incorrect', $data);
+            }
+        }//end if
 
         $scopeOpener = $tokens[$stackPtr]['scope_opener'];
         $scopeCloser = $tokens[$stackPtr]['scope_closer'];
@@ -184,11 +195,15 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
             // If this is a HEREDOC then we need to ignore it as the
             // whitespace before the contents within the HEREDOC are
             // considered part of the content.
-            if ($tokens[$i]['code'] === T_START_HEREDOC) {
+            if ($tokens[$i]['code'] === T_START_HEREDOC
+                || $tokens[$i]['code'] === T_START_NOWDOC
+            ) {
                 $inHereDoc = true;
                 continue;
             } else if ($inHereDoc === true) {
-                if ($tokens[$i]['code'] === T_END_HEREDOC) {
+                if ($tokens[$i]['code'] === T_END_HEREDOC
+                    || $tokens[$i]['code'] === T_END_NOWDOC
+                ) {
                     $inHereDoc = false;
                 }
 
@@ -235,12 +250,7 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
 
                 // This is a special condition for T_DOC_COMMENT and C-style
                 // comments, which contain whitespace between each line.
-                $comments = array(
-                             T_COMMENT,
-                             T_DOC_COMMENT
-                            );
-
-                if (in_array($tokens[$firstToken]['code'], $comments) === true) {
+                if (in_array($tokens[$firstToken]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === true) {
                     $content = trim($tokens[$firstToken]['content']);
                     if (preg_match('|^/\*|', $content) !== 0) {
                         // Check to see if the end of the comment is on the same line
@@ -266,6 +276,14 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
                         $column = ($contentLength - $trimmedContentLength + 1);
                         if (preg_match('|\*/$|', $content) !== 0) {
                             $commentOpen = false;
+                        }
+
+                        // We are in a comment, so the indent does not have to
+                        // be exact. The important thing is that the comment opens
+                        // at the correct column and nothing sits closer to the left
+                        // than that opening column.
+                        if ($column > $indent) {
+                            continue;
                         }
                     }//end if
                 }//end if
@@ -311,11 +329,16 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
     {
         $conditionStack = array();
 
+        $inParenthesis = false;
+        if (isset($tokens[$stackPtr]['nested_parenthesis']) === true
+            && empty($tokens[$stackPtr]['nested_parenthesis']) === false
+        ) {
+            $inParenthesis = true;
+        }
+
         // Empty conditions array (top level structure).
         if (empty($tokens[$stackPtr]['conditions']) === true) {
-            if (isset($tokens[$stackPtr]['nested_parenthesis']) === true
-                && empty($tokens[$stackPtr]['nested_parenthesis']) === false
-            ) {
+            if ($inParenthesis === true) {
                 // Wrapped in parenthesis means it is probably in a
                 // function call (like a closure) so we have to assume indent
                 // is correct here and someone else will check it more
@@ -326,16 +349,44 @@ class Generic_Sniffs_WhiteSpace_ScopeIndentSniff implements PHP_CodeSniffer_Snif
             }
         }
 
+        $indent = 0;
+
         $tokenConditions = $tokens[$stackPtr]['conditions'];
         foreach ($tokenConditions as $id => $condition) {
-            // If it's an indenting scope ie. it's not in our array of
-            // scopes that don't indent, add it to our condition stack.
-            if (in_array($condition, $this->nonIndentingScopes) === false) {
-                $conditionStack[$id] = $condition;
+            // If it's not an indenting scope i.e., it's in our array of
+            // scopes that don't indent, skip it.
+            if (in_array($condition, $this->nonIndentingScopes) === true) {
+                continue;
             }
-        }
 
-        $indent = ((count($conditionStack) * $this->indent) + 1);
+            if ($condition === T_CLOSURE && $inParenthesis === true) {
+                // Closures cause problems with indents when they are
+                // used as function arguments because the code inside them
+                // is not technically inside the function yet, so the indent
+                // is always off by one. So instead, use the
+                // indent of the closure as the base value.
+                $lastContent = $id;
+                for ($i = ($id - 1); $i > 0; $i--) {
+                    if ($tokens[$i]['line'] !== $tokens[$id]['line']) {
+                        // Changed lines, so the last content we saw is what
+                        // we want.
+                        break;
+                    }
+
+                    if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$emptyTokens) === false) {
+                        $lastContent = $i;
+                    }
+                }
+
+                $indent = ($tokens[$lastContent]['column'] - 1);
+            }
+
+            $indent += $this->indent;
+        }//end foreach
+
+        // Increase by 1 to indiciate that the code should start at a specific column.
+        // E.g., code indented 4 spaces should start at column 5.
+        $indent++;
         return $indent;
 
     }//end calculateExpectedIndent()
