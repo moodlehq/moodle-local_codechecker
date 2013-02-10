@@ -1,0 +1,14 @@
+Changes in version 2.2.3 (torelease):
+- CONTRIB-4145: upgrade to PHPCS 1.4.4.
+- CONTRIB-4144: add (this) CHANGES.txt file.
+
+Changes in version v2.2.2 (20120616):
+- add some well known globals to avoid reporting them.
+- don't check .xml files (Tim Hunt).
+
+Changes in version v2.2.1 (20120408):
+- maturity stable.
+- added plugin icon.
+- fixed copy/paste typo @ version.php.
+- accept inline comments starting by digit (Tim Hunt).
+- improve line length check on non-php files (Tim Hunt).
