@@ -94,7 +94,13 @@ function local_codesniffer_get_ignores() {
 
     $paths[] = preg_quote(local_codechecker_clean_path(
             '/local/codechecker' . DIRECTORY_SEPARATOR . 'pear'));
-    return $paths;
+    // Changed in PHP_CodeSniffer 1.4.4 and upwards, so we apply the
+    // same here: Paths go to keys and mark all them as 'absolute'.
+    $finalpaths = array();
+    foreach ($paths as $pattern) {
+        $finalpaths[$pattern] = 'absolute';
+    }
+    return $finalpaths;
 }
 
 function local_codechecker_get_line_of_code($line, $prettypath) {
