@@ -51,4 +51,15 @@
     <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
 
     <rule ref="Zend.Files.ClosingTag"/>
+
+    <!-- Add the PHPCompatibility external standard
+         from git://github.com/wimg/PHPCompatibility.git
+         Note it only works by specifying paths. Any
+         attempt to include external rulesets with own
+         rules or excludes fail -->
+    <rule ref="../phpcompatibility">
+        <!-- Moodle's bootstrap ensures DefaultTimezone is defined, so excluding this -->
+        <exclude name="../phpcompatibility/Sniffs/PHP/DefaultTimezoneRequiredSniff.php"/>
+    </rule>
+
 </ruleset>
