@@ -76,7 +76,12 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                        T_PROPERTY,
                       );
 
+            // We allow phpdoc before all those tokens.
             if (in_array($tokens[$nextToken]['code'], $ignore) === true) {
+                return;
+
+            // Allow phpdoc before define() token (see CONTRIB-4150).
+            } else if ($tokens[$nextToken]['code'] == T_STRING and $tokens[$nextToken]['content'] == 'define') {
                 return;
 
             } else {
@@ -87,6 +92,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                     true
                 );
 
+                // Allow phpdocs after php open tag (file phpdoc).
                 if ($tokens[$prevToken]['code'] === T_OPEN_TAG) {
                     return;
                 }

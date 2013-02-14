@@ -50,7 +50,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             2 => array('3 slashes comments are not allowed'),
-            4 => 1));
+            4 => 1,
+            6 => 'No space before comment text',
+           26 => 1,
+           42 => 1));
         $this->set_warnings(array(
             2 => 0,
             4 => array(null, 'Commenting.InlineComment.InvalidEndChar')));
