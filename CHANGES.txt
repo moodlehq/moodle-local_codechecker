@@ -1,3 +1,6 @@
+Changes in version 2.2.6 (torelease):
+- CONTRIB-4160: fail tests if there are unexpected results (errors & warnings).
+
 Changes in version 2.2.5 (20130214):
 - CONTRIB-4151: added moodle phpunit support (via local_codechecker_testcase).
 - CONTRIB-4149: added phpcompatibility sniffs (git://github.com/wimg/PHPCompatibility.git).

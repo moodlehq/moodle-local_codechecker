@@ -269,10 +269,15 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
             foreach ($expectation as $key => $expectedcontent) {
                 if (is_string($expectedcontent)) {
                     $this->assertContains($expectedcontent, $results[$line][$key],
-                    'Failed contents matching of ' . $type . ' for element ' . ($key+1) . ' of line ' . $line . '.');
+                            'Failed contents matching of ' . $type . ' for element ' . ($key+1) . ' of line ' . $line . '.');
                 }
             }
+            // Delete this line from results
+            unset($results[$line]);
         }
+        // Ended looping, verify there aren't remaining results (errors, warnings).
+        $this->assertSame(array(), $results,
+                'Failed to verify that all the ' . $type . ' have been defined by expectations.');
     }
 
     /**
