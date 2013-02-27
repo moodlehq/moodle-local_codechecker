@@ -40,12 +40,16 @@ class local_codechecker_form extends moodleform {
         $mform = $this->_form;
 
         $a = new stdClass();
-        $a->link = html_writer::link('http://docs.moodle.org/en/Development:Coding_style',
+        $a->link = html_writer::link('http://docs.moodle.org/dev/Coding_style',
                 get_string('moodlecodingguidelines', 'local_codechecker'));
         $a->path = html_writer::tag('tt', 'local/codechecker');
+        $a->excludeexample =  html_writer::tag('tt', 'db, backup/*1, *lib*');
         $mform->addElement('static', '', '', get_string('info', 'local_codechecker', $a));
 
-        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'));
+        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'), array('size'=>'48'));
+        $mform->addRule('path', null, 'required', null, 'client');
+
+        $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size'=>'48'));
 
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
@@ -80,9 +84,11 @@ function local_codechecker_pretty_path($file) {
 
 /**
  * Get a list of folders to ignores.
+ *
+ * @param string $extraignorelist optional comma separated list of substr matching paths to ignore.
  * @return array of paths.
  */
-function local_codesniffer_get_ignores() {
+function local_codesniffer_get_ignores($extraignorelist = '') {
     global $CFG;
 
     $paths = array();
@@ -99,6 +105,14 @@ function local_codesniffer_get_ignores() {
     $finalpaths = array();
     foreach ($paths as $pattern) {
         $finalpaths[$pattern] = 'absolute';
+    }
+    // Let's add any substr matching path passed in $extraignorelist.
+    if ($extraignorelist) {
+        $extraignorearr = explode(',', $extraignorelist);
+        foreach ($extraignorearr as $extraignore) {
+            $extrapath = trim($extraignore);
+            $finalpaths[$extrapath] = 'absolute';
+        }
     }
     return $finalpaths;
 }

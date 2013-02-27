@@ -27,27 +27,26 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 $path = optional_param('path', '', PARAM_PATH);
-if ($path) {
-    $pageparams = array('path' => $path);
-} else {
-    $pageparams = array();
-}
+$exclude = optional_param('exclude', '', PARAM_NOTAGS);
 
-require_login();
-require_capability('moodle/site:config', get_context_instance(CONTEXT_SYSTEM));
+$pageparams = array();
+if ($path) {
+    $pageparams['path'] = $path;
+}
+if ($exclude) {
+    $pageparams['exclude'] = $exclude;
+}
 
 admin_externalpage_setup('local_codechecker', '', $pageparams);
 
-$PAGE->set_heading($SITE->fullname);
-$PAGE->set_title($SITE->fullname . ': ' . get_string('pluginname', 'local_codechecker'));
-
+// We are going to need lots of memory and time.
 raise_memory_limit(MEMORY_HUGE);
 set_time_limit(300);
 
 $mform = new local_codechecker_form(new moodle_url('/local/codechecker/'));
-$mform->set_data((object) array('path' => $path));
+$mform->set_data((object)$pageparams);
 if ($data = $mform->get_data()) {
-    redirect(new moodle_url('/local/codechecker/', array('path' => $data->path)));
+    redirect(new moodle_url('/local/codechecker/', $pageparams));
 }
 
 if ($path) {
@@ -65,7 +64,7 @@ if ($path) {
     if ($fullpath) {
         $phpcs = new PHP_CodeSniffer();
         $phpcs->setCli(new local_codechecker_codesniffer_cli());
-        $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
+        $phpcs->setIgnorePatterns(local_codesniffer_get_ignores($exclude));
         $phpcs->process(local_codechecker_clean_path($fullpath),
                 local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
         $problems = $phpcs->getFilesErrors();
