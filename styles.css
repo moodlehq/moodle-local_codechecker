@@ -1,3 +1,7 @@
+#page-admin-local-codechecker-index .local_codechecker_results h2 {
+    font-weight: bold;
+    font-style: normal;
+}
 #page-admin-local-codechecker-index .local_codechecker_results ul {
     display: block;
     list-style-type: none;
@@ -5,19 +9,17 @@
     padding: 0;
 }
 #page-admin-local-codechecker-index .local_codechecker_results li {
+    font-weight: normal;
+    font-style: normal;
     display: block;
     list-style-type: none;
     margin: 0.5em 0;
     padding: 0;
 }
 #page-admin-local-codechecker-index .local_codechecker_results .fail.error {
-    font-weight: normal;
-    font-style: normal;
     color: #660000;
 }
 #page-admin-local-codechecker-index .local_codechecker_results .fail.warning {
-    font-weight: normal;
-    font-style: normal;
     color: #996600;
 }
 #page-admin-local-codechecker-index .local_codechecker_results .good {

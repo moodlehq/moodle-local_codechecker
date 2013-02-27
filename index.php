@@ -70,22 +70,10 @@ if ($path) {
                 local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
         $problems = $phpcs->getFilesErrors();
         local_codechecker_check_other_files(local_codechecker_clean_path($fullpath), $problems);
-        ksort($problems);
+        list($numerrors, $numwarnings) = local_codechecker_count_problems($problems);
 
-        $errors = 0;
-        $warnings = 0;
-        foreach ($problems as $file => $info) {
-            $errors += $info['numErrors'];
-            $warnings += $info['numWarnings'];
-        }
-        if ($errors + $warnings > 0) {
-            $summary = get_string('numerrorswarnings', 'local_codechecker',
-                    array('numErrors' => $errors, 'numWarnings' => $warnings));
-        } else {
-            $summary = '';
-        }
-
-        echo $output->report($problems, $phpcs, $summary);
+        // Output the results report.
+        echo $output->report($problems, $phpcs, $numerrors, $numwarnings);
 
     } else {
         echo $output->invald_path_message($path);

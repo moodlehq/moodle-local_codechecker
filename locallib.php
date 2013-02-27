@@ -275,3 +275,20 @@ function local_codechecker_check_other_files($path, &$problems) {
         local_codechecker_check_other_file($file, $problems);
     }
 }
+
+/**
+ * Calculate the total number of errors and warnings in the execution
+ *
+ * @param array $problems Existing problem structure from PHPCodeSniffer
+ *   for which total number of errors and warnings will be counted.
+ * return array with the total count of errors and warnings.
+ */
+function local_codechecker_count_problems($problems) {
+    $errors = 0;
+    $warnings = 0;
+    foreach ($problems as $file => $info) {
+        $errors += $info['numErrors'];
+        $warnings += $info['numWarnings'];
+    }
+    return array($errors, $warnings);
+}

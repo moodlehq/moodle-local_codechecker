@@ -1,6 +1,7 @@
 Changes in version 2.2.6 (torelease):
 - CONTRIB-4160: fail tests if there are unexpected results (errors & warnings).
 - CONTRIB-4150: allow phpdocs block before define().
+- CONTRIB-4186: fix CSS / rendering of results.
 
 Changes in version 2.2.5 (20130214):
 - CONTRIB-4151: added moodle phpunit support (via local_codechecker_testcase).
