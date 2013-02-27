@@ -97,6 +97,8 @@ class local_codechecker_renderer extends plugin_renderer_base {
     public function report(array $problems, PHP_CodeSniffer $phpcs, $totalproblems) {
         $output = '';
 
+        $output .= html_writer::start_tag('div', array('class' => 'local_codechecker_results'));
+
         $numfiles = count($problems);
         $output .= $this->summary_start($numfiles);
 
@@ -123,6 +125,8 @@ class local_codechecker_renderer extends plugin_renderer_base {
 
             $output .= $this->problems($index, local_codechecker_pretty_path($file), $info);
         }
+
+        $output .= html_writer::end_tag('div');
 
         return $output;
     }

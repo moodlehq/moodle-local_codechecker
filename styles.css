@@ -1,45 +1,39 @@
-#page-admin-local-codechecker-index .region-content ul {
+#page-admin-local-codechecker-index .local_codechecker_results ul {
     display: block;
     list-style-type: none;
     margin: 1em 0;
     padding: 0;
 }
-#page-admin-local-codechecker-index .region-content li {
+#page-admin-local-codechecker-index .local_codechecker_results li {
     display: block;
     list-style-type: none;
     margin: 0.5em 0;
     padding: 0;
 }
-#page-admin-local-codechecker-index .fail.error .info,
-#page-admin-local-codechecker-index .region-content .fail {
-    color: #660000;
-}
-#page-admin-local-codechecker-index .fail.warning {
-    color: #996600;
+#page-admin-local-codechecker-index .local_codechecker_results .fail.error {
     font-weight: normal;
     font-style: normal;
+    color: #660000;
 }
-#page-admin-local-codechecker-index .good {
+#page-admin-local-codechecker-index .local_codechecker_results .fail.warning {
+    font-weight: normal;
+    font-style: normal;
+    color: #996600;
+}
+#page-admin-local-codechecker-index .local_codechecker_results .good {
     color: #006600;
+}
+#page-admin-local-codechecker-index .local_codechecker_results pre {
+    margin-top: 1em;
+    margin-bottom: 0;
+}
+#page-admin-local-codechecker-index .local_codechecker_results pre span {
+    color: #888;
+}
+#page-admin-local-codechecker-index .local_codechecker_results h3 :link,
+#page-admin-local-codechecker-index .local_codechecker_results h3 :visited {
+    color: inherit;
 }
 #page-admin-local-codechecker-index tt {
     display: inline; /* Override silly rule in Canvas theme. */
-}
-#page-admin-local-codechecker-index pre {
-    margin-bottom: 0;
-}
-#page-admin-local-codechecker-index pre span {
-    color: #888;
-}
-#page-admin-local-codechecker-index .checkresults {
-    padding:5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    background-color:#f2f2f2;
-    margin: 1em 0;
-}
-#page-admin-local-codechecker-index h3 :link,
-#page-admin-local-codechecker-index h3 :visited {
-    color: inherit;
 }
