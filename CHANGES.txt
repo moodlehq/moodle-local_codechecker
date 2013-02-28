@@ -3,6 +3,7 @@ Changes in version 2.2.6 (torelease):
 - CONTRIB-4150: allow phpdocs block before define().
 - CONTRIB-4186: fix CSS / rendering of results.
 - CONTRIB-3582: allow to specify excluded paths.
+- CONTRIB-3562: skip indentation checks on inline html sections within PHP code.
 
 Changes in version 2.2.5 (20130214):
 - CONTRIB-4151: added moodle phpunit support (via local_codechecker_testcase).
