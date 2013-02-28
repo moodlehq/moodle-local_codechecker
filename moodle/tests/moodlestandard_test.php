@@ -49,14 +49,14 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => array of contents for message / source problem matching.
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            2 => array('3 slashes comments are not allowed'),
-            4 => 1,
-            6 => 'No space before comment text',
-           26 => 1,
-           42 => 1));
+            4 => array('3 slashes comments are not allowed'),
+            6 => 1,
+            8 => 'No space before comment text',
+           28 => 1,
+           44 => 1));
         $this->set_warnings(array(
-            2 => 0,
-            4 => array(null, 'Commenting.InlineComment.InvalidEndChar')));
+            4 => 0,
+            6 => array(null, 'Commenting.InlineComment.InvalidEndChar')));
 
         // Let's do all the hard work!
         $this->verify_cs_results();
@@ -74,10 +74,32 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => array of contents for message / source problem matching.
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            1 => 0,
-            2 => array('found "if(...) {'),
             3 => 0,
-            4 => '@Message: Expected "} else {\n"'));
+            4 => array('found "if(...) {'),
+            5 => 0,
+            6 => '@Message: Expected "} else {\n"'));
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_whitespace_scopeindent() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle_Sniffs_WhiteSpace_ScopeIndentSniff');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_whitespace_scopeindent.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            6 => 'indented incorrectly; expected 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent',
+            7 => 'indented incorrectly; expected 4 spaces, found 6 @Source: moodle.WhiteSpace.ScopeIndent',
+            18 => 'indented incorrectly; expected 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent',
+            19 => 'indented incorrectly; expected 4 spaces, found 6 @Source: moodle.WhiteSpace.ScopeIndent'));
         $this->set_warnings(array());
 
         // Let's do all the hard work!
@@ -100,7 +122,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
         $this->set_warnings(array(
-            3 => array('function ereg_replace', 'use call_user_func instead', '@Source: phpcompat')));
+            5 => array('function ereg_replace', 'use call_user_func instead', '@Source: phpcompat')));
 
         // Let's do all the hard work!
         $this->verify_cs_results();

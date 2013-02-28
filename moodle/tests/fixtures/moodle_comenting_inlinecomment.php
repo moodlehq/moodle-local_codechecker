@@ -1,4 +1,6 @@
 <?php
+defined('MOODLE_INTERNAL') || die(); // Make this always the 1st line in all CS fixtures.
+
 /// Three slashes are incorrect.
 
 //// four are also wrong. Not to talk about the missing upper and final dot
