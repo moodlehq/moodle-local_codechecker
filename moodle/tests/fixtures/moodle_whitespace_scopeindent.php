@@ -18,3 +18,9 @@ if (1=1) {
   $anothervar = true; // Bad aligned PHP.
       $anothervar = true; // Bad aligned PHP.
 }
+// This must not throw any indentation error, and running the Sniff
+// under "exact mode" causes that, so we need to run it in unexact mode.
+if ($condition) {
+    execute_one_function_having_a_very_long_description('and a lot of params', $like, $these,
+        $causing, $us, to $split);
+}

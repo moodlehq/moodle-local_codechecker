@@ -96,10 +96,8 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => array of contents for message / source problem matching.
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            6 => 'indented incorrectly; expected 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent',
-            7 => 'indented incorrectly; expected 4 spaces, found 6 @Source: moodle.WhiteSpace.ScopeIndent',
-            18 => 'indented incorrectly; expected 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent',
-            19 => 'indented incorrectly; expected 4 spaces, found 6 @Source: moodle.WhiteSpace.ScopeIndent'));
+            6 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent.Incorrect',
+            18 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent.Incorrect'));
         $this->set_warnings(array());
 
         // Let's do all the hard work!

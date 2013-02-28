@@ -34,7 +34,7 @@ class moodle_Sniffs_WhiteSpace_ScopeIndentSniff extends Generic_Sniffs_WhiteSpac
     /**
      * @var boolean Does the indent need to be exactly right.
      */
-    public $exact = true;
+    public $exact = false; // Seting this to true leads to tons of false positives in multiline expressions.
 
     /**
      * @var array Tokens we are not interested to verify their indentation within an scope.
