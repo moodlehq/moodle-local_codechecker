@@ -20,7 +20,9 @@ if (1=1) {
 }
 // This must not throw any indentation error, and running the Sniff
 // under "exact mode" causes that, so we need to run it in unexact mode.
+// Note 8 spaces indentation is the correct one for any line wrap, both
+// for normal and control structure lines. (Thanks Tim for remembering it here).
 if ($condition) {
     execute_one_function_having_a_very_long_description('and a lot of params', $like, $these,
-        $causing, $us, to $split);
+            $causing, $us, to $split);
 }
