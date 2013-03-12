@@ -1,4 +1,4 @@
-Changes in version 2.2.6 (torelease):
+Changes in version 2.2.6 (20130312):
 - CONTRIB-4160: fail tests if there are unexpected results (errors & warnings).
 - CONTRIB-4150: allow phpdocs block before define().
 - CONTRIB-4186: fix CSS / rendering of results.
