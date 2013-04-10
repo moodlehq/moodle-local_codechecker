@@ -1,3 +1,8 @@
+Changes in version 2.2.7 (xxxxxxxx):
+
+- MDLSITE-2205: Allow 20-120 chars long hyphen commenting-separators.
+- NOBUG: Fixed some dev warnings under 2.5.
+
 Changes in version 2.2.6 (20130312):
 - CONTRIB-4160: fail tests if there are unexpected results (errors & warnings).
 - CONTRIB-4150: allow phpdocs block before define().
