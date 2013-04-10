@@ -56,7 +56,16 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            44 => 1));
         $this->set_warnings(array(
             4 => 0,
-            6 => array(null, 'Commenting.InlineComment.InvalidEndChar')));
+            6 => array(null, 'Commenting.InlineComment.InvalidEndChar'),
+           55 => array('19 found'),
+           57 => array('121 found'),
+           59 => array('Found: (no)'),
+           61 => 1,
+           63 => 1,
+           65 => 1,
+           67 => 1,
+           69 => array('WrongCommentCodeFoundBefore'),
+           71 => 3));
 
         // Let's do all the hard work!
         $this->verify_cs_results();

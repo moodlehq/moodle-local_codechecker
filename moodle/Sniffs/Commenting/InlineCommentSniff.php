@@ -117,6 +117,39 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             return;
         }
 
+        // Allow pure comment separators only (look for comments having at least 10 hyphens).
+        if (preg_match('!^// (.*?)(-{10})(.*)$!', $comment, $matches)) {
+            // It's a comment separator.
+            // Verify it's pure.
+            $wrongcharsfound = trim(str_replace('-', '', $matches[1] . $matches[3]));
+            if ($wrongcharsfound !== '') {
+                $error = 'Comment separators are not allowed to contain other chars buy hyphens (-). Found: (%s)';
+                // Basic clean dupes for notification
+                $wrongcharsfound = implode(array_keys(array_flip(preg_split('//', $wrongcharsfound, -1, PREG_SPLIT_NO_EMPTY))));
+                $data = array($wrongcharsfound);
+                $phpcsFile->addWarning($error, $stackPtr, 'IncorrectCommentSeparator', $data);
+            }
+            // Verify length between 20 and 120
+            $hyphencount = strlen($matches[1] . $matches[2] . $matches[3]);
+            if ($hyphencount < 20 or $hyphencount > 120) {
+                $error = 'Comment separators length must contain 20-120 chars, %s found';
+                $phpcsFile->addWarning($error, $stackPtr, 'WrongCommentSeparatorLength', array($hyphencount));
+            }
+            // Verify it's the first token in the line.
+            $prevToken = $phpcsFile->findPrevious(
+                PHP_CodeSniffer_Tokens::$emptyTokens,
+                ($stackPtr - 1),
+                null,
+                true
+            );
+            if (!empty($prevToken) and $tokens[$prevToken]['line'] == $tokens[$stackPtr]['line']) {
+                $error = 'Comment separators must be the unique text in the line, code found before.';
+                $phpcsFile->addWarning($error, $stackPtr, 'WrongCommentCodeFoundBefore', array());
+            }
+            // Don't want to continue processing the comment separator.
+            return;
+        }
+
         // Count slashes
         $slashCount = strlen(preg_replace('!^([/#]*).*!', '\\1', $comment));
 
