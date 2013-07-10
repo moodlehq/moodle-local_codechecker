@@ -134,4 +134,27 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // Let's do all the hard work!
         $this->verify_cs_results();
     }
+
+    /**
+     * Test call time pass by reference.
+     */
+    public function test_phpcompatibility_php_forbiddencalltimepassbyreference() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff');
+        $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_forbiddencalltimepassbyreference.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            6 => array('call-time pass-by-reference is prohibited'),
+            7 => array('@Source: phpcompat')));
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
 }

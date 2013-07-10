@@ -1,3 +1,6 @@
+Changes in version 2.2.8 (XXXXXXXX):
+- NOBUG: Update phpcompatibility standard with latest changes (plus testing).
+
 Changes in version 2.2.7 (20130606):
 - MDLSITE-2205: Allow 20-120 chars long hyphen commenting-separators.
 - NOBUG: Fixed some dev warnings under 2.5.
