@@ -14,6 +14,7 @@ class foo {
     public $REALLY_badvar = null;
     public $goodvariable = null;
     private $_goodvariable = null;
+    var $badvarusage = null;
 }
 
 $result = "String: $badPlaceholder1";

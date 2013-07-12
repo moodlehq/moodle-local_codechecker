@@ -184,9 +184,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             14 => array('must be all lower-case', 'must not contain underscores'),
             15 => 0,
             16 => 0,
-            19 => 'must be all lower-case',
-            20 => 'must not contain underscores',
-            21 => array('must be all lower-case', 'must not contain underscores'),
+            17 => 'The \'var\' keyword is not permitted',
+            20 => 'must be all lower-case',
+            21 => 'must not contain underscores',
+            22 => array('must be all lower-case', 'must not contain underscores'),
         ));
         $this->set_warnings(array());
 
