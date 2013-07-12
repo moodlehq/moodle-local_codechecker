@@ -47,22 +47,27 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
      */
     protected function processMemberVar(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
-        $membername     = ltrim($tokens[$stackptr]['content'], '$');
+        $membername = ltrim($tokens[$stackptr]['content'], '$');
 
         if (preg_match('/[A-Z]+/', $membername)) {
             $error = "Member variable \"$membername\" must be all lower-case";
             $phpcsfile->addError($error, $stackptr);
-            return;
         }
 
-        // Must not be preceded by 'var' keyword
+        // Find underscores in variable names (accepting $_foo for private vars).
+        $pos = strpos($membername, '_');
+        if ($pos > 1) {
+            $error = "Member variable \"$membername\" must not contain underscores.";
+            $phpcsfile->addError($error, $stackptr);
+        }
+
+        // Must not be preceded by 'var' keyword.
         $keyword = $phpcsfile->findPrevious(T_VAR, $stackptr);
 
         if ($tokens[$keyword]['line'] == $tokens[$stackptr]['line']) {
             $error = "The 'var' keyword is not permitted." .
                      'Visibility must be explicitly declared with public, private or protected';
             $phpcsfile->addError($error, $stackptr);
-            return;
         }
     }
 
@@ -77,15 +82,7 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     protected function processVariable(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
         $membername     = ltrim($tokens[$stackptr]['content'], '$');
-
-        if (preg_match('/[A-Z]+/', $membername)) {
-
-            if (!in_array($membername, $this->allowedglobals)) {
-                $error = "Member variable \"$membername\" must be all lower-case";
-                $phpcsfile->addError($error, $stackptr);
-                return;
-            }
-        }
+        $this->validate_moodle_variable_name($membername, $phpcsfile, $stackptr);
     }
 
     /**
@@ -102,24 +99,30 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
         if (preg_match('/\$([A-Za-z0-9_]+)(\-\>([A-Za-z0-9_]+))?/i',
                 $tokens[$stackptr]['content'], $matches)) {
             $firstvar = $matches[1];
-            $objectvar = (empty($matches[3])) ? null : $matches[3];
-            $membername = $firstvar . $objectvar;
 
-            if (preg_match('/[A-Z]+/', $firstvar, $matches)) {
-
-                if (!in_array($firstvar, $this->allowedglobals)) {
-                    $error = "Member variable \"$firstvar\" must be all lower-case";
-                    $phpcsfile->addError($error, $stackptr);
-                    return;
-                }
-            }
-
-            if (!empty($objectvar) && preg_match('/[A-Z]+/', $objectvar, $matches)) {
-                $error = "Member variable \"$objectvar\" must be all lower-case";
-                $phpcsfile->addError($error, $stackptr);
-                return;
-            }
+            $this->validate_moodle_variable_name($firstvar, $phpcsfile, $stackptr);
         }
-        return;
+    }
+
+    /**
+     * Processes normal moodle variables against Moodle coding guidelines. Note this
+     * can't be used for member variables as we allow slightly different rules there.
+     *
+     * @param string               $varname   The name of the variable.
+     * @param PHP_CodeSniffer_File $phpcsfile The file where this token was found.
+     * @param int                  $stackptr  The position where the token was found.
+     *
+     * @return void
+     */
+    private function validate_moodle_variable_name($varname, PHP_CodeSniffer_File $phpcsfile, $stackptr) {
+        if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, $this->allowedglobals)) {
+            $error = "Variable \"$varname\" must be all lower-case";
+            $phpcsfile->addError($error, $stackptr);
+        }
+
+        if (strpos($varname, '_') !== false && !in_array($varname, $this->allowedglobals)) {
+            $error = "Variable \"$varname\" must not contain underscores.";
+            $phpcsfile->addError($error, $stackptr);
+        }
     }
 }
