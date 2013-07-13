@@ -1,4 +1,4 @@
-Changes in version 2.2.8 (XXXXXXXX):
+Changes in version 2.2.8 (20130713):
 - NOBUG: Update phpcompatibility standard with latest changes (plus testing).
 - MDLSITE-2106: Detect underscores in variable names.
 
