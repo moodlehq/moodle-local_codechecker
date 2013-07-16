@@ -18,10 +18,20 @@ Site administration -> Development -> Code checker in the settings block.
 We hope you find this tool useful. Please feel free to enhance it.
 
 
-Tip for Eclipse users:
+IDE Integration
+===============
+* Eclipse:
+    If if you use Eclipse for development, you might want to install the
+    PHP CodeSniffer plugin (http://www.phpsrc.org/).
+    1. Create a new "CodeSniffer standard" in the preferences page.
+    2. Point it at the moodle directory inside the codechecker folder.
+    3. Thank Michael Aherne from University of Strathclyde who worked this out!
 
-If if you use Eclipse for development, you might want to install the
-PHP CodeSniffer plugin (http://www.phpsrc.org/).
-1. Create a new "CodeSniffer standard" in the preferences page.
-2. Point it at the moodle directory inside the codechecker folder.
-3. Thank Michael Aherne from University of Strathclyde who worked this out!
+* PhpStorm
+    1. Install the phpcs cli tool
+    2. Open PhpStorm preferences
+    2. Go to PHP > CodeSniffer and supply the path to the phpcs executable
+    3. Go to Inspections > PHP > PHP Code Sniffer Validation
+    4. In the 'coding standard' dropdown select 'custom' and press the [...]
+       button next to the path to the coding standard. Point is at the moodle
+       directory inside the this plugin directory.
