@@ -92,11 +92,11 @@ for RELATIVEFILE in $RELATIVEFILES; do
     ABSOLUTEFILE=$TOPDIR/$RELATIVEFILE
 
     # Generate some tmp file names - will be cleaned up later.
-    TMPFILE=`mktemp git-cs-XXXXXX --tmpdir`
-    REPORT1=`mktemp git-cs-report1-XXXXXX --tmpdir`
-    REPORT1NOLINES=`mktemp git-cs-report1-nolines-XXXXXX --tmpdir`
-    REPORT2=`mktemp git-cs-report2-XXXXXX --tmpdir`
-    REPORT2NOLINES=`mktemp git-cs-report2-nolines-XXXXXX --tmpdir`
+    TMPFILE=`mktemp /tmp/git-cs-XXXXXX`
+    REPORT1=`mktemp /tmp/git-cs-report1-XXXXXX`
+    REPORT1NOLINES=`mktemp /tmp/git-cs-report1-nolines-XXXXXX`
+    REPORT2=`mktemp /tmp/git-cs-report2-XXXXXX`
+    REPORT2NOLINES=`mktemp /tmp/git-cs-report2-nolines-XXXXXX`
 
     # Checkout a copy of the file from the comparison git revision.
     git show $COMPARISON:$RELATIVEFILE > $TMPFILE
