@@ -95,7 +95,7 @@ for RELATIVEFILE in $RELATIVEFILES; do
     REPORT1=`mktemp git-cs-report1-XXXXXX --tmpdir`
     REPORT1NOLINES=`mktemp git-cs-report1-nolines-XXXXXX --tmpdir`
     REPORT2=`mktemp git-cs-report2-XXXXXX --tmpdir`
-    REPORT1NOLINES=`mktemp git-cs-report2-nolines-XXXXXX --tmpdir`
+    REPORT2NOLINES=`mktemp git-cs-report2-nolines-XXXXXX --tmpdir`
 
     # Checkout a copy of the file from the comparison git revision.
     git show $COMPARISON:$RELATIVEFILE > $TMPFILE
