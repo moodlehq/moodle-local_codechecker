@@ -8,6 +8,23 @@
 # to see the introduced errors since HEAD or
 # > git-cs origin/master
 # to see the introduced errors since the upstream master (or any valid git-revision).
+#
+# You can also set this up as a git alias with branch completion.
+# Example:
+# First create symlink (I call mine git-cs) of this script into PATH (~/bin)
+# Add to .gitconfig [alias] section:
+#
+# cs = !git-cs $1
+#
+# Now to get branch completion add this to .bashrc:
+#
+# _git_cs () {
+#    _git_branch
+# }
+#
+# Now (in a new shell) type: git cs [TAB][TAB]
+# Profit!
+
 
 # Start of script...
 
@@ -27,7 +44,6 @@ if [ "$LASTARG" = "--help" ]; then
 fi
 
 # Windows users get no warranty anyway.
-TMP=/tmp
 
 # Resolve if this script is a symlink so we can get the path to the phpcs binary.
 LINKSOURCE=`readlink $0`
@@ -70,11 +86,11 @@ for RELATIVEFILE in $RELATIVEFILES; do
     ABSOLUTEFILE=$TOPDIR/$RELATIVEFILE
 
     # Generate some tmp file names - will be cleaned up later.
-    TMPFILE=$TMP/git-cs-$RANDOM.txt
-    REPORT1=$TMP/git-cs-$RANDOM.report1
-    REPORT1NOLINES=$REPORT1.nolines
-    REPORT2=$TMP/git-cs-$RANDOM.report2
-    REPORT2NOLINES=$REPORT2.nolines
+    TMPFILE=`mktemp git-cs-XXXXXX --tmpdir`
+    REPORT1=`mktemp git-cs-report1-XXXXXX --tmpdir`
+    REPORT1NOLINES=`mktemp git-cs-report1-nolines-XXXXXX --tmpdir`
+    REPORT2=`mktemp git-cs-report2-XXXXXX --tmpdir`
+    REPORT1NOLINES=`mktemp git-cs-report2-nolines-XXXXXX --tmpdir`
 
     # Checkout a copy of the file from the comparison git revision.
     git show $COMPARISON:$RELATIVEFILE > $TMPFILE
