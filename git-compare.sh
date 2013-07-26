@@ -112,14 +112,13 @@ for RELATIVEFILE in $RELATIVEFILES; do
 
     echo "Run code sniffer on modified file $RELATIVEFILE"
     # Generate a nolines version of the report.
-    cat $REPORT1 | sed -e 's/[0-9 ]\+|/ /g' > $REPORT1NOLINES
+    cat $REPORT1 | sed -e 's/[0-9 ]\+|/ /g' |egrep -v "FILE|FOUND"> $REPORT1NOLINES
 
     # Generate phpcs report for the file with our local changes.
     $SCRIPT --report=$REPORT --standard=$STANDARD --tab-width=4 $ABSOLUTEFILE > $REPORT2 || true
 
-    echo "Report only differences"
     # Generate a nolines version of the report.
-    cat $REPORT2 | sed -e 's/[0-9 ]\+|/ /g' > $REPORT2NOLINES
+    cat $REPORT2 | sed -e 's/[0-9 ]\+|/ /g' |egrep -v "FILE|FOUND"> $REPORT2NOLINES
 
     # Get the lines added/removed from the two sniffer reports in a format we can parse.
     LINESADDED=`diff -n $REPORT1NOLINES $REPORT2NOLINES | egrep "^a|^d" | sed -e 's/ /,/g'`
@@ -140,6 +139,12 @@ for RELATIVEFILE in $RELATIVEFILES; do
 
         # If no lines added...
         if [ -z "$ADDED" ]; then
+            #echo "DELETED LINES"
+            #FIRSTADJUSTED=`dc -e "$FIRST $SECOND + 1 - p"`
+            #SECONDADJUSTED=`dc -e "$SECOND p"`
+
+            # Only print the relevant lines from the "lines" report.
+            #cat $REPORT1 | head -n $FIRSTADJUSTED | tail -n $SECONDADJUSTED
             # Lines Deleted
             OFFSET=`dc -e "$OFFSET $SECOND -p"`
         else
@@ -147,13 +152,12 @@ for RELATIVEFILE in $RELATIVEFILES; do
 
             # We keep track of the total lines added/removed up to this point
             # so we can correctly calculate the starting line in the "lines" report.
-            # The format required by sed means we need to add 1 to the start line and
-            # subtract 1 from the number of lines to show.
-            FIRSTADJUSTED=`dc -e "$FIRST $OFFSET 1++p"`
-            SECONDADJUSTED=`dc -e "$SECOND 1 - p"`
+            echo "NEW LINES"
+            FIRSTADJUSTED=`dc -e "$FIRST $SECOND + 1 - p"`
+            SECONDADJUSTED=`dc -e "$SECOND p"`
 
             # Only print the relevant lines from the "lines" report.
-            cat $REPORT2 | sed -n "${FIRSTADJUSTED},+${SECONDADJUSTED}p"
+            cat $REPORT2 | head -n $FIRSTADJUSTED | tail -n $SECONDADJUSTED
 
             # Lines added
             OFFSET=`dc -e "$OFFSET $SECOND +p"`
