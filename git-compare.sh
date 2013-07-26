@@ -28,6 +28,11 @@
 
 # Start of script...
 
+if [ ! -z "$SERVER_NAME" ]; then
+    # This script must be run from the command line.
+    exit 0;
+fi
+
 # Quick check for --help as last arg.
 LASTARG="${@: -1}"
 
