@@ -84,6 +84,9 @@ RELATIVEFILES=`git diff $COMPARISON --name-only`
 # Where is the root of the current git repo?
 TOPDIR=`git rev-parse --show-toplevel`
 
+FILESCHANGED=`echo $RELATIVEFILES|wc -w`
+echo "$FILESCHANGED file(s) changed."
+
 # We run phpcs for each changed file separately.
 FILES=''
 for RELATIVEFILE in $RELATIVEFILES; do
@@ -98,18 +101,23 @@ for RELATIVEFILE in $RELATIVEFILES; do
     REPORT2=`mktemp /tmp/git-cs-report2-XXXXXX`
     REPORT2NOLINES=`mktemp /tmp/git-cs-report2-nolines-XXXXXX`
 
+    echo "Checkout file $RELATIVEFILE"
     # Checkout a copy of the file from the comparison git revision.
     git show $COMPARISON:$RELATIVEFILE > $TMPFILE
 
+    echo "Run code sniffer on original file $RELATIVEFILE"
+    # Checkout a copy of the file from the comparison git revision.
     # Generate phpcs report for the unmodified file.
-    $SCRIPT --report=$REPORT --standard=$STANDARD --tab-width=4 $TMPFILE > $REPORT1
+    $SCRIPT --report=$REPORT --standard=$STANDARD --tab-width=4 $TMPFILE > $REPORT1 || true
 
+    echo "Run code sniffer on modified file $RELATIVEFILE"
     # Generate a nolines version of the report.
     cat $REPORT1 | sed -e 's/[0-9 ]\+|/ /g' > $REPORT1NOLINES
 
     # Generate phpcs report for the file with our local changes.
-    $SCRIPT --report=$REPORT --standard=$STANDARD --tab-width=4 $ABSOLUTEFILE > $REPORT2
+    $SCRIPT --report=$REPORT --standard=$STANDARD --tab-width=4 $ABSOLUTEFILE > $REPORT2 || true
 
+    echo "Report only differences"
     # Generate a nolines version of the report.
     cat $REPORT2 | sed -e 's/[0-9 ]\+|/ /g' > $REPORT2NOLINES
 
@@ -120,7 +128,7 @@ for RELATIVEFILE in $RELATIVEFILES; do
     OFFSET=0
     for RANGE in $LINESADDED; do
         # Used to check if the lines were added or removed.
-        ADDED=`echo -n $RANGE|grep "a"`
+        ADDED=`echo -n $RANGE|grep "a" || true`
 
         # Strip the leading a/d from the line.
         RANGE=`echo -n $RANGE|sed -s 's/[ad]//g'`
@@ -129,7 +137,7 @@ for RELATIVEFILE in $RELATIVEFILES; do
         FIRST=`echo -n $RANGE|sed -e 's/,.*//g'`
         # Get the second number.
         SECOND=`echo -n $RANGE|sed -e 's/.*,//g'`
-        
+
         # If no lines added...
         if [ -z "$ADDED" ]; then
             # Lines Deleted
