@@ -27,6 +27,7 @@
 
 
 # Start of script...
+set -e
 
 if [ ! -z "$SERVER_NAME" ]; then
     # This script must be run from the command line.
