@@ -56,7 +56,7 @@ LINKSOURCE=`readlink $0`
 if [ -z "$LINKSOURCE" ]; then
     ME=$0
 else
-    ME=`dirname $0`/$LINKSOURCE
+    ME=$LINKSOURCE
 fi
 
 # Get the install location (where codechecker is checked out).
