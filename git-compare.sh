@@ -131,7 +131,7 @@ for RELATIVEFILE in $RELATIVEFILES; do
         ADDED=`echo -n $RANGE|grep "a" || true`
 
         # Strip the leading a/d from the line.
-        RANGE=`echo -n $RANGE|sed -s 's/[ad]//g'`
+        RANGE=`echo -n $RANGE|sed -e 's/[ad]//g'`
 
         # Get the first number.
         FIRST=`echo -n $RANGE|sed -e 's/,.*//g'`
