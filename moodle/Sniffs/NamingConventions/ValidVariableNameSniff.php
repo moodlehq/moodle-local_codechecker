@@ -33,8 +33,8 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     private $allowedglobals = array('ADMIN', 'CFG', 'COURSE', 'DB', 'FULLME',
             'OUTPUT', 'PAGE', 'PERF', 'SESSION', 'SITE', 'THEME', 'USER',
             '_SERVER', '_GET', '_POST', '_FILES', '_REQUEST', '_SESSION', '_ENV',
-            '_COOKIE', '_HTTP_RAW_POST_DATA', 'ACCESSLIB_PRIVATE',
-            'CONDITIONLIB_PRIVATE', 'FILTERLIB_PRIVATE');
+            '_COOKIE', '_HTTP_RAW_POST_DATA', 'ACCESSLIB_PRIVATE', 'ME',
+            'CONDITIONLIB_PRIVATE', 'FILTERLIB_PRIVATE', 'SCRIPT', 'MNET_REMOTE_CLIENT');
 
     /**
      * Processes class member variables.
