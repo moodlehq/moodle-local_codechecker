@@ -36,21 +36,20 @@ require_once($CFG->dirroot . '/local/codechecker/pear/PHP/CodeSniffer.php');
  */
 class local_codechecker_form extends moodleform {
     protected function definition() {
-        global $path;
         $mform = $this->_form;
 
         $a = new stdClass();
         $a->link = html_writer::link('http://docs.moodle.org/dev/Coding_style',
                 get_string('moodlecodingguidelines', 'local_codechecker'));
         $a->path = html_writer::tag('tt', 'local/codechecker');
-        $a->excludeexample =  html_writer::tag('tt', 'db, backup/*1, *lib*');
+        $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
         $mform->addElement('static', '', '', get_string('info', 'local_codechecker', $a));
 
-        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'), array('size'=>'48'));
+        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'), array('size' => '48'));
         $mform->setType('path', PARAM_PATH);
         $mform->addRule('path', null, 'required', null, 'client');
 
-        $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size'=>'48'));
+        $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size' => '48'));
         $mform->setType('exclude', PARAM_NOTAGS);
 
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
@@ -77,7 +76,7 @@ class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
 /**
  * Convert a full path name to a relative one, for output.
  * @param string $file a full path name of a file.
- * @return string the prittied up path name.
+ * @return string the prettied up path name.
  */
 function local_codechecker_pretty_path($file) {
     global $CFG;
@@ -87,7 +86,7 @@ function local_codechecker_pretty_path($file) {
 /**
  * Get a list of folders to ignores.
  *
- * @param string $extraignorelist optional comma separated list of substr matching paths to ignore.
+ * @param string $extraignorelist optional comma separated list of substring matching paths to ignore.
  * @return array of paths.
  */
 function local_codesniffer_get_ignores($extraignorelist = '') {
@@ -108,7 +107,7 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
     foreach ($paths as $pattern) {
         $finalpaths[$pattern] = 'absolute';
     }
-    // Let's add any substr matching path passed in $extraignorelist.
+    // Let's add any substring matching path passed in $extraignorelist.
     if ($extraignorelist) {
         $extraignorearr = explode(',', $extraignorelist);
         foreach ($extraignorearr as $extraignore) {
@@ -149,13 +148,13 @@ function local_codechecker_clean_path($path) {
  * Recursively finds all files within a folder that match particular extensions.
  * @param array &$arr Array to add file paths to
  * @param string $folder Path to search (or may be a single file)
- * @param string $extensions File extensions to include (not including .)
+ * @param array $extensions File extensions to include (not including .)
  */
 function local_codechecker_find_other_files(&$arr, $folder,
         $extensions = array('txt', 'html', 'csv')) {
     $regex = '~\.(' . implode('|', $extensions) . ')$~';
 
-    // Handle if this is called directly with a file and not folder
+    // Handle if this is called directly with a file and not folder.
     if (is_file($folder)) {
         if (preg_match($regex, $folder)) {
             $arr[] = $folder;
@@ -191,14 +190,14 @@ function local_codechecker_find_other_files(&$arr, $folder,
  * @param bool $warning If true is warning, otherwise error
  */
 function local_codechecker_add_problem(&$problems, $file, $line, $key, $warning=false) {
-    // Build new problem structure
+    // Build new problem structure.
     $newproblem = array(
         'message' => get_string('other_' . $key, 'local_codechecker'),
         'source' => 'other.' . $key,
         'severity' => $warning? PHPCS_DEFAULT_WARN_SEV : PHPCS_DEFAULT_ERROR_SEV
     );
 
-    // Find appropriate place and add new problem
+    // Find appropriate place and add new problem.
     if ($warning) {
         $problems[$file]['numWarnings']++;
         $inner =& $problems[$file]['warnings'];
@@ -230,7 +229,7 @@ function local_codechecker_check_other_file($file, &$problems) {
     }
 
     // Certain files are permitted lines of any length because they are
-    // auto-generated
+    // Auto-generated.
     $allowanylength = in_array(basename($file), array('install.xml')) ||
             substr($file, -4, 4) === '.csv';
 
@@ -239,12 +238,12 @@ function local_codechecker_check_other_file($file, &$problems) {
     $blankrun = 0;
     foreach ($lines as $l) {
         $index++;
-        // Incorrect [Windows] line ending
+        // Incorrect [Windows] line ending.
         if ((strpos($l, "\r\n") !== false) && empty($donecrlf)) {
             local_codechecker_add_problem($problems, $file, $index, 'crlf');
             $donecrlf = true;
         }
-        // Missing line ending (at EOF presumably)
+        // Missing line ending (at EOF presumably).
         if (strpos($l, "\n") === false) {
             local_codechecker_add_problem($problems, $file, $index, 'missinglf');
         }
@@ -255,20 +254,20 @@ function local_codechecker_check_other_file($file, &$problems) {
             $blankrun = 0;
         }
 
-        // Whitespace at EOL
+        // Whitespace at EOL.
         if (preg_match('~ +$~', $l)) {
             local_codechecker_add_problem($problems, $file, $index, 'eol');
         }
-        // Tab anywhere in line
+        // Tab anywhere in line.
         if (preg_match('~\t~', $l)) {
             local_codechecker_add_problem($problems, $file, $index, 'tab');
         }
 
         if (strlen($l) > 180 && !$allowanylength) {
-            // Line length > 180
+            // Line length > 180.
             local_codechecker_add_problem($problems, $file, $index, 'toolong');
         } else if (strlen($l) > 132 && !$allowanylength) {
-            // Line length > 132
+            // Line length > 132.
             local_codechecker_add_problem($problems, $file, $index, 'ratherlong', true);
         }
     }
@@ -281,7 +280,7 @@ function local_codechecker_check_other_file($file, &$problems) {
  * Checking the parts that PHPCodeSniffer can't reach (i.e. anything except
  * php, css, js) for basic whitespace problems.
  * @param string $path Path to search (may be file or folder)
- * @param array $problems Existing problem structure from PHPCodeSniffer
+ * @param array &$problems Existing problem structure from PHPCodeSniffer
  *   to which new problems will be added
  */
 function local_codechecker_check_other_files($path, &$problems) {
@@ -297,12 +296,12 @@ function local_codechecker_check_other_files($path, &$problems) {
  *
  * @param array $problems Existing problem structure from PHPCodeSniffer
  *   for which total number of errors and warnings will be counted.
- * return array with the total count of errors and warnings.
+ * @return array with the total count of errors and warnings.
  */
 function local_codechecker_count_problems($problems) {
     $errors = 0;
     $warnings = 0;
-    foreach ($problems as $file => $info) {
+    foreach ($problems as $info) {
         $errors += $info['numErrors'];
         $warnings += $info['numWarnings'];
     }
