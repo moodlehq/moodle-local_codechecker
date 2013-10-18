@@ -1,3 +1,10 @@
+Changes in verssion 2.2.9 (20131018):
+- NOBUG: Better instructions for integration with phpStorm (Dan Poltawski).
+- NOBUG: Instruct checker about some more valid globals (Sam Hemelryk).
+- NOBUG: New sniffs to verify spaces around operators (Ankit Agarwal).
+- NOBUG: Internal cleanup.
+- CONTRIB-4696: Add support for new 2.6 distributed thirdpartylibs.xml.
+
 Changes in version 2.2.8 (20130713):
 - NOBUG: Update phpcompatibility standard with latest changes (plus testing).
 - MDLSITE-2106: Detect underscores in variable names.
