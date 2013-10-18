@@ -30,7 +30,7 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === fa
 class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
         extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
 
-    private $allowedglobals = array('ADMIN', 'CFG', 'COURSE', 'DB', 'FULLME',
+    static public $allowedglobals = array('ADMIN', 'CFG', 'COURSE', 'DB', 'FULLME',
             'OUTPUT', 'PAGE', 'PERF', 'SESSION', 'SITE', 'THEME', 'USER',
             '_SERVER', '_GET', '_POST', '_FILES', '_REQUEST', '_SESSION', '_ENV',
             '_COOKIE', '_HTTP_RAW_POST_DATA', 'ACCESSLIB_PRIVATE', 'ME',
@@ -115,12 +115,12 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
      * @return void
      */
     private function validate_moodle_variable_name($varname, PHP_CodeSniffer_File $phpcsfile, $stackptr) {
-        if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, $this->allowedglobals)) {
+        if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must be all lower-case";
             $phpcsfile->addError($error, $stackptr);
         }
 
-        if (strpos($varname, '_') !== false && !in_array($varname, $this->allowedglobals)) {
+        if (strpos($varname, '_') !== false && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must not contain underscores.";
             $phpcsfile->addError($error, $stackptr);
         }
