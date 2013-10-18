@@ -92,21 +92,66 @@ function local_codechecker_pretty_path($file) {
 function local_codesniffer_get_ignores($extraignorelist = '') {
     global $CFG;
 
-    $paths = array();
+    $files = array(); // XML files to be processed.
+    $paths = array(); // Absolute paths to be excluded.
 
-    $thirdparty = simplexml_load_file($CFG->libdir . '/thirdpartylibs.xml');
-    foreach ($thirdparty->xpath('/libraries/library/location') as $lib) {
-        $paths[] = preg_quote(local_codechecker_clean_path('/lib/' . $lib));
+    $files['core'] = $CFG->libdir . DIRECTORY_SEPARATOR . '/thirdpartylibs.xml'; // This one always exists.
+
+    // With MDL-42148, for 2.6 and upwards, the general 'thirdpartylibs.xml' file
+    // has been split so any plugin with dependencies can have its own. In order to
+    // keep master compatibility with older branches we are doing some
+    // conditional coding here.
+    if (file_exists($CFG->dirroot . '/' . $CFG->admin . '/' . 'thirdpartylibs.php')) {
+        // New behavior, distributed XML files, let's look for them.
+        $plugintypes = core_component::get_plugin_types();
+        foreach ($plugintypes as $type => $ignored) {
+            $plugins = core_component::get_plugin_list_with_file($type, 'thirdpartylibs.xml', false);
+            foreach ($plugins as $plugin => $path) {
+                $files[$type.'_'.$plugin] = $path;
+            }
+        }
     }
 
+    // Let's extract all the paths from the XML files.
+    foreach ($files as $file) {
+        $base = realpath(dirname($file));
+        $thirdparty = simplexml_load_file($file);
+        foreach ($thirdparty->xpath('/libraries/library/location') as $location) {
+            $location = substr($base, strlen($CFG->dirroot)) . '/' . $location;
+            // This was happening since ages ago, leading to incorrect excluded
+            // paths like: "/lib/theme/bootstrapbase/less/bootstrap", so we try
+            // reducing it. Note this does not affect 2.6 and up, where all
+            // locations are relative to their xml file so this problem cannot happen.
+            if (!file_exists(dirname($CFG->dirroot . DIRECTORY_SEPARATOR . $location))) {
+                // Only if it starts with '/lib'.
+                if (strpos($location, '/lib') === 0) {
+                    $candidate = substr($location, strlen('/lib'));
+                    // Only modify the original location if the candidate exists.
+                    if (file_exists(dirname($CFG->dirroot . DIRECTORY_SEPARATOR . $candidate))) {
+                        $location = $candidate;
+                    }
+                }
+            }
+            // Accept only correct paths from XML files.
+            if (file_exists(dirname($CFG->dirroot . DIRECTORY_SEPARATOR . $location))) {
+                $paths[] = preg_quote(local_codechecker_clean_path($location));
+            } else {
+                debugging("Processing $file for exclussions, incorrect $location path found. Please fix it");
+            }
+        }
+    }
+
+    // Manually add our own pear stuff to be excluded.
     $paths[] = preg_quote(local_codechecker_clean_path(
             '/local/codechecker' . DIRECTORY_SEPARATOR . 'pear'));
+
     // Changed in PHP_CodeSniffer 1.4.4 and upwards, so we apply the
     // same here: Paths go to keys and mark all them as 'absolute'.
     $finalpaths = array();
     foreach ($paths as $pattern) {
         $finalpaths[$pattern] = 'absolute';
     }
+
     // Let's add any substring matching path passed in $extraignorelist.
     if ($extraignorelist) {
         $extraignorearr = explode(',', $extraignorelist);
@@ -115,6 +160,7 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
             $finalpaths[$extrapath] = 'absolute';
         }
     }
+
     return $finalpaths;
 }
 
