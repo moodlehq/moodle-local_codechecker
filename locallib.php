@@ -124,8 +124,8 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
             // locations are relative to their xml file so this problem cannot happen.
             if (!file_exists(dirname($CFG->dirroot . DIRECTORY_SEPARATOR . $location))) {
                 // Only if it starts with '/lib'.
-                if (strpos($location, '/lib') === 0) {
-                    $candidate = substr($location, strlen('/lib'));
+                if (strpos($location, DIRECTORY_SEPARATOR . 'lib') === 0) {
+                    $candidate = substr($location, strlen(DIRECTORY_SEPARATOR . 'lib'));
                     // Only modify the original location if the candidate exists.
                     if (file_exists(dirname($CFG->dirroot . DIRECTORY_SEPARATOR . $candidate))) {
                         $location = $candidate;

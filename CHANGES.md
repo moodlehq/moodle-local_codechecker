@@ -1,5 +1,6 @@
 Changes in version 2.3.0 (YYYYMMDD - not released yet)
 ------------------------------------
+- CONTRIB-4742: Fix incorrect thirdpartylibs.xml debugging for Windows.
 - CONTRIB-4705: Convert own txt files to markdown.
 
 Changes in version 2.2.9 (20131018)
