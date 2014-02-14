@@ -56,7 +56,8 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
     protected $standard = null;
 
     /**
-     * @var string name of the sniff to be tested. Must be part of the standard definition.
+     * @var string code of the sniff to be tested. Must be part of the standard definition.
+     *             See {@link ::set_sniff()} for more information.
      */
     protected $sniff = null;
 
@@ -101,7 +102,13 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
     /**
      * Set the name of the sniff to be tested.
      *
-     * @param string $sniff name of the sniff to be tested. Must be part of the standard definition.
+     * @param string $sniff code of the sniff to be tested. Must be part of the standard definition.
+     *                      Since CodeSniffer 1.5 they are not the Sniff (class) names anymore but
+     *                      the called Sniff "code" that is a 3 elements, dot separated, structure
+     *                      with format: standard.group.name. Examples:
+     *                        - Generic.PHP.LowerCaseConstant
+     *                        - moodle.Commenting.InlineComment
+     *                        - PEAR.WhiteSpace.ScopeIndent
      */
     protected function set_sniff($sniff) {
         $this->sniff = $sniff;
@@ -207,23 +214,19 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
 
         // Let's process the fixture.
         try {
-            self::$phpcs->processFile($this->fixture);
+            $phpcsfile = self::$phpcs->processFile($this->fixture);
         } catch (Exception $e) {
             $this->fail('An unexpected exception has been caught: '. $e->getMessage());
         }
 
         // Capture results.
-        $files = self::$phpcs->getFiles();
-        if (empty($files) === true) {
+        if (empty($phpcsfile) === true) {
             $this->markTestSkipped();
         }
 
-        // Get the errors and warnings of the execution.
-        $file = array_pop($files);
-
         // Let's compare expected errors with returned ones.
-        $this->verify_errors($file->getErrors());
-        $this->verify_warnings($file->getWarnings());
+        $this->verify_errors($phpcsfile->getErrors());
+        $this->verify_warnings($phpcsfile->getWarnings());
     }
 
     /**

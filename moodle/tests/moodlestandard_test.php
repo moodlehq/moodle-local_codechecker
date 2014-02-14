@@ -41,7 +41,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('moodle_Sniffs_Commenting_InlineCommentSniff');
+        $this->set_sniff('moodle.Commenting.InlineComment');
         $this->set_fixture(__DIR__ . '/fixtures/moodle_comenting_inlinecomment.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -75,7 +75,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('moodle_Sniffs_ControlStructures_ControlSignatureSniff');
+        $this->set_sniff('moodle.ControlStructures.ControlSignature');
         $this->set_fixture(__DIR__ . '/fixtures/moodle_controlstructures_controlsignature.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -97,7 +97,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('moodle_Sniffs_WhiteSpace_ScopeIndentSniff');
+        $this->set_sniff('moodle.WhiteSpace.ScopeIndent');
         $this->set_fixture(__DIR__ . '/fixtures/moodle_whitespace_scopeindent.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -120,7 +120,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff');
+        $this->set_sniff('PHPCompatibility.PHP.DeprecatedFunctions');
         $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_deprecatedfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -142,7 +142,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff');
+        $this->set_sniff('PHPCompatibility.PHP.ForbiddenCallTimePassByReference');
         $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_forbiddencalltimepassbyreference.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -165,7 +165,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('moodle_Sniffs_NamingConventions_ValidVariableNameSniff');
+        $this->set_sniff('moodle.NamingConventions.ValidVariableName');
         $this->set_fixture(__DIR__ . '/fixtures/moodle_namingconventions_variablename.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -202,7 +202,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('Squiz_Sniffs_WhiteSpace_OperatorSpacingSniff');
+        $this->set_sniff('Squiz.WhiteSpace.OperatorSpacing');
         $this->set_fixture(__DIR__ . '/fixtures/squiz_whitespace_operatorspacing.php');
 
         // Define expected results (errors and warnings). Format, array of:
