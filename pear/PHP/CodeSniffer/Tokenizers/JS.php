@@ -21,7 +21,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Tokenizers_JS
@@ -159,6 +159,7 @@ class PHP_CodeSniffer_Tokenizers_JS
                               'try'       => 'T_TRY',
                               'catch'     => 'T_CATCH',
                               'return'    => 'T_RETURN',
+                              'throw'     => 'T_THROW',
                               'break'     => 'T_BREAK',
                               'switch'    => 'T_SWITCH',
                               'continue'  => 'T_CONTINUE',
@@ -693,7 +694,7 @@ class PHP_CodeSniffer_Tokenizers_JS
                      'code'    => T_CLOSE_TAG,
                      'type'    => 'T_CLOSE_TAG',
                      'content' => '',
-        );
+                    );
 
         /*
             Now that we have done some basic tokenizing, we need to
@@ -854,13 +855,13 @@ class PHP_CodeSniffer_Tokenizers_JS
                         );
 
         $afterTokens = array(
-                         ',',
-                         ')',
-                         ';',
-                         ' ',
-                         '.',
-                         $eolChar,
-                        );
+                        ',',
+                        ')',
+                        ';',
+                        ' ',
+                        '.',
+                        $eolChar,
+                       );
 
         // Find the last non-whitespace token that was added
         // to the tokens array.
@@ -1068,6 +1069,14 @@ class PHP_CodeSniffer_Tokenizers_JS
                 // Make sure this is not part of an inline IF statement.
                 for ($x = ($i - 1); $x >= 0; $x--) {
                     if ($tokens[$x]['code'] === T_INLINE_THEN) {
+                        $tokens[$i]['code'] = T_INLINE_ELSE;
+                        $tokens[$i]['type'] = 'T_INLINE_ELSE';
+
+                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                            echo str_repeat("\t", count($classStack));
+                            echo "\t* token $i converted from T_COLON to T_INLINE_THEN *".PHP_EOL;
+                        }
+
                         continue(2);
                     } else if ($tokens[$x]['line'] < $tokens[$i]['line']) {
                         break;

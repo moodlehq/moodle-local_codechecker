@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Tests_PHP_ForbiddenFunctionsUnitTest extends AbstractSniffUnitTest
@@ -42,10 +42,18 @@ class Generic_Tests_PHP_ForbiddenFunctionsUnitTest extends AbstractSniffUnitTest
      */
     public function getErrorList()
     {
-        return array(
-                2 => 1,
-                4 => 1,
-               );
+        $errors = array(
+                   2 => 1,
+                   4 => 1,
+                  );
+
+        // The trait insteadof test will only work in PHP versions where traits exist
+        // and will throw errors in earlier versions.
+        if (version_compare(PHP_VERSION, '5.4.0') < 0) {
+            $errors[44] = 2;
+        }
+
+        return $errors;
 
     }//end getErrorList()
 

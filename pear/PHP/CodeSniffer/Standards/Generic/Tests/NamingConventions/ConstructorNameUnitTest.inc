@@ -28,4 +28,17 @@ class MyClass
     }
 
 }
+
+class MyClass extends \MyNamespace\SomeClass
+{
+    function __construct() {
+        something::MyNamespace();
+    }
+
+}
+
+abstract class MyAbstractClass extends \MyNamespace\SomeClass
+{
+    abstract public function __construct();
+}
 ?>

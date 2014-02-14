@@ -24,7 +24,7 @@
  * @author    Manuel Pichler <mapi@manuel-pichler.de>
  * @copyright 2007-2008 Manuel Pichler. All rights reserved.
  * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Tests_CodeAnalysis_UnnecessaryFinalModifierUnitTest extends AbstractSniffUnitTest

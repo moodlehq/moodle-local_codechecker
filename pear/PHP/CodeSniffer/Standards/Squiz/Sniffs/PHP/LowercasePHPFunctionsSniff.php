@@ -24,7 +24,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_PHP_LowercasePHPFunctionsSniff implements PHP_CodeSniffer_Sniff
@@ -38,26 +38,7 @@ class Squiz_Sniffs_PHP_LowercasePHPFunctionsSniff implements PHP_CodeSniffer_Sni
      */
     public function register()
     {
-        return array(
-                T_ISSET,
-                T_ECHO,
-                T_PRINT,
-                T_RETURN,
-                T_BREAK,
-                T_CONTINUE,
-                T_EMPTY,
-                T_EVAL,
-                T_EXIT,
-                T_LIST,
-                T_UNSET,
-                T_INCLUDE,
-                T_INCLUDE_ONCE,
-                T_REQUIRE,
-                T_REQUIRE_ONCE,
-                T_NEW,
-                T_DECLARE,
-                T_STRING,
-               );
+        return array(T_STRING);
 
     }//end register()
 
@@ -74,21 +55,6 @@ class Squiz_Sniffs_PHP_LowercasePHPFunctionsSniff implements PHP_CodeSniffer_Sni
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-
-        if ($tokens[$stackPtr]['code'] !== T_STRING) {
-            $content = $tokens[$stackPtr]['content'];
-            if ($content !== strtolower($content)) {
-                $error = '%s keyword must be lowercase; expected "%s" but found "%s"';
-                $data  = array(
-                          strtoupper($content),
-                          strtolower($content),
-                          $content,
-                         );
-                $phpcsFile->addError($error, $stackPtr, 'KeywordUppercase', $data);
-            }
-
-            return;
-        }
 
         // Make sure this is a function call.
         $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);

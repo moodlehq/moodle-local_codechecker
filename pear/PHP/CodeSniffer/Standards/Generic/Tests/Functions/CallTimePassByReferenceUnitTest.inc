@@ -17,4 +17,8 @@ myclass::myfunc($myvar);
 
 while(testfunc($var1, &$var2, $var3, &$var4) === false) {
 }
+
+sprintf("0%o", 0777 & $p);
+
+$foo(&$myvar);
 ?>

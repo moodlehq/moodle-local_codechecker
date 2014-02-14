@@ -22,11 +22,18 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PEAR_Sniffs_ControlStructures_MultiLineConditionSniff implements PHP_CodeSniffer_Sniff
 {
+
+    /**
+     * The number of spaces code should be indented.
+     *
+     * @var int
+     */
+    public $indent = 4;
 
 
     /**
@@ -36,7 +43,10 @@ class PEAR_Sniffs_ControlStructures_MultiLineConditionSniff implements PHP_CodeS
      */
     public function register()
     {
-        return array(T_IF);
+        return array(
+                T_IF,
+                T_ELSEIF,
+               );
 
     }//end register()
 
@@ -82,14 +92,14 @@ class PEAR_Sniffs_ControlStructures_MultiLineConditionSniff implements PHP_CodeS
                         // Closing bracket is on the same line as a condition.
                         $error = 'Closing parenthesis of a multi-line IF statement must be on a new line';
                         $phpcsFile->addError($error, $i, 'CloseBracketNewLine');
-                        $expectedIndent = ($statementIndent + 4);
+                        $expectedIndent = ($statementIndent + $this->indent);
                     } else {
                         // Closing brace needs to be indented to the same level
                         // as the function.
                         $expectedIndent = $statementIndent;
                     }
                 } else {
-                    $expectedIndent = ($statementIndent + 4);
+                    $expectedIndent = ($statementIndent + $this->indent);
                 }
 
                 // We changed lines, so this should be a whitespace indent token.

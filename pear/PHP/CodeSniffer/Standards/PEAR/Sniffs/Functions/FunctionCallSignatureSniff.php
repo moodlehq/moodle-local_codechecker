@@ -22,7 +22,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffer_Sniff
@@ -41,6 +41,20 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
      * @var bool
      */
     public $allowMultipleArguments = true;
+
+    /**
+     * How many spaces should follow the opening bracket.
+     *
+     * @var int
+     */
+    public $requiredSpacesAfterOpen = 0;
+
+    /**
+     * How many spaces should precede the closing bracket.
+     *
+     * @var int
+     */
+    public $requiredSpacesBeforeClose = 0;
 
 
     /**
@@ -66,6 +80,8 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
+        $this->requiredSpacesAfterOpen   = (int) $this->requiredSpacesAfterOpen;
+        $this->requiredSpacesBeforeClose = (int) $this->requiredSpacesBeforeClose;
         $tokens = $phpcsFile->getTokens();
 
         // Find the next non-empty token.
@@ -107,10 +123,10 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
         }
 
         // Check if this is a single line or multi-line function call.
-        if ($tokens[$openBracket]['line'] === $tokens[$closeBracket]['line']) {
-            $this->processSingleLineCall($phpcsFile, $stackPtr, $openBracket, $tokens);
-        } else {
+        if ($this->isMultiLineCall($phpcsFile, $stackPtr, $openBracket, $tokens) === true) {
             $this->processMultiLineCall($phpcsFile, $stackPtr, $openBracket, $tokens);
+        } else {
+            $this->processSingleLineCall($phpcsFile, $stackPtr, $openBracket, $tokens);
         }
 
     }//end process()
@@ -129,29 +145,72 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
      *
      * @return void
      */
+    public function isMultiLineCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $openBracket, $tokens)
+    {
+        $closeBracket = $tokens[$openBracket]['parenthesis_closer'];
+        if ($tokens[$openBracket]['line'] !== $tokens[$closeBracket]['line']) {
+            return true;
+        }
+
+        return false;
+
+    }//end isMultiLineCall()
+
+
+    /**
+     * Processes single-line calls.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile   The file being scanned.
+     * @param int                  $stackPtr    The position of the current token
+     *                                          in the stack passed in $tokens.
+     * @param int                  $openBracket The position of the opening bracket
+     *                                          in the stack passed in $tokens.
+     * @param array                $tokens      The stack of tokens that make up
+     *                                          the file.
+     *
+     * @return void
+     */
     public function processSingleLineCall(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $openBracket, $tokens)
     {
-        if ($tokens[($openBracket + 1)]['code'] === T_WHITESPACE) {
+
+        $closer = $tokens[$openBracket]['parenthesis_closer'];
+        if ($openBracket === ($closer - 1)) {
+            return;
+        }
+
+        if ($this->requiredSpacesAfterOpen === 0 && $tokens[($openBracket + 1)]['code'] === T_WHITESPACE) {
             // Checking this: $value = my_function([*]...).
             $error = 'Space after opening parenthesis of function call prohibited';
             $phpcsFile->addError($error, $stackPtr, 'SpaceAfterOpenBracket');
+        } else if ($this->requiredSpacesAfterOpen > 0) {
+            $spaceAfterOpen = 0;
+            if ($tokens[($openBracket + 1)]['code'] === T_WHITESPACE) {
+                $spaceAfterOpen = strlen($tokens[($openBracket + 1)]['content']);
+            }
+
+            if ($spaceAfterOpen !== $this->requiredSpacesAfterOpen) {
+                $error = 'Expected %s spaces after opening bracket; %s found';
+                $data  = array(
+                          $this->requiredSpacesAfterOpen,
+                          $spaceAfterOpen,
+                         );
+                $phpcsFile->addError($error, $stackPtr, 'SpaceAfterOpenBracket', $data);
+            }
         }
 
-        $closer = $tokens[$openBracket]['parenthesis_closer'];
-
+        // Checking this: $value = my_function(...[*]).
+        $spaceBeforeClose = 0;
         if ($tokens[($closer - 1)]['code'] === T_WHITESPACE) {
-            // Checking this: $value = my_function(...[*]).
-            $between = $phpcsFile->findNext(T_WHITESPACE, ($openBracket + 1), null, true);
+            $spaceBeforeClose = strlen($tokens[($closer - 1)]['content']);
+        }
 
-            // Only throw an error if there is some content between the parenthesis.
-            // i.e., Checking for this: $value = my_function().
-            // If there is no content, then we would have thrown an error in the
-            // previous IF statement because it would look like this:
-            // $value = my_function( ).
-            if ($between !== $closer) {
-                $error = 'Space before closing parenthesis of function call prohibited';
-                $phpcsFile->addError($error, $closer, 'SpaceBeforeCloseBracket');
-            }
+        if ($spaceBeforeClose !== $this->requiredSpacesBeforeClose) {
+            $error = 'Expected %s spaces before closing bracket; %s found';
+            $data  = array(
+                      $this->requiredSpacesBeforeClose,
+                      $spaceBeforeClose,
+                     );
+            $phpcsFile->addError($error, $stackPtr, 'SpaceBeforeCloseBracket', $data);
         }
 
     }//end processSingleLineCall()
@@ -307,4 +366,3 @@ class PEAR_Sniffs_Functions_FunctionCallSignatureSniff implements PHP_CodeSniffe
 
 
 }//end class
-?>

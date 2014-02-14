@@ -23,7 +23,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_CSS_LowercaseStyleDefinitionUnitTest extends AbstractSniffUnitTest
@@ -40,9 +40,10 @@ class Squiz_Tests_CSS_LowercaseStyleDefinitionUnitTest extends AbstractSniffUnit
     public function getErrorList()
     {
         return array(
-                2 => 1,
-                3 => 1,
-                5 => 2,
+                2  => 1,
+                3  => 1,
+                5  => 2,
+                11 => 1,
                );
 
     }//end getErrorList()

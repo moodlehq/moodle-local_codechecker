@@ -23,7 +23,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PSR1_Sniffs_Files_SideEffectsSniff implements PHP_CodeSniffer_Sniff
@@ -99,10 +99,10 @@ class PSR1_Sniffs_Files_SideEffectsSniff implements PHP_CodeSniffer_Sniff
                    );
 
         $conditions = array(
-                      T_IF,
-                      T_ELSE,
-                      T_ELSEIF,
-                     );
+                       T_IF,
+                       T_ELSE,
+                       T_ELSEIF,
+                      );
 
         $firstSymbol = null;
         $firstEffect = null;
@@ -133,7 +133,11 @@ class PSR1_Sniffs_Files_SideEffectsSniff implements PHP_CodeSniffer_Sniff
             } else if ($tokens[$i]['code'] === T_USE
                 || $tokens[$i]['code'] === T_CONST
             ) {
-                $i = $phpcsFile->findNext(T_SEMICOLON, ($i + 1));
+                $semicolon = $phpcsFile->findNext(T_SEMICOLON, ($i + 1));
+                if ($semicolon !== false) {
+                    $i = $semicolon;
+                }
+
                 continue;
             }
 

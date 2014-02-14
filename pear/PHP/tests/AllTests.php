@@ -18,7 +18,9 @@ if (defined('PHP_CODESNIFFER_IN_TESTS') === false) {
 }
 
 require_once 'TestSuite.php';
-require_once 'PHPUnit/TextUI/TestRunner.php';
+if (class_exists('PHPUnit_TextUI_TestRunner', false) === false) {
+    require_once 'PHPUnit/TextUI/TestRunner.php';
+}
 
 if (is_file(dirname(__FILE__).'/../CodeSniffer.php') === true) {
     // We are not installed.
@@ -42,7 +44,7 @@ if (is_file(dirname(__FILE__).'/../CodeSniffer.php') === true) {
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_AllTests

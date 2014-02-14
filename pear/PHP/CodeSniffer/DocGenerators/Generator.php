@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_DocGenerators_Generator
@@ -131,27 +131,19 @@ class PHP_CodeSniffer_DocGenerators_Generator
      */
     protected function getStandardFiles()
     {
-        if (is_dir($this->_standard) === true) {
-            // This is a custom standard.
-            $standardDir = $this->_standard;
-            $standard    = basename($this->_standard);
-        } else {
-            $standardDir
-                = realpath(dirname(__FILE__).'/../Standards/'.$this->_standard);
-
-            $standard = $this->_standard;
-        }
-
         $phpcs = new PHP_CodeSniffer();
-        $sniffs = $phpcs->getSniffFiles($standardDir, $standard);
+        $phpcs->process(array(), $this->_standard);
+        $sniffs = $phpcs->getSniffs();
 
         $standardFiles = array();
-        foreach ($sniffs as $sniff) {
+        foreach ($sniffs as $className => $sniffClass) {
+            $object = new ReflectionObject($sniffClass);
+            $sniff  = $object->getFilename();
             if (empty($this->_sniffs) === false) {
                 // We are limiting the docs to certain sniffs only, so filter
                 // out any unwanted sniffs.
-                $sniffName = substr($sniff, (strrpos($sniff, '/') + 1));
-                $sniffName = substr($sniffName, 0, -9);
+                $parts     = explode('_', $className);
+                $sniffName = $parts[0].'.'.$parts[2].'.'.substr($parts[3], 0, -5);
                 if (in_array($sniffName, $this->_sniffs) === false) {
                     continue;
                 }

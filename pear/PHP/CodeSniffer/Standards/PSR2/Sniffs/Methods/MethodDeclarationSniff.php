@@ -26,7 +26,7 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PSR2_Sniffs_Methods_MethodDeclarationSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
@@ -62,7 +62,7 @@ class PSR2_Sniffs_Methods_MethodDeclarationSniff extends PHP_CodeSniffer_Standar
             return;
         }
 
-        if ($methodName[0] === '_' && $methodName[1] !== '_') {
+        if ($methodName[0] === '_' && isset($methodName[1]) === true && $methodName[1] !== '_') {
             $error = 'Method name "%s" should not be prefixed with an underscore to indicate visibility';
             $data  = array($methodName);
             $phpcsFile->addWarning($error, $stackPtr, 'Underscore', $data);

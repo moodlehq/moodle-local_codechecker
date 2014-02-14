@@ -22,7 +22,7 @@
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009 Florian Grandel
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_Functions_CallTimePassByReferenceSniff implements PHP_CodeSniffer_Sniff
@@ -36,7 +36,10 @@ class Generic_Sniffs_Functions_CallTimePassByReferenceSniff implements PHP_CodeS
      */
     public function register()
     {
-        return array(T_STRING);
+        return array(
+                T_STRING,
+                T_VARIABLE,
+               );
 
     }//end register()
 
@@ -126,6 +129,7 @@ class Generic_Sniffs_Functions_CallTimePassByReferenceSniff implements PHP_CodeS
                 switch ($tokens[$tokenBefore]['code']) {
                 case T_VARIABLE:
                 case T_CLOSE_PARENTHESIS:
+                case T_LNUMBER:
                     // In these cases T_BITWISE_AND represents
                     // the bitwise and operator.
                     continue;

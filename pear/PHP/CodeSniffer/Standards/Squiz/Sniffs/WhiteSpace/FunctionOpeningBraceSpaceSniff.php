@@ -24,7 +24,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_WhiteSpace_FunctionOpeningBraceSpaceSniff implements PHP_CodeSniffer_Sniff
@@ -100,9 +100,8 @@ class Squiz_Sniffs_WhiteSpace_FunctionOpeningBraceSpaceSniff implements PHP_Code
 
             if ($nestedFunction === true) {
                 if ($lineDifference > 0) {
-                    $error = 'Expected 0 blank lines before opening brace of nested function; %s found';
-                    $data  = array($found);
-                    $phpcsFile->addError($error, $openBrace, 'SpacingAfterNested', $data);
+                    $error = 'Opening brace should be on the same line as the function keyword';
+                    $phpcsFile->addError($error, $openBrace, 'SpacingAfterNested');
                 }
             } else {
                 if ($lineDifference === 0) {

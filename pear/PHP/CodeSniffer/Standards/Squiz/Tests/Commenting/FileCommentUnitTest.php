@@ -33,7 +33,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_Commenting_FileCommentUnitTest extends AbstractSniffUnitTest
@@ -60,7 +60,6 @@ class Squiz_Tests_Commenting_FileCommentUnitTest extends AbstractSniffUnitTest
                 23 => 1,
                 24 => 2,
                 26 => 1,
-                27 => 2,
                 30 => 2,
                );
 
@@ -77,9 +76,7 @@ class Squiz_Tests_Commenting_FileCommentUnitTest extends AbstractSniffUnitTest
      */
     public function getWarningList()
     {
-        return array(
-                28 => 1,
-               );
+        return array();
 
     }//end getWarningList()
 

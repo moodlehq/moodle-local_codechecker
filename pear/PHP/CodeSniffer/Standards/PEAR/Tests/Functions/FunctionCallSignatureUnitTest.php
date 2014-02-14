@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PEAR_Tests_Functions_FunctionCallSignatureUnitTest extends AbstractSniffUnitTest
@@ -44,7 +44,7 @@ class PEAR_Tests_Functions_FunctionCallSignatureUnitTest extends AbstractSniffUn
     {
         return array(
                 5   => 1,
-                6   => 1,
+                6   => 2,
                 7   => 1,
                 8   => 1,
                 9   => 2,
@@ -53,7 +53,7 @@ class PEAR_Tests_Functions_FunctionCallSignatureUnitTest extends AbstractSniffUn
                 18  => 1,
                 31  => 1,
                 34  => 1,
-                43  => 1,
+                43  => 2,
                 57  => 1,
                 59  => 1,
                 63  => 1,
@@ -69,6 +69,8 @@ class PEAR_Tests_Functions_FunctionCallSignatureUnitTest extends AbstractSniffUn
                 142 => 2,
                 171 => 1,
                 203 => 1,
+                211 => 2,
+                213 => 2,
                );
 
     }//end getErrorList()

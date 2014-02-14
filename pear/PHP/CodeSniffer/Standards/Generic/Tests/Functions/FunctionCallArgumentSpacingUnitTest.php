@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Tests_Functions_FunctionCallArgumentSpacingUnitTest extends AbstractSniffUnitTest
@@ -54,6 +54,8 @@ class Generic_Tests_Functions_FunctionCallArgumentSpacingUnitTest extends Abstra
                 43 => 3,
                 45 => 1,
                 46 => 2,
+                79 => 1,
+                82 => 1,
                );
 
     }//end getErrorList()

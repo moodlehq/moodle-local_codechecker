@@ -24,7 +24,7 @@ if (class_exists('PHP_CodeSniffer_Tokenizers_PHP', true) === false) {
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
@@ -61,6 +61,14 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
         $multiLineComment = false;
         for ($stackPtr = 0; $stackPtr < $numTokens; $stackPtr++) {
             $token = $tokens[$stackPtr];
+
+            // CSS files don't have lists or break tags, so convert these to
+            // standard strings early so they can be converted into T_STYLE
+            // tokens and joined with other strings if needed.
+            if ($token['code'] === T_BREAK || $token['code'] === T_LIST) {
+                $token['type'] = 'T_STRING';
+                $token['code'] = T_STRING;
+            }
 
             if (PHP_CODESNIFFER_VERBOSITY > 1) {
                 $type    = $token['type'];
@@ -114,6 +122,24 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
                 }
             }//end if
 
+            if ($token['code'] === T_GOTO_LABEL) {
+                // Convert these back to T_STRING folowed by T_COLON so we can
+                // more easily process style definitions.
+                $finalTokens[$newStackPtr] = array(
+                                              'type'    => 'T_STRING',
+                                              'code'    => T_STRING,
+                                              'content' => substr($token['content'], 0, -1),
+                                             );
+                $newStackPtr++;
+                $finalTokens[$newStackPtr] = array(
+                                              'type'    => 'T_COLON',
+                                              'code'    => T_COLON,
+                                              'content' => ':',
+                                             );
+                $newStackPtr++;
+                continue;
+            }
+
             if ($token['code'] === T_FUNCTION) {
                 // There are no functions in CSS, so convert this to a string.
                 $finalTokens[$newStackPtr] = array(
@@ -164,7 +190,9 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
 
                     // If the first content looks like a colour and not a class
                     // definition, join the tokens together.
-                    if (preg_match('/^[ABCDEF0-9]+$/i', $firstContent) === 1) {
+                    if (preg_match('/^[ABCDEF0-9]+$/i', $firstContent) === 1
+                        && $commentTokens[1]['content'] !== '-'
+                    ) {
                         array_shift($commentTokens);
                         // Work out what we trimmed off above and remember to re-add it.
                         $trimmed = substr($token['content'], 0, (strlen($token['content']) - strlen($content)));
@@ -353,10 +381,6 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
     /**
      * Performs additional processing after main tokenizing.
      *
-     * This additional processing converts T_LIST tokens to T_STRING
-     * because there are no list constructs in CSS and list-* styles
-     * look like lists to the PHP tokenizer.
-     *
      * @param array  &$tokens The array of tokens to process.
      * @param string $eolChar The EOL character to use for splitting strings.
      *
@@ -364,148 +388,8 @@ class PHP_CodeSniffer_Tokenizers_CSS extends PHP_CodeSniffer_Tokenizers_PHP
      */
     public function processAdditional(&$tokens, $eolChar)
     {
-        if (PHP_CODESNIFFER_VERBOSITY > 1) {
-            echo "\t*** START ADDITIONAL CSS PROCESSING ***".PHP_EOL;
-        }
-
-        $numTokens  = (count($tokens) - 1);
-        $changeMade = false;
-
-        for ($i = 0; $i < $numTokens; $i++) {
-            if ($tokens[($i + 1)]['code'] !== T_STYLE) {
-                continue;
-            }
-
-            $style = ($i + 1);
-
-            if ($tokens[$i]['code'] === T_LIST) {
-                $tokens[$style]['content'] = $tokens[$i]['content'].$tokens[$style]['content'];
-                $tokens[$style]['column']  = $tokens[$i]['column'];
-
-                if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                    $line = $tokens[$i]['line'];
-                    echo "\t* T_LIST token $i on line $line merged into T_STYLE token $style *".PHP_EOL;
-                }
-
-                // Now fix the brackets that surround this token as they will
-                // be pointing too far ahead now that we have removed a token.
-                for ($t = $i; $t >= 0; $t--) {
-                    if (isset($tokens[$t]['bracket_closer']) === true) {
-                        $old = $tokens[$t]['bracket_closer'];
-                        $tokens[$t]['bracket_closer']--;
-                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                            $new  = $tokens[$t]['bracket_closer'];
-                            $type = $tokens[$t]['type'];
-                            $line = $tokens[$t]['line'];
-                            echo "\t\t* $type token $t on line $line closer changed from $old to $new *".PHP_EOL;
-                        }
-
-                        // Only need to fix one set of brackets.
-                        break;
-                    }
-                }
-
-                // Now fix all future brackets as they are no longer pointing
-                // to the correct tokens either.
-                for ($t = $i; $t <= $numTokens; $t++) {
-                    if (isset($tokens[$t]) === false) {
-                        break;
-                    }
-
-                    if ($tokens[$t]['code'] === T_OPEN_CURLY_BRACKET) {
-                        $old = $tokens[$t]['bracket_closer'];
-                        $tokens[$t]['bracket_closer']--;
-                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                            $new  = $tokens[$t]['bracket_closer'];
-                            $type = $tokens[$t]['type'];
-                            $line = $tokens[$t]['line'];
-                            echo "\t\t* $type token $t on line $line closer changed from $old to $new *".PHP_EOL;
-                        }
-
-                        $t = $old;
-                    }
-                }
-
-                unset($tokens[$i]);
-                $changeMade = true;
-                $i++;
-            } else if ($tokens[$i]['code'] === T_BREAK) {
-                // Break is sometimes used in style definitions, like page-break-inside
-                // so we need merge the elements around it into the next T_STYLE.
-                $newStyle = 'break'.$tokens[$style]['content'];
-                for ($x = ($i - 1); $x >= 0; $x--) {
-                    if ($tokens[$x]['code'] !== T_STRING && $tokens[$x]['code'] !== T_MINUS) {
-                        break;
-                    }
-
-                    $newStyle = $tokens[$x]['content'].$newStyle;
-                }
-
-                $x++;
-                $tokens[$style]['content'] = $newStyle;
-                $tokens[$style]['column']  = $tokens[$x]['column'];
-
-                if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                    $line = $tokens[$i]['line'];
-                    echo "\t* tokens $x - $i on line $line merged into T_STYLE token $style due to T_BREAK at token $i *".PHP_EOL;
-                }
-
-                // Now fix the brackets that surround this token as they will
-                // be pointing too far ahead now that we have removed tokens.
-                $diff = ($style - $x);
-                for ($t = $style; $t >= 0; $t--) {
-                    if (isset($tokens[$t]['bracket_closer']) === true) {
-                        $old = $tokens[$t]['bracket_closer'];
-                        $tokens[$t]['bracket_closer'] -= $diff;
-                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                            $new  = $tokens[$t]['bracket_closer'];
-                            $type = $tokens[$t]['type'];
-                            $line = $tokens[$t]['line'];
-                            echo "\t\t* $type token $t on line $line closer changed from $old to $new *".PHP_EOL;
-                        }
-
-                        // Only need to fix one set of brackets.
-                        break;
-                    }
-                }
-
-                // Now fix all future brackets as they are no longer pointing
-                // to the correct tokens either.
-                for ($t = $style; $t <= $numTokens; $t++) {
-                    if (isset($tokens[$t]) === false) {
-                        break;
-                    }
-
-                    if ($tokens[$t]['code'] === T_OPEN_CURLY_BRACKET) {
-                        $old = $tokens[$t]['bracket_closer'];
-                        $tokens[$t]['bracket_closer'] -= $diff;
-                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                            $new  = $tokens[$t]['bracket_closer'];
-                            $type = $tokens[$t]['type'];
-                            $line = $tokens[$t]['line'];
-                            echo "\t\t* $type token $t on line $line closer changed from $old to $new *".PHP_EOL;
-                        }
-
-                        $t = $old;
-                    }
-                }
-
-                for ($x; $x <= $i; $x++) {
-                    unset($tokens[$x]);
-                }
-
-                $changeMade = true;
-                $i++;
-            }//end if
-        }//end for
-
-        if ($changeMade === true) {
-            $tokens = array_values($tokens);
-        }
-
-        if (PHP_CODESNIFFER_VERBOSITY > 1) {
-            echo "\t*** END ADDITIONAL CSS PROCESSING ***".PHP_EOL;
-        }
+        // We override this method because we don't want the PHP version to
+        // run during CSS processing because it is wasted processing time.
 
     }//end processAdditional()
 

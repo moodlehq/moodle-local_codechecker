@@ -22,7 +22,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2007 Mayflower GmbH
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_Metrics_NestingLevelSniff implements PHP_CodeSniffer_Sniff

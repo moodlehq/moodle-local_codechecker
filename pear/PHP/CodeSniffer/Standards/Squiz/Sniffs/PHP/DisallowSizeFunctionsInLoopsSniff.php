@@ -22,7 +22,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_PHP_DisallowSizeFunctionsInLoopsSniff implements PHP_CodeSniffer_Sniff
@@ -49,9 +49,7 @@ class Squiz_Sniffs_PHP_DisallowSizeFunctionsInLoopsSniff implements PHP_CodeSnif
                                                'strlen',
                                                'count',
                                               ),
-                                     'JS'  => array(
-                                               'length',
-                                              ),
+                                     'JS'  => array('length'),
                                     );
 
 
@@ -62,7 +60,10 @@ class Squiz_Sniffs_PHP_DisallowSizeFunctionsInLoopsSniff implements PHP_CodeSnif
      */
     public function register()
     {
-        return array(T_WHILE, T_FOR);
+        return array(
+                T_WHILE,
+                T_FOR,
+               );
 
     }//end register()
 

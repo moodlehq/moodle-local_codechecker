@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_Files_FileExtensionUnitTest extends AbstractSniffUnitTest
@@ -38,13 +38,27 @@ class Squiz_Tests_Files_FileExtensionUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array(int => int)
      */
-    public function getErrorList()
+    public function getErrorList($testFile='')
     {
-        return array(
-                1 => 1,
-               );
+        switch ($testFile) {
+        case 'FileExtensionUnitTest.1.inc':
+            return array(
+                    1 => 1,
+                   );
+        case 'FileExtensionUnitTest.4.inc':
+            if (version_compare(PHP_VERSION, '5.4.0', '<') === true) {
+                // Traits are available from PHP 5.4.0.
+                return array(
+                        1 => 1,
+                       );
+            }
+        default:
+            return array();
+        }
 
     }//end getErrorList()
 

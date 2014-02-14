@@ -20,7 +20,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class MySource_Tests_Commenting_FunctionCommentUnitTest extends AbstractSniffUnitTest
@@ -61,10 +61,7 @@ class MySource_Tests_Commenting_FunctionCommentUnitTest extends AbstractSniffUni
      */
     public function getWarningList()
     {
-        return array(
-                67 => 1,
-                68 => 1,
-               );
+        return array();
 
     }//end getWarningList()
 

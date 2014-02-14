@@ -74,4 +74,49 @@ class Test
     }
 }
 
+class MyClass
+{
+}
+
+class MyClass
+{
+
+}
+
+class MyClass
+{
+    // Foo.
+}
+
+class MyClass
+{
+    // Foo.
+
+}
+
+abstract class Test implements
+    TestInterface1,
+    TestInterface2
+{
+}
+
+interface MyInterface extends LongInterfaceName1, LongInterfaceName2, LongInterfaceName3, LoginInterfaceName4
+{
+}
+
+interface MyInterface extends
+    LongInterfaceName1,
+    LongInterfaceName2,
+    LongInterfaceName3,
+    LoginInterfaceName4
+{
+}
+
+interface MyInterface extends
+ LongInterfaceName1,
+    LongInterfaceName2,
+     LongInterfaceName3,
+{
+}
+
 ?>

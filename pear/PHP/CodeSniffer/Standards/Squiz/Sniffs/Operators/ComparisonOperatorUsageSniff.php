@@ -43,7 +43,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Operators_ComparisonOperatorUsageSniff implements PHP_CodeSniffer_Sniff
@@ -101,6 +101,7 @@ class Squiz_Sniffs_Operators_ComparisonOperatorUsageSniff implements PHP_CodeSni
     {
         return array(
                 T_IF,
+                T_ELSEIF,
                 T_INLINE_THEN,
                );
 
@@ -178,6 +179,12 @@ class Squiz_Sniffs_Operators_ComparisonOperatorUsageSniff implements PHP_CodeSni
             if ($phpcsFile->tokenizerType !== 'JS') {
                 if ($tokens[$i]['code'] === T_BOOLEAN_AND || $tokens[$i]['code'] === T_BOOLEAN_OR) {
                     $requiredOps++;
+
+                    // When the instanceof operator is used with another operator
+                    // like ===, you can get more ops than are required.
+                    if ($foundOps > $requiredOps) {
+                        $foundOps = $requiredOps;
+                    }
 
                     // If we get to here and we have not found the right number of
                     // comparison operators, then we must have had an implicit

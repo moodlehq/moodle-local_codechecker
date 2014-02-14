@@ -29,7 +29,7 @@ if (class_exists('PHP_CodeSniffer_Standards_IncorrectPatternException', true) ==
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_CodeSniffer_Sniff
@@ -409,7 +409,9 @@ abstract class PHP_CodeSniffer_Standards_AbstractPatternSniff implements PHP_Cod
                             // This may just be an indent that comes after a newline
                             // so check the token before to make sure. If it is a newline, we
                             // can ignore the error here.
-                            if ($tokens[($stackPtr - 1)]['content'] !== $phpcsFile->eolChar) {
+                            if (($tokens[($stackPtr - 1)]['content'] !== $phpcsFile->eolChar)
+                                && ($this->ignoreComments === true && in_array($tokens[($stackPtr - 1)]['code'], PHP_CodeSniffer_Tokens::$commentTokens) === false)
+                            ) {
                                 $hasError = true;
                             } else {
                                 $stackPtr--;

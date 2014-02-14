@@ -22,7 +22,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
@@ -98,8 +98,17 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
                 }
 
                 if ($tokens[$i]['code'] === T_COMMA) {
-                    $valueCount++;
-                    $commas[] = $i;
+                    // Before counting this comma, make sure we are not
+                    // at the end of the array.
+                    $next = $phpcsFile->findNext(T_WHITESPACE, ($i + 1), $arrayEnd, true);
+                    if ($next !== false) {
+                        $valueCount++;
+                        $commas[] = $i;
+                    } else {
+                        // There is a comma at the end of a single line array.
+                        $error = 'Comma not allowed after last value in single-line array declaration';
+                        $phpcsFile->addError($error, $i, 'CommaAfterLast');
+                    }
                 }
             }
 
@@ -220,9 +229,7 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
 
             if ($tokens[$nextToken]['code'] === T_ARRAY) {
                 // Let subsequent calls of this test handle nested arrays.
-                $indices[] = array(
-                              'value' => $nextToken,
-                             );
+                $indices[] = array('value' => $nextToken);
                 $nextToken = $tokens[$tokens[$nextToken]['parenthesis_opener']]['parenthesis_closer'];
                 continue;
             }
@@ -321,22 +328,13 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
 
         if (empty($indices) === true) {
             $singleValue = true;
-        } else if (count($indices) === 1) {
-            if ($lastToken === T_COMMA) {
-                // There may be another array value without a comma.
-                $exclude     = PHP_CodeSniffer_Tokens::$emptyTokens;
-                $exclude[]   = T_COMMA;
-                $nextContent = $phpcsFile->findNext($exclude, ($indices[0]['value'] + 1), $arrayEnd, true);
-                if ($nextContent === false) {
-                    $singleValue = true;
-                }
-            }
-
-            if ($singleValue === false && isset($indices[0]['arrow']) === false) {
-                // A single nested array as a value is fine.
-                if ($tokens[$indices[0]['value']]['code'] !== T_ARRAY) {
-                    $singleValue === true;
-                }
+        } else if (count($indices) === 1 && $lastToken === T_COMMA) {
+            // There may be another array value without a comma.
+            $exclude     = PHP_CodeSniffer_Tokens::$emptyTokens;
+            $exclude[]   = T_COMMA;
+            $nextContent = $phpcsFile->findNext($exclude, ($indices[0]['value'] + 1), $arrayEnd, true);
+            if ($nextContent === false) {
+                $singleValue = true;
             }
         }
 
@@ -472,11 +470,13 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
 
             // Check each line ends in a comma.
             if ($tokens[$index['value']]['code'] !== T_ARRAY) {
+                $valueLine = $tokens[$index['value']]['line'];
                 $nextComma = false;
                 for ($i = ($index['value'] + 1); $i < $arrayEnd; $i++) {
                     // Skip bracketed statements, like function calls.
                     if ($tokens[$i]['code'] === T_OPEN_PARENTHESIS) {
-                        $i = $tokens[$i]['parenthesis_closer'];
+                        $i         = $tokens[$i]['parenthesis_closer'];
+                        $valueLine = $tokens[$i]['line'];
                         continue;
                     }
 
@@ -486,7 +486,7 @@ class Squiz_Sniffs_Arrays_ArrayDeclarationSniff implements PHP_CodeSniffer_Sniff
                     }
                 }
 
-                if (($nextComma === false) || ($tokens[$nextComma]['line'] !== $tokens[$index['value']]['line'])) {
+                if (($nextComma === false) || ($tokens[$nextComma]['line'] !== $valueLine)) {
                     $error = 'Each line in an array declaration must end in a comma';
                     $phpcsFile->addError($error, $index['value'], 'NoComma');
                 }

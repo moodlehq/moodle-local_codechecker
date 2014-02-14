@@ -26,7 +26,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_WhiteSpace_SuperfluousWhitespaceSniff implements PHP_CodeSniffer_Sniff
@@ -197,7 +197,7 @@ class Squiz_Sniffs_WhiteSpace_SuperfluousWhitespaceSniff implements PHP_CodeSnif
 
             $tokenContent = rtrim($tokens[$stackPtr]['content'], $phpcsFile->eolChar);
             if (empty($tokenContent) === false) {
-                if (preg_match('|^.*\s+$|', $tokenContent) !== 0) {
+                if ($tokenContent !== rtrim($tokenContent)) {
                     $phpcsFile->addError('Whitespace found at end of line', $stackPtr, 'EndLine');
                 }
             }

@@ -70,12 +70,21 @@ $var1
     : $var2 = 1;
 
 $var1 ? $var2 = 0 : $var2 = 1;
-?>
-<?php
+
+
 $var1 ? $var2 = 0 : $var2 = 1;
 
 if ($var2 === TRUE) {
     $var1 ? $var2 = 0 : $var2 = 1;
 }
 $var1 ? $var2 = 0 : $var2 = 1;
-?>
+
+if ($value) {
+} elseif (!$value) {
+}
+
+if (false === ($parent instanceof Foo) && ($parent instanceof Bar) === false) {
+}
+
+if (false === ($parent instanceof Foo) && $foo) {
+}

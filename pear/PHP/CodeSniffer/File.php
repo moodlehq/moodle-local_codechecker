@@ -111,7 +111,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class PHP_CodeSniffer_File
@@ -258,19 +258,31 @@ class PHP_CodeSniffer_File
      */
     protected $ruleset = array();
 
+    /**
+     * An array of sniff codes to restrict violations to.
+     *
+     * This value gets set by PHP_CodeSniffer when the object is created.
+     * It may be empty, indicating that no fitering should take place.
+     *
+     * @var array
+     */
+    protected $restrictions = array();
+
 
     /**
      * Constructs a PHP_CodeSniffer_File.
      *
-     * @param string          $file       The absolute path to the file to process.
-     * @param array(string)   $listeners  The initial listeners listening
-     *                                    to processing of this file.
-     * @param array           $tokenizers An array of extensions mapping
-     *                                    to the tokenizer to use.
-     * @param array           $ruleset    An array of rules from the
-     *                                    ruleset.xml file.
-     * @param PHP_CodeSniffer $phpcs      The PHP_CodeSniffer object controlling
-     *                                    this run.
+     * @param string          $file         The absolute path to the file to process.
+     * @param array(string)   $listeners    The initial listeners listening
+     *                                      to processing of this file.
+     * @param array           $tokenizers   An array of extensions mapping
+     *                                      to the tokenizer to use.
+     * @param array           $ruleset      An array of rules from the
+     *                                      ruleset.xml file.
+     * @param array           $restrictions An array of sniff codes to
+     *                                      restrict violations to.
+     * @param PHP_CodeSniffer $phpcs        The PHP_CodeSniffer object controlling
+     *                                      this run.
      *
      * @throws PHP_CodeSniffer_Exception If the register() method does
      *                                   not return an array.
@@ -280,13 +292,15 @@ class PHP_CodeSniffer_File
         array $listeners,
         array $tokenizers,
         array $ruleset,
+        array $restrictions,
         PHP_CodeSniffer $phpcs
     ) {
-        $this->_file      = trim($file);
-        $this->_listeners = $listeners;
-        $this->tokenizers = $tokenizers;
-        $this->ruleset    = $ruleset;
-        $this->phpcs      = $phpcs;
+        $this->_file        = trim($file);
+        $this->_listeners   = $listeners;
+        $this->tokenizers   = $tokenizers;
+        $this->ruleset      = $ruleset;
+        $this->restrictions = $restrictions;
+        $this->phpcs        = $phpcs;
 
         $cliValues = $phpcs->cli->getCommandLineValues();
         if (isset($cliValues['showSources']) === true
@@ -408,7 +422,7 @@ class PHP_CodeSniffer_File
         // token, get them to process it.
         foreach ($this->_tokens as $stackPtr => $token) {
             // Check for ignored lines.
-            if ($token['code'] === T_COMMENT) {
+            if ($token['code'] === T_COMMENT || $token['code'] === T_DOC_COMMENT) {
                 if (strpos($token['content'], '@codingStandardsIgnoreStart') !== false) {
                     $ignoring = true;
                 } else if (strpos($token['content'], '@codingStandardsIgnoreEnd') !== false) {
@@ -463,7 +477,7 @@ class PHP_CodeSniffer_File
                 }
 
                 // If the file path matches one of our ignore patterns, skip it.
-                $parts = explode('_', $class);
+                $parts = explode('_', str_replace('\\', '_', $class));
                 if (isset($parts[3]) === true) {
                     $source   = $parts[0].'.'.$parts[2].'.'.substr($parts[3], 0, -5);
                     $patterns = $this->phpcs->getIgnorePatterns($source);
@@ -728,9 +742,10 @@ class PHP_CodeSniffer_File
         // Work out which sniff generated the error.
         if (substr($code, 0, 9) === 'Internal.') {
             // Any internal message.
-            $sniff = $code;
+            $sniff     = $code;
+            $sniffCode = $code;
         } else {
-            $parts = explode('_', $this->_activeListener);
+            $parts = explode('_', str_replace('\\', '_', $this->_activeListener));
             if (isset($parts[3]) === true) {
                 $sniff = $parts[0].'.'.$parts[2].'.'.$parts[3];
 
@@ -740,14 +755,24 @@ class PHP_CodeSniffer_File
                 $sniff = 'unknownSniff';
             }
 
+            $sniffCode = $sniff;
             if ($code !== '') {
-                $sniff .= '.'.$code;
+                $sniffCode .= '.'.$code;
             }
+        }//end if
+
+        // Make sure this message type is allowed based on the --sniffs
+        // command line argument values.
+        if (empty($this->restrictions) === false
+            && in_array($sniffCode, $this->restrictions) === false
+            && in_array($sniff, $this->restrictions) === false
+        ) {
+            return;
         }
 
         // Make sure this message type has not been set to "warning".
-        if (isset($this->ruleset[$sniff]['type']) === true
-            && $this->ruleset[$sniff]['type'] === 'warning'
+        if (isset($this->ruleset[$sniffCode]['type']) === true
+            && $this->ruleset[$sniffCode]['type'] === 'warning'
         ) {
             // Pass this off to the warning handler.
             $this->addWarning($error, $stackPtr, $code, $data, $severity);
@@ -755,8 +780,8 @@ class PHP_CodeSniffer_File
         }
 
         // Make sure we are interested in this severity level.
-        if (isset($this->ruleset[$sniff]['severity']) === true) {
-            $severity = $this->ruleset[$sniff]['severity'];
+        if (isset($this->ruleset[$sniffCode]['severity']) === true) {
+            $severity = $this->ruleset[$sniffCode]['severity'];
         } else if ($severity === 0) {
             $severity = PHPCS_DEFAULT_ERROR_SEV;
         }
@@ -766,7 +791,7 @@ class PHP_CodeSniffer_File
         }
 
         // Make sure we are not ignoring this file.
-        $patterns = $this->phpcs->getIgnorePatterns($sniff);
+        $patterns = $this->phpcs->getIgnorePatterns($sniffCode);
         foreach ($patterns as $pattern => $type) {
             // While there is support for a type of each pattern
             // (absolute or relative) we don't actually support it here.
@@ -799,8 +824,8 @@ class PHP_CodeSniffer_File
         }
 
         // Work out the warning message.
-        if (isset($this->ruleset[$sniff]['message']) === true) {
-            $error = $this->ruleset[$sniff]['message'];
+        if (isset($this->ruleset[$sniffCode]['message']) === true) {
+            $error = $this->ruleset[$sniffCode]['message'];
         }
 
         if (empty($data) === true) {
@@ -819,7 +844,7 @@ class PHP_CodeSniffer_File
 
         $this->_errors[$lineNum][$column][] = array(
                                                'message'  => $message,
-                                               'source'   => $sniff,
+                                               'source'   => $sniffCode,
                                                'severity' => $severity,
                                               );
 
@@ -849,9 +874,10 @@ class PHP_CodeSniffer_File
         // Work out which sniff generated the warning.
         if (substr($code, 0, 9) === 'Internal.') {
             // Any internal message.
-            $sniff = $code;
+            $sniff     = $code;
+            $sniffCode = $code;
         } else {
-            $parts = explode('_', $this->_activeListener);
+            $parts = explode('_', str_replace('\\', '_', $this->_activeListener));
             if (isset($parts[3]) === true) {
                 $sniff = $parts[0].'.'.$parts[2].'.'.$parts[3];
 
@@ -861,14 +887,24 @@ class PHP_CodeSniffer_File
                 $sniff = 'unknownSniff';
             }
 
+            $sniffCode = $sniff;
             if ($code !== '') {
-                $sniff .= '.'.$code;
+                $sniffCode .= '.'.$code;
             }
+        }//end if
+
+        // Make sure this message type is allowed based on the --sniffs
+        // command line argument values.
+        if (empty($this->restrictions) === false
+            && in_array($sniffCode, $this->restrictions) === false
+            && in_array($sniff, $this->restrictions) === false
+        ) {
+            return;
         }
 
         // Make sure this message type has not been set to "error".
-        if (isset($this->ruleset[$sniff]['type']) === true
-            && $this->ruleset[$sniff]['type'] === 'error'
+        if (isset($this->ruleset[$sniffCode]['type']) === true
+            && $this->ruleset[$sniffCode]['type'] === 'error'
         ) {
             // Pass this off to the error handler.
             $this->addError($warning, $stackPtr, $code, $data, $severity);
@@ -876,8 +912,8 @@ class PHP_CodeSniffer_File
         }
 
         // Make sure we are interested in this severity level.
-        if (isset($this->ruleset[$sniff]['severity']) === true) {
-            $severity = $this->ruleset[$sniff]['severity'];
+        if (isset($this->ruleset[$sniffCode]['severity']) === true) {
+            $severity = $this->ruleset[$sniffCode]['severity'];
         } else if ($severity === 0) {
             $severity = PHPCS_DEFAULT_WARN_SEV;
         }
@@ -887,7 +923,7 @@ class PHP_CodeSniffer_File
         }
 
         // Make sure we are not ignoring this file.
-        $patterns = $this->phpcs->getIgnorePatterns($sniff);
+        $patterns = $this->phpcs->getIgnorePatterns($sniffCode);
         foreach ($patterns as $pattern => $type) {
             // While there is support for a type of each pattern
             // (absolute or relative) we don't actually support it here.
@@ -920,8 +956,8 @@ class PHP_CodeSniffer_File
         }
 
         // Work out the warning message.
-        if (isset($this->ruleset[$sniff]['message']) === true) {
-            $warning = $this->ruleset[$sniff]['message'];
+        if (isset($this->ruleset[$sniffCode]['message']) === true) {
+            $warning = $this->ruleset[$sniffCode]['message'];
         }
 
         if (empty($data) === true) {
@@ -940,7 +976,7 @@ class PHP_CodeSniffer_File
 
         $this->_warnings[$lineNum][$column][] = array(
                                                  'message'  => $message,
-                                                 'source'   => $sniff,
+                                                 'source'   => $sniffCode,
                                                  'severity' => $severity,
                                                 );
 
@@ -1410,7 +1446,7 @@ class PHP_CodeSniffer_File
                 if (PHP_CODESNIFFER_VERBOSITY > 1) {
                     $type    = $tokens[$i]['type'];
                     $content = str_replace($eolChar, '\n', $tokens[$i]['content']);
-                    echo "\tStart scope map at $i: $type => $content".PHP_EOL;
+                    echo "\tStart scope map at $i:$type => $content".PHP_EOL;
                 }
 
                 $i = self::_recurseScopeMap(
@@ -1491,14 +1527,66 @@ class PHP_CodeSniffer_File
             // scope tokens. If an IF statement below this one has an opener but no
             // keyword, the opener will be incorrectly assigned to this IF statement.
             // E.g., if (1) 1; 1 ? (1 ? 1 : 1) : 1;
-            if ($currType === T_IF && $opener === null && $tokens[$i]['code'] === T_SEMICOLON) {
+            if (($currType === T_IF || $currType === T_ELSE) && $opener === null && $tokens[$i]['code'] === T_SEMICOLON) {
                 if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                    $type = $tokens[$stackPtr]['type'];
                     echo str_repeat("\t", $depth);
-                    echo "=> Found semicolon before scope opener for $stackPtr (T_IF), bailing".PHP_EOL;
+                    echo "=> Found semicolon before scope opener for $stackPtr:$type, bailing".PHP_EOL;
                 }
 
                 return $i;
             }
+
+            if (in_array($tokenType, $tokenizer->scopeOpeners[$currType]['end']) === true
+                && $opener !== null
+            ) {
+                if ($ignore > 0 && $tokenType === T_CLOSE_CURLY_BRACKET) {
+                    // The last opening bracket must have been for a string
+                    // offset or alike, so let's ignore it.
+                    if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                        echo str_repeat("\t", $depth);
+                        echo '* finished ignoring curly brace *'.PHP_EOL;
+                    }
+
+                    $ignore--;
+                    continue;
+                } else if ($tokens[$opener]['code'] === T_OPEN_CURLY_BRACKET
+                    && $tokenType !== T_CLOSE_CURLY_BRACKET
+                ) {
+                    // The opener is a curly bracket so the closer must be a curly bracket as well.
+                    // We ignore this closer to handle cases such as T_ELSE or T_ELSEIF being considered
+                    // a closer of T_IF when it should not.
+                    if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                        $type = $tokens[$stackPtr]['type'];
+                        echo str_repeat("\t", $depth);
+                        echo "=> Ignoring non-culry scope closer for $stackPtr:$type".PHP_EOL;
+                    }
+                } else {
+                    if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                        $type       = $tokens[$stackPtr]['type'];
+                        $closerType = $tokens[$i]['type'];
+                        echo str_repeat("\t", $depth);
+                        echo "=> Found scope closer ($i:$closerType) for $stackPtr:$type".PHP_EOL;
+                    }
+
+                    foreach (array($stackPtr, $opener, $i) as $token) {
+                        $tokens[$token]['scope_condition'] = $stackPtr;
+                        $tokens[$token]['scope_opener']    = $opener;
+                        $tokens[$token]['scope_closer']    = $i;
+                    }
+
+                    if ($tokenizer->scopeOpeners[$tokens[$stackPtr]['code']]['shared'] === true) {
+                        // As we are going back to where we started originally, restore
+                        // the ignore value back to its original value.
+                        $ignore = $originalIgnore;
+                        return $opener;
+                    } else if (isset($tokenizer->scopeOpeners[$tokenType]) === true) {
+                        return ($i - 1);
+                    } else {
+                        return $i;
+                    }
+                }//end if
+            }//end if
 
             // Is this an opening condition ?
             if (isset($tokenizer->scopeOpeners[$tokenType]) === true) {
@@ -1508,7 +1596,7 @@ class PHP_CodeSniffer_File
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $type = $tokens[$stackPtr]['type'];
                         echo str_repeat("\t", $depth);
-                        echo "=> Couldn't find scope opener for $stackPtr ($type), bailing".PHP_EOL;
+                        echo "=> Couldn't find scope opener for $stackPtr:$type, bailing".PHP_EOL;
                     }
 
                     return $stackPtr;
@@ -1610,45 +1698,11 @@ class PHP_CodeSniffer_File
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $type = $tokens[$stackPtr]['type'];
                         echo str_repeat("\t", $depth);
-                        echo "=> Found scope opener for $stackPtr ($type)".PHP_EOL;
+                        echo "=> Found scope opener for $stackPtr:$type".PHP_EOL;
                     }
 
                     $opener = $i;
                 }
-            } else if (in_array($tokenType, $tokenizer->scopeOpeners[$currType]['end']) === true
-                && $opener !== null
-            ) {
-                if ($ignore > 0 && $tokenType === T_CLOSE_CURLY_BRACKET) {
-                    // The last opening bracket must have been for a string
-                    // offset or alike, so let's ignore it.
-                    if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                        echo str_repeat("\t", $depth);
-                        echo '* finished ignoring curly brace *'.PHP_EOL;
-                    }
-
-                    $ignore--;
-                } else {
-                    if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                        $type = $tokens[$stackPtr]['type'];
-                        echo str_repeat("\t", $depth);
-                        echo "=> Found scope closer for $stackPtr ($type)".PHP_EOL;
-                    }
-
-                    foreach (array($stackPtr, $opener, $i) as $token) {
-                        $tokens[$token]['scope_condition'] = $stackPtr;
-                        $tokens[$token]['scope_opener']    = $opener;
-                        $tokens[$token]['scope_closer']    = $i;
-                    }
-
-                    if ($tokenizer->scopeOpeners[$tokens[$stackPtr]['code']]['shared'] === true) {
-                        // As we are going back to where we started originally, restore
-                        // the ignore value back to its original value.
-                        $ignore = $originalIgnore;
-                        return $opener;
-                    } else {
-                        return $i;
-                    }
-                }//end if
             } else if ($tokenType === T_OPEN_PARENTHESIS) {
                 if (isset($tokens[$i]['parenthesis_owner']) === true) {
                     $owner = $tokens[$i]['parenthesis_owner'];
@@ -1699,13 +1753,13 @@ class PHP_CodeSniffer_File
                             $type  = $tokens[$stackPtr]['type'];
                             $lines = ($tokens[$i]['line'] - $startLine);
                             echo str_repeat("\t", $depth);
-                            echo "=> Still looking for $stackPtr ($type) scope opener after $lines lines".PHP_EOL;
+                            echo "=> Still looking for $stackPtr:$type scope opener after $lines lines".PHP_EOL;
                         }
                     } else {
                         if (PHP_CODESNIFFER_VERBOSITY > 1) {
                             $type = $tokens[$stackPtr]['type'];
                             echo str_repeat("\t", $depth);
-                            echo "=> Couldn't find scope opener for $stackPtr ($type), bailing".PHP_EOL;
+                            echo "=> Couldn't find scope opener for $stackPtr:$type, bailing".PHP_EOL;
                         }
 
                         return $stackPtr;
@@ -1732,7 +1786,7 @@ class PHP_CodeSniffer_File
                         if (PHP_CODESNIFFER_VERBOSITY > 1) {
                             $type = $tokens[$stackPtr]['type'];
                             echo str_repeat("\t", $depth);
-                            echo "=> Found (unexpected) scope closer for $stackPtr ($type)".PHP_EOL;
+                            echo "=> Found (unexpected) scope closer for $stackPtr:$type".PHP_EOL;
                         }
 
                         foreach (array($stackPtr, $opener) as $token) {
@@ -1807,7 +1861,7 @@ class PHP_CodeSniffer_File
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $type = $tokens[$stackPtr]['type'];
                         echo str_repeat("\t", ($level + 1));
-                        echo "=> Found scope opener for $stackPtr ($type)".PHP_EOL;
+                        echo "=> Found scope opener for $stackPtr:$type".PHP_EOL;
                     }
 
                     $stackPtr = $tokens[$i]['scope_condition'];
@@ -1837,7 +1891,7 @@ class PHP_CodeSniffer_File
                             if (PHP_CODESNIFFER_VERBOSITY > 1) {
                                 $type = $tokens[$badToken]['type'];
                                 echo str_repeat("\t", ($level + 1));
-                                echo "* shared closer, cleaning up $badToken ($type) *".PHP_EOL;
+                                echo "* shared closer, cleaning up $badToken:$type *".PHP_EOL;
                             }
 
                             for ($x = $tokens[$i]['scope_condition']; $x <= $i; $x++) {
@@ -1863,7 +1917,7 @@ class PHP_CodeSniffer_File
 
                                     $newLevel = $tokens[$x]['level'];
                                     echo str_repeat("\t", ($level + 1));
-                                    echo "* cleaned $x ($type) *".PHP_EOL;
+                                    echo "* cleaned $x:$type *".PHP_EOL;
                                     echo str_repeat("\t", ($level + 2));
                                     echo "=> level changed from $oldLevel to $newLevel".PHP_EOL;
                                     echo str_repeat("\t", ($level + 2));
@@ -1875,7 +1929,7 @@ class PHP_CodeSniffer_File
                             if (PHP_CODESNIFFER_VERBOSITY > 1) {
                                 $type = $tokens[$badToken]['type'];
                                 echo str_repeat("\t", ($level + 1));
-                                echo "* token $badToken ($type) removed from conditions array *".PHP_EOL;
+                                echo "* token $badToken:$type removed from conditions array *".PHP_EOL;
                             }
 
                             unset ($openers[$lastOpener]);
@@ -1898,14 +1952,14 @@ class PHP_CodeSniffer_File
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $type = $tokens[$stackPtr]['type'];
                         echo str_repeat("\t", ($level + 1));
-                        echo "* token $stackPtr ($type) added to conditions array *".PHP_EOL;
+                        echo "* token $stackPtr:$type added to conditions array *".PHP_EOL;
                     }
 
                     $lastOpener = $tokens[$i]['scope_opener'];
                     if ($lastOpener !== null) {
                         $openers[$lastOpener] = $lastOpener;
                     }
-                } else if ($tokens[$i]['scope_closer'] === $i) {
+                } else if ($lastOpener !== null && $tokens[$lastOpener]['scope_closer'] === $i) {
                     foreach (array_reverse($openers) as $opener) {
                         if ($tokens[$opener]['scope_closer'] === $i) {
                             $oldOpener = array_pop($openers);
@@ -1919,7 +1973,7 @@ class PHP_CodeSniffer_File
                             if (PHP_CODESNIFFER_VERBOSITY > 1) {
                                 $type = $tokens[$oldOpener]['type'];
                                 echo str_repeat("\t", ($level + 1));
-                                echo "=> Found scope closer for $oldOpener ($type)".PHP_EOL;
+                                echo "=> Found scope closer for $oldOpener:$type".PHP_EOL;
                             }
 
                             $oldCondition = array_pop($conditions);
@@ -1940,7 +1994,7 @@ class PHP_CodeSniffer_File
                                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                                         $type = token_name($oldCondition);
                                         echo str_repeat("\t", ($level + 1));
-                                        echo "* scope closer was bad, cleaning up $badToken ($type) *".PHP_EOL;
+                                        echo "* scope closer was bad, cleaning up $badToken:$type *".PHP_EOL;
                                     }
 
                                     for ($x = ($oldOpener + 1); $x <= $i; $x++) {
@@ -1966,7 +2020,7 @@ class PHP_CodeSniffer_File
 
                                             $newLevel = $tokens[$x]['level'];
                                             echo str_repeat("\t", ($level + 1));
-                                            echo "* cleaned $x ($type) *".PHP_EOL;
+                                            echo "* cleaned $x:$type *".PHP_EOL;
                                             echo str_repeat("\t", ($level + 2));
                                             echo "=> level changed from $oldLevel to $newLevel".PHP_EOL;
                                             echo str_repeat("\t", ($level + 2));
@@ -2128,6 +2182,7 @@ class PHP_CodeSniffer_File
                 $currVar = $i;
                 break;
             case T_ARRAY_HINT:
+            case T_CALLABLE:
                 $typeHint = $this->_tokens[$i]['content'];
                 break;
             case T_STRING:
@@ -2848,12 +2903,21 @@ class PHP_CodeSniffer_File
             return false;
         }
 
-        $stringIndex = $this->findNext(T_STRING, $extendsIndex, $classCloserIndex);
-        if (false === $stringIndex) {
+        $find = array(
+                 T_NS_SEPARATOR,
+                 T_STRING,
+                 T_WHITESPACE,
+                );
+
+        $end  = $this->findNext($find, ($extendsIndex + 1), $classCloserIndex, true);
+        $name = $this->getTokensAsString(($extendsIndex + 1), ($end - $extendsIndex - 1));
+        $name = trim($name);
+
+        if ($name === '') {
             return false;
         }
 
-        return $this->_tokens[$stringIndex]['content'];
+        return $name;
 
     }//end findExtendedClassName()
 

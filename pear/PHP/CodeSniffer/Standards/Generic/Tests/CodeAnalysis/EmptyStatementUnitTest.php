@@ -24,7 +24,7 @@
  * @author    Manuel Pichler <mapi@manuel-pichler.de>
  * @copyright 2007-2008 Manuel Pichler. All rights reserved.
  * @license   http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Tests_CodeAnalysis_EmptyStatementUnitTest extends AbstractSniffUnitTest
@@ -42,8 +42,17 @@ class Generic_Tests_CodeAnalysis_EmptyStatementUnitTest extends AbstractSniffUni
     public function getErrorList()
     {
         return array(
-                64 => 1,
-                68 => 1,
+                3  => 1,
+                15 => 1,
+                17 => 1,
+                19 => 1,
+                30 => 1,
+                35 => 1,
+                41 => 1,
+                47 => 1,
+                52 => 1,
+                55 => 1,
+                72 => 2,
                );
 
     }//end getErrorList()
@@ -60,18 +69,9 @@ class Generic_Tests_CodeAnalysis_EmptyStatementUnitTest extends AbstractSniffUni
     public function getWarningList()
     {
         return array(
-                3  => 1,
-                15 => 1,
-                17 => 1,
-                19 => 1,
-                30 => 1,
-                35 => 1,
-                41 => 1,
-                47 => 1,
-                52 => 1,
-                55 => 1,
-                72 => 2,
-        );
+                64 => 1,
+                68 => 1,
+               );
 
     }//end getWarningList()
 

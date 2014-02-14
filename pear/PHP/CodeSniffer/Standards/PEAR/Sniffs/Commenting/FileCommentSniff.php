@@ -38,7 +38,7 @@ if (class_exists('PHP_CodeSniffer_CommentParser_ClassCommentParser', true) === f
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 
@@ -120,7 +120,7 @@ class PEAR_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
                                         'allow_multiple' => false,
                                         'order_text'     => 'follows @since (if used) or @see (if used) or @link',
                                        ),
-                );
+                      );
 
 
     /**
@@ -363,9 +363,9 @@ class PEAR_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
             if ($info['required'] === true && in_array($tag, $foundTags) === false) {
                 $error = 'Missing @%s tag in %s comment';
                 $data  = array(
-                              $tag,
-                              $docBlock,
-                             );
+                          $tag,
+                          $docBlock,
+                         );
                 $this->currentFile->addError($error, $commentEnd, 'MissingTag', $data);
                 continue;
             }
@@ -782,8 +782,9 @@ class PEAR_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
             } else if (strstr($content, 'CVS:') === false
                 && strstr($content, 'SVN:') === false
                 && strstr($content, 'GIT:') === false
+                && strstr($content, 'HG:') === false
             ) {
-                $error = 'Invalid version "%s" in file comment; consider "CVS: <cvs_id>" or "SVN: <svn_id>" or "GIT: <git_id>" instead';
+                $error = 'Invalid version "%s" in file comment; consider "CVS: <cvs_id>" or "SVN: <svn_id>" or "GIT: <git_id>" or "HG: <hg_id>" instead';
                 $data  = array($content);
                 $this->currentFile->addWarning($error, $errorPos, 'InvalidVersion', $data);
             }

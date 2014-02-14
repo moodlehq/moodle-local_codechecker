@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_Classes_LowercaseClassKeywordsUnitTest extends AbstractSniffUnitTest
@@ -42,13 +42,20 @@ class Squiz_Tests_Classes_LowercaseClassKeywordsUnitTest extends AbstractSniffUn
      */
     public function getErrorList()
     {
-        return array(
-                2 => 3,
-                3 => 3,
-                4 => 1,
-                8 => 1,
-                9 => 1,
-               );
+        $errors = array(
+                   2  => 3,
+                   3  => 3,
+                   4  => 1,
+                   9  => 1,
+                   10 => 1,
+                  );
+
+        // The trait test will only work in PHP versions where traits exist.
+        if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
+            $errors[5] = 1;
+        }
+
+        return $errors;
 
     }//end getErrorList()
 

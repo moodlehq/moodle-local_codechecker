@@ -22,7 +22,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Sniffs_CSS_IndentationSniff implements PHP_CodeSniffer_Sniff
@@ -34,6 +34,13 @@ class Squiz_Sniffs_CSS_IndentationSniff implements PHP_CodeSniffer_Sniff
      * @var array
      */
     public $supportedTokenizers = array('CSS');
+
+    /**
+    * The number of spaces code should be indented.
+    *
+    * @var int
+    */
+    public $indent = 4;
 
 
     /**
@@ -62,7 +69,6 @@ class Squiz_Sniffs_CSS_IndentationSniff implements PHP_CodeSniffer_Sniff
         $tokens = $phpcsFile->getTokens();
 
         $numTokens    = (count($tokens) - 2);
-        $currentLine  = 0;
         $indentLevel  = 0;
         $nestingLevel = 0;
         for ($i = 1; $i < $numTokens; $i++) {
@@ -87,7 +93,7 @@ class Squiz_Sniffs_CSS_IndentationSniff implements PHP_CodeSniffer_Sniff
                 $indentLevel--;
             }
 
-            if ($tokens[$i]['line'] === $currentLine) {
+            if ($tokens[$i]['column'] !== 1) {
                 continue;
             }
 
@@ -99,8 +105,9 @@ class Squiz_Sniffs_CSS_IndentationSniff implements PHP_CodeSniffer_Sniff
                 $foundIndent = 0;
             }
 
-            $expectedIndent = ($indentLevel * 4);
-            if ($expectedIndent > 0 && strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false
+            $expectedIndent = ($indentLevel * $this->indent);
+            if ($expectedIndent > 0
+                && strpos($tokens[$i]['content'], $phpcsFile->eolChar) !== false
             ) {
                 if ($nestingLevel !== $indentLevel) {
                     $error = 'Blank lines are not allowed in class definitions';
@@ -114,10 +121,7 @@ class Squiz_Sniffs_CSS_IndentationSniff implements PHP_CodeSniffer_Sniff
                          );
                 $phpcsFile->addError($error, $i, 'Incorrect', $data);
             }
-
-            $currentLine = $tokens[$i]['line'];
         }//end foreach
-
     }//end process()
 
 }//end class

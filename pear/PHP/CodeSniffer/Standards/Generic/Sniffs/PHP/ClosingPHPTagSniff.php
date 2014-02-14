@@ -13,14 +13,14 @@
  */
 
 /**
- * Checks that the file does not end with a closing tag.
+ * Checks that open PHP tags are paired with closing tags.
  *
  * @category  PHP
  * @package   PHP_CodeSniffer
  * @author    Stefano Kowalke <blueduck@gmx.net>
  * @copyright 2010 Stefano Kowalke
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_PHP_ClosingPHPTagSniff implements PHP_CodeSniffer_Sniff

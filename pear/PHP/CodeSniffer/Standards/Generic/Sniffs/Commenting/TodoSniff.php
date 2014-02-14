@@ -22,7 +22,7 @@
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_Commenting_TodoSniff implements PHP_CodeSniffer_Sniff
@@ -65,13 +65,13 @@ class Generic_Sniffs_Commenting_TodoSniff implements PHP_CodeSniffer_Sniff
         $tokens = $phpcsFile->getTokens();
 
         $content = $tokens[$stackPtr]['content'];
-        $matches = Array();
-        if (preg_match('|[^a-z]+todo[^a-z]+(.*)|i', $content, $matches) !== 0) {
+        $matches = array();
+        if (preg_match('/(?:\A|[^\p{L}]+)todo([^\p{L}]+(.*)|\Z)/ui', $content, $matches) !== 0) {
             // Clear whitespace and some common characters not required at
             // the end of a to-do message to make the warning more informative.
             $type        = 'CommentFound';
             $todoMessage = trim($matches[1]);
-            $todoMessage = trim($todoMessage, '[]().');
+            $todoMessage = trim($todoMessage, '-:[](). ');
             $error       = 'Comment refers to a TODO task';
             $data        = array($todoMessage);
             if ($todoMessage !== '') {

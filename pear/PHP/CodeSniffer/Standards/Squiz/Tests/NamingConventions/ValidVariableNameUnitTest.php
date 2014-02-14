@@ -25,7 +25,7 @@
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @copyright 2006-2012 Squiz Pty Ltd (ABN 77 084 670 600)
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version   Release: 1.4.4
+ * @version   Release: 1.5.2
  * @link      http://pear.php.net/package/PHP_CodeSniffer
  */
 class Squiz_Tests_NamingConventions_ValidVariableNameUnitTest extends AbstractSniffUnitTest
@@ -66,8 +66,6 @@ class Squiz_Tests_NamingConventions_ValidVariableNameUnitTest extends AbstractSn
                 63  => 1,
                 64  => 1,
                 67  => 1,
-                76  => 1,
-                78  => 1,
                 81  => 1,
                 106 => 1,
                 107 => 1,

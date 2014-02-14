@@ -28,7 +28,7 @@ if (class_exists('PHP_CodeSniffer_Standards_AbstractScopeSniff', true) === false
  * @package  PHP_CodeSniffer
  * @author   Leif Wickland <lwickland@rightnow.com>
  * @license  https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
- * @version  Release: 1.4.4
+ * @version  Release: 1.5.2
  * @link     http://pear.php.net/package/PHP_CodeSniffer
  */
 class Generic_Sniffs_NamingConventions_ConstructorNameSniff extends PHP_CodeSniffer_Standards_AbstractScopeSniff
@@ -77,6 +77,11 @@ class Generic_Sniffs_NamingConventions_ConstructorNameSniff extends PHP_CodeSnif
 
         $parentClassName = $phpcsFile->findExtendedClassName($currScope);
         if ($parentClassName === false) {
+            return;
+        }
+
+        // Stop if the constructor doesn't have a body, like when it is abstract.
+        if (isset($tokens[$stackPtr]['scope_closer']) === false) {
             return;
         }
 
