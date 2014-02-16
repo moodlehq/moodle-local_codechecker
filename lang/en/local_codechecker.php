@@ -26,6 +26,10 @@
 
 $string['check'] = 'Check code';
 $string['clihelp'] = 'Check some PHP code against the Moodle coding guidelines.
+Options:
+  --interactive, -i Stops after every file allowing to continue with the next
+                    file or to repeat the check against the same one.
+  --help, -h        Shows this information
 Example:
   php run.php local/codechecker';
 $string['error_find'] = 'Folder search failed';

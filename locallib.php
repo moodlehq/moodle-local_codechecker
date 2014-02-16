@@ -62,16 +62,33 @@ class local_codechecker_form extends moodleform {
  * really want one. This is a dummy class to make it work.
  */
 class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
+
+    private $report = 'full';
+
     /** Constructor */
     public function __construct() {
+        // Horrible, cannot be set programatically.
         $this->errorSeverity = 1;
         $this->warningSeverity = 1;
     }
+
+    /** Set the report to use */
+    public function setReport($report) {
+        $this->report = $report;
+    }
+
     public function getCommandLineValues() {
-        return array('showProgress' => false);
+
+        // Inject our settings to defaults.
+        $defaults = array_merge(
+            $this->getDefaults(),
+            array(
+                'reports' => array($this->report => null),
+            )
+        );
+        return $defaults;
     }
 }
-
 
 /**
  * Convert a full path name to a relative one, for output.
