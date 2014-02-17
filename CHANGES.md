@@ -1,5 +1,12 @@
-Changes in version 2.3.0 (YYYYMMDD - not released yet)
+Changes in version 2.3.0 (20140217)
 ------------------------------------
+- CONTRIB-4876: Upgrade to CS 1.5.2.
+    - (internal) Changes to use new APIs (sniffs and reporting). Applied to
+      the web client, the CLI (run.php) and testing framework.
+    - (internal) Renderer modified to work based on a reported xml
+      structure (SimpleXMLElement).
+    - Added new option to the CLI about running in interactive mode.
+    - Beautify the web report, grouping problems per line of code.
 - CONTRIB-4742: Fix incorrect thirdpartylibs.xml debugging for Windows.
 - CONTRIB-4705: Convert own txt files to markdown.
 
