@@ -49,7 +49,7 @@ $string['info'] = '<p>Checks code against some aspects of the {$a->link}.</p>
 <p>To exclude files, a comma separated list of substr matching paths can be used, for example: {$a->excludeexample}. Asterisks are allowed as wildchars at any place.</p>';
 $string['invalidpath'] = 'Invalid path {$a}';
 $string['moodlecodingguidelines'] = 'Moodle coding guidelines';
-$string['numerrorswarnings'] = '{$a->numErrors} error(s) and {$a->numWarnings} warning(s)';
+$string['numerrorswarnings'] = '{$a->errors} error(s) and {$a->warnings} warning(s)';
 $string['path'] = 'Path to check';
 $string['pluginname'] = 'Code checker';
 $string['recheckfile'] = 'Re-check just this file';

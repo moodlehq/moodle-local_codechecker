@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../config.php');
+require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
@@ -62,18 +62,29 @@ echo $OUTPUT->header();
 
 if ($path) {
     if ($fullpath) {
+        $reportfile = make_temp_directory('phpcs') . '/phpcs_' . random_string(10) . '.xml';
         $phpcs = new PHP_CodeSniffer();
-        $phpcs->setCli(new local_codechecker_codesniffer_cli());
+        $cli = new local_codechecker_codesniffer_cli();
+        $cli->setReport('xml'); // Using xml format for easier handling later.
+        $cli->setReportFile($reportfile); // Send the report to dataroot temp.
+        $phpcs->setCli($cli);
         $phpcs->setIgnorePatterns(local_codesniffer_get_ignores($exclude));
         $phpcs->process(local_codechecker_clean_path($fullpath),
                 local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
-        $problems = $phpcs->getFilesErrors();
-        local_codechecker_check_other_files(local_codechecker_clean_path($fullpath), $problems);
-        list($numerrors, $numwarnings) = local_codechecker_count_problems($problems);
+        // Save the xml report file to dataroot/temp.
+        $phpcs->reporting->printReport('xml', false, $reportfile);
+        // Load the XML file to proceed with the rest of checks.
+        $xml = simplexml_load_file($reportfile);
+
+        // Look for other problems, not handled by codesniffer.
+        local_codechecker_check_other_files(local_codechecker_clean_path($fullpath), $xml);
+        list($numerrors, $numwarnings) = local_codechecker_count_problems($xml);
 
         // Output the results report.
-        echo $output->report($problems, $phpcs, $numerrors, $numwarnings);
+        echo $output->report($xml, $numerrors, $numwarnings);
 
+        // And clean the report temp file.
+        @unlink($reportfile);
     } else {
         echo $output->invald_path_message($path);
     }
