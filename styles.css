@@ -5,32 +5,39 @@
 #page-admin-local-codechecker-index .local_codechecker_results ul {
     display: block;
     list-style-type: none;
-    margin: 1em 0;
     padding: 0;
+    margin: 0;
 }
 #page-admin-local-codechecker-index .local_codechecker_results li {
     font-weight: normal;
     font-style: normal;
     display: block;
     list-style-type: none;
-    margin: 0.5em 0;
     padding: 0;
+    margin: 0;
 }
 #page-admin-local-codechecker-index .local_codechecker_results .fail.error {
     color: #660000;
+    margin-left: 2em;
 }
 #page-admin-local-codechecker-index .local_codechecker_results .fail.warning {
     color: #996600;
+    margin-left: 2em;
 }
 #page-admin-local-codechecker-index .local_codechecker_results .good {
     color: #006600;
 }
+#page-admin-local-codechecker-index .local_codechecker_results pre span {
+    color: #888;
+}
 #page-admin-local-codechecker-index .local_codechecker_results pre {
     margin-top: 1em;
     margin-bottom: 0;
-}
-#page-admin-local-codechecker-index .local_codechecker_results pre span {
-    color: #888;
+    color: #222;
+    background-color: #DDD;
+    padding: 0.5em;
+    word-break: break-all;
+    word-wrap: break-word;
 }
 #page-admin-local-codechecker-index .local_codechecker_results h3 :link,
 #page-admin-local-codechecker-index .local_codechecker_results h3 :visited {

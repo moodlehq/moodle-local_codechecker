@@ -194,17 +194,26 @@ class local_codechecker_renderer extends plugin_renderer_base {
      * @return string html to display an individual problem
      */
     public function problem_message($problem, $prettypath) {
+        static $lastfileandline = ''; // To detect changes of line.
         $line = $problem['line'];
         $column = $problem['column'];
         $level = $problem->getName();
+
+        $code = '';
+        if ($lastfileandline !== $prettypath . '#@#' . $line) {
+            // We have moved to another line, oputput it
+            $code = html_writer::tag('li', html_writer::tag('div',
+                        html_writer::tag('pre', '#' . $line . ': ' . str_replace(
+                            array_keys($this->replaces),
+                            array_values($this->replaces),
+                            s(local_codechecker_get_line_of_code($line, $prettypath)))
+                        )), array('class' => 'sourcecode'));
+            $lastfileandline = $prettypath . '#@#' . $line;
+        }
+
         $sourceclass = str_replace('.', '_', $problem['source']);
-        $info = html_writer::tag('div', html_writer::tag('strong', $line) . ': ' .
-                s($problem), array('class'=>'info ' . $sourceclass));
+        $info = html_writer::tag('div', s($problem), array('class'=>'info ' . $sourceclass));
 
-        $code = html_writer::tag('pre', str_replace(
-                array_keys($this->replaces), array_values($this->replaces),
-                s(local_codechecker_get_line_of_code($line, $prettypath))));
-
-        return html_writer::tag('li', $code . $info, array('class' => 'fail ' . $level));
+        return $code .  html_writer::tag('li', $info, array('class' => 'fail ' . $level));
     }
 }

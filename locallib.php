@@ -251,8 +251,13 @@ function local_codechecker_get_line_of_code($line, $prettypath) {
         $file = file($CFG->dirroot . '/' . $prettypath);
         $lastfilename = $prettypath;
     }
+    $linecontents = $file[$line - 1];
+    // Handle empty lines.
+    if (trim($linecontents) === '') {
+        $linecontents = '&#x00d8;';
+    }
 
-    return $file[$line - 1];
+    return $linecontents;
 }
 
 /**
