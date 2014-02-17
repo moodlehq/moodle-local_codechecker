@@ -65,14 +65,14 @@ if ($path) {
         $reportfile = make_temp_directory('phpcs') . '/phpcs_' . random_string(10) . '.xml';
         $phpcs = new PHP_CodeSniffer();
         $cli = new local_codechecker_codesniffer_cli();
-        $cli->setReport('xml'); // Using xml format for easier handling later.
+        $cli->setReport('local_codechecker'); // Using own custom xml format for easier handling later.
         $cli->setReportFile($reportfile); // Send the report to dataroot temp.
         $phpcs->setCli($cli);
         $phpcs->setIgnorePatterns(local_codesniffer_get_ignores($exclude));
         $phpcs->process(local_codechecker_clean_path($fullpath),
                 local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
         // Save the xml report file to dataroot/temp.
-        $phpcs->reporting->printReport('xml', false, $reportfile);
+        $phpcs->reporting->printReport('local_codechecker', false, $reportfile);
         // Load the XML file to proceed with the rest of checks.
         $xml = simplexml_load_file($reportfile);
 

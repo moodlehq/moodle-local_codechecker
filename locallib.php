@@ -98,6 +98,58 @@ class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
 }
 
 /**
+ * Custom XML reporting returning files without violations.
+ *
+ * By default the CodeSniffer reporting does not return information
+ * about files with 0 errors and 0 warnings anymore. But in the web
+ * UI of local_codechecker we want to show, with a lovely green, all
+ * the passed files.
+ *
+ * So this is extending {@link PHP_CodeSniffer_Reports_Xml} to modify
+ * every bit needed to get those files reported. The extension will
+ * try to rely in the original report as much as possible.
+ *
+ * This has been reported @ https://pear.php.net/bugs/bug.php?id=20202
+ */
+class PHP_CodeSniffer_Reports_local_codechecker extends PHP_CodeSniffer_Reports_Xml {
+    /**
+     * Generate a partial report for a single processed file.
+     *
+     * For files with violations delegate processing to parent class. For files
+     * without violations, just return the plain <file> element, without any err/warn.
+     *
+     * @param array   $report      Prepared report data.
+     * @param boolean $showSources Show sources?
+     * @param int     $width       Maximum allowed line width.
+     *
+     * @return boolean
+     */
+    public function generateFileReport($report, $showSources=false, $width=80) {
+
+        // Report has violations, delegate to parent standard processing.
+        if ($report['errors'] !== 0 || $report['warnings'] !== 0) {
+            return parent::generateFileReport($report, $showSources, $width);
+        }
+
+        // Here we are, with a file with 0 errors and warnings.
+        $out = new XMLWriter;
+        $out->openMemory();
+        $out->setIndent(true);
+
+        $out->startElement('file');
+        $out->writeAttribute('name', $report['filename']);
+        $out->writeAttribute('errors', $report['errors']);
+        $out->writeAttribute('warnings', $report['warnings']);
+
+        $out->endElement();
+        echo $out->flush();
+
+        return true;
+
+    }
+}
+
+/**
  * Convert a full path name to a relative one, for output.
  * @param string $file a full path name of a file.
  * @return string the prettied up path name.
