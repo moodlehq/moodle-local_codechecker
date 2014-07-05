@@ -58,7 +58,7 @@
          rules or excludes fail -->
     <rule ref="../phpcompatibility">
         <!-- Moodle's bootstrap ensures DefaultTimezone is defined, so excluding this -->
-        <exclude name="../phpcompatibility/Sniffs/PHP/DefaultTimezoneRequiredSniff.php"/>
+        <exclude name="PHPCompatibility.PHP.DefaultTimezoneRequired"/>
     </rule>
 
 </ruleset>
