@@ -30,17 +30,13 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff implements PHP_Co
     protected $deprecatedIniDirectives = array(
         'define_syslog_variables' => array(
             '5.3' => false,
-	        '5.4' => true
+            '5.4' => true
         ),
         'register_globals' => array(
             '5.3' => false,
             '5.4' => true
         ),
         'register_long_arrays' => array(
-            '5.3' => false,
-            '5.4' => true
-        ),
-        'safe_mode' => array(
             '5.3' => false,
             '5.4' => true
         ),
@@ -151,21 +147,36 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff implements PHP_Co
         if (in_array(str_replace("'", "", $tokens[$iniToken]['content']), array_keys($this->deprecatedIniDirectives)) === false) {
             return;
         }
-        $error = "INI directive " . $tokens[$iniToken]['content'] . " is";
+
+        $error = '';
+
         foreach ($this->deprecatedIniDirectives[str_replace("'", "", $tokens[$iniToken]['content'])] as $version => $forbidden)
         {
-            if ($forbidden === true) {
-                $error .= " forbidden";
-            } else {
-                $error .= " deprecated";
+            if (
+                is_null(PHP_CodeSniffer::getConfigData('testVersion'))
+                ||
+                (
+                    !is_null(PHP_CodeSniffer::getConfigData('testVersion'))
+                    &&
+                    version_compare(PHP_CodeSniffer::getConfigData('testVersion'), $version) >= 0
+                )
+            ) {
+                if ($forbidden === true) {
+                    $error .= " forbidden";
+                } else {
+                    $error .= " deprecated";
+                }
+                $error .= " in PHP " . $version . " and";
             }
-            $error .= " in PHP " . $version . " and ";
         }
-        $error = substr($error, 0, strlen($error) - 5) . ".";
 
-        $phpcsFile->addWarning($error, $stackPtr);
+        if (strlen($error) > 0) {
+            $error = "INI directive " . $tokens[$iniToken]['content'] . " is" . $error;
+            $error = substr($error, 0, strlen($error) - 4) . ".";
+
+            $phpcsFile->addWarning($error, $stackPtr);
+        }
 
     }//end process()
-
 
 }//end class

@@ -119,7 +119,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends Generic_Sniff
                                         'mysqli_client_encoding' => array(
                                             '5.4' => true,
                                             '5.5' => true,
-                                            'alternative' => 'mysqli_charachter_set_name'
+                                            'alternative' => 'mysqli_character_set_name'
                                         ),
                                         'mysqli_fetch' => array(
                                             '5.4' => true,
@@ -151,24 +151,24 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends Generic_Sniff
                                             '5.3' => false,
                                             '5.4' => true,
                                             '5.5' => true,
-                                            'alternative' => 'use $_SESSION'
+                                            'alternative' => '$_SESSION'
                                         ),
                                         'session_unregister' => array(
                                             '5.3' => false,
                                             '5.4' => true,
                                             '5.5' => true,
-                                            'alternative' => 'use $_SESSION'
+                                            'alternative' => '$_SESSION'
                                         ),
                                         'session_is_registered' => array(
                                             '5.3' => false,
                                             '5.4' => true,
                                             '5.5' => true,
-                                            'alternative' => 'use $_SESSION'
+                                            'alternative' => '$_SESSION'
                                         ),
                                         'set_magic_quotes_runtime' => array(
                                             '5.3' => false,
-                                            '5.4' => false,
-                                            '5.5' => false,
+                                            '5.4' => true,
+                                            '5.5' => true,
                                             'alternative' => null
                                         ),
                                         'set_socket_blocking' => array(
@@ -233,14 +233,12 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends Generic_Sniff
                                         ),
                                     );
 
-
     /**
      * If true, an error will be thrown; otherwise a warning.
      *
      * @var bool
      */
     public $error = false;
-
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -260,6 +258,8 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends Generic_Sniff
                 T_OBJECT_OPERATOR,
                 T_FUNCTION,
                 T_CONST,
+                T_USE,
+                T_NS_SEPARATOR,
         );
 
         $prevToken = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
@@ -297,7 +297,6 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends Generic_Sniff
 
     }//end process()
 
-
     /**
      * Generates the error or wanrning for this sniff.
      *
@@ -311,34 +310,47 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends Generic_Sniff
      */
     protected function addError($phpcsFile, $stackPtr, $function, $pattern=null)
     {
-        $error = 'The use of function ' . $function . ' is ';
-
         if ($pattern === null) {
             $pattern = $function;
         }
 
+        $error = '';
+
         $this->error = false;
         foreach ($this->forbiddenFunctions[$pattern] as $version => $forbidden) {
-            if ($version != 'alternative') {
-                if ($forbidden === true) {
-                    $this->error = true;
-                    $error .= 'forbidden';
-                } else {
-                    $error .= 'discouraged';
+            if (
+                is_null(PHP_CodeSniffer::getConfigData('testVersion'))
+                ||
+                (
+                    !is_null(PHP_CodeSniffer::getConfigData('testVersion'))
+                    &&
+                    version_compare(PHP_CodeSniffer::getConfigData('testVersion'), $version) >= 0
+                )
+            ) {
+                if ($version != 'alternative') {
+                    if ($forbidden === true) {
+                        $this->error = true;
+                        $error .= 'forbidden';
+                    } else {
+                        $error .= 'discouraged';
+                    }
+                    $error .=  ' in PHP version ' . $version . ' and ';
                 }
-                $error .=  ' in PHP version ' . $version . ' and ';
             }
         }
-        $error = substr($error, 0, strlen($error) - 5);
+        if (strlen($error) > 0) {
+            $error = 'The use of function ' . $function . ' is ' . $error;
+            $error = substr($error, 0, strlen($error) - 5);
 
-        if ($this->forbiddenFunctions[$pattern]['alternative'] !== null) {
-            $error .= '; use ' . $this->forbiddenFunctions[$pattern]['alternative'] . ' instead';
-        }
+            if ($this->forbiddenFunctions[$pattern]['alternative'] !== null) {
+                $error .= '; use ' . $this->forbiddenFunctions[$pattern]['alternative'] . ' instead';
+            }
 
-        if ($this->error === true) {
-            $phpcsFile->addError($error, $stackPtr);
-        } else {
-            $phpcsFile->addWarning($error, $stackPtr);
+            if ($this->error === true) {
+                $phpcsFile->addError($error, $stackPtr);
+            } else {
+                $phpcsFile->addWarning($error, $stackPtr);
+            }
         }
 
     }//end addError()
