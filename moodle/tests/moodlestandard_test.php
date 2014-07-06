@@ -113,6 +113,57 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_php_forbiddenfunctions() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.PHP.ForbiddenFunctions');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddenfunctions.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            5 => 'function sizeof() is forbidden; use count()',
+            6 => 1,
+            8 => 1,
+            9 => 1,
+            10 => 1,
+            13 => 'function extract() is forbidden',
+            14 => 0, // These are eval, goto and got labels handled by {@link Moodle_Sniffs_PHP_ForbiddenTokensSniff}.
+            15 => 0,
+            16 => 0,
+            17 => 0,
+            ));
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_php_forbiddentokens() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.PHP.ForbiddenTokens');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddentokens.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            5 => 'The use of function eval() is forbidden',
+            6 => 'The use of operator goto is forbidden',
+            8 => 'The use of goto labels is forbidden',
+            11 => 1));
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     /**
      * Test external sniff incorporated to moodle standard.
      */

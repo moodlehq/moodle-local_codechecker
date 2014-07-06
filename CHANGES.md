@@ -3,6 +3,10 @@ Changes in version 2.3.1 (not released yet)
 - MDLSITE-2800: Upgrade to CS 1.5.3.
     - Exclude the DefaultTimezoneRequired sniff properly.
     - Upgrade the PHPCompatibility standard to current version.
+- CONTRIB-4146: Forbid the use of some functions/operators.
+    - extract().
+    - eval() - no matter we are aware of few places where they are ok to be used.
+    - goto and goto labels.
 
 Changes in version 2.3.0 (20140217)
 ------------------------------------

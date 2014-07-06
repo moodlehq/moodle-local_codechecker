@@ -32,11 +32,19 @@ class Moodle_Sniffs_PHP_ForbiddenFunctionsSniff
     /** Constructor. */
     public function __construct() {
         $this->forbiddenFunctions = array(
+            // Usual development debugging functions.
             'sizeof'       => 'count',
             'delete'       => 'unset',
             'error_log'    => null,
             'print_r'      => null,
             'print_object' => null,
+            // Dangerous functions. From coding style.
+            'extract'      => null,
+            // Note that some of these are handled as specific tokens by the Tokenizer
+            // and detected by {@link Moodle_Sniffs_PHP_ForbiddenTokensSniff} instead.
+            // We just keep them here to ensure behavior does not change in the future.
+            'eval'         => null, // T_EVAL token.
+            'goto'         => null, // T_GOTO token.
         );
     }
 }
