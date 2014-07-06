@@ -1,3 +1,9 @@
+Changes in version 2.3.1 (not released yet)
+------------------------------------
+- MDLSITE-2800: Upgrade to CS 1.5.3.
+    - Exclude the DefaultTimezoneRequired sniff properly.
+    - Upgrade the PHPCompatibility standard to current version.
+
 Changes in version 2.3.0 (20140217)
 ------------------------------------
 - CONTRIB-4876: Upgrade to CS 1.5.2.
