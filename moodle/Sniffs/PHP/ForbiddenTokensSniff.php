@@ -36,7 +36,8 @@ class Moodle_Sniffs_PHP_ForbiddenTokensSniff implements PHP_CodeSniffer_Sniff {
         return array(
                 T_EVAL => 'The use of function eval() is forbidden',
                 T_GOTO => 'The use of operator goto is forbidden',
-                T_GOTO_LABEL => 'The use of goto labels is forbidden');
+                T_GOTO_LABEL => 'The use of goto labels is forbidden',
+                T_BACKTICK => 'The use of backticks for shell execution is forbidden',);
     }
 
     /**

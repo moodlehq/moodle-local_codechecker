@@ -157,8 +157,37 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             5 => 'The use of function eval() is forbidden',
             6 => 'The use of operator goto is forbidden',
             8 => 'The use of goto labels is forbidden',
-            11 => 1));
+            11 => 1,
+            13 => array('backticks', 'backticks')));
         $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_strings_forbiddenstrings() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Strings.ForbiddenStrings');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_strings_forbiddenstrings.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            8 => 'The use of the AS keyword to alias tables is bad for cross-db',
+            10 => 1,
+            11 => 'The use of the AS keyword to alias tables is bad for cross-db',
+            12 => 0,
+            15 => 'The use of the /e modifier in regular expressions is forbidden',
+            16 => 1,
+            23 => 2));
+        $this->set_warnings(array(
+            19 => array('backticks in strings is not recommended'),
+            20 => 1,
+            23 => 1));
 
         // Let's do all the hard work!
         $this->verify_cs_results();

@@ -7,6 +7,10 @@ Changes in version 2.3.1 (not released yet)
     - extract().
     - eval() - no matter we are aware of few places where they are ok to be used.
     - goto and goto labels.
+    - preg_replace() with /e modifier.
+    - backticks shell execution.
+    - backticks within strings.
+- MDLSITE-3150: Forbid use of AS keyword for table aliasing.
 
 Changes in version 2.3.0 (20140217)
 ------------------------------------
