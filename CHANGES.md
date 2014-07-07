@@ -1,5 +1,5 @@
-Changes in version 2.3.1 (not released yet)
-------------------------------------
+Changes in version 2.3.1 (20140707) - San Fermín release!
+---------------------------------------------------------
 - MDLSITE-2800: Upgrade to CS 1.5.3.
     - Exclude the DefaultTimezoneRequired sniff properly.
     - Upgrade the PHPCompatibility standard to current version.
