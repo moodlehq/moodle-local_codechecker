@@ -63,7 +63,7 @@ class Moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], "'\"");
-        if (preg_match('~\b(FROM|JOIN)\b.*\{\w+\}.(?!\))*\bAS\b~im', $text)) {
+        if (preg_match('~\b(FROM|JOIN)\b.*\{\w+\}\s*\bAS\b~im', $text)) {
             $error = 'The use of the AS keyword to alias tables is bad for cross-db';
             $phpcsFile->addError($error, $stackPtr, 'Found');
         }
