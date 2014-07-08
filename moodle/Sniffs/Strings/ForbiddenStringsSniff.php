@@ -85,7 +85,7 @@ class Moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
         if (@preg_match($text, '') !== false) {
             // Regular expression found. Look for used separator (1st char).
             $separator = substr($text, 0, 1);
-            $parts = preg_split('~' . $separator . '~', $text);
+            $parts = preg_split('~' . preg_quote($separator, '~') . '~', $text);
             $modifiers = end($parts);
             if (strpos($modifiers, 'e') !== false) {
                 $error = 'The use of the /e modifier in regular expressions is forbidden';
