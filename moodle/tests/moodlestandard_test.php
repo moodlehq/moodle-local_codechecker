@@ -183,7 +183,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             12 => 0,
             15 => 'The use of the /e modifier in regular expressions is forbidden',
             16 => 1,
-            23 => 2));
+            23 => 2,
+            26 => 0,
+            27 => 0));
         $this->set_warnings(array(
             19 => array('backticks in strings is not recommended'),
             20 => 1,
