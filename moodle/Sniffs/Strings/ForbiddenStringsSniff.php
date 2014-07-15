@@ -81,7 +81,7 @@ class Moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
     protected function process_regexp_separator_e(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
-        $text = trim($token['content'], "'\"");
+        $text = trim($token['content'], " '\"\t\n");
         if (@preg_match($text, '') !== false) {
             // Regular expression found. Look for used separator (1st char).
             $separator = substr($text, 0, 1);
@@ -91,9 +91,11 @@ class Moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
             // Need exactly 2 parts.
             if (isset($parts[1]) && !isset($parts[2])) {
                 $modifiers = $parts[1];
-                if (strpos($modifiers, 'e') !== false) {
-                    $error = 'The use of the /e modifier in regular expressions is forbidden';
-                    $phpcsFile->addError($error, $stackPtr, 'Found');
+                if (preg_match('~[imsxeADSUXJu]+~', $modifiers) !== false) { // Only when modifiers are valid.
+                    if (strpos($modifiers, 'e') !== false) {
+                        $error = 'The use of the /e modifier in regular expressions is forbidden';
+                        $phpcsFile->addError($error, $stackPtr, 'Found');
+                    }
                 }
             }
         }
