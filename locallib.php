@@ -51,6 +51,7 @@ class local_codechecker_form extends moodleform {
 
         $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size' => '48'));
         $mform->setType('exclude', PARAM_NOTAGS);
+        $mform->setDefault('exclude', '*/yui/build/*, */tests/fixtures/*');
 
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
