@@ -1,3 +1,10 @@
+Changes in version 2.3.2 (YYYYMMDD)
+-----------------------------------
+- NOBUG: Allow clone() (T\_CLONE) to be used as function.
+- NOBUG: Add some sensible exclude defaults (Tim Hunt).
+- NOBUG: Sort results by path (Tim Hunt).
+- CONTRIB-5175: Fixed some regexp false positives (CONTRIB-4146 regression).
+
 Changes in version 2.3.1 (20140707) - San Fermín release!
 ---------------------------------------------------------
 - MDLSITE-2800: Upgrade to CS 1.5.3.
@@ -7,7 +14,7 @@ Changes in version 2.3.1 (20140707) - San Fermín release!
     - extract().
     - eval() - no matter we are aware of few places where they are ok to be used.
     - goto and goto labels.
-    - preg_replace() with /e modifier.
+    - preg\_replace() with /e modifier.
     - backticks shell execution.
     - backticks within strings.
 - MDLSITE-3150: Forbid use of AS keyword for table aliasing.
@@ -52,7 +59,7 @@ Changes in version 2.2.6 (20130312)
 
 Changes in version 2.2.5 (20130214)
 ------------------------------------
-- CONTRIB-4151: added moodle phpunit support (via local_codechecker_testcase).
+- CONTRIB-4151: added moodle phpunit support (via local\_codechecker\_testcase).
 - CONTRIB-4149: added phpcompatibility sniffs (git://github.com/wimg/PHPCompatibility.git).
 - CONTRIB-4145: upgrade to PHPCS 1.4.4.
 - CONTRIB-4144: add (this) CHANGES.txt file.
