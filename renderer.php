@@ -123,14 +123,22 @@ class local_codechecker_renderer extends plugin_renderer_base {
 
         $output .= html_writer::start_tag('div', array('class' => 'local_codechecker_results'));
 
-        // Files count and list.
+        // Sort the file by path.
         $files = $xml->xpath('file');
+        $sortedfiles = array();
+        foreach ($files as $fileinxml) {
+            $sortedfiles[local_codechecker_pretty_path($fileinxml['name'])] = $fileinxml;
+        }
+        ksort($sortedfiles);
+        $files = $sortedfiles;
+
+        // Files count and list.
         $numfiles = count($files);
         $output .= $this->summary_start($numfiles);
 
         // Heading summaries.
         $index = 0;
-        foreach ($files as $fileinxml) {
+        foreach ($files as $prettypath => $fileinxml) {
             $index++;
 
             $summary = '';
@@ -139,20 +147,20 @@ class local_codechecker_renderer extends plugin_renderer_base {
                 $summary = get_string('numerrorswarnings', 'local_codechecker', $numerrwarn);
             }
 
-            $output .= $this->summary_line($index, local_codechecker_pretty_path($fileinxml['name']), $summary);
+            $output .= $this->summary_line($index, $prettypath, $summary);
         }
         $output .= $this->summary_end($numfiles, $grandsummary, $grandtype);
 
         // Details.
         $index = 0;
-        foreach ($files as $fileinxml) {
+        foreach ($files as $prettypath => $fileinxml) {
             $index++;
 
             if ($fileinxml['errors'] + $fileinxml['warnings'] == 0) {
                 continue;
             }
 
-            $output .= $this->problems($index, $fileinxml);
+            $output .= $this->problems($index, $fileinxml, $prettypath);
         }
 
         $output .= html_writer::end_tag('div');
@@ -165,10 +173,10 @@ class local_codechecker_renderer extends plugin_renderer_base {
      * $problems is a non-empty array.
      * @param int $fileindex unique index of this file.
      * @param SimpleXMLElement $fileinxml the file with all its problems.
+     * @param string $prettypath prettified file path.
      * @return string HTML to output.
      */
-    public function problems($fileindex, $fileinxml) {
-        $prettypath = local_codechecker_pretty_path($fileinxml['name']);
+    public function problems($fileindex, $fileinxml, $prettypath) {
         $output = html_writer::start_tag('div',
                 array('class'=>'resultfile', 'id'=>'file' . $fileindex));
         $output .= html_writer::tag('h3', html_writer::link(
