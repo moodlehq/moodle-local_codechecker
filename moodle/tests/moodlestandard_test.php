@@ -142,6 +142,42 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_php_forbiddennamesasinvokedfunctions() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.PHP.ForbiddenNamesAsInvokedFunctions');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddennamesasinvokedfunctions.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            5 => 0, // These are allowed as invoked functions in Moodle for now.
+            6 => 0,
+            7 => 0,
+            8 => 0,
+            9 => 0,
+            12 => 0,
+            13 => 0,
+            14 => 0,
+            15 => 0,
+            16 => 0,
+            19 => 1, // These are not allowed as invoked functions.
+            20 => 'T_CALLABLE',
+            21 => 'is a reserved keyword introduced in PHP version 5.0',
+            22 => 'T_FINAL',
+            23 => 1,
+            24 => 1,
+            25 => 1,
+            26 => 1));
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     public function test_moodle_php_forbiddentokens() {
 
         // Define the standard, sniff and fixture to use.
