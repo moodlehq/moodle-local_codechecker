@@ -1,5 +1,7 @@
-Changes in version 2.3.2 (YYYYMMDD)
------------------------------------
+Changes in version 2.3.2 (20140815) - Candelaria, mojo's paradise!
+------------------------------------------------------------------
+- CONTRIB-5240: Fix CamelCase problems (so it works ok on any OS,
+  no matter its file case-sensitiveness).
 - NOBUG: Allow clone() (T\_CLONE) to be used as function.
 - NOBUG: Add some sensible exclude defaults (Tim Hunt).
 - NOBUG: Sort results by path (Tim Hunt).
