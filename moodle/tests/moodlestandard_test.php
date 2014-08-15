@@ -131,7 +131,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             9 => 1,
             10 => 1,
             13 => 'function extract() is forbidden',
-            14 => 0, // These are eval, goto and got labels handled by {@link Moodle_Sniffs_PHP_ForbiddenTokensSniff}.
+            14 => 0, // These are eval, goto and got labels handled by {@link moodle_Sniffs_PHP_ForbiddenTokensSniff}.
             15 => 0,
             16 => 0,
             17 => 0,

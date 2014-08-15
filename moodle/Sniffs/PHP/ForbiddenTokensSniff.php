@@ -18,14 +18,14 @@
  * The use of some tokens is forbidden.
  *
  * This Sniff looks for some functions and operators that are handled
- * as specific tokens by the CS tokenizer. Complements {@link Moodle_Sniffs_PHP_ForbiddenFunctionsSniff}.
+ * as specific tokens by the CS tokenizer. Complements {@link moodle_Sniffs_PHP_ForbiddenFunctionsSniff}.
  *
  * @package    local_codechecker
  * @copyright  2014 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class Moodle_Sniffs_PHP_ForbiddenTokensSniff implements PHP_CodeSniffer_Sniff {
+class moodle_Sniffs_PHP_ForbiddenTokensSniff implements PHP_CodeSniffer_Sniff {
 
     /**
      * Returns an array of Tokenizer tokens and errors this Sniff will listen and process.
