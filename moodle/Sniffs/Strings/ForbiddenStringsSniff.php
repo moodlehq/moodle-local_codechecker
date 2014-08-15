@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class Moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sniff {
+class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sniff {
 
     /**
      * Returns an array of tokens this test wants to listen for.

@@ -31,7 +31,7 @@ if (class_exists('PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSn
             'PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff not found');
 }
 
-class Moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
+class moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
         extends PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff {
     /** Constructor. */
     public function __construct() {

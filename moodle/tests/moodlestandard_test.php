@@ -131,7 +131,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             9 => 1,
             10 => 1,
             13 => 'function extract() is forbidden',
-            14 => 0, // These are eval, goto and got labels handled by {@link Moodle_Sniffs_PHP_ForbiddenTokensSniff}.
+            14 => 0, // These are eval, goto and got labels handled by {@link moodle_Sniffs_PHP_ForbiddenTokensSniff}.
             15 => 0,
             16 => 0,
             17 => 0,
@@ -234,12 +234,12 @@ class moodlestandard_testcase extends local_codechecker_testcase {
     /**
      * Test external sniff incorporated to moodle standard.
      */
-    public function test_phpcompatibility_php_deprecatedfunctions() {
+    public function test_PHPCompatibility_php_deprecatedfunctions() {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
         $this->set_sniff('PHPCompatibility.PHP.DeprecatedFunctions');
-        $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_deprecatedfunctions.php');
+        $this->set_fixture(__DIR__ . '/fixtures/PHPCompatibility_php_deprecatedfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
         //   - line => number of problems,  or
@@ -247,7 +247,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
         $this->set_warnings(array(
-            5 => array('function ereg_replace', 'use call_user_func instead', '@Source: phpcompat')));
+            5 => array('function ereg_replace', 'use call_user_func instead', '@Source: PHPCompat')));
 
         // Let's do all the hard work!
         $this->verify_cs_results();
@@ -256,12 +256,12 @@ class moodlestandard_testcase extends local_codechecker_testcase {
     /**
      * Test call time pass by reference.
      */
-    public function test_phpcompatibility_php_forbiddencalltimepassbyreference() {
+    public function test_PHPCompatibility_php_forbiddencalltimepassbyreference() {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
         $this->set_sniff('PHPCompatibility.PHP.ForbiddenCallTimePassByReference');
-        $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_forbiddencalltimepassbyreference.php');
+        $this->set_fixture(__DIR__ . '/fixtures/PHPCompatibility_php_forbiddencalltimepassbyreference.php');
 
         // Define expected results (errors and warnings). Format, array of:
         //   - line => number of problems,  or
@@ -269,7 +269,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             6 => array('call-time pass-by-reference is prohibited'),
-            7 => array('@Source: phpcompat')));
+            7 => array('@Source: PHPCompat')));
         $this->set_warnings(array());
 
         // Let's do all the hard work!
