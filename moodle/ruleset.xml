@@ -56,7 +56,7 @@
          Note it only works by specifying paths. Any
          attempt to include external rulesets with own
          rules or excludes fail -->
-    <rule ref="../phpcompatibility">
+    <rule ref="../PHPCompatibility">
         <!-- Moodle's bootstrap ensures DefaultTimezone is defined, so excluding this -->
         <exclude name="PHPCompatibility.PHP.DefaultTimezoneRequired"/>
         <!-- We use our own subclassed Moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
