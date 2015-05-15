@@ -1,3 +1,7 @@
+Changes in version 2.x.y (not released yet)
+-------------------------------------------
+- Pull request #19. Minor changes to make it work with CS 2.x (Corey Wallis).
+
 Changes in version 2.3.2 (20140815) - Candelaria, mojo's paradise!
 ------------------------------------------------------------------
 - CONTRIB-5240: Fix CamelCase problems (so it works ok on any OS,
