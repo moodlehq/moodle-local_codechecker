@@ -22,7 +22,7 @@
  * @author    Jansen Price <jansen.price@gmail.com>
  * @copyright 2012 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff implements PHP_CodeSniffer_Sniff
+class PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff extends PHPCompatibility_Sniff
 {
 
     /**
@@ -47,7 +47,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff implemen
         T_GOTO => '5.3',
         T_IMPLEMENTS => '5.0',
         T_INTERFACE => '5.0',
-        T_INSTANCEOF => '5.4',
+        T_INSTANCEOF => '5.0',
         T_INSTEADOF => '5.4',
         T_NAMESPACE => '5.3',
         T_PRIVATE => '5.0',
@@ -143,15 +143,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff implemen
                 $version = $this->targetedTokens[$tokenCode];
             }
 
-            if (
-                is_null(PHP_CodeSniffer::getConfigData('testVersion'))
-                ||
-                (
-                    !is_null(PHP_CodeSniffer::getConfigData('testVersion'))
-                    &&
-                    version_compare(PHP_CodeSniffer::getConfigData('testVersion'), $version) >= 0
-                )
-            ) {
+            if ($this->supportsAbove($version)) {
                 $error = sprintf(
                     "'%s' is a reserved keyword introduced in PHP version %s and cannot be invoked as a function (%s)",
                     $content,

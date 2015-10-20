@@ -26,7 +26,7 @@
  * @copyright 2009 Florian Grandel
  * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
-class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff implements PHP_CodeSniffer_Sniff
+class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends PHPCompatibility_Sniff
 {
 
     /**
@@ -58,15 +58,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff implemen
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        if (
-            is_null(PHP_CodeSniffer::getConfigData('testVersion'))
-            ||
-            (
-                !is_null(PHP_CodeSniffer::getConfigData('testVersion'))
-                &&
-                version_compare(PHP_CodeSniffer::getConfigData('testVersion'), '5.4') >= 0
-            )
-        ) {
+        if ($this->supportsAbove('5.4')) {
             $tokens = $phpcsFile->getTokens();
 
             // Skip tokens that are the names of functions or classes
@@ -146,6 +138,25 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff implemen
                         // In these cases T_BITWISE_AND represents
                         // the bitwise and operator.
                         continue;
+
+                    // Unfortunately the tokenizer fails to recognize global constants,
+                    // class-constants and -attributes. Any of these are returned is
+                    // treated as T_STRING.
+                    // So we step back another token and check if it is a class
+                    // operator (-> or ::), which means we have a false positive.
+                    // Global constants still remain uncovered.
+                    case T_STRING:
+                        $tokenBeforePlus = $phpcsFile->findPrevious(
+                            PHP_CodeSniffer_Tokens::$emptyTokens,
+                            ($tokenBefore - 1),
+                            null,
+                            true
+                        );
+                        if( T_DOUBLE_COLON === $tokens[$tokenBeforePlus]['code'] ||
+                            T_OBJECT_OPERATOR === $tokens[$tokenBeforePlus]['code']
+                        ) {
+                            continue;
+                        }
 
                     default:
                         // T_BITWISE_AND represents a pass-by-reference.

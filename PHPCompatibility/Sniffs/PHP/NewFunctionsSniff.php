@@ -19,9 +19,16 @@
  * @version   1.0.0
  * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends Generic_Sniffs_PHP_ForbiddenFunctionsSniff
+class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sniff
 {
 
+    /**
+     * If true, forbidden functions will be considered regular expressions.
+     *
+     * @var bool
+     */
+    protected $patternMatch = false;
+    
     /**
      * A list of new functions, not present in older versions.
      *
@@ -1095,6 +1102,27 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends Generic_Sniffs_PHP_F
 
 
     /**
+     * Returns an array of tokens this test wants to listen for.
+     *
+     * @return array
+     */
+    public function register()
+    {
+        // Everyone has had a chance to figure out what forbidden functions
+        // they want to check for, so now we can cache out the list.
+        $this->forbiddenFunctionNames = array_keys($this->forbiddenFunctions);
+    
+        if ($this->patternMatch === true) {
+            foreach ($this->forbiddenFunctionNames as $i => $name) {
+                $this->forbiddenFunctionNames[$i] = '/'.$name.'/i';
+            }
+        }
+    
+        return array(T_STRING);
+    
+    }//end register()
+    
+    /**
      * Processes this test, when one of its tokens is encountered.
      *
      * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
@@ -1171,11 +1199,7 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends Generic_Sniffs_PHP_F
 
         $this->error = false;
         foreach ($this->forbiddenFunctions[$pattern] as $version => $present) {
-            if (
-                !is_null(PHP_CodeSniffer::getConfigData('testVersion'))
-                &&
-                version_compare(PHP_CodeSniffer::getConfigData('testVersion'), $version) <= 0
-            ) {
+            if ($this->supportsBelow($version)) {
                 if ($present === false) {
                     $this->error = true;
                     $error .= 'not present in PHP version ' . $version . ' or earlier';

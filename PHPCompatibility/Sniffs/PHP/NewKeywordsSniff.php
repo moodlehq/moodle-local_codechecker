@@ -19,7 +19,7 @@
  * @version   1.0.0
  * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff implements PHP_CodeSniffer_Sniff
+class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Sniff
 {
 
     /**
@@ -31,10 +31,20 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff implements PHP_CodeSniffer_Sn
      * @var array(string => array(string => int|string|null))
      */
     protected $newKeywords = array(
+                                        'T_CALLABLE' => array(
+                                            '5.3' => false,
+                                            '5.4' => true,
+                                            'description' => '"callable" keyword'
+                                        ),
                                         'T_DIR' => array(
                                             '5.2' => false,
                                             '5.3' => true,
                                             'description' => '__DIR__ magic constant'
+                                        ),
+                                        'T_GOTO' => array(
+                                            '5.2' => false,
+                                            '5.3' => true,
+                                            'description' => '"goto" keyword'
                                         ),
                                         'T_INSTEADOF' => array(
                                             '5.3' => false,
@@ -50,11 +60,6 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff implements PHP_CodeSniffer_Sn
                                             '5.2' => false,
                                             '5.3' => true,
                                             'description' => '__NAMESPACE__ magic constant'
-                                        ),
-                                        'T_NS_SEPARATOR' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => 'the \ operator (for namespaces)'
                                         ),
                                         'T_USE' => array(
                                             '5.2' => false,
@@ -122,7 +127,23 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff implements PHP_CodeSniffer_Sn
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
-        $this->addError($phpcsFile, $stackPtr, $tokens[$stackPtr]['type']);
+
+        $nextToken = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+
+        // Skip attempts to use keywords as functions or class names - the former
+        // will be reported by FrobiddenNamesAsInvokedFunctionsSniff, whilst the
+        // latter doesn't yet have an appropriate sniff.
+        // Either type will result in false-positives when targetting lower versions
+        // of PHP where the name was not reserved, unless we explicitly check for
+        // them.
+        if (
+            $tokens[$nextToken]['type'] != 'T_OPEN_PARENTHESIS'
+            &&
+            $tokens[$prevToken]['type'] != 'T_CLASS'
+        ) {
+            $this->addError($phpcsFile, $stackPtr, $tokens[$stackPtr]['type']);
+        }
     }//end process()
 
 
@@ -147,11 +168,7 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff implements PHP_CodeSniffer_Sn
 
         $this->error = false;
         foreach ($this->newKeywords[$pattern] as $version => $present) {
-            if (
-                !is_null(PHP_CodeSniffer::getConfigData('testVersion'))
-                &&
-                version_compare(PHP_CodeSniffer::getConfigData('testVersion'), $version) <= 0
-            ) {
+            if ($this->supportsBelow($version)) {
                 if ($present === false) {
                     $this->error = true;
                     $error .= 'not present in PHP version ' . $version . ' or earlier';
