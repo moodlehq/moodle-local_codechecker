@@ -199,7 +199,7 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
      */
     protected function verify_cs_results() {
 
-        self::$phpcs->process(array(), $this->standard, array($this->sniff));
+        self::$phpcs->initStandard($this->standard, array($this->sniff));
         self::$phpcs->setIgnorePatterns(array());
 
         // The passed sniff is incorrect.
