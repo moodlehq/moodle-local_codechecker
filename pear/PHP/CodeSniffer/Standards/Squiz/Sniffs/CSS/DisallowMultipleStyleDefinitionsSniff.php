@@ -39,7 +39,7 @@ class Squiz_Sniffs_CSS_DisallowMultipleStyleDefinitionsSniff implements PHP_Code
     /**
      * Returns the token types that this sniff is interested in.
      *
-     * @return array(int)
+     * @return int[]
      */
     public function register()
     {
@@ -72,10 +72,13 @@ class Squiz_Sniffs_CSS_DisallowMultipleStyleDefinitionsSniff implements PHP_Code
 
         if ($tokens[$next]['line'] === $tokens[$stackPtr]['line']) {
             $error = 'Each style definition must be on a line by itself';
-            $phpcsFile->addError($error, $next, 'Found');
+            $fix   = $phpcsFile->addFixableError($error, $next, 'Found');
+            if ($fix === true) {
+                $phpcsFile->fixer->addNewlineBefore($next);
+            }
         }
 
     }//end process()
 
+
 }//end class
-?>

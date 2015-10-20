@@ -44,6 +44,7 @@ class Squiz_Sniffs_Functions_FunctionDeclarationSniff extends PHP_CodeSniffer_St
     {
         return array(
                 'function abc(...);',
+                'function abc(...)',
                 'abstract function abc(...);',
                );
 
@@ -51,5 +52,3 @@ class Squiz_Sniffs_Functions_FunctionDeclarationSniff extends PHP_CodeSniffer_St
 
 
 }//end class
-
-?>

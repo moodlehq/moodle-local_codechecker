@@ -39,7 +39,7 @@ class Squiz_Sniffs_CSS_LowercaseStyleDefinitionSniff implements PHP_CodeSniffer_
     /**
      * Returns the token types that this sniff is interested in.
      *
-     * @return array(int)
+     * @return int[]
      */
     public function register()
     {
@@ -95,12 +95,16 @@ class Squiz_Sniffs_CSS_LowercaseStyleDefinitionSniff implements PHP_CodeSniffer_
                               $expected,
                               $tokens[$i]['content'],
                              );
-                    $phpcsFile->addError($error, $i, 'FoundUpper', $data);
+
+                    $fix = $phpcsFile->addFixableError($error, $i, 'FoundUpper', $data);
+                    if ($fix === true) {
+                        $phpcsFile->fixer->replaceToken($i, $expected);
+                    }
                 }
             }
         }//end for
 
     }//end process()
 
+
 }//end class
-?>

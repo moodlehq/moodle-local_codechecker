@@ -102,7 +102,7 @@ class Zend_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeSniff
                         $error = 'Variable "%s" is not in valid camel caps format';
                         $data  = array($originalVarName);
                         $phpcsFile->addError($error, $var, 'NotCamelCaps', $data);
-                    } else if (preg_match('|\d|', $objVarName)) {
+                    } else if (preg_match('|\d|', $objVarName) === 1) {
                         $warning = 'Variable "%s" contains numbers but this is discouraged';
                         $data    = array($originalVarName);
                         $phpcsFile->addWarning($warning, $stackPtr, 'ContainsNumbers', $data);
@@ -134,7 +134,7 @@ class Zend_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeSniff
             $error = 'Variable "%s" is not in valid camel caps format';
             $data  = array($originalVarName);
             $phpcsFile->addError($error, $stackPtr, 'NotCamelCaps', $data);
-        } else if (preg_match('|\d|', $varName)) {
+        } else if (preg_match('|\d|', $varName) === 1) {
             $warning = 'Variable "%s" contains numbers but this is discouraged';
             $data    = array($originalVarName);
             $phpcsFile->addWarning($warning, $stackPtr, 'ContainsNumbers', $data);
@@ -180,11 +180,11 @@ class Zend_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeSniff
         }
 
         if (PHP_CodeSniffer::isCamelCaps($varName, false, $public, false) === false) {
-            $error = 'Variable "%s" is not in valid camel caps format';
+            $error = 'Member variable "%s" is not in valid camel caps format';
             $data  = array($varName);
             $phpcsFile->addError($error, $stackPtr, 'MemberVarNotCamelCaps', $data);
-        } else if (preg_match('|\d|', $varName)) {
-            $warning = 'Variable "%s" contains numbers but this is discouraged';
+        } else if (preg_match('|\d|', $varName) === 1) {
+            $warning = 'Member variable "%s" contains numbers but this is discouraged';
             $data    = array($varName);
             $phpcsFile->addWarning($warning, $stackPtr, 'MemberVarContainsNumbers', $data);
         }
@@ -227,32 +227,19 @@ class Zend_Sniffs_NamingConventions_ValidVariableNameSniff extends PHP_CodeSniff
                     continue;
                 }
 
-                // There is no way for us to know if the var is public or private,
-                // so we have to ignore a leading underscore if there is one and just
-                // check the main part of the variable name.
-                $originalVarName = $varName;
-                if (substr($varName, 0, 1) === '_') {
-                    if ($phpcsFile->hasCondition($stackPtr, array(T_CLASS, T_INTERFACE, T_TRAIT)) === true) {
-                        $varName = substr($varName, 1);
-                    }
-                }
-
                 if (PHP_CodeSniffer::isCamelCaps($varName, false, true, false) === false) {
-                    $varName = $matches[0];
-                    $error   = 'Variable "%s" is not in valid camel caps format';
-                    $data    = array($originalVarName);
+                    $error = 'Variable "%s" is not in valid camel caps format';
+                    $data  = array($varName);
                     $phpcsFile->addError($error, $stackPtr, 'StringVarNotCamelCaps', $data);
-                } else if (preg_match('|\d|', $varName)) {
+                } else if (preg_match('|\d|', $varName) === 1) {
                     $warning = 'Variable "%s" contains numbers but this is discouraged';
-                    $data    = array($originalVarName);
+                    $data    = array($varName);
                     $phpcsFile->addWarning($warning, $stackPtr, 'StringVarContainsNumbers', $data);
                 }
-            }
+            }//end foreach
         }//end if
 
     }//end processVariableInString()
 
 
 }//end class
-
-?>
