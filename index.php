@@ -72,7 +72,7 @@ if ($path) {
         $phpcs->process(local_codechecker_clean_path($fullpath),
                 local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
         // Save the xml report file to dataroot/temp.
-        $phpcs->reporting->printReport('local_codechecker', false, $reportfile);
+        $phpcs->reporting->printReport('local_codechecker', false, $cli->getCommandLineValues(), $reportfile);
         // Load the XML file to proceed with the rest of checks.
         $xml = simplexml_load_file($reportfile);
 

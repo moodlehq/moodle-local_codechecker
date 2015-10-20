@@ -119,17 +119,18 @@ class PHP_CodeSniffer_Reports_local_codechecker extends PHP_CodeSniffer_Reports_
      * For files with violations delegate processing to parent class. For files
      * without violations, just return the plain <file> element, without any err/warn.
      *
-     * @param array   $report      Prepared report data.
+     * @param array $report Prepared report data.
+     * @param PHP_CodeSniffer_File $phpcsFile The file being reported on.
      * @param boolean $showSources Show sources?
-     * @param int     $width       Maximum allowed line width.
+     * @param int $width Maximum allowed line width.
      *
      * @return boolean
      */
-    public function generateFileReport($report, $showSources=false, $width=80) {
+    public function generateFileReport($report, PHP_CodeSniffer_File $phpcsFile, $showSources = false, $width = 80) {
 
         // Report has violations, delegate to parent standard processing.
         if ($report['errors'] !== 0 || $report['warnings'] !== 0) {
-            return parent::generateFileReport($report, $showSources, $width);
+            return parent::generateFileReport($report, $phpcsFile, $showSources, $width);
         }
 
         // Here we are, with a file with 0 errors and warnings.

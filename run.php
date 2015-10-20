@@ -54,10 +54,11 @@ raise_memory_limit(MEMORY_HUGE);
 
 $standard = $CFG->dirroot . str_replace('/', DIRECTORY_SEPARATOR, '/local/codechecker/moodle');
 
+$cli = new local_codechecker_codesniffer_cli();
 $phpcs = new PHP_CodeSniffer(1, 0, 'utf-8', $interactive);
-$phpcs->setCli(new local_codechecker_codesniffer_cli());
+$phpcs->setCli($cli);
 $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
 $phpcs->process(local_codechecker_clean_path(
         $CFG->dirroot . '/' . trim($path, '/')),
         local_codechecker_clean_path($standard));
-$phpcs->reporting->printReport('full', false, null);
+$phpcs->reporting->printReport('full', false, $cli->getCommandLineValues(), null);
