@@ -57,7 +57,7 @@ $standard = $CFG->dirroot . str_replace('/', DIRECTORY_SEPARATOR, '/local/codech
 $phpcs = new PHP_CodeSniffer(1, 0, 'utf-8', $interactive);
 $phpcs->setCli(new local_codechecker_codesniffer_cli());
 $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
-$numerrors = $phpcs->process(local_codechecker_clean_path(
+$phpcs->process(local_codechecker_clean_path(
         $CFG->dirroot . '/' . trim($path, '/')),
         local_codechecker_clean_path($standard));
 $phpcs->reporting->printReport('full', false, null);

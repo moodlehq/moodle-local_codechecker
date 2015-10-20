@@ -267,7 +267,7 @@ function local_codechecker_get_line_of_code($line, $prettypath) {
  * converting all / and \ to DIRECTORY_SEPARATOR. It should be used whenever a
  * path is passed to the CodeSniffer library.
  * @param string $path a file path
- * @return the path with all directory separators changed to DIRECTORY_SEPARATOR.
+ * @return string The path with all directory separators changed to DIRECTORY_SEPARATOR.
  */
 function local_codechecker_clean_path($path) {
     return str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $path);

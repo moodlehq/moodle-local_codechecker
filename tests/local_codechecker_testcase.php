@@ -88,7 +88,7 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
             $this->standard = $stdfile;
         } else {
             // Now try plugin top directory, where moodle and others... reside).
-            $stdfile =  __DIR__ . '/../' . $standard . '/ruleset.xml';
+            $stdfile = __DIR__ . '/../' . $standard . '/ruleset.xml';
             if (file_exists($stdfile)) {
                 $this->standard = $stdfile;
             }
@@ -272,10 +272,10 @@ abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
             foreach ($expectation as $key => $expectedcontent) {
                 if (is_string($expectedcontent)) {
                     $this->assertContains($expectedcontent, $results[$line][$key],
-                            'Failed contents matching of ' . $type . ' for element ' . ($key+1) . ' of line ' . $line . '.');
+                            'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
                 }
             }
-            // Delete this line from results
+            // Delete this line from results.
             unset($results[$line]);
         }
         // Ended looping, verify there aren't remaining results (errors, warnings).

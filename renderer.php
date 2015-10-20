@@ -178,7 +178,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
      */
     public function problems($fileindex, $fileinxml, $prettypath) {
         $output = html_writer::start_tag('div',
-                array('class'=>'resultfile', 'id'=>'file' . $fileindex));
+                array('class' => 'resultfile', 'id' => 'file' . $fileindex));
         $output .= html_writer::tag('h3', html_writer::link(
                 new moodle_url('/local/codechecker/', array('path' => $prettypath)),
                 s($prettypath), array('title' => get_string('recheckfile', 'local_codechecker'))));
@@ -204,12 +204,11 @@ class local_codechecker_renderer extends plugin_renderer_base {
     public function problem_message($problem, $prettypath) {
         static $lastfileandline = ''; // To detect changes of line.
         $line = $problem['line'];
-        $column = $problem['column'];
         $level = $problem->getName();
 
         $code = '';
         if ($lastfileandline !== $prettypath . '#@#' . $line) {
-            // We have moved to another line, oputput it
+            // We have moved to another line, output it.
             $code = html_writer::tag('li', html_writer::tag('div',
                         html_writer::tag('pre', '#' . $line . ': ' . str_replace(
                             array_keys($this->replaces),
@@ -220,7 +219,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
         }
 
         $sourceclass = str_replace('.', '_', $problem['source']);
-        $info = html_writer::tag('div', s($problem), array('class'=>'info ' . $sourceclass));
+        $info = html_writer::tag('div', s($problem), array('class' => 'info ' . $sourceclass));
 
         return $code .  html_writer::tag('li', $info, array('class' => 'fail ' . $level));
     }
