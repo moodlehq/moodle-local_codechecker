@@ -69,3 +69,11 @@ defined('ADEFINED', true);
 echo 'hello'; // --------------------------
 
 echo 'hello'; // A--------------.
+
+# and, finally, some horrible perl comment, oh my. Missing uppers and ending too
+
+// and yes, I'm missing correct start and end
+
+// just checking multilines do work ok.
+/// And the correct problems are detected, also this 3-slash line
+// missig upper at the start and missing dot at the end

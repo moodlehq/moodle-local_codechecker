@@ -51,9 +51,11 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_errors(array(
             4 => array('3 slashes comments are not allowed'),
             6 => 1,
-            8 => 'No space before comment text',
-           28 => 1,
-           44 => 1));
+            8 => 'No space found before comment text',
+           28 => 'Inline doc block comments are not allowed; use "// Comment." instead',
+           44 => 1,
+           73 => 'Perl-style comments are not allowed; use "// Comment." instead',
+           78 => '3 slashes comments are not allowed'));
         $this->set_warnings(array(
             4 => 0,
             6 => array(null, 'Commenting.InlineComment.InvalidEndChar'),
@@ -65,7 +67,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            65 => 1,
            67 => 1,
            69 => array('WrongCommentCodeFoundBefore'),
-           71 => 3));
+           71 => 3,
+           75 => 2,
+           77 => 1,
+           79 => 1));
 
         // Let's do all the hard work!
         $this->verify_cs_results();

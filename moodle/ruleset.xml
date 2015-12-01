@@ -51,6 +51,11 @@
 
     <rule ref="Zend.Files.ClosingTag"/>
 
+    <!-- Disable this exact error unless it's approved -->
+    <rule ref="moodle.Commenting.InlineComment.SpacingAfter">
+        <severity>0</severity>
+    </rule>
+
     <!-- Add the PHPCompatibility external standard
          from git://github.com/wimg/PHPCompatibility.git
          Note it only works by specifying paths. Any
