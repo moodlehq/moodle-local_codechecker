@@ -26,5 +26,6 @@ $sqlregexptick = '@SELECT * FROM {table} AS t WHERE `column` = :param@mes';
 $this->pix_url('<div tabindex="0" class="file-picker fp-generallayout" role="dialog" aria-live="assertive">');
 $regexp = preg_replace('/test/me0', 'ignore anything having invalid (not "imsxeADSUXJu") modifiers');
 echo '       <div class="fp-restrictions">';
+echo '{"foo" : {"fe" : 1} }';
 
 // Fair enough.
