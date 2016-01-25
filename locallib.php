@@ -53,6 +53,9 @@ class local_codechecker_form extends moodleform {
         $mform->setType('exclude', PARAM_NOTAGS);
         $mform->setDefault('exclude', '*/yui/build/*, */tests/fixtures/*');
 
+        $mform->addElement('advcheckbox', 'includewarnings', get_string('includewarnings', 'local_codechecker'));
+        $mform->setType('includewarnings', PARAM_BOOL);
+
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
 }
@@ -82,6 +85,11 @@ class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
     /** Set the reportfile to use */
     public function setReportFile($reportfile) {
         $this->reportfile = $reportfile;
+    }
+
+    /** Set the warnings flag to use */
+    public function setIncludeWarnings($includewarnings) {
+        $this->warningSeverity = (int)$includewarnings;
     }
 
     /* Overload method to inject our settings */
