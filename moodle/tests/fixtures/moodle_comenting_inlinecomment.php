@@ -77,3 +77,19 @@ echo 'hello'; // A--------------.
 // just checking multilines do work ok.
 /// And the correct problems are detected, also this 3-slash line
 // missig upper at the start and missing dot at the end
+
+// Following CONTRIB-6025, let's accept phpdoc type hinting matching with begin of next line.
+/** @var some_class $variable */
+$variable = $giveme->some_class();
+
+foreach ($somearray as $variable) {
+    /** @var some_class $variable */
+    $variable->do_something();
+}
+
+// Don't accept type hinting if it does not match the begin of next line.
+/** @var some_class $variable */
+lets_execute_it($variable->do_something());
+
+/** @var some_class $variable */
+$variables = $giveme->some_class();

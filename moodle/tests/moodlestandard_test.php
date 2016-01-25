@@ -55,7 +55,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            28 => 'Inline doc block comments are not allowed; use "// Comment." instead',
            44 => 1,
            73 => 'Perl-style comments are not allowed; use "// Comment." instead',
-           78 => '3 slashes comments are not allowed'));
+           78 => '3 slashes comments are not allowed',
+           91 => '\'$variable\' does not match next code line \'lets_execute_it...\'',
+           94 => 1));
         $this->set_warnings(array(
             4 => 0,
             6 => array(null, 'Commenting.InlineComment.InvalidEndChar'),
