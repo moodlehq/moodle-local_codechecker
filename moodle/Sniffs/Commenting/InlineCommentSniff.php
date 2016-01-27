@@ -131,6 +131,45 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 return;
             }
 
+            // Allow @var (type hinting) phpdocs matching beginning of next line.
+            $nextToken = $phpcsFile->findNext(
+                T_DOC_COMMENT_WHITESPACE,
+                ($stackPtr + 1),
+                null,
+                true
+            );
+            // Is it a @var tag in the comment?
+            if ($tokens[$nextToken]['code'] === T_DOC_COMMENT_TAG &&
+                    $tokens[$nextToken]['content'] == '@var') {
+                $nextToken = $phpcsFile->findNext(
+                    T_DOC_COMMENT_WHITESPACE,
+                    ($nextToken + 1),
+                    null,
+                    true
+                );
+                // Does the @var comment string end with a variable?
+                if ($tokens[$nextToken]['code'] === T_DOC_COMMENT_STRING) {
+                    if (preg_match('/\$[^ ]+ *$/', $tokens[$nextToken]['content'], $matches)) {
+                        $foundvar = trim($matches[0]);
+                        // Does the found variable match the beginning of the next line?
+                        $nextToken = $phpcsFile->findNext(
+                            PHP_CodeSniffer_Tokens::$emptyTokens,
+                            ($nextToken + 1),
+                            null,
+                            true
+                        );
+                        if ($tokens[$nextToken]['content'] !== $foundvar) {
+                            // Not valid type-hinting, specialised error.
+                            $error = 'Inline doc block type-hinting for \'%s\' does not match next code line \'%s...\'';
+                            $data = array($foundvar, $tokens[$nextToken]['content']);
+                            $phpcsFile->addError($error, $stackPtr, 'TypeHintingMatch', $data);
+                        }
+                        return; // Have finished.
+                    }
+                }
+            }
+
+
             if ($tokens[$stackPtr]['content'] === '/**') {
                 $error = 'Inline doc block comments are not allowed; use "// Comment." instead';
                 $phpcsFile->addError($error, $stackPtr, 'DocBlock');
