@@ -151,14 +151,42 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 if ($tokens[$nextToken]['code'] === T_DOC_COMMENT_STRING) {
                     if (preg_match('/\$[^ ]+ *$/', $tokens[$nextToken]['content'], $matches)) {
                         $foundvar = trim($matches[0]);
-                        // Does the found variable match the beginning of the next line?
+                        // Does the found variable match any next line beginning with any of:
+                        //   - a list() statement containing the variable.
+                        //   - the variable.
                         $nextToken = $phpcsFile->findNext(
                             PHP_CodeSniffer_Tokens::$emptyTokens,
                             ($nextToken + 1),
                             null,
                             true
                         );
-                        if ($tokens[$nextToken]['content'] !== $foundvar) {
+                        if ($tokens[$nextToken]['code'] === T_LIST) {
+                            // Let's look within the list for the variable,
+                            // calculating its start and end.
+                            $liststart = $phpcsFile->findNext(
+                                T_OPEN_PARENTHESIS,
+                                ($nextToken + 1)
+                            );
+                            $listend = $phpcsFile->findNext(
+                                T_CLOSE_PARENTHESIS,
+                                ($liststart + 1)
+                            );
+                            // Now look for the var within the list used variables.
+                            $nextToken = $phpcsFile->findNext(
+                                T_VARIABLE,
+                                $liststart,
+                                $listend,
+                                false,
+                                $foundvar,
+                                true
+                            );
+                            if (!$nextToken) {
+                                // Not valid type-hinting, specialised error.
+                                $error = 'Inline doc block type-hinting for \'%s\' does not match next list() variables';
+                                $data = array($foundvar);
+                                $phpcsFile->addError($error, $stackPtr, 'TypeHintingList', $data);
+                            }
+                        } else if ($tokens[$nextToken]['content'] !== $foundvar) {
                             // Not valid type-hinting, specialised error.
                             $error = 'Inline doc block type-hinting for \'%s\' does not match next code line \'%s...\'';
                             $data = array($foundvar, $tokens[$nextToken]['content']);
