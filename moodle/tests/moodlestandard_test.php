@@ -386,4 +386,28 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // Let's do all the hard work!
         $this->verify_cs_results();
     }
+
+    /**
+     * Test variable naming standards
+     */
+    public function test_squid_php_commentedoutcode() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('Squiz.PHP.CommentedOutCode');
+        $this->set_fixture(__DIR__ . '/fixtures/squiz_php_commentedoutcode.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array());
+        $this->set_warnings(array(
+            5 => 'This comment is 63% valid code; is this commented out code',
+            9 => '@Source: Squiz.PHP.CommentedOutCode.Found'
+        ));
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
 }
