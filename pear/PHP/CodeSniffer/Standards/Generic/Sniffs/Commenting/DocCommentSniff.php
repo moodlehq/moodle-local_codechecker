@@ -159,17 +159,13 @@ class Generic_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
             }
         }
 
-        if (preg_match('/\p{Lu}|\P{L}/u', $shortContent[0]) === 0) {
+        if (preg_match('/^\p{Ll}/u', $shortContent) === 1) {
             $error = 'Doc comment short description must start with a capital letter';
             $phpcsFile->addError($error, $short, 'ShortNotCapital');
         }
 
         $long = $phpcsFile->findNext($empty, ($shortEnd + 1), ($commentEnd - 1), true);
-        if ($long === false) {
-            return;
-        }
-
-        if ($tokens[$long]['code'] === T_DOC_COMMENT_STRING) {
+        if ($long !== false && $tokens[$long]['code'] === T_DOC_COMMENT_STRING) {
             if ($tokens[$long]['line'] !== ($tokens[$shortEnd]['line'] + 2)) {
                 $error = 'There must be exactly one blank line between descriptions in a doc comment';
                 $fix   = $phpcsFile->addFixableError($error, $long, 'SpacingBetween');
@@ -189,7 +185,7 @@ class Generic_Sniffs_Commenting_DocCommentSniff implements PHP_CodeSniffer_Sniff
                 }
             }
 
-            if (preg_match('/\p{Lu}|\P{L}/u', $tokens[$long]['content'][0]) === 0) {
+            if (preg_match('/^\p{Ll}/u', $tokens[$long]['content']) === 1) {
                 $error = 'Doc comment long description must start with a capital letter';
                 $phpcsFile->addError($error, $long, 'LongNotCapital');
             }

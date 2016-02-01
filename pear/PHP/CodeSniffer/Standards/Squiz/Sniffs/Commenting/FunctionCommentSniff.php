@@ -251,7 +251,7 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff extends PEAR_Sniffs_Commentin
             $commentLines = array();
             if ($tokens[($tag + 2)]['code'] === T_DOC_COMMENT_STRING) {
                 $matches = array();
-                preg_match('/([^$&]+)(?:((?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
+                preg_match('/([^$&.]+)(?:((?:\.\.\.)?(?:\$|&)[^\s]+)(?:(\s+)(.*))?)?/', $tokens[($tag + 2)]['content'], $matches);
 
                 $typeLen   = strlen($matches[1]);
                 $type      = trim($matches[1]);
@@ -327,6 +327,14 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff extends PEAR_Sniffs_Commentin
         $realParams  = $phpcsFile->getMethodParameters($stackPtr);
         $foundParams = array();
 
+        // We want to use ... for all variable length arguments, so added
+        // this prefix to the variable name so comparisons are easier.
+        foreach ($realParams as $pos => $param) {
+            if ($param['variable_length'] === true) {
+                $realParams[$pos]['name'] = '...'.$realParams[$pos]['name'];
+            }
+        }
+
         foreach ($params as $pos => $param) {
             // If the type is empty, the whole line is empty.
             if ($param['type'] === '') {
@@ -359,12 +367,24 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff extends PEAR_Sniffs_Commentin
                 } else if (count($typeNames) === 1) {
                     // Check type hint for array and custom type.
                     $suggestedTypeHint = '';
-                    if (strpos($suggestedName, 'array') !== false) {
+                    if (strpos($suggestedName, 'array') !== false || substr($suggestedName, -2) === '[]') {
                         $suggestedTypeHint = 'array';
                     } else if (strpos($suggestedName, 'callable') !== false) {
                         $suggestedTypeHint = 'callable';
+                    } else if (strpos($suggestedName, 'callback') !== false) {
+                        $suggestedTypeHint = 'callable';
                     } else if (in_array($typeName, PHP_CodeSniffer::$allowedTypes) === false) {
                         $suggestedTypeHint = $suggestedName;
+                    } else if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+                        if ($typeName === 'string') {
+                            $suggestedTypeHint = 'string';
+                        } else if ($typeName === 'int' || $typeName === 'integer') {
+                            $suggestedTypeHint = 'int';
+                        } else if ($typeName === 'float') {
+                            $suggestedTypeHint = 'float';
+                        } else if ($typeName === 'bool' || $typeName === 'boolean') {
+                            $suggestedTypeHint = 'bool';
+                        }
                     }
 
                     if ($suggestedTypeHint !== '' && isset($realParams[$pos]) === true) {
@@ -375,7 +395,17 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff extends PEAR_Sniffs_Commentin
                                       $suggestedTypeHint,
                                       $param['var'],
                                      );
-                            $phpcsFile->addError($error, $stackPtr, 'TypeHintMissing', $data);
+
+                            $errorCode = 'TypeHintMissing';
+                            if ($suggestedTypeHint === 'string'
+                                || $suggestedTypeHint === 'int'
+                                || $suggestedTypeHint === 'float'
+                                || $suggestedTypeHint === 'bool'
+                            ) {
+                                $errorCode = 'Scalar'.$errorCode;
+                            }
+
+                            $phpcsFile->addError($error, $stackPtr, $errorCode, $data);
                         } else if ($typeHint !== substr($suggestedTypeHint, (strlen($typeHint) * -1))) {
                             $error = 'Expected type hint "%s"; found "%s" for %s';
                             $data  = array(
@@ -384,7 +414,7 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff extends PEAR_Sniffs_Commentin
                                       $param['var'],
                                      );
                             $phpcsFile->addError($error, $stackPtr, 'IncorrectTypeHint', $data);
-                        }
+                        }//end if
                     } else if ($suggestedTypeHint === '' && isset($realParams[$pos]) === true) {
                         $typeHint = $realParams[$pos]['type_hint'];
                         if ($typeHint !== '') {
@@ -514,8 +544,7 @@ class Squiz_Sniffs_Commenting_FunctionCommentSniff extends PEAR_Sniffs_Commentin
             }//end if
 
             // Param comments must start with a capital letter and end with the full stop.
-            $firstChar = $param['comment']{0};
-            if (preg_match('|\p{Lu}|u', $firstChar) === 0) {
+            if (preg_match('/^(\p{Ll}|\P{L})/u', $param['comment']) === 1) {
                 $error = 'Parameter comment must start with a capital letter';
                 $phpcsFile->addError($error, $param['tag'], 'ParamCommentNotCapital');
             }

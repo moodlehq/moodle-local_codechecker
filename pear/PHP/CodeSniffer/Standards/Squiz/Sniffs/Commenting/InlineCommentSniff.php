@@ -94,6 +94,10 @@ class Squiz_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Snif
                        T_ABSTRACT,
                        T_CONST,
                        T_PROPERTY,
+                       T_INCLUDE,
+                       T_INCLUDE_ONCE,
+                       T_REQUIRE,
+                       T_REQUIRE_ONCE,
                       );
 
             if (in_array($tokens[$nextToken]['code'], $ignore) === true) {
@@ -257,18 +261,14 @@ class Squiz_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Snif
             return;
         }
 
-        // If the first character is now uppercase and is not
-        // a non-letter character, throw an error.
-        // \p{Lu} : an uppercase letter that has a lowercase variant.
-        // \P{L}  : a non-letter character.
-        if (preg_match('/\p{Lu}|\P{L}/u', $commentText[0]) === 0) {
+        if (preg_match('/^\p{Ll}/u', $commentText) === 1) {
             $error = 'Inline comments must start with a capital letter';
             $phpcsFile->addError($error, $topComment, 'NotCapital');
         }
 
         // Only check the end of comment character if the start of the comment
         // is a letter, indicating that the comment is just standard text.
-        if (preg_match('/\P{L}/u', $commentText[0]) === 0) {
+        if (preg_match('/^\p{L}/u', $commentText) === 1) {
             $commentCloser   = $commentText[(strlen($commentText) - 1)];
             $acceptedClosers = array(
                                 'full-stops'        => '.',

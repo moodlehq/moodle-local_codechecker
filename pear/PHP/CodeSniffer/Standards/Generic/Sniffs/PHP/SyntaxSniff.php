@@ -56,7 +56,12 @@ class Generic_Sniffs_PHP_SyntaxSniff implements PHP_CodeSniffer_Sniff
     {
         $phpPath = PHP_CodeSniffer::getConfigData('php_path');
         if ($phpPath === null) {
-            return;
+            // PHP_BINARY is available in PHP 5.4+.
+            if (defined('PHP_BINARY') === true) {
+                $phpPath = PHP_BINARY;
+            } else {
+                return;
+            }
         }
 
         $fileName = $phpcsFile->getFilename();
@@ -64,7 +69,7 @@ class Generic_Sniffs_PHP_SyntaxSniff implements PHP_CodeSniffer_Sniff
         $output   = shell_exec($cmd);
 
         $matches = array();
-        if (preg_match('/^.*error:(.*) in .* on line ([0-9]+)/', $output, $matches) === 1) {
+        if (preg_match('/^.*error:(.*) in .* on line ([0-9]+)/', trim($output), $matches) === 1) {
             $error = trim($matches[1]);
             $line  = (int) $matches[2];
             $phpcsFile->addErrorOnLine("PHP syntax error: $error", $line, 'PHPSyntax');
