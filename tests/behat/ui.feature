@@ -1,0 +1,75 @@
+@local @local_codechecker
+Feature: Codechecker UI works as expected
+  In order to verify coding style
+  As an admin
+  I need to be able to use codechecker UI with success
+
+  Scenario Outline: Verify that specified paths are checked
+    Given I log in as "admin"
+    And I expand "Site administration" node
+    And I expand "Development" node
+    And I follow "Code checker"
+    And I set the field "Path to check" to "<path>"
+    When I press "Check code"
+    Then I should see "<seen>"
+    And I should not see "<notseen>"
+    And I log out
+
+    Examples:
+      | path                                    | seen                           | notseen        |
+      | index.php                               | Files found: 1                 | Invalid path   |
+      | index.php                               | Well done!                     | Invalid path   |
+      | index2.php                              | Invalid path index2.php        | Files found: 1 |
+      | local/codechecker/moodle/tests/fixtures | Files found: 0                 | Invalid path   |
+      | local/codechecker/tests/                | local_codechecker_testcase.php | Invalid path   |
+      | local/codechecker/tests/                | Files found: 1                 | Invalid path   |
+      | local/codechecker/tests/                | Well done!                     | Invalid path   |
+      | admin/index.php                         | Files found: 1                 | Invalid path   |
+      | admin/index.php                         | Total:                         | Well done!     |
+      | admin/index.php                         | Expected 1 space before        | Well done!     |
+      | admin/index.php                         | Inline comments must start     | Well done!     |
+
+  Scenario Outline: Verify that specified exclusions are performed
+    Given I log in as "admin"
+    And I expand "Site administration" node
+    And I expand "Development" node
+    And I follow "Code checker"
+    And I set the field "Path to check" to "<path>"
+    And I set the field "Exclude" to "<exclude>"
+    When I press "Check code"
+    Then I should see "<seen>"
+    And I should not see "<notseen>"
+    And I log out
+
+    Examples:
+      | path                            | exclude            | seen                          | notseen      |
+      | local/codechecker/moodle/tests  | */tests/fixtures/* | Files found: 1                | Invalid path |
+      | local/codechecker/moodle/tests  | */tests/fixtures/* | moodlestandard_test.php       | Invalid path |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Files found: 3                | Invalid path |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Line 1 of the opening comment | moodle_php   |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /PHPCompat   |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /PHPCompat   |
+      | local/codechecker/moodle/tests/ | *moodle_*          | fixtures/PHPCompat            | /moodle_php  |
+
+  # We use the @javascript tag here because of MDL-53083, causing non-javascript to fail unchecking checkboxes
+  @javascript
+  Scenario: Verify that the warnings toogle has effect
+    Given I log in as "admin"
+    And I expand "Site administration" node
+    And I expand "Development" node
+    And I follow "Code checker"
+    And I set the field "Path to check" to "local/codechecker/moodle/tests/fixtures/squiz_php_commentedoutcode.php"
+    And I set the field "Exclude" to "dont_exclude_anything"
+    # Warnings enabled
+    And I set the field "Include warnings" to "1"
+    When I press "Check code"
+    Then I should see "Inline comments must start"
+    And I should see "is this commented out code"
+    And I should not see "0 warning(s)"
+    # Warnings disabled
+    And I set the field "Include warnings" to ""
+    And I press "Check code"
+    And I should see "0 warning(s)"
+    And I should not see "Inline comments must start"
+    And I should not see "is this commented out code"
+    And I log out
