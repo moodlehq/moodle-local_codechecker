@@ -1,8 +1,16 @@
-Changes in version 2.x.y (not released yet)
--------------------------------------------
+Changes in version 2.5.1 (20160214) - Valentinius release!
+----------------------------------------------------------
 - Pull request #19. Minor changes to make it work with CS 2.x (Corey Wallis).
-- Upgrade PHP_CodeSniffer to 2.3.4.
-- Upgrade PHPCompatibility to PHP 5.6 release.
+- CONTRIB-5175: Better modifiers matching in regexps.
+- CONTRIB-5732: Upgrade to recent version (Mark Nielsen):
+    - Upgrade PHP_CodeSniffer to 2.5.1+ (b506fcd).
+    - Upgrade PHPCompatibility to PHP 5.6 release.
+    - Renew various moodle Sniffs using their updated sources.
+    - Fixes to reporting API, unit tests...
+    - Allow the UI to skip warnings (warningSeverity).
+- CONTRIB-6025, CONTRIB-6105: Allow type hinting phpdoc blocks, supported both in variable/list assignments and variable actions.
+- NOBUG: Improve moodle standard unit test coverage.
+- NOBUG: Added some UI acceptance tests.
 
 Changes in version 2.3.2 (20140815) - Candelaria, mojo's paradise!
 ------------------------------------------------------------------
