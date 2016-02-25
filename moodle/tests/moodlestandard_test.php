@@ -233,7 +233,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_warnings(array(
             19 => array('backticks in strings is not recommended'),
             20 => 1,
-            23 => 1));
+            23 => 1,
+            36 => 'backticks in strings',
+            37 => 1));
 
         // Let's do all the hard work!
         $this->verify_cs_results();
