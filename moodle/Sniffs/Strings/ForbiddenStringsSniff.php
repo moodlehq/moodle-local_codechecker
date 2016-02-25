@@ -115,6 +115,32 @@ class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], "'\"");
         if (strpos($text, '`') !== false) {
+
+            // Exception. lang strings ending with _desc or _help can
+            // contain backticks as they are correct Markdown formatting.
+            // Look for previous string.
+            $prevString = $phpcsFile->findPrevious(
+                T_CONSTANT_ENCAPSED_STRING,
+                ($stackPtr - 1));
+            if ($prevString) {
+                $prevtext = trim($tokens[$prevString]['content'], "'\"");
+                // Verify it matches _desc|_help.
+                if (preg_match('/(_desc|_help)$/', $prevtext)) {
+                    // Verify it's an $string array element.
+                    $prevToken = $phpcsFile->findPrevious(
+                        T_OPEN_SQUARE_BRACKET,
+                        ($prevString - 1),
+                        null,
+                        true);
+                    if ($prevToken) {
+                        if ($tokens[$prevToken]['code'] === T_VARIABLE && $tokens[$prevToken]['content'] === '$string') {
+                            // Confirmed we are in a valid lang string using Markdown, skip any warning.
+                            return;
+                        }
+                    }
+                }
+            }
+
             $error = 'The use of backticks in strings is not recommended';
             $phpcsFile->addWarning($error, $stackPtr, 'Found');
         }

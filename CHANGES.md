@@ -1,3 +1,7 @@
+Changes in version 2.5.2 (2016MMDD) - giveme a name!
+----------------------------------------------------
+- MDLSITE-4197: Allow backticks within lang strings. Valid Markdown.
+
 Changes in version 2.5.1 (20160214) - Valentinius release!
 ----------------------------------------------------------
 - Pull request #19. Minor changes to make it work with CS 2.x (Corey Wallis).

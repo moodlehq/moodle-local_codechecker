@@ -28,4 +28,12 @@ $regexp = preg_replace('/test/me0', 'ignore anything having invalid (not "imsxeA
 echo '       <div class="fp-restrictions">';
 echo '{"foo" : {"fe" : 1} }';
 
+// And these are valid lang string using Markdown formatting.
+$string['something_desc'] = 'Some with `backticks` is not so bad';
+$string['something_help'] = 'Some with `backticks` is not so bad';
+
+// But not these.
+$variable['something_desc'] = 'Some with `backticks` in this context is bad';
+$string['something_warn'] = 'Some with `backticks` in this context is bad';
+
 // Fair enough.
