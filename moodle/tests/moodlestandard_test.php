@@ -101,20 +101,44 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
-    public function test_moodle_whitespace_scopeindent() {
+    public function test_generic_whitespace_disalowtabindent() {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('moodle.WhiteSpace.ScopeIndent');
-        $this->set_fixture(__DIR__ . '/fixtures/moodle_whitespace_scopeindent.php');
+        $this->set_sniff('Generic.WhiteSpace.DisallowTabIndent');
+        $this->set_fixture(__DIR__ . '/fixtures/generic_whitespace_disallowtabindent.php');
 
         // Define expected results (errors and warnings). Format, array of:
         //   - line => number of problems,  or
         //   - line => array of contents for message / source problem matching.
         //   - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            6 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent.Incorrect',
-            18 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: moodle.WhiteSpace.ScopeIndent.Incorrect'));
+            9 => 'Spaces must be used to indent lines; tabs are not allowed',
+           10 => 1,
+           11 => 1));
+
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
+    public function test_generic_whitespace_scopeindent() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('Generic.WhiteSpace.ScopeIndent');
+        $this->set_fixture(__DIR__ . '/fixtures/generic_whitespace_scopeindent.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        //   - line => number of problems,  or
+        //   - line => array of contents for message / source problem matching.
+        //   - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            6 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
+            18 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
+            43 => 'expected at least 8 spaces',
+            50 => 'IncorrectExact'));
         $this->set_warnings(array());
 
         // Let's do all the hard work!
