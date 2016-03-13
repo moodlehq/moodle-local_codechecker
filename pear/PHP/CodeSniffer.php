@@ -73,7 +73,7 @@ class PHP_CodeSniffer
      *
      * @var string
      */
-    const VERSION = '2.5.1';
+    const VERSION = '2.6.0';
 
     /**
      * Package stability; either stable, beta or alpha.
@@ -717,6 +717,19 @@ class PHP_CodeSniffer
             $ownSniffs = $this->_expandSniffDirectory($rulesetDir.DIRECTORY_SEPARATOR.'Sniffs', $depth);
         }
 
+        // Process custom sniff config settings.
+        foreach ($ruleset->{'config'} as $config) {
+            if ($this->_shouldProcessElement($config) === false) {
+                continue;
+            }
+
+            $this->setConfigData((string) $config['name'], (string) $config['value'], true);
+            if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                echo str_repeat("\t", $depth);
+                echo "\t=> set config value ".(string) $config['name'].': '.(string) $config['value'].PHP_EOL;
+            }
+        }
+
         foreach ($ruleset->rule as $rule) {
             if (isset($rule['ref']) === false
                 || $this->_shouldProcessElement($rule) === false
@@ -838,19 +851,6 @@ class PHP_CodeSniffer
             chdir($rulesetDir);
             $this->cli->setCommandLineValues($cliArgs);
             chdir($currentDir);
-        }
-
-        // Process custom sniff config settings.
-        foreach ($ruleset->{'config'} as $config) {
-            if ($this->_shouldProcessElement($config) === false) {
-                continue;
-            }
-
-            $this->setConfigData((string) $config['name'], (string) $config['value'], true);
-            if (PHP_CODESNIFFER_VERBOSITY > 1) {
-                echo str_repeat("\t", $depth);
-                echo "\t=> set config value ".(string) $config['name'].': '.(string) $config['value'].PHP_EOL;
-            }
         }
 
         // Process custom ignore pattern rules.
@@ -1700,6 +1700,7 @@ class PHP_CodeSniffer
         $firstContent = $contents;
         if ($contents === null && is_readable($filePath) === true) {
             $handle = fopen($filePath, 'r');
+            stream_set_blocking($handle, true);
             if ($handle !== false) {
                 $firstContent  = fgets($handle);
                 $firstContent .= fgets($handle);

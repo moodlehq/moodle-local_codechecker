@@ -619,6 +619,29 @@ class PHP_CodeSniffer_Tokenizers_PHP
             }
 
             /*
+                Before PHP 5.6, the **= operator was tokenized as
+                T_MULTIPLY followed by T_MUL_EQUAL. So look for and combine
+                these tokens in earlier versions.
+            */
+
+            if ($tokenIsArray === false
+                && $token[0] === '*'
+                && isset($tokens[($stackPtr + 1)]) === true
+                && is_array($tokens[($stackPtr + 1)]) === true
+                && $tokens[($stackPtr + 1)][1] === '*='
+            ) {
+                $newToken            = array();
+                $newToken['code']    = T_POW_EQUAL;
+                $newToken['type']    = 'T_POW_EQUAL';
+                $newToken['content'] = '**=';
+                $finalTokens[$newStackPtr] = $newToken;
+
+                $newStackPtr++;
+                $stackPtr++;
+                continue;
+            }
+
+            /*
                 Before PHP 7, the <=> operator was tokenized as
                 T_IS_SMALLER_OR_EQUAL followed by T_GREATER_THAN.
                 So look for and combine these tokens in earlier versions.
@@ -673,6 +696,7 @@ class PHP_CodeSniffer_Tokenizers_PHP
 
             if ($tokenIsArray === true
                 && $token[0] === T_STRING
+                && isset($tokens[($stackPtr + 1)]) === true
                 && $tokens[($stackPtr + 1)] === ':'
                 && $tokens[($stackPtr - 1)][0] !== T_PAAMAYIM_NEKUDOTAYIM
             ) {
@@ -1021,11 +1045,17 @@ class PHP_CodeSniffer_Tokenizers_PHP
 
                     $tokenAfterReturnTypeHint = $tokens[$i]['scope_opener'];
                 } else if (isset($tokens[$i]['parenthesis_closer']) === true) {
+                    $tokenAfterReturnTypeHint = null;
                     for ($x = ($tokens[$i]['parenthesis_closer'] + 1); $x < $numTokens; $x++) {
                         if ($tokens[$x]['code'] === T_SEMICOLON) {
                             $tokenAfterReturnTypeHint = $x;
                             break;
                         }
+                    }
+
+                    if ($tokenAfterReturnTypeHint === null) {
+                        // Probably a syntax error.
+                        continue;
                     }
                 } else {
                     // Probably a syntax error.
@@ -1240,11 +1270,11 @@ class PHP_CodeSniffer_Tokenizers_PHP
                 }
             }
 
-            if ($tokens[$x]['code'] === T_CASE) {
+            if ($tokens[$x]['code'] === T_CASE || $tokens[$x]['code'] === T_DEFAULT) {
                 // Special case for multiple CASE statements that share the same
                 // closer. Because we are going backwards through the file, this next
-                // CASE statement is already fixed, so just use its closer and don't
-                // worry about fixing anything.
+                // CASE/DEFAULT statement is already fixed, so just use its closer
+                // and don't worry about fixing anything.
                 $newCloser = $tokens[$x]['scope_closer'];
                 $tokens[$i]['scope_closer'] = $newCloser;
                 if (PHP_CODESNIFFER_VERBOSITY > 1) {
@@ -1260,7 +1290,7 @@ class PHP_CodeSniffer_Tokenizers_PHP
             if ($tokens[$x]['code'] !== T_OPEN_CURLY_BRACKET
                 || isset($tokens[$x]['scope_condition']) === true
             ) {
-                // Not a CASE with a curly brace opener.
+                // Not a CASE/DEFAULT with a curly brace opener.
                 continue;
             }
 

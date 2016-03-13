@@ -388,11 +388,18 @@ class PHP_CodeSniffer_CLI
 
         // Check for content on STDIN.
         $handle = fopen('php://stdin', 'r');
-        stream_set_blocking($handle, false);
-        $fileContents = stream_get_contents($handle);
-        fclose($handle);
-        if (trim($fileContents) !== '') {
-            $this->values['stdin'] = $fileContents;
+        if (stream_set_blocking($handle, false) === true) {
+            $fileContents = '';
+            while (($line = fgets(STDIN)) !== false) {
+                $fileContents .= $line;
+                usleep(10);
+            }
+
+            stream_set_blocking($handle, true);
+            fclose($handle);
+            if (trim($fileContents) !== '') {
+                $this->values['stdin'] = $fileContents;
+            }
         }
 
         return $this->values;
@@ -1227,7 +1234,7 @@ class PHP_CodeSniffer_CLI
         echo '                      (extension filtering only valid when checking a directory)'.PHP_EOL;
         echo '                      The type of the file can be specified using: ext/type'.PHP_EOL;
         echo '                      e.g., module/php,es/js'.PHP_EOL;
-        echo '        <generator>   Uses either the "HMTL", "Markdown" or "Text" generator'.PHP_EOL;
+        echo '        <generator>   Uses either the "HTML", "Markdown" or "Text" generator'.PHP_EOL;
         echo '                      (forces documentation generation instead of checking)'.PHP_EOL;
         echo '        <patterns>    A comma separated list of patterns to ignore files and directories'.PHP_EOL;
         echo '        <report>      Print either the "full", "xml", "checkstyle", "csv"'.PHP_EOL;

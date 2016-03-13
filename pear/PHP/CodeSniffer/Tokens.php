@@ -132,6 +132,10 @@ if (defined('T_POW') === false) {
     define('T_POW', 'PHPCS_T_POW');
 }
 
+if (defined('T_POW_EQUAL') === false) {
+    define('T_POW_EQUAL', 'PHPCS_T_POW_EQUAL');
+}
+
 // Some PHP 7 tokens, replicated for lower versions.
 if (defined('T_SPACESHIP') === false) {
     define('T_SPACESHIP', 'PHPCS_T_SPACESHIP');
@@ -319,6 +323,7 @@ final class PHP_CodeSniffer_Tokens
                                    T_LOGICAL_XOR              => 3,
                                    T_METHOD_C                 => 10,
                                    T_MINUS_EQUAL              => 2,
+                                   T_POW_EQUAL                => 3,
                                    T_MOD_EQUAL                => 2,
                                    T_MUL_EQUAL                => 2,
                                    T_NAMESPACE                => 9,
@@ -399,9 +404,11 @@ final class PHP_CodeSniffer_Tokens
     public static $assignmentTokens = array(
                                        T_EQUAL        => T_EQUAL,
                                        T_AND_EQUAL    => T_AND_EQUAL,
+                                       T_OR_EQUAL     => T_OR_EQUAL,
                                        T_CONCAT_EQUAL => T_CONCAT_EQUAL,
                                        T_DIV_EQUAL    => T_DIV_EQUAL,
                                        T_MINUS_EQUAL  => T_MINUS_EQUAL,
+                                       T_POW_EQUAL    => T_POW_EQUAL,
                                        T_MOD_EQUAL    => T_MOD_EQUAL,
                                        T_MUL_EQUAL    => T_MUL_EQUAL,
                                        T_PLUS_EQUAL   => T_PLUS_EQUAL,
@@ -495,29 +502,30 @@ final class PHP_CodeSniffer_Tokens
      * @var array(int)
      */
     public static $scopeOpeners = array(
-                                   T_CLASS     => T_CLASS,
-                                   T_INTERFACE => T_INTERFACE,
-                                   T_TRAIT     => T_TRAIT,
-                                   T_NAMESPACE => T_NAMESPACE,
-                                   T_FUNCTION  => T_FUNCTION,
-                                   T_CLOSURE   => T_CLOSURE,
-                                   T_IF        => T_IF,
-                                   T_SWITCH    => T_SWITCH,
-                                   T_CASE      => T_CASE,
-                                   T_DECLARE   => T_DECLARE,
-                                   T_DEFAULT   => T_DEFAULT,
-                                   T_WHILE     => T_WHILE,
-                                   T_ELSE      => T_ELSE,
-                                   T_ELSEIF    => T_ELSEIF,
-                                   T_FOR       => T_FOR,
-                                   T_FOREACH   => T_FOREACH,
-                                   T_DO        => T_DO,
-                                   T_TRY       => T_TRY,
-                                   T_CATCH     => T_CATCH,
-                                   T_FINALLY   => T_FINALLY,
-                                   T_PROPERTY  => T_PROPERTY,
-                                   T_OBJECT    => T_OBJECT,
-                                   T_USE       => T_USE,
+                                   T_CLASS      => T_CLASS,
+                                   T_ANON_CLASS => T_ANON_CLASS,
+                                   T_INTERFACE  => T_INTERFACE,
+                                   T_TRAIT      => T_TRAIT,
+                                   T_NAMESPACE  => T_NAMESPACE,
+                                   T_FUNCTION   => T_FUNCTION,
+                                   T_CLOSURE    => T_CLOSURE,
+                                   T_IF         => T_IF,
+                                   T_SWITCH     => T_SWITCH,
+                                   T_CASE       => T_CASE,
+                                   T_DECLARE    => T_DECLARE,
+                                   T_DEFAULT    => T_DEFAULT,
+                                   T_WHILE      => T_WHILE,
+                                   T_ELSE       => T_ELSE,
+                                   T_ELSEIF     => T_ELSEIF,
+                                   T_FOR        => T_FOR,
+                                   T_FOREACH    => T_FOREACH,
+                                   T_DO         => T_DO,
+                                   T_TRY        => T_TRY,
+                                   T_CATCH      => T_CATCH,
+                                   T_FINALLY    => T_FINALLY,
+                                   T_PROPERTY   => T_PROPERTY,
+                                   T_OBJECT     => T_OBJECT,
+                                   T_USE        => T_USE,
                                   );
 
     /**

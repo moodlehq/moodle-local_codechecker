@@ -498,12 +498,16 @@ class PHP_CodeSniffer_File
                         $this->_fixableCount = 0;
                         return;
                     } else if (strpos($token['content'], '@codingStandardsChangeSetting') !== false) {
-                        $start         = strpos($token['content'], '@codingStandardsChangeSetting');
-                        $comment       = substr($token['content'], ($start + 30));
-                        $parts         = explode(' ', $comment);
-                        $sniffParts    = explode('.', $parts[0]);
-                        $listenerClass = $sniffParts[0].'_Sniffs_'.$sniffParts[1].'_'.$sniffParts[2].'Sniff';
-                        $this->phpcs->setSniffProperty($listenerClass, $parts[1], $parts[2]);
+                        $start   = strpos($token['content'], '@codingStandardsChangeSetting');
+                        $comment = substr($token['content'], ($start + 30));
+                        $parts   = explode(' ', $comment);
+                        if (count($parts) >= 3) {
+                            $sniffParts = explode('.', $parts[0]);
+                            if (count($sniffParts) >= 3) {
+                                $listenerClass = $sniffParts[0].'_Sniffs_'.$sniffParts[1].'_'.$sniffParts[2].'Sniff';
+                                $this->phpcs->setSniffProperty($listenerClass, $parts[1], $parts[2]);
+                            }
+                        }
                     }//end if
                 }//end if
             }//end if
@@ -2129,10 +2133,27 @@ class PHP_CodeSniffer_File
                     if (PHP_CODESNIFFER_VERBOSITY > 1) {
                         $type = $tokens[$stackPtr]['type'];
                         echo str_repeat("\t", $depth);
-                        echo "=> Found new opening condition before scope opener for $stackPtr:$type, bailing".PHP_EOL;
+                        echo "=> Found new opening condition before scope opener for $stackPtr:$type, ";
                     }
 
-                    return ($i - 1);
+                    if (($tokens[$stackPtr]['code'] === T_IF
+                        || $tokens[$stackPtr]['code'] === T_ELSEIF
+                        || $tokens[$stackPtr]['code'] === T_ELSE)
+                        && ($tokens[$i]['code'] === T_ELSE
+                        || $tokens[$i]['code'] === T_ELSEIF)
+                    ) {
+                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                            echo "continuing".PHP_EOL;
+                        }
+
+                        return ($i - 1);
+                    } else {
+                        if (PHP_CODESNIFFER_VERBOSITY > 1) {
+                            echo "backtracking".PHP_EOL;
+                        }
+
+                        return $stackPtr;
+                    }
                 }//end if
 
                 if (PHP_CODESNIFFER_VERBOSITY > 1) {
@@ -3229,9 +3250,9 @@ class PHP_CodeSniffer_File
 
 
     /**
-     * Returns the position of the next specified token(s).
+     * Returns the position of the previous specified token(s).
      *
-     * If a value is specified, the next token of the specified type(s)
+     * If a value is specified, the previous token of the specified type(s)
      * containing the specified value will be returned.
      *
      * Returns false if no token can be found.
@@ -3242,14 +3263,14 @@ class PHP_CodeSniffer_File
      * @param int       $end     The end position to fail if no token is found.
      *                           if not specified or null, end will default to
      *                           the start of the token stack.
-     * @param bool      $exclude If true, find the next token that are NOT of
+     * @param bool      $exclude If true, find the previous token that are NOT of
      *                           the types specified in $types.
      * @param string    $value   The value that the token(s) must be equal to.
      *                           If value is omitted, tokens with any value will
      *                           be returned.
      * @param bool      $local   If true, tokens outside the current statement
      *                           will not be checked. IE. checking will stop
-     *                           at the next semi-colon found.
+     *                           at the previous semi-colon found.
      *
      * @return int|bool
      * @see    findNext()
