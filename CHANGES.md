@@ -1,6 +1,12 @@
-Changes in version 2.5.2 (2016MMDD) - giveme a name!
-----------------------------------------------------
+Changes in version 2.5.2 (20160314) - The March begins...
+---------------------------------------------------------
 - MDLSITE-4197: Allow backticks within lang strings. Valid Markdown.
+- CONTRIB-6146: Better handling of indentation in files having multiple PHP blocks.
+    - Moving away from our custom indentation Sniff.
+    - Using upstream Generic.Whitespace.ScopeIndent, with open/close tags rooting indentation.
+    - Added Generic.Whitespace.DisallowTabIndent (to detect tabs within codechecker).
+    - Better coverage of indentation tests.
+- NOBUG: Upgrade PHP_CodeSniffer to pre 2.6.0 version (8c5d176).
 
 Changes in version 2.5.1 (20160214) - Valentinius release!
 ----------------------------------------------------------
