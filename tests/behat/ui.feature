@@ -18,8 +18,8 @@ Feature: Codechecker UI works as expected
     Examples:
       | path                                    | seen                           | notseen        |
       | index.php                               | Files found: 1                 | Invalid path   |
-      | index.php                               | Well done!                     | Invalid path   |
       | index2.php                              | Invalid path index2.php        | Files found: 1 |
+      | local/codechecker/version.php           | Well done!                     | Invalid path   |
       | local/codechecker/moodle/tests/fixtures | Files found: 0                 | Invalid path   |
       | local/codechecker/tests/                | local_codechecker_testcase.php | Invalid path   |
       | local/codechecker/tests/                | Files found: 1                 | Invalid path   |
@@ -47,9 +47,9 @@ Feature: Codechecker UI works as expected
       | local/codechecker/moodle/tests  | */tests/fixtures/* | moodlestandard_test.php       | Invalid path |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Files found: 5                | Invalid path |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Line 1 of the opening comment | moodle_php   |
-      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /PHPCompat   |
-      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /PHPCompat   |
-      | local/codechecker/moodle/tests/ | *moodle_*          | fixtures/PHPCompat            | /moodle_php  |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
+      | local/codechecker/moodle/tests/ | *moodle_*          | fixtures/phpcompat            | /moodle_php  |
 
   # We use the @javascript tag here because of MDL-53083, causing non-javascript to fail unchecking checkboxes
   @javascript

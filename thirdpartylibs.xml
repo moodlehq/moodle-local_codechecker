@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>pear</location>
+        <name>PHP_CodeSniffer</name>
+        <version>pre 2.6.0 (8c5d176)</version>
+        <license>BSD 3-Clause</license>
+    </library>
+    <library>
+        <location>PHPCompatibility</location>
+        <name>PHP Compatibility Coding Standard</name>
+        <version>(1becdd2)</version>
+        <license>LGPL</license>
+        <licenseversion>3</licenseversion>
+    </library>
+</libraries>

@@ -210,11 +210,13 @@ class local_codechecker_renderer extends plugin_renderer_base {
         if ($lastfileandline !== $prettypath . '#@#' . $line) {
             // We have moved to another line, output it.
             $code = html_writer::tag('li', html_writer::tag('div',
-                        html_writer::tag('pre', '#' . $line . ': ' . str_replace(
-                            array_keys($this->replaces),
-                            array_values($this->replaces),
-                            s(local_codechecker_get_line_of_code($line, $prettypath)))
-                        )), array('class' => 'sourcecode'));
+                html_writer::tag('pre', '#' . $line . ': ' . str_replace(
+                    array_keys($this->replaces),
+                    array_values($this->replaces),
+                    s(local_codechecker_get_line_of_code($line, $prettypath))
+                    ))),
+                array('class' => 'sourcecode')
+            );
             $lastfileandline = $prettypath . '#@#' . $line;
         }
 

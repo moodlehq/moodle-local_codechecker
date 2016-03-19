@@ -1,0 +1,51 @@
+language: php
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+php:
+  - 5.4
+  - 7.0
+
+env:
+  - MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+  - MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+  - MOODLE_BRANCH=MOODLE_30_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+  - MOODLE_BRANCH=MOODLE_29_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+  - MOODLE_BRANCH=MOODLE_28_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+  - MOODLE_BRANCH=MOODLE_27_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+
+matrix:
+  exclude:
+    - php: 7.0
+      env: MOODLE_BRANCH=MOODLE_27_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+    - php: 7.0
+      env: MOODLE_BRANCH=MOODLE_28_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+    - php: 7.0
+      env: MOODLE_BRANCH=MOODLE_29_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  - cd ../..
+  - composer selfupdate
+  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+  # - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci dev-master
+  - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+
+install:
+  - moodle-plugin-ci install
+
+script:
+  - moodle-plugin-ci phplint
+  - moodle-plugin-ci phpcpd
+  - moodle-plugin-ci phpmd
+  - moodle-plugin-ci codechecker
+  - moodle-plugin-ci csslint
+  - moodle-plugin-ci shifter
+  - moodle-plugin-ci jshint
+  - moodle-plugin-ci validate
+  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci behat

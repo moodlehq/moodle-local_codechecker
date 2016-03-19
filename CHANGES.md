@@ -1,3 +1,9 @@
+Changes in version 2.5.3 (201604XX) - Another dent to indent
+------------------------------------------------------------
+- NOBUG: Add travis support (using the nice [moodle-plugin-ci](https://github.com/moodlerooms/moodle-plugin-ci)
+      assistant for Moodle plugins.
+- ...
+
 Changes in version 2.5.2 (20160314) - The March begins...
 ---------------------------------------------------------
 - MDLSITE-4197: Allow backticks within lang strings. Valid Markdown.

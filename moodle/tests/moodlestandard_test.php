@@ -45,9 +45,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_comenting_inlinecomment.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             4 => array('3 slashes comments are not allowed'),
             6 => 1,
@@ -87,9 +87,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_controlstructures_controlsignature.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             3 => 0,
             4 => array('found "if(...) {'),
@@ -109,9 +109,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/generic_whitespace_disallowtabindent.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             9 => 'Spaces must be used to indent lines; tabs are not allowed',
            10 => 1,
@@ -131,9 +131,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/generic_whitespace_scopeindent.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             6 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
             18 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
@@ -153,9 +153,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddenfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             5 => 'function sizeof() is forbidden; use count()',
             6 => 1,
@@ -182,9 +182,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddennamesasinvokedfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             5 => 0, // These are allowed as invoked functions in Moodle for now.
             6 => 0,
@@ -218,9 +218,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddentokens.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             5 => 'The use of function eval() is forbidden',
             6 => 'The use of operator goto is forbidden',
@@ -241,9 +241,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_strings_forbiddenstrings.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             8 => 'The use of the AS keyword to alias tables is bad for cross-db',
             10 => 1,
@@ -268,17 +268,17 @@ class moodlestandard_testcase extends local_codechecker_testcase {
     /**
      * Test external sniff incorporated to moodle standard.
      */
-    public function test_PHPCompatibility_php_deprecatedfunctions() {
+    public function test_phpcompatibility_php_deprecatedfunctions() {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
         $this->set_sniff('PHPCompatibility.PHP.DeprecatedFunctions');
-        $this->set_fixture(__DIR__ . '/fixtures/PHPCompatibility_php_deprecatedfunctions.php');
+        $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_deprecatedfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
         $this->set_warnings(array(
             5 => array('function ereg_replace', 'use call_user_func instead', '@Source: PHPCompat')));
@@ -290,17 +290,17 @@ class moodlestandard_testcase extends local_codechecker_testcase {
     /**
      * Test call time pass by reference.
      */
-    public function test_PHPCompatibility_php_forbiddencalltimepassbyreference() {
+    public function test_phpcompatibility_php_forbiddencalltimepassbyreference() {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
         $this->set_sniff('PHPCompatibility.PHP.ForbiddenCallTimePassByReference');
-        $this->set_fixture(__DIR__ . '/fixtures/PHPCompatibility_php_forbiddencalltimepassbyreference.php');
+        $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_forbiddencalltimepassbyreference.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             6 => array('call-time pass-by-reference is prohibited'),
             7 => array('@Source: PHPCompat')));
@@ -321,9 +321,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/moodle_namingconventions_variablename.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
             4 => 'must not contain underscores',
             5 => 'must be all lower-case',
@@ -358,9 +358,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/squiz_whitespace_operatorspacing.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
                                5 => 0,
                                6 => 'Expected 1 space before',
@@ -424,9 +424,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_fixture(__DIR__ . '/fixtures/squiz_php_commentedoutcode.php');
 
         // Define expected results (errors and warnings). Format, array of:
-        //   - line => number of problems,  or
-        //   - line => array of contents for message / source problem matching.
-        //   - line => string of contents for message / source problem matching (only 1).
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
         $this->set_warnings(array(
             5 => 'This comment is 63% valid code; is this commented out code',
