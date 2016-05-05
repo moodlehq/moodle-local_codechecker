@@ -51,7 +51,7 @@ class local_codechecker_form extends moodleform {
 
         $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size' => '48'));
         $mform->setType('exclude', PARAM_NOTAGS);
-        $mform->setDefault('exclude', '*/yui/build/*, */tests/fixtures/*');
+        $mform->setDefault('exclude', '');
 
         $mform->addElement('advcheckbox', 'includewarnings', get_string('includewarnings', 'local_codechecker'));
         $mform->setType('includewarnings', PARAM_BOOL);
@@ -252,6 +252,11 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
             $finalpaths[$extrapath] = 'absolute';
         }
     }
+
+    // Ignore any compiled JS and test fixtures.
+    $finalpaths['*/amd/build/*'] = 'absolute';
+    $finalpaths['*/yui/build/*'] = 'absolute';
+    $finalpaths['*/tests/fixtures/*'] = 'absolute';
 
     return $finalpaths;
 }
