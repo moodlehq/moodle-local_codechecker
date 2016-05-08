@@ -2,6 +2,7 @@ Changes in version 2.5.3 (201604XX) - Another dent to indent
 ------------------------------------------------------------
 - NOBUG: Add travis support (using the nice [moodle-plugin-ci](https://github.com/moodlerooms/moodle-plugin-ci)
       assistant for Moodle plugins.
+- NOBUG: Upgrade PHP_CodeSniffer to 2.6.0 version.
 - ...
 
 Changes in version 2.5.2 (20160314) - The March begins...

@@ -459,8 +459,11 @@ class PHP_CodeSniffer_File
         // If this is standard input, see if a filename was passed in as well.
         // This is done by including: phpcs_input_file: [file path]
         // as the first line of content.
-        if ($this->_file === 'STDIN' && $contents !== null) {
-            if (substr($contents, 0, 17) === 'phpcs_input_file:') {
+        if ($this->_file === 'STDIN') {
+            $cliValues = $this->phpcs->cli->getCommandLineValues();
+            if ($cliValues['stdinPath'] !== '') {
+                $this->_file = $cliValues['stdinPath'];
+            } else if ($contents !== null && substr($contents, 0, 17) === 'phpcs_input_file:') {
                 $eolPos      = strpos($contents, $this->eolChar);
                 $filename    = trim(substr($contents, 17, ($eolPos - 17)));
                 $contents    = substr($contents, ($eolPos + strlen($this->eolChar)));
@@ -501,12 +504,11 @@ class PHP_CodeSniffer_File
                         $start   = strpos($token['content'], '@codingStandardsChangeSetting');
                         $comment = substr($token['content'], ($start + 30));
                         $parts   = explode(' ', $comment);
-                        if (count($parts) >= 3) {
-                            $sniffParts = explode('.', $parts[0]);
-                            if (count($sniffParts) >= 3) {
-                                $listenerClass = $sniffParts[0].'_Sniffs_'.$sniffParts[1].'_'.$sniffParts[2].'Sniff';
-                                $this->phpcs->setSniffProperty($listenerClass, $parts[1], $parts[2]);
-                            }
+                        if (count($parts) >= 3
+                            && isset($this->phpcs->sniffCodes[$parts[0]]) === true
+                        ) {
+                            $listenerClass = $this->phpcs->sniffCodes[$parts[0]];
+                            $this->phpcs->setSniffProperty($listenerClass, $parts[1], $parts[2]);
                         }
                     }//end if
                 }//end if
