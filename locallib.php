@@ -256,7 +256,9 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
     // Ignore any compiled JS and test fixtures.
     $finalpaths['*/amd/build/*'] = 'absolute';
     $finalpaths['*/yui/build/*'] = 'absolute';
-    $finalpaths['*/tests/fixtures/*'] = 'absolute';
+    if (!defined('BEHAT_SITE_RUNNING')) { // We need testing fixtures at hand for testing purposes, heh.
+        $finalpaths['*/tests/fixtures/*'] = 'absolute';
+    }
 
     return $finalpaths;
 }

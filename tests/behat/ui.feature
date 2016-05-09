@@ -10,6 +10,7 @@ Feature: Codechecker UI works as expected
     And I expand "Development" node
     And I follow "Code checker"
     And I set the field "Path to check" to "<path>"
+    And I set the field "Exclude" to "*/tests/fixtures/*"
     When I press "Check code"
     Then I should see "<seen>"
     And I should not see "<notseen>"
