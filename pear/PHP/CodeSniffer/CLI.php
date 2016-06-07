@@ -14,11 +14,13 @@
 
 error_reporting(E_ALL | E_STRICT);
 
-// Installations via Composer: make sure that we autoload all dependencies.
-if (file_exists($a = dirname(__FILE__).'/../../../autoload.php') === true) {
-    include_once $a;
-} else if (file_exists($a = dirname(__FILE__).'/../vendor/autoload.php') === true) {
-    include_once $a;
+// Make sure that we autoload all dependencies if running via Composer.
+if (version_compare(PHP_VERSION, '5.3.2', '>=') === true) {
+    if (file_exists($a = dirname(__FILE__).'/../../../autoload.php') === true) {
+        include_once $a;
+    } else if (file_exists($a = dirname(__FILE__).'/../vendor/autoload.php') === true) {
+        include_once $a;
+    }
 }
 
 if (file_exists($a = dirname(__FILE__).'/../CodeSniffer.php') === true) {
@@ -243,7 +245,7 @@ class PHP_CodeSniffer_CLI
     public function checkRequirements()
     {
         // Check the PHP version.
-        if (version_compare(PHP_VERSION, '5.1.2') === -1) {
+        if (version_compare(PHP_VERSION, '5.1.2', '<') === true) {
             echo 'ERROR: PHP_CodeSniffer requires PHP version 5.1.2 or greater.'.PHP_EOL;
             exit(2);
         }
@@ -379,8 +381,6 @@ class PHP_CodeSniffer_CLI
         if (empty($this->values) === false) {
             return $this->values;
         }
-
-        $values = $this->getDefaults();
 
         $args = $_SERVER['argv'];
         array_shift($args);
@@ -1079,7 +1079,7 @@ class PHP_CodeSniffer_CLI
                 $standard = 'PEAR';
             }
 
-            return array($standard);
+            return explode(',', $standard);
         }//end if
 
         $cleaned   = array();
@@ -1334,7 +1334,7 @@ class PHP_CodeSniffer_CLI
      * @param int $width The width of the report. If "auto" then will
      *                   be replaced by the terminal width.
      *
-     * @return void
+     * @return int
      */
     private function _validateReportWidth($width)
     {
