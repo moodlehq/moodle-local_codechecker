@@ -136,3 +136,41 @@ echo $OUTPUT->essential_blocks('side-pre', 'row-fluid', 'aside', 4);
 <?php require_once(\theme_essential\toolbox::get_tile_file('footer')); ?>
 </body>
 </html>
+
+<?php
+
+// Now we are going to try a number of crazily nested indentations, mixing
+// both functions and arrays, to verify that CONTRIB-6206 does not break again.
+
+$somevariable = some_function(another_function($param1, $param2),
+        more_function($param3, another_one(
+                $key1, $value1,
+                $key2, $value2)));
+$continue = this_line_is_correct_and_works_ok();
+
+$somevariable = some_function(another_function($param1, $param2),
+        more_function($param3, array(
+                $key1, $value1,
+                $key2, $value2)));
+$continue = this_line_is_correct_and_works_ok();
+
+function read_competency_framework($id) {
+    global $PAGE;
+
+    $params = self::validate_parameters(self::read_competency_framework_parameters(),
+                                        array(
+                                            'id' => $id,
+                                        ));
+
+    $framework = api::read_framework($params['id']);
+}
+
+if ($showcompleted) {
+    $feedbackcompleted = $DB->get_record('feedback_completed',
+            array('feedback' => $feedback->id, 'id' => $showcompleted,
+                'anonymous_response' => FEEDBACK_ANONYMOUS_YES), '*', MUST_EXIST);
+    $responsetitle = get_string('response_nr', 'feedback') . ': ' .
+        $feedbackcompleted->random_response . ' (' . get_string('anonymous', 'feedback') . ')';
+}
+
+// End of function/array fixtures (CONTRIB-6206).
