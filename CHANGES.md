@@ -2,7 +2,9 @@ Changes in version 2.5.3 (201604XX) - Another dent to indent
 ------------------------------------------------------------
 - NOBUG: Add travis support (using the nice [moodle-plugin-ci](https://github.com/moodlerooms/moodle-plugin-ci)
       assistant for Moodle plugins).
-- NOBUG: Upgrade PHP_CodeSniffer to 2.6.0 version.
+- NOBUG: Upgrade PHP_CodeSniffer to 2.6.0 version. (Mark Nielsen)
+- CONTRIB-5921: Exclude yui/amd and fixtures by default. (Brendan Heywood)
+- CONTRIB-6206: Fixed indentation issues when mixing functions and arrays. Bundled PHP_CodeSniffer upgraded to 2.6.2 dev version.
 - ...
 
 Changes in version 2.5.2 (20160314) - The March begins...
