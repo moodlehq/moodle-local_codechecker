@@ -34,7 +34,8 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
             'OUTPUT', 'PAGE', 'PERF', 'SESSION', 'SITE', 'THEME', 'USER',
             '_SERVER', '_GET', '_POST', '_FILES', '_REQUEST', '_SESSION', '_ENV',
             '_COOKIE', '_HTTP_RAW_POST_DATA', 'ACCESSLIB_PRIVATE', 'ME',
-            'CONDITIONLIB_PRIVATE', 'FILTERLIB_PRIVATE', 'SCRIPT', 'MNET_REMOTE_CLIENT');
+            'CONDITIONLIB_PRIVATE', 'FILTERLIB_PRIVATE', 'SCRIPT', 'MNET_REMOTE_CLIENT',
+            'http_response_header');
 
     /**
      * Processes class member variables.
