@@ -58,6 +58,7 @@ class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
     private $permittedmethods = array(
         'setUp',
         'tearDown', // Used by simpletest.
+        'setUpBeforeClass',
         'offsetExists',
         'offsetGet',
         'offsetSet',
