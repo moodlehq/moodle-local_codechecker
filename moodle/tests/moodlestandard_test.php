@@ -436,4 +436,91 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // Let's do all the hard work!
         $this->verify_cs_results();
     }
+
+    public function test_moodle_files_moodleinternal_problem() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/problem.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array());
+        $this->set_warnings(array(
+            19 => 'Expected MOODLE_INTERNAL check or config.php inclusion'
+        ));
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_namespace_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/namespace_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_no_moodle_cookie_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/no_moodle_cookie_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_behat_skipped() {
+        // Files in behat dirs are ignored.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/behat/behat_mod_workshop.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_lang_skipped() {
+        // Files in lang dirs are ignored.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/lang/en/repository_dropbox.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_namespace_with_use_ok() {
+        // An edge case which allows use statements before defined().
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/namespace_with_use_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_old_style_if_die() {
+        // Old style if statement MOODLE_INTERNAL check.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/old_style_if_die_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
 }
