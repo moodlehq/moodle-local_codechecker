@@ -1,3 +1,11 @@
+Changes in version 2.5.4 (to be released) - Giveme a nice title, please!
+------------------------------------------------------------------------
+- NOBUG: Updated PHP_CodeSniffer to 2.6.2 version.
+- MDLSITE-3688: Verify all files have MOODLE_INTERNAL or require config.php (Dan Poltawski)
+- [PR#31](https://github.com/moodlehq/moodle-local_codechecker/pull/31): Avoid PHPUnit's setUpBeforeClass() to generate CS errors. (David Mudrák)
+- NOBUG: Adjust php combinations for travis testing on multiple branches.
+- [PR#29](https://github.com/moodlehq/moodle-local_codechecker/pull/29): Allow http_response_header global. (Andrew Downes)
+
 Changes in version 2.5.3 (20160608) - Another dent to indent
 ------------------------------------------------------------
 - NOBUG: Add travis support (using the nice [moodle-plugin-ci](https://github.com/moodlerooms/moodle-plugin-ci)
