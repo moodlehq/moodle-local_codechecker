@@ -447,8 +447,6 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
-        $this->set_warnings(array());
-
         $this->set_warnings(array(
             19 => 'Expected MOODLE_INTERNAL check or config.php inclusion'
         ));
@@ -495,6 +493,30 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->set_standard('moodle');
         $this->set_sniff('moodle.Files.MoodleInternal');
         $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/lang/en/repository_dropbox.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_namespace_with_use_ok() {
+        // An edge case which allows use statements before defined().
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/namespace_with_use_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_old_style_if_die() {
+        // Old style if statement MOODLE_INTERNAL check.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/old_style_if_die_ok.php');
 
         $this->set_errors(array());
         $this->set_warnings(array());
