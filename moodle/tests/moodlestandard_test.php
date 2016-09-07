@@ -446,9 +446,22 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => number of problems,  or
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            19 => 'Expected MOODLE_INTERNAL check or config.php inclusion'
+        ));
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_warning() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/warning.php');
+
         $this->set_errors(array());
         $this->set_warnings(array(
-            19 => 'Expected MOODLE_INTERNAL check or config.php inclusion'
+            32 => 'Expected MOODLE_INTERNAL check or config.php inclusion'
         ));
 
         $this->verify_cs_results();

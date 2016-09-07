@@ -74,7 +74,11 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
         }
 
         // Got here because, so something is not right.
-        $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion', $pointer);
+        if ($this->code_changes_global_state($file, $pointer, ($file->numTokens - 1))) {
+            $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.', $pointer);
+        } else {
+            $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion', $pointer);
+        }
     }
 
     /**
@@ -216,6 +220,101 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
         }
 
         return true;
+    }
+
+    /**
+     * Searches for changes in 'global state' rather than just symbol definitions in the code.
+     *
+     * Heavily inspired by PSR1.Files.SideEffects:
+     * https://github.com/squizlabs/PHP_CodeSniffer/blob/master/CodeSniffer/Standards/PSR1/Sniffs/Files/SideEffectsSniff.php
+     *
+     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param int                  $start     The token to start searching from.
+     * @param int                  $end       The token to search to.
+     * @param array                $tokens    The stack of tokens that make up
+     *                                        the file.
+     * @return true if side effect is detected in the code.
+     */
+    private function code_changes_global_state(PHP_CodeSniffer_File $file, $start, $end) {
+        $tokens = $file->getTokens();
+        $symbols = [T_CLASS => T_CLASS, T_INTERFACE => T_INTERFACE, T_TRAIT => T_TRAIT, T_FUNCTION => T_FUNCTION];
+        $conditions = [T_IF => T_IF, T_ELSE   => T_ELSE, T_ELSEIF => T_ELSEIF];
+
+        for ($i = $start; $i <= $end; $i++) {
+            // Ignore whitespace and comments.
+            if (isset(PHP_CodeSniffer_Tokens::$emptyTokens[$tokens[$i]['code']]) === true) {
+                continue;
+            }
+
+            // Ignore function/class prefixes.
+            if (isset(PHP_CodeSniffer_Tokens::$methodPrefixes[$tokens[$i]['code']]) === true) {
+                continue;
+            }
+
+            // Ignore anon classes.
+            if ($tokens[$i]['code'] === T_ANON_CLASS) {
+                $i = $tokens[$i]['scope_closer'];
+                continue;
+            }
+
+            switch ($tokens[$i]['code']) {
+                case T_NAMESPACE:
+                case T_USE:
+                case T_DECLARE:
+                case T_CONST:
+                    // Ignore entire namespace, declare, const and use statements.
+                    if (isset($tokens[$i]['scope_opener']) === true) {
+                        $i = $tokens[$i]['scope_closer'];
+                    } else {
+                        $semicolon = $file->findNext(T_SEMICOLON, ($i + 1));
+                        if ($semicolon !== false) {
+                            $i = $semicolon;
+                        }
+                    }
+                    continue;
+                    break;
+            }
+
+            // Detect and skip over symbols.
+            if (isset($symbols[$tokens[$i]['code']]) === true && isset($tokens[$i]['scope_closer']) === true) {
+                $i = $tokens[$i]['scope_closer'];
+                continue;
+            } else if ($tokens[$i]['code'] === T_STRING && strtolower($tokens[$i]['content']) === 'define') {
+                $prev = $file->findPrevious(T_WHITESPACE, ($i - 1), null, true);
+                if ($tokens[$prev]['code'] !== T_OBJECT_OPERATOR) {
+
+                    $semicolon = $file->findNext(T_SEMICOLON, ($i + 1));
+                    if ($semicolon !== false) {
+                        $i = $semicolon;
+                    }
+
+                    continue;
+                }
+            }
+
+            // Conditional statements are allowed in symbol files as long as the
+            // contents is only a symbol definition. So don't count these as effects
+            // in this case.
+            if (isset($conditions[$tokens[$i]['code']]) === true) {
+                if (isset($tokens[$i]['scope_opener']) === false) {
+                    // Probably an "else if", so just ignore.
+                    continue;
+                }
+
+                if ($this->code_changes_global_state($file, ($tokens[$i]['scope_opener'] + 1), ($tokens[$i]['scope_closer'] - 1))) {
+                    return true;
+                }
+
+                $i = $tokens[$i]['scope_closer'];
+                continue;
+            }
+
+            // If we got here, there is a token which change state..
+            return true;
+        }
+
+        // If we got here, we got out of the loop.
+        return false;
     }
 }
 
