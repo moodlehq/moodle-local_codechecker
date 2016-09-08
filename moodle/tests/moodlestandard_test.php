@@ -523,4 +523,72 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         $this->verify_cs_results();
     }
+
+    public function test_moodle_files_requirelogin_problem() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.RequireLogin');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_requirelogin/problem.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array(
+            25 => 'Expected login check (require_login, require_course_login, admin_externalpage_setup) following config inclusion. None found'
+        ));
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_requirelogin_require_login_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.RequireLogin');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_requirelogin/require_login_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_requirelogin_require_course_login_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.RequireLogin');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_requirelogin/require_course_login_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_requirelogin_admin_externalpage_setup_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.RequireLogin');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_requirelogin/admin_externalpage_setup_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_requirelogin_cliscript_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.RequireLogin');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_requirelogin/cliscript_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_requirelogin_nomoodlecookies_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.RequireLogin');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_requirelogin/nomoodlecookies_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
 }
