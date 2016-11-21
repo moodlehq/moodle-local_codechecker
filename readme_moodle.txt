@@ -8,7 +8,7 @@ Instructions to upgrade the phpcs bundled version:
 
 Current checkout:
 
-  2.6.2 (4edb770)
+  2.7.0 (571e27b)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
