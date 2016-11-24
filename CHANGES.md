@@ -1,3 +1,7 @@
+Changes in version 2.7.0 (YYYYMMDD) - Boosting you!
+---------------------------------------------------
+- NOBUG: Updated PHP_CodeSniffer to 2.7.0 version.
+
 Changes in version 2.5.4 (20160930) - Internally safe
 -----------------------------------------------------
 - NOBUG: Updated PHP_CodeSniffer to 2.6.2 version.
