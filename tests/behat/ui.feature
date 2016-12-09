@@ -6,9 +6,7 @@ Feature: Codechecker UI works as expected
 
   Scenario Outline: Verify that specified paths are checked
     Given I log in as "admin"
-    And I expand "Site administration" node
-    And I expand "Development" node
-    And I follow "Code checker"
+    And I navigate to "Development > Code checker" in site administration
     And I set the field "Path to check" to "<path>"
     And I set the field "Exclude" to "*/tests/fixtures/*"
     When I press "Check code"
@@ -32,9 +30,7 @@ Feature: Codechecker UI works as expected
 
   Scenario Outline: Verify that specified exclusions are performed
     Given I log in as "admin"
-    And I expand "Site administration" node
-    And I expand "Development" node
-    And I follow "Code checker"
+    And I navigate to "Development > Code checker" in site administration
     And I set the field "Path to check" to "<path>"
     And I set the field "Exclude" to "<exclude>"
     When I press "Check code"
@@ -56,9 +52,7 @@ Feature: Codechecker UI works as expected
   @javascript
   Scenario: Verify that the warnings toogle has effect
     Given I log in as "admin"
-    And I expand "Site administration" node
-    And I expand "Development" node
-    And I follow "Code checker"
+    And I navigate to "Development > Code checker" in site administration
     And I set the field "Path to check" to "local/codechecker/moodle/tests/fixtures/squiz_php_commentedoutcode.php"
     And I set the field "Exclude" to "dont_exclude_anything"
     # Warnings enabled
