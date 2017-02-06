@@ -40,6 +40,8 @@ class moodle_Sniffs_PHP_ForbiddenFunctionsSniff
             'print_object' => null,
             // Dangerous functions. From coding style.
             'extract'      => null,
+            // Unit test should not use setExpectedException.                                                                        
+            'setExpectedException' => 'expectException',
             // Note that some of these are handled as specific tokens by the Tokenizer
             // and detected by {@link moodle_Sniffs_PHP_ForbiddenTokensSniff} instead.
             // With phpcs 2.x these are detected both as tokens and functions, so getting
