@@ -9,221 +9,113 @@
 /**
  * Forbidden names as function invocations sniff test file
  *
+ * @group forbiddenNamesAsInvokedFunctions
+ * @group reservedKeywords
+ *
+ * @covers PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
+ *
  * @uses BaseSniffTest
  * @package PHPCompatibility
  * @author Jansen Price <jansen.price@gmail.com>
  */
 class ForbiddenNamesAsInvokedFunctionsSniffTest extends BaseSniffTest
 {
-    /**
-     * Sniffed file
-     *
-     * @var PHP_CodeSniffer_File
-     */
-    protected $_sniffFile;
+
+    const TEST_FILE = 'sniff-examples/forbidden_names_function_invocation.php';
 
     /**
-     * setUp
+     * testReservedKeyword
+     *
+     * @dataProvider dataReservedKeyword
+     *
+     * @param string $keyword      Reserved keyword.
+     * @param array  $lines        The line numbers in the test file which apply to this keyword.
+     * @param string $introducedIn The PHP version in which the keyword became a reserved word.
+     * @param string $okVersion    A PHP version in which the keyword was not yet reserved.
      *
      * @return void
      */
-    public function setUp()
+    public function testReservedKeyword($keyword, $lines, $introducedIn, $okVersion)
     {
-        parent::setUp();
+        $file = $this->sniffFile(self::TEST_FILE, $introducedIn);
+        foreach ($lines as $line) {
+            $this->assertError($file, $line, "'{$keyword}' is a reserved keyword introduced in PHP version {$introducedIn} and cannot be invoked as a function");
+        }
 
-        $this->_sniffFile = $this->sniffFile('sniff-examples/forbidden_names_function_invocation.php');
+        $file = $this->sniffFile(self::TEST_FILE, $okVersion);
+        foreach ($lines as $line) {
+            $this->assertNoViolation($file, $line);
+        }
     }
 
     /**
-     * Test declare parameter by reference
+     * Data provider.
+     *
+     * @see testReservedKeyword()
+     *
+     * @return array
+     */
+    public function dataReservedKeyword()
+    {
+        return array(
+            array('abstract', array(6), '5.0', '4.4'),
+            array('callable', array(7), '5.4', '5.3'),
+            array('catch', array(8), '5.0', '4.4'),
+            array('final', array(10), '5.0', '4.4'),
+            array('finally', array(11), '5.5', '5.4'),
+            array('goto', array(12), '5.3', '5.2'),
+            array('implements', array(13), '5.0', '4.4'),
+            array('interface', array(14), '5.0', '4.4'),
+            array('instanceof', array(15), '5.0', '4.4'),
+            array('insteadof', array(16), '5.4', '5.3'),
+            array('namespace', array(17), '5.3', '5.2'),
+            array('private', array(18), '5.0', '4.4'),
+            array('protected', array(19), '5.0', '4.4'),
+            array('public', array(20), '5.0', '4.4'),
+            array('trait', array(22), '5.4', '5.3'),
+            array('try', array(23), '5.0', '4.4'),
+        );
+    }
+
+
+    /**
+     * testNoFalsePositives
+     *
+     * @dataProvider dataNoFalsePositives
+     *
+     * @param int $line Line number where no error should occur.
      *
      * @return void
      */
-    public function testAbstract()
+    public function testNoFalsePositives($line)
     {
-        $this->assertError($this->_sniffFile, 6, "'abstract' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
+        $file = $this->sniffFile(self::TEST_FILE, '99.0'); // High number beyond any newly introduced keywords.
+        $this->assertNoViolation($file, $line);
     }
 
     /**
-     * testCallable
+     * dataNoFalsePositives
      *
-     * @return void
+     * @see testNoFalsePositives()
+     *
+     * @return array
      */
-    public function testCallable()
-    {
-        $this->assertError($this->_sniffFile, 7, "'callable' is a reserved keyword introduced in PHP version 5.4 and cannot be invoked as a function");
-    }
-
-    /**
-     * testCatch
-     *
-     * @return void
-     */
-    public function testCatch()
-    {
-        $this->assertError($this->_sniffFile, 8, "'catch' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testClone
-     *
-     * @return void
-     */
-    public function testClone()
-    {
-        $this->assertError($this->_sniffFile, 9, "'clone' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testFinal
-     *
-     * @return void
-     */
-    public function testFinal()
-    {
-        $this->assertError($this->_sniffFile, 10, "'final' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testFinally
-     *
-     * TODO: Test 'finally' (PHP 5.5)
-     *
-     * @return void
-     */
-    public function testFinally()
-    {
-    }
-
-    /**
-     * testGoto
-     *
-     * @return void
-     */
-    public function testGoto()
-    {
-        $this->assertError($this->_sniffFile, 12, "'goto' is a reserved keyword introduced in PHP version 5.3 and cannot be invoked as a function");
-    }
-
-    /**
-     * testImplements
-     *
-     * @return void
-     */
-    public function testImplements()
-    {
-        $this->assertError($this->_sniffFile, 13, "'implements' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testInterface
-     *
-     * @return void
-     */
-    public function testInterface()
-    {
-        $this->assertError($this->_sniffFile, 14, "'interface' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testInstanceOf
-     *
-     * @return void
-     */
-    public function testInstanceOf()
-    {
-        $this->assertError($this->_sniffFile, 15, "'instanceof' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testInsteadOf
-     *
-     * @return void
-     */
-    public function testInsteadOf()
-    {
-        $this->assertError($this->_sniffFile, 16, "'insteadof' is a reserved keyword introduced in PHP version 5.4 and cannot be invoked as a function");
-    }
-
-    /**
-     * testNamespace
-     *
-     * @return void
-     */
-    public function testNamespace()
-    {
-        $this->assertError($this->_sniffFile, 17, "'namespace' is a reserved keyword introduced in PHP version 5.3 and cannot be invoked as a function");
-    }
-
-    /**
-     * testPrivate
-     *
-     * @return void
-     */
-    public function testPrivate()
-    {
-        $this->assertError($this->_sniffFile, 18, "'private' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testProteced
-     *
-     * @return void
-     */
-    public function testProteced()
-    {
-        $this->assertError($this->_sniffFile, 19, "'protected' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testPublic
-     *
-     * @return void
-     */
-    public function testPublic()
-    {
-        $this->assertError($this->_sniffFile, 20, "'public' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testThrow
-     *
-     * @return void
-     */
-    public function testThrow()
-    {
-        $this->assertError($this->_sniffFile, 21, "'throw' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * testTrait
-     *
-     * @return void
-     */
-    public function testTrait()
-    {
-        $this->assertError($this->_sniffFile, 22, "'trait' is a reserved keyword introduced in PHP version 5.4 and cannot be invoked as a function");
-    }
-
-    /**
-     * testTry
-     *
-     * @return void
-     */
-    public function testTry()
-    {
-        $this->assertError($this->_sniffFile, 23, "'try' is a reserved keyword introduced in PHP version 5.0 and cannot be invoked as a function");
-    }
-
-    /**
-     * Verify that checking for a specific version works
-     *
-     * @return void
-     */
-    public function testGotoInPreviousVersion()
-    {
-        $this->_sniffFile = $this->sniffFile('sniff-examples/forbidden_names_function_invocation.php', '5.2');
-
-        $this->assertNoViolation($this->_sniffFile, 12);
+    public function dataNoFalsePositives() {
+        return array(
+            array(34),
+            array(35),
+            array(36),
+            array(37),
+            array(38),
+            array(39),
+            array(40),
+            array(41),
+            array(42),
+            array(43),
+            array(44),
+            array(45),
+            array(46),
+            array(47),
+        );
     }
 }

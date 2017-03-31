@@ -33,3 +33,34 @@ function gen_one_to_three() {
         yield $i;
     }
 }
+
+$str = <<<'EOD'
+Example of string
+spanning multiple lines
+using nowdoc syntax.
+EOD;
+
+const TEST = 'Hello';
+
+class testing {
+    const TEST = 'Hello';
+    const ok = 'a';
+}
+
+interface testing {
+    const TEST = 'Hello';
+    const ok = 'a';
+}
+
+function myTest(callable $callableMethod) {}
+
+goto end;
+
+end:
+echo 'something';
+
+
+__halt_compiler();
+
+bla();
+const ok = 'a';

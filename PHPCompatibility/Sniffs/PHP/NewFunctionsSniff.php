@@ -2,12 +2,9 @@
 /**
  * PHPCompatibility_Sniffs_PHP_NewFunctionsSniff.
  *
- * PHP version 5.5
- *
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2013 Cu.be Solutions bvba
  */
 
 /**
@@ -16,19 +13,9 @@
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
- * @version   1.0.0
- * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sniff
+class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_AbstractNewFeatureSniff
 {
-
-    /**
-     * If true, forbidden functions will be considered regular expressions.
-     *
-     * @var bool
-     */
-    protected $patternMatch = false;
-    
     /**
      * A list of new functions, not present in older versions.
      *
@@ -37,7 +24,7 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
      *
      * @var array(string => array(string => int|string|null))
      */
-    public $forbiddenFunctions = array(
+    protected $newFunctions = array(
                                         'array_fill_keys' => array(
                                             '5.1' => false,
                                             '5.2' => true
@@ -107,14 +94,6 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
                                             '5.2' => true
                                         ),
                                         'ming_setSWFCompression' => array(
-                                            '5.1' => false,
-                                            '5.2' => true
-                                        ),
-                                        'swfmovie::namedanchor' => array(
-                                            '5.1' => false,
-                                            '5.2' => true
-                                        ),
-                                        'swfmovie::protect' => array(
                                             '5.1' => false,
                                             '5.2' => true
                                         ),
@@ -327,14 +306,6 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
                                             '5.2' => false,
                                             '5.3' => true
                                         ),
-                                        'streamWrapper::stream_cast' => array(
-                                            '5.2' => false,
-                                            '5.3' => true
-                                        ),
-                                        'streamWrapper::stream_set_option' => array(
-                                            '5.2' => false,
-                                            '5.3' => true
-                                        ),
                                         'date_add' => array(
                                             '5.2' => false,
                                             '5.3' => true
@@ -387,6 +358,10 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
                                             '5.2' => false,
                                             '5.3' => true
                                         ),
+                                        'mysqli_get_cache_stats' => array(
+                                            '5.2' => false,
+                                            '5.3' => true
+                                        ),
                                         'mysqli_fetch_all' => array(
                                             '5.2' => false,
                                             '5.3' => true
@@ -436,6 +411,22 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
                                             '5.3' => true
                                         ),
                                         'acosh' => array(
+                                            '5.2' => false,
+                                            '5.3' => true
+                                        ),
+                                        'asinh' => array(
+                                            '5.2' => false,
+                                            '5.3' => true
+                                        ),
+                                        'atanh' => array(
+                                            '5.2' => false,
+                                            '5.3' => true
+                                        ),
+                                        'expm1' => array(
+                                            '5.2' => false,
+                                            '5.3' => true
+                                        ),
+                                        'log1p' => array(
                                             '5.2' => false,
                                             '5.3' => true
                                         ),
@@ -1085,20 +1076,170 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
                                             '5.4' => false,
                                             '5.5' => true
                                         ),
-                                        'SplFixedArray::_wakup' => array(
-                                            '5.4' => false,
-                                            '5.5' => true
+
+                                        'gmp_root' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'gmp_rootrem' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'hash_equals' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'ldap_escape' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'ldap_modify_batch' => array(
+                                            '5.4.25' => false,
+                                            '5.5.9' => false,
+                                            '5.4.26' => true,
+                                            '5.5.10' => true,
+                                            '5.6.0' => true,
+                                        ),
+                                        'mysqli_get_links_stats' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'openssl_get_cert_locations' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'openssl_x509_fingerprint' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'openssl_spki_new' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'openssl_spki_verify' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'openssl_spki_export_challenge' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'openssl_spki_export' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'pg_connect_poll' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'pg_consume_input' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'pg_flush' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'pg_socket' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'session_abort' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
+                                        ),
+                                        'session_reset' => array(
+                                            '5.5' => false,
+                                            '5.6' => true
                                         ),
 
+                                        'random_bytes' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'random_int' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'error_clear_last' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'gmp_random_seed' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'intdiv' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'preg_replace_callback_array' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'gc_mem_caches' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'get_resources' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'posix_setrlimit' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'inflate_add' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'deflate_add' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'inflate_init' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+                                        'deflate_init' => array(
+                                            '5.6' => false,
+                                            '7.0' => true
+                                        ),
+
+                                        'socket_export_stream' => array(
+                                            '7.0.6' => false,
+                                            '7.0.7' => true
+                                        ),
+
+                                        'curl_multi_errno' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
+                                        'curl_share_errno' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
+                                        'curl_share_strerror' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
+                                        'is_iterable' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
+                                        'pcntl_async_signals' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
+                                        'session_create_id' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
+                                        'session_gc' => array(
+                                            '7.0' => false,
+                                            '7.1' => true
+                                        ),
                                     );
-
-
-    /**
-     * If true, an error will be thrown; otherwise a warning.
-     *
-     * @var bool
-     */
-    public $error = false;
 
 
     /**
@@ -1108,20 +1249,13 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
      */
     public function register()
     {
-        // Everyone has had a chance to figure out what forbidden functions
-        // they want to check for, so now we can cache out the list.
-        $this->forbiddenFunctionNames = array_keys($this->forbiddenFunctions);
-    
-        if ($this->patternMatch === true) {
-            foreach ($this->forbiddenFunctionNames as $i => $name) {
-                $this->forbiddenFunctionNames[$i] = '/'.$name.'/i';
-            }
-        }
-    
+        // Handle case-insensitivity of function names.
+        $this->newFunctions = $this->arrayKeysToLowercase($this->newFunctions);
+
         return array(T_STRING);
-    
+
     }//end register()
-    
+
     /**
      * Processes this test, when one of its tokens is encountered.
      *
@@ -1147,75 +1281,49 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Sni
             // Not a call to a PHP function.
             return;
         }
-
-        $function = strtolower($tokens[$stackPtr]['content']);
-        $pattern  = null;
-
-        if ($this->patternMatch === true) {
-            $count   = 0;
-            $pattern = preg_replace(
-                    $this->forbiddenFunctionNames,
-                    $this->forbiddenFunctionsNames,
-                    $function,
-                    1,
-                    $count
-            );
-
-            if ($count === 0) {
-                return;
-            }
-
-            // Remove the pattern delimiters and modifier.
-            $pattern = substr($pattern, 1, -2);
-        } else {
-            if (in_array($function, $this->forbiddenFunctionNames) === false) {
-                return;
-            }
+        else if($tokens[$prevToken]['code'] === T_NS_SEPARATOR && $tokens[$prevToken - 1]['code'] === T_STRING) {
+            // Namespaced function.
+            return;
         }
 
-        $this->addError($phpcsFile, $stackPtr, $function, $pattern);
+        $function   = $tokens[$stackPtr]['content'];
+        $functionLc = strtolower($function);
+
+        if (isset($this->newFunctions[$functionLc]) === false) {
+            return;
+        }
+
+        $itemInfo = array(
+            'name'   => $function,
+            'nameLc' => $functionLc,
+        );
+        $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
 
     }//end process()
 
 
     /**
-     * Generates the error or wanrning for this sniff.
+     * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the function
-     *                                        in the token array.
-     * @param string               $function  The name of the function.
-     * @param string               $pattern   The pattern used for the match.
+     * @param array $itemInfo Base information about the item.
      *
-     * @return void
+     * @return array Version and other information about the item.
      */
-    protected function addError($phpcsFile, $stackPtr, $function, $pattern=null)
+    public function getItemArray(array $itemInfo)
     {
-        if ($pattern === null) {
-            $pattern = $function;
-        }
+        return $this->newFunctions[$itemInfo['nameLc']];
+    }
 
-        $error = '';
 
-        $this->error = false;
-        foreach ($this->forbiddenFunctions[$pattern] as $version => $present) {
-            if ($this->supportsBelow($version)) {
-                if ($present === false) {
-                    $this->error = true;
-                    $error .= 'not present in PHP version ' . $version . ' or earlier';
-                }
-            }
-        }
-        if (strlen($error) > 0) {
-            $error = 'The function ' . $function . ' is ' . $error;
+    /**
+     * Get the error message template for this sniff.
+     *
+     * @return string
+     */
+    protected function getErrorMsgTemplate()
+    {
+        return 'The function %s() is not present in PHP version %s or earlier';
+    }
 
-            if ($this->error === true) {
-                $phpcsFile->addError($error, $stackPtr);
-            } else {
-                $phpcsFile->addWarning($error, $stackPtr);
-            }
-        }
-
-    }//end addError()
 
 }//end class
