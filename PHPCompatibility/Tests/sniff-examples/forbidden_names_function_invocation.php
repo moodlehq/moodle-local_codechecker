@@ -6,7 +6,7 @@
 abstract();
 callable();
 catch();
-clone();
+// Removed: clone(); see #284
 final();
 finally(); // introduced in 5.5
 goto();
@@ -18,7 +18,7 @@ namespace();
 private();
 protected();
 public();
-throw();
+// Removed: throw(); see #118
 trait();
 try();
 
@@ -29,3 +29,19 @@ catch
 try {} catch(Exception $e) {}
 try {
 } catch (Exception $e) {}
+
+// OK: These keywords *can* be used as function names.
+bool();
+int();
+float();
+string();
+NULL();
+null();
+TRUE();
+true();
+FALSE();
+false();
+resource();
+object();
+mixed();
+numeric();
