@@ -22,5 +22,5 @@ catch($object);
 final($object);
 instanceof($object);
 private($object);
-throw($object);
+// throw($object); See https://github.com/wimg/PHPCompatibility/issues/118
 trait($object);
