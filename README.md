@@ -56,3 +56,9 @@ IDE Integration
 5. In the 'coding standard' dropdown select 'custom' and press the [...]
    button next to the path to the coding standard. Point is at the moodle
    directory inside the this plugin directory.
+   
+   ### Sublime Text
+   
+   https://docs.moodle.org/dev/Setting_up_Sublime2#Sublime_PHP_CS
+   
+   
