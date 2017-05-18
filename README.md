@@ -60,4 +60,3 @@ IDE Integration
 ### Sublime Text
    
 Find documentation here: https://docs.moodle.org/dev/Setting_up_Sublime2#Sublime_PHP_CS
-   
