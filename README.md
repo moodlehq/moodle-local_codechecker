@@ -60,7 +60,7 @@ IDE Integration
 ### Sublime Text
    
 Find documentation here: https://docs.moodle.org/dev/Setting_up_Sublime2#Sublime_PHP_CS. <br />
-After step 3 in the Sublime PHP CS section
+After step 3 in the Sublime PHP CS section:
 1. Go in your Sublime Text to Preferences -> Package Control -> Package Control: Install Package
 2. Write 'phpcs' in the search field, if you see Phpcs and SublimeLinter-phpcs, click on them to install them. 
 3. If not, check if they are already installed Preferences -> Package Control -> Package Control: Remove Package.
