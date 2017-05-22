@@ -19,7 +19,7 @@
  * @version   1.0.0
  * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Sniff
+class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_AbstractNewFeatureSniff
 {
 
     /**
@@ -133,10 +133,6 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Sniff
                                             '5.3' => false,
                                             '5.4' => true
                                         ),
-                                        'JsonSerializable' => array(
-                                            '5.3' => false,
-                                            '5.4' => true
-                                        ),
                                         'SessionHandler' => array(
                                             '5.3' => false,
                                             '5.4' => true
@@ -191,21 +187,20 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Sniff
 
 
     /**
-     * If true, an error will be thrown; otherwise a warning.
-     *
-     * @var bool
-     */
-    protected $error = false;
-
-
-    /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array
      */
     public function register()
     {
-        return array(T_NEW);
+        // Handle case-insensitivity of class names.
+        $this->newClasses = $this->arrayKeysToLowercase($this->newClasses);
+
+        return array(
+                T_NEW,
+                T_CLASS,
+                T_DOUBLE_COLON,
+               );
 
     }//end register()
 
@@ -221,70 +216,65 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Sniff
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-        if (
-            $tokens[$stackPtr + 2]['type'] == 'T_STRING'
-            &&
-            (
-                $tokens[$stackPtr + 3]['type'] == 'T_OPEN_PARENTHESIS'
-                ||
-                (
-                    $tokens[$stackPtr + 3]['type'] == 'T_WHITESPACE'
-                    &&
-                    $tokens[$stackPtr + 4]['type'] == 'T_OPEN_PARENTHESIS'
-                )
-            )
-        ) {
-            $className = $tokens[$stackPtr + 2]['content'];
-            if (array_key_exists($className, $this->newClasses) === false) {
-                return;
-            }
-            $this->addError($phpcsFile, $stackPtr, $className);
+        $tokens      = $phpcsFile->getTokens();
+        $FQClassName = '';
+
+        if ($tokens[$stackPtr]['type'] === 'T_NEW') {
+            $FQClassName = $this->getFQClassNameFromNewToken($phpcsFile, $stackPtr);
+        }
+        else if ($tokens[$stackPtr]['type'] === 'T_CLASS') {
+            $FQClassName = $this->getFQExtendedClassName($phpcsFile, $stackPtr);
+        }
+        else if ($tokens[$stackPtr]['type'] === 'T_DOUBLE_COLON') {
+            $FQClassName = $this->getFQClassNameFromDoubleColonToken($phpcsFile, $stackPtr);
         }
 
+        if ($FQClassName === '') {
+            return;
+        }
 
+        if ($this->isNamespaced($FQClassName) === true) {
+            return;
+        }
+
+        $className   = substr($FQClassName, 1); // Remove global namespace indicator.
+        $classNameLc = strtolower($className);
+
+        if (isset($this->newClasses[$classNameLc]) === false) {
+            return;
+        }
+
+        $itemInfo = array(
+            'name'   => $className,
+            'nameLc' => $classNameLc,
+        );
+        $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
 
     }//end process()
 
 
     /**
-     * Generates the error or wanrning for this sniff.
+     * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the function
-     *                                        in the token array.
-     * @param string               $function  The name of the function.
-     * @param string               $pattern   The pattern used for the match.
+     * @param array $itemInfo Base information about the item.
      *
-     * @return void
+     * @return array Version and other information about the item.
      */
-    protected function addError($phpcsFile, $stackPtr, $className, $pattern=null)
+    public function getItemArray(array $itemInfo)
     {
-        if ($pattern === null) {
-            $pattern = $className;
-        }
+        return $this->newClasses[$itemInfo['nameLc']];
+    }
 
-        $error = '';
 
-        $this->error = false;
-        foreach ($this->newClasses[$pattern] as $version => $present) {
-            if ($this->supportsBelow($version)) {
-                if ($present === false) {
-                    $this->error = true;
-                    $error .= 'not present in PHP version ' . $version . ' or earlier';
-                }
-            }
-        }
-        if (strlen($error) > 0) {
-            $error = 'The built-in class ' . $className . ' is ' . $error;
+    /**
+     * Get the error message template for this sniff.
+     *
+     * @return string
+     */
+    protected function getErrorMsgTemplate()
+    {
+        return 'The built-in class '.parent::getErrorMsgTemplate();
+    }
 
-            if ($this->error === true) {
-                $phpcsFile->addError($error, $stackPtr);
-            } else {
-                $phpcsFile->addWarning($error, $stackPtr);
-            }
-        }
-
-    }//end addError()
 
 }//end class

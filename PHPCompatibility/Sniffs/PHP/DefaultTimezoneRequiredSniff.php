@@ -46,9 +46,13 @@ class PHPCompatibility_Sniffs_PHP_DefaultTimeZoneRequiredSniff extends PHPCompat
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         if ($this->supportsAbove('5.4')) {
-            if (ini_get('date.timezone') == false) {
-                $error = 'Default timezone is required since PHP 5.4';
-                $phpcsFile->addError($error, $stackPtr);
+            $ini_value = ini_get('date.timezone');
+            if (is_string($ini_value) === false || $ini_value === '') {
+                $phpcsFile->addError(
+                    'Default timezone is required since PHP 5.4',
+                    $stackPtr,
+                    'Missing'
+                );
             }
         }
 

@@ -9,112 +9,113 @@
 /**
  * Long Arrays Sniff tests
  *
+ * @group longArrays
+ * @group superglobals
+ *
+ * @covers PHPCompatibility_Sniffs_PHP_LongArraysSniff
+ *
  * @uses BaseSniffTest
  * @package PHPCompatibility
  * @author Jansen Price <jansen.price@gmail.com>
  */
 class LongArraysSniffTest extends BaseSniffTest
 {
-    /**
-     * Sniffed file
-     *
-     * @var PHP_CodeSniffer_File
-     */
-    protected $_sniffFile;
+
+    const TEST_FILE = 'sniff-examples/long_arrays.php';
 
     /**
-     * setUp
+     * testLongVariable
+     *
+     * @dataProvider dataLongVariable
+     *
+     * @param string $longVariable Variable name.
+     * @param array  $lines        The line numbers in the test file which apply to this variable.
+     * @param string $deprecatedIn The PHP version in which the variable became deprecated.
+     * @param string $removedIn    The PHP version in which the variable was removed.
+     * @param string $okVersion    A PHP version in which the variable was still ok to be used.
      *
      * @return void
      */
-    public function setUp()
+    public function testLongVariable($longVariable, $lines, $deprecatedIn, $removedIn, $okVersion)
     {
-        parent::setUp();
+        $file = $this->sniffFile(self::TEST_FILE, $deprecatedIn);
+        foreach ($lines as $line) {
+            $this->assertWarning($file, $line, "The use of long predefined variables has been deprecated in PHP {$deprecatedIn}; Found '{$longVariable}'");
+        }
 
-        $this->_sniffFile = $this->sniffFile('sniff-examples/long_arrays.php');
+        $file = $this->sniffFile(self::TEST_FILE, $removedIn);
+        foreach ($lines as $line) {
+            $this->assertError($file, $line, "The use of long predefined variables has been deprecated in PHP {$deprecatedIn} and removed in PHP {$removedIn}; Found '{$longVariable}'");
+        }
+
+        $file = $this->sniffFile(self::TEST_FILE, $okVersion);
+        foreach ($lines as $line) {
+            $this->assertNoViolation($file, $line);
+        }
     }
 
     /**
-     * Test http post vars
+     * Data provider.
+     *
+     * @see testLongVariable()
+     *
+     * @return array
+     */
+    public function dataLongVariable()
+    {
+        return array(
+            array('$HTTP_POST_VARS', array(3, 24), '5.3', '5.4', '5.2'),
+            array('$HTTP_GET_VARS', array(4, 25, 42), '5.3', '5.4', '5.2'),
+            array('$HTTP_ENV_VARS', array(5, 26, 43), '5.3', '5.4', '5.2'),
+            array('$HTTP_SERVER_VARS', array(6, 27), '5.3', '5.4', '5.2'),
+            array('$HTTP_COOKIE_VARS', array(7, 28), '5.3', '5.4', '5.2'),
+            array('$HTTP_SESSION_VARS', array(8, 29), '5.3', '5.4', '5.2'),
+            array('$HTTP_POST_FILES', array(9, 30), '5.3', '5.4', '5.2'),
+        );
+    }
+
+
+    /**
+     * testNoViolation
+     *
+     * @dataProvider dataNoViolation
+     *
+     * @param int $line The line number.
      *
      * @return void
      */
-    public function testHttpPostVars()
+    public function testNoViolation($line)
     {
-        $this->assertWarning($this->_sniffFile, 3, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_POST_VARS'");
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file, $line);
     }
 
     /**
-     * testHttpGetVars
+     * Data provider.
      *
-     * @return void
-     */
-    public function testHttpGetVars()
-    {
-        $this->assertWarning($this->_sniffFile, 4, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_GET_VARS'");
-    }
-
-    /**
-     * testHttpEnvVars
+     * @see testNoViolation()
      *
-     * @return void
+     * @return array
      */
-    public function testHttpEnvVars()
+    public function dataNoViolation()
     {
-        $this->assertWarning($this->_sniffFile, 5, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_ENV_VARS'");
-    }
+        return array(
+            // Issue #268 - class properties named after long array variables.
+            array(14),
+            array(15),
+            array(16),
+            array(17),
+            array(18),
+            array(19),
+            array(20),
 
-    /**
-     * testHttpServerVars
-     *
-     * @return void
-     */
-    public function testHttpServerVars()
-    {
-        $this->assertWarning($this->_sniffFile, 6, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_SERVER_VARS'");
-    }
-
-    /**
-     * testHttpCookieVars
-     *
-     * @return void
-     */
-    public function testHttpCookieVars()
-    {
-        $this->assertWarning($this->_sniffFile, 7, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_COOKIE_VARS'");
-    }
-
-    /**
-     * testHttpCookieVars
-     *
-     * @return void
-     */
-    public function testHttpSessionVars()
-    {
-        $this->assertWarning($this->_sniffFile, 8, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_SESSION_VARS'");
-    }
-
-    /**
-     * testHttpPostFiles
-     *
-     * @return void
-     */
-    public function testHttpPostFiles()
-    {
-        $this->assertWarning($this->_sniffFile, 9, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_POST_FILES'");
-    }
-
-    /**
-     * Test when sniffing for a testVersion config param
-     *
-     * @return void
-     */
-    public function testSpecificVersionTest()
-    {
-        $file = $this->sniffFile('sniff-examples/long_arrays.php', '5.2');
-        $this->assertNoViolation($file, 3);
-
-        $file = $this->sniffFile('sniff-examples/long_arrays.php', '5.3');
-        $this->assertWarning($file, 3, "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '\$HTTP_POST_VARS'");
+            array(33),
+            array(34),
+            array(35),
+            array(36),
+            array(37),
+            array(38),
+            array(39),
+        );
     }
 }

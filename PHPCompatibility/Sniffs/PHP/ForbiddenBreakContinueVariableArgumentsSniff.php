@@ -13,7 +13,7 @@
 /**
  * PHPCompatibility_Sniffs_PHP_ForbiddenBreakContinueVariableArguments.
  *
- * Discourages the use of assigning the return value of new by reference
+ * Forbids variable arguments on break or continue statements.
  *
  * PHP version 5.4
  *
@@ -24,13 +24,17 @@
  */
 class PHPCompatibility_Sniffs_PHP_ForbiddenBreakContinueVariableArgumentsSniff extends PHPCompatibility_Sniff
 {
-
     /**
-     * If true, an error will be thrown; otherwise a warning.
+     * Error types this sniff handles for forbidden break/continue arguments.
      *
-     * @var bool
+     * Array key is the error code. Array value will be used as part of the error message.
+     *
+     * @var array
      */
-    protected $error = true;
+    private $errorTypes = array(
+        'variableArgument' => 'a variable argument',
+        'zeroArgument'     => '0 as an argument',
+    );
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -54,33 +58,41 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenBreakContinueVariableArgumentsSniff e
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        if ($this->supportsAbove('5.4')) {
-            $tokens = $phpcsFile->getTokens();
-            $nextSemicolonToken = $phpcsFile->findNext(T_SEMICOLON, ($stackPtr), null, false);
-            for ($curToken = $stackPtr + 1; $curToken < $nextSemicolonToken; $curToken++) {
-                $gotError = false;
-                if ($tokens[$curToken]['type'] == 'T_STRING') {
-                    // If the next non-whitespace token after the string
-                    // is an opening parenthesis then it's a function call.
-                    $openBracket = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, $curToken + 1, null, true);
-                    if ($tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS) {
-                        continue;
-                    } else {
-                        $gotError = true;
-                    }
-                }
-                switch ($tokens[$curToken]['type']) {
-                    case 'T_VARIABLE':
-                    case 'T_FUNCTION':
-                        $gotError = true;
-                        break;
-                }
-                if ($gotError === true) {
-                    $error = 'Using a variable argument on break or continue is forbidden since PHP 5.4';
-                    $phpcsFile->addError($error, $stackPtr);
+        if ($this->supportsAbove('5.4') === false) {
+            return;
+        }
+
+        $tokens             = $phpcsFile->getTokens();
+        $nextSemicolonToken = $phpcsFile->findNext(T_SEMICOLON, ($stackPtr), null, false);
+        $errorType          = '';
+        for ($curToken = $stackPtr + 1; $curToken < $nextSemicolonToken; $curToken++) {
+            if ($tokens[$curToken]['type'] === 'T_STRING') {
+                // If the next non-whitespace token after the string
+                // is an opening parenthesis then it's a function call.
+                $openBracket = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, $curToken + 1, null, true);
+                if ($tokens[$openBracket]['code'] === T_OPEN_PARENTHESIS) {
+                    $errorType = 'variableArgument';
+                    break;
                 }
             }
+            else if (in_array($tokens[$curToken]['type'], array('T_VARIABLE', 'T_FUNCTION', 'T_CLOSURE'), true)) {
+                $errorType = 'variableArgument';
+                break;
+            }
+            else if ($tokens[$curToken]['type'] === 'T_LNUMBER' && $tokens[$curToken]['content'] === '0') {
+                $errorType = 'zeroArgument';
+                break;
+            }
         }
+
+        if ($errorType !== '') {
+            $error     = 'Using %s on break or continue is forbidden since PHP 5.4';
+            $errorCode = $errorType.'Found';
+            $data      = array($this->errorTypes[$errorType]);
+
+            $phpcsFile->addError($error, $stackPtr, $errorCode, $data);
+        }
+
     }//end process()
 
 }//end class

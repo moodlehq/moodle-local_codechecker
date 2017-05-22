@@ -60,18 +60,55 @@ class PHPCompatibility_Sniffs_PHP_LongArraysSniff extends PHPCompatibility_Sniff
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        if ($this->supportsAbove('5.3')) {
-            $tokens = $phpcsFile->getTokens();
+        if ($this->supportsAbove('5.3') === false) {
+            return;
+        }
 
-            if ($tokens[$stackPtr]['type'] == 'T_VARIABLE'
-                && in_array(substr($tokens[$stackPtr]['content'], 1), $this->deprecated)
-            ) {
-                $error = sprintf(
-                    "The use of long predefined variables has been deprecated in 5.3 and removed in 5.4; Found '%s'",
-                    $tokens[$stackPtr]['content']
-                );
-                $phpcsFile->addWarning($error, $stackPtr);
+        $tokens  = $phpcsFile->getTokens();
+        $varName = substr($tokens[$stackPtr]['content'], 1);
+
+        // Check if the variable name is in our blacklist.
+        if (in_array($varName, $this->deprecated, true) === false) {
+            return;
+        }
+
+        if ($this->inClassScope($phpcsFile, $stackPtr, false) === true) {
+            /*
+             * Check for class property definitions.
+             */
+            $properties = array();
+            try {
+                $properties = $phpcsFile->getMemberProperties($stackPtr);
+            } catch ( PHP_CodeSniffer_Exception $e) {
+                // If it's not an expected exception, throw it.
+                if ($e->getMessage() !== '$stackPtr is not a class member var') {
+                    throw $e;
+                }
+            }
+
+            if (isset($properties['scope'])) {
+                // Ok, so this was a class property declaration, not our concern.
+                return;
+            }
+
+            /*
+             * Check for static usage of class properties shadowing the long arrays.
+             */
+            $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
+            if ($tokens[$prevToken]['code'] === T_DOUBLE_COLON) {
+                return;
             }
         }
+
+        // Still here, so throw an error/warning.
+        $error     = "The use of long predefined variables has been deprecated in PHP 5.3%s; Found '%s'";
+        $isError   = $this->supportsAbove('5.4');
+        $errorCode = $this->stringToErrorCode($varName).'Found';
+        $data      = array(
+            (($isError === true) ? ' and removed in PHP 5.4' : ''),
+            $tokens[$stackPtr]['content'],
+        );
+
+        $this->addMessage($phpcsFile, $error, $stackPtr, $isError, $errorCode, $data);
     }
 }

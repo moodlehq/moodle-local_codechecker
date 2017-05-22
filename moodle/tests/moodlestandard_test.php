@@ -202,7 +202,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             22 => 'T_FINAL',
             23 => 1,
             24 => 1,
-            25 => 1,
+            25 => 0,
             26 => 1));
         $this->set_warnings(array());
 
@@ -279,9 +279,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => number of problems,  or
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
-        $this->set_errors(array());
-        $this->set_warnings(array(
-            5 => array('function ereg_replace', 'use call_user_func instead', '@Source: PHPCompat')));
+        $this->set_errors(array(
+            5 => array('Function ereg_replace', 'Use call_user_func instead', '@Source: PHPCompat')
+        ));
+        $this->set_warnings(array());
 
         // Let's do all the hard work!
         $this->verify_cs_results();
@@ -302,7 +303,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            6 => array('call-time pass-by-reference is prohibited'),
+            6 => array('call-time pass-by-reference is deprecated'),
             7 => array('@Source: PHPCompat')));
         $this->set_warnings(array());
 
