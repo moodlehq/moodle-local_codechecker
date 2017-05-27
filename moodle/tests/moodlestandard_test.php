@@ -545,7 +545,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         $this->set_errors(array());
         $this->set_warnings(array(
-            25 => 'Expected login check (require_login, require_course_login, admin_externalpage_setup) following config inclusion. None found'
+            25 => 'check (require_login, require_course_login, admin_externalpage_setup) following config inclusion. None found'
         ));
 
         $this->verify_cs_results();
