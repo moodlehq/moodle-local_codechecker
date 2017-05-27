@@ -33,9 +33,6 @@ class VariableVariablesSniffTest extends BaseSniffTest
      */
     public function testVariableVariables($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.6');
-        $this->assertNoViolation($file, $line);
-
         $file = $this->sniffFile(self::TEST_FILE, '7.0');
         $this->assertError($file, $line, 'Indirect access to variables, properties and methods will be evaluated strictly in left-to-right order since PHP 7.0. Use curly braces to remove ambiguity.');
     }
@@ -60,15 +57,15 @@ class VariableVariablesSniffTest extends BaseSniffTest
 
 
     /**
-     * testNoFalsePositive
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoFalsePositive
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testNoFalsePositive($line)
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(self::TEST_FILE, '7.0');
         $this->assertNoViolation($file, $line);
@@ -77,11 +74,11 @@ class VariableVariablesSniffTest extends BaseSniffTest
     /**
      * Data provider.
      *
-     * @see testNoFalsePositive()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoFalsePositive()
+    public function dataNoFalsePositives()
     {
         return array(
             array(11),
@@ -106,4 +103,17 @@ class VariableVariablesSniffTest extends BaseSniffTest
             array(37),
         );
     }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.6');
+        $this->assertNoViolation($file);
+    }
+
 }

@@ -186,6 +186,13 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionParametersSniff extends PHPCompatib
                                                 '5.1' => true
                                             ),
                                         ),
+                                        'get_defined_functions' => array(
+                                            0 => array(
+                                                'name' => 'exclude_disabled',
+                                                '7.0.14' => false,
+                                                '7.0.15' => true
+                                            ),
+                                        ),
                                         'get_html_translation_table' => array(
                                             2 => array(
                                                 'name' => 'encoding',
@@ -333,7 +340,7 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionParametersSniff extends PHPCompatib
                                         'iterator_to_array' => array(
                                             1 => array(
                                                 'name' => 'use_keys',
-                                                '5.2' => false,
+                                                '5.2.0' => false,
                                                 '5.2.1' => true
                                             ),
                                         ),
@@ -566,7 +573,7 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionParametersSniff extends PHPCompatib
                                         'session_set_save_handler' => array(
                                             6 => array(
                                                 'name' => 'create_sid',
-                                                '5.5' => false,
+                                                '5.5.0' => false,
                                                 '5.5.1' => true
                                             ),
                                         ),

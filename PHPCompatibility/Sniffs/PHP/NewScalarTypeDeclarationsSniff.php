@@ -79,7 +79,10 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
      */
     public function register()
     {
-        return array(T_FUNCTION);
+        return array(
+            T_FUNCTION,
+            T_CLOSURE,
+        );
     }//end register()
 
 
@@ -107,33 +110,36 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
                 continue;
             }
 
+            // Strip off potential nullable indication.
+            $type_hint = ltrim($param['type_hint'], '?');
+
             if ($supportsPHP4 === true) {
                 $phpcsFile->addError(
                     'Type hints were not present in PHP 4.4 or earlier.',
-                    $stackPtr,
+                    $param['token'],
                     'TypeHintFound'
                 );
             }
-            else if (isset($this->newTypes[$param['type_hint']])) {
+            else if (isset($this->newTypes[$type_hint])) {
                 $itemInfo = array(
-                    'name'   => $param['type_hint'],
+                    'name'   => $type_hint,
                 );
-                $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+                $this->handleFeature($phpcsFile, $param['token'], $itemInfo);
             }
-            else if (isset($this->invalidTypes[$param['type_hint']])) {
+            else if (isset($this->invalidTypes[$type_hint])) {
                 $error = "'%s' is not a valid type declaration. Did you mean %s ?";
                 $data  = array(
-                    $param['type_hint'],
-                    $this->invalidTypes[$param['type_hint']],
+                    $type_hint,
+                    $this->invalidTypes[$type_hint],
                 );
 
-                $phpcsFile->addError($error, $stackPtr, 'InvalidTypeHintFound', $data);
+                $phpcsFile->addError($error, $param['token'], 'InvalidTypeHintFound', $data);
             }
-            else if ($param['type_hint'] === 'self') {
-                if ($this->inClassScope($phpcsFile, $stackPtr) === false) {
+            else if ($type_hint === 'self') {
+                if ($this->inClassScope($phpcsFile, $stackPtr, false) === false) {
                     $phpcsFile->addError(
                         "'self' type cannot be used outside of class scope",
-                        $stackPtr,
+                        $param['token'],
                         'SelfOutsideClassScopeFound'
                     );
                 }

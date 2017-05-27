@@ -23,7 +23,7 @@ class ConstantArraysUsingDefineSniffTest extends BaseSniffTest
     const TEST_FILE = 'sniff-examples/constant_arrays_using_define.php';
 
     /**
-     * Verify that checking for a specific version works
+     * testConstantArraysUsingDefine
      *
      * @dataProvider dataConstantArraysUsingDefine
      *
@@ -33,9 +33,6 @@ class ConstantArraysUsingDefineSniffTest extends BaseSniffTest
      */
     public function testConstantArraysUsingDefine($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '7.0');
-        $this->assertNoViolation($file, $line);
-
         $file = $this->sniffFile(self::TEST_FILE, '5.6');
         $this->assertError($file, $line, 'Constant arrays using define are not allowed in PHP 5.6 or earlier');
     }
@@ -57,15 +54,15 @@ class ConstantArraysUsingDefineSniffTest extends BaseSniffTest
 
 
     /**
-     * testNoViolation
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.6');
         $this->assertNoViolation($file, $line);
@@ -74,11 +71,11 @@ class ConstantArraysUsingDefineSniffTest extends BaseSniffTest
     /**
      * Data provider.
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation()
+    public function dataNoFalsePositives()
     {
         return array(
             array(15),
@@ -91,6 +88,18 @@ class ConstantArraysUsingDefineSniffTest extends BaseSniffTest
             array(31),
             array(32),
         );
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '7.0');
+        $this->assertNoViolation($file);
     }
 
 }

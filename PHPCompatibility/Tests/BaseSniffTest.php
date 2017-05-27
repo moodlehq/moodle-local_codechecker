@@ -11,12 +11,14 @@
  * Adds PHPCS sniffing logic and custom assertions for PHPCS errors and
  * warnings
  *
- * @uses PHPUnit_Framework_TestCase
+ * @uses    PHPUnit_Framework_TestCase
  * @package PHPCompatibility
- * @author Jansen Price <jansen.price@gmail.com>
+ * @author  Jansen Price <jansen.price@gmail.com>
  */
 class BaseSniffTest extends PHPUnit_Framework_TestCase
 {
+    const STANDARD_NAME = 'PHPCompatibility';
+
     /**
      * The PHP_CodeSniffer object used for testing.
      *
@@ -58,7 +60,14 @@ class BaseSniffTest extends PHPUnit_Framework_TestCase
             self::$phpcs->cli->setCommandLineValues(array('-pq', '--colors'));
         }
 
-        self::$phpcs->process(array(), dirname( __FILE__ ) . '/../');
+        // Restrict the sniffing of the test case files to the particular sniff being tested.
+        if (method_exists('PHP_CodeSniffer', 'initStandard')) {
+            self::$phpcs->initStandard(self::STANDARD_NAME, array($this->getSniffCode()));
+        } else {
+            // PHPCS 1.x
+            self::$phpcs->process(array(), dirname( __FILE__ ) . '/../', array($this->getSniffCode()));
+        }
+
         self::$phpcs->setIgnorePatterns(array());
 
         parent::setUp();
@@ -86,6 +95,16 @@ class BaseSniffTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Get the sniff code for the current sniff being tested.
+     *
+     * @return string
+     */
+    protected function getSniffCode()
+    {
+        return self::STANDARD_NAME . '.PHP.' . str_replace('SniffTest', '', get_class($this));
+    }
+
+    /**
      * Sniff a file and return resulting file object
      *
      * @param string $filename Filename to sniff
@@ -104,7 +123,13 @@ class BaseSniffTest extends PHPUnit_Framework_TestCase
 
         $pathToFile = realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR . $filename;
         try {
-            self::$sniffFiles[$filename][$targetPhpVersion] = self::$phpcs->processFile($pathToFile);
+            if (method_exists('PHP_CodeSniffer', 'initStandard')) {
+                self::$sniffFiles[$filename][$targetPhpVersion] = self::$phpcs->processFile($pathToFile);
+            } else {
+                // PHPCS 1.x - Sniff code restrictions have to be passed via the function call.
+                self::$sniffFiles[$filename][$targetPhpVersion] = self::$phpcs->processFile($pathToFile, null, array($this->getSniffCode()));
+            }
+
         } catch (Exception $e) {
             $this->fail('An unexpected exception has been caught: ' . $e->getMessage());
             return false;
@@ -184,15 +209,16 @@ class BaseSniffTest extends PHPUnit_Framework_TestCase
         $errors   = $this->gatherErrors($file);
         $warnings = $this->gatherWarnings($file);
 
-        if (!count($errors) && !count($warnings)) {
+        if (empty($errors) && empty($warnings)) {
             return $this->assertTrue(true);
         }
 
-        if ($lineNumber == 0) {
+        if ($lineNumber === 0) {
+            $failMessage = 'Failed asserting no violations in file. Found ' . count($errors) . ' errors and ' . count($warnings) . ' warnings.';
             $allMessages = $errors + $warnings;
             // TODO: Update the fail message to give the tester some
             // indication of what the errors or warnings were
-            return $this->assertEmpty($allMessages, 'Failed asserting no violations in file');
+            return $this->assertEmpty($allMessages, $failMessage);
         }
 
         $encounteredMessages = array();
@@ -208,14 +234,9 @@ class BaseSniffTest extends PHPUnit_Framework_TestCase
             }
         }
 
-        if (!count($encounteredMessages)) {
-            return $this->assertTrue(true);
-        }
-
-        $failMessage = "Failed asserting no standards violation on line $lineNumber: "
-            . implode(', ', $encounteredMessages);
-
-        $this->assertEmpty($encounteredMessages, $failMessage);
+        $failMessage = "Failed asserting no standards violation on line $lineNumber. Found: \n"
+            . implode("\n", $encounteredMessages);
+        $this->assertCount(0, $encounteredMessages, $failMessage);
     }
 
     /**

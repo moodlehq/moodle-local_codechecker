@@ -28,12 +28,49 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
      * @var array(string|null)
      */
     protected $removedGlobalVariables = array(
+        'HTTP_POST_VARS' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_POST',
+        ),
+        'HTTP_GET_VARS' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_GET',
+        ),
+        'HTTP_ENV_VARS' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_ENV',
+        ),
+        'HTTP_SERVER_VARS' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_SERVER',
+        ),
+        'HTTP_COOKIE_VARS' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_COOKIE',
+        ),
+        'HTTP_SESSION_VARS' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_SESSION',
+        ),
+        'HTTP_POST_FILES' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'alternative' => '$_FILES',
+        ),
+
         'HTTP_RAW_POST_DATA' => array(
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'php://input'
+            'alternative' => 'php://input',
         ),
     );
+
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -46,6 +83,7 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
 
     }//end register()
 
+
     /**
      * Processes this test, when one of its tokens is encountered.
      *
@@ -57,6 +95,10 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
+        if ($this->supportsAbove('5.3') === false) {
+            return;
+        }
+
         $tokens  = $phpcsFile->getTokens();
         $varName = substr($tokens[$stackPtr]['content'], 1);
 
@@ -64,6 +106,20 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
             return;
         }
 
+        if ($this->isClassProperty($phpcsFile, $stackPtr) === true) {
+            // Ok, so this was a class property declaration, not our concern.
+            return;
+        }
+
+        // Check for static usage of class properties shadowing the removed global variables.
+        if ($this->inClassScope($phpcsFile, $stackPtr, false) === true) {
+            $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
+            if ($prevToken !== false && $tokens[$prevToken]['code'] === T_DOUBLE_COLON) {
+                return;
+            }
+        }
+
+        // Still here, so throw an error/warning.
         $itemInfo = array(
             'name' => $varName,
         );

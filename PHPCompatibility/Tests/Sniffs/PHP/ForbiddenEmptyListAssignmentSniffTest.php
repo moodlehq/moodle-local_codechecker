@@ -20,6 +20,8 @@
  */
 class ForbiddenEmptyListAssignmentSniffTest extends BaseSniffTest
 {
+    const TEST_FILE = 'sniff-examples/forbidden_empty_list_assignment.php';
+
     /**
      * testEmptyListAssignment
      *
@@ -31,11 +33,8 @@ class ForbiddenEmptyListAssignmentSniffTest extends BaseSniffTest
      */
     public function testEmptyListAssignment($line)
     {
-        $file = $this->sniffFile('sniff-examples/forbidden_empty_list_assignment.php', '5.6');
-        $this->assertNoViolation($file, $line);
-
-        $file = $this->sniffFile('sniff-examples/forbidden_empty_list_assignment.php', '7.0');
-        $this->assertError($file, $line, "Empty list() assignments are not allowed since PHP 7.0");
+        $file = $this->sniffFile(self::TEST_FILE, '7.0');
+        $this->assertError($file, $line, 'Empty list() assignments are not allowed since PHP 7.0');
     }
 
     /**
@@ -45,7 +44,8 @@ class ForbiddenEmptyListAssignmentSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataEmptyListAssignment() {
+    public function dataEmptyListAssignment()
+    {
         return array(
             array(3),
             array(4),
@@ -57,28 +57,29 @@ class ForbiddenEmptyListAssignmentSniffTest extends BaseSniffTest
 
 
     /**
-     * testValidListAssignment
+     * testNoFalsePositives
      *
-     * @dataProvider dataValidListAssignment
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line Line number with a valid list assignment.
      *
      * @return void
      */
-    public function testValidListAssignment($line)
+    public function testNoFalsePositives($line)
     {
-        $file = $this->sniffFile('sniff-examples/forbidden_empty_list_assignment.php');
+        $file = $this->sniffFile(self::TEST_FILE, '7.0');
         $this->assertNoViolation($file, $line);
     }
 
     /**
-     * dataValidListAssignment
+     * dataNoFalsePositives
      *
-     * @see testValidListAssignment()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataValidListAssignment() {
+    public function dataNoFalsePositives()
+    {
         return array(
             array(13),
             array(14),
@@ -87,6 +88,18 @@ class ForbiddenEmptyListAssignmentSniffTest extends BaseSniffTest
             array(17),
             array(20),
         );
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.6');
+        $this->assertNoViolation($file);
     }
 
 }

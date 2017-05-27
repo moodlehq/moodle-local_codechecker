@@ -22,7 +22,7 @@ class ForbiddenNamesSniffTest extends BaseSniffTest
 {
 
     /**
-     * testNamespace
+     * testForbiddenNames
      *
      * @dataProvider usecaseProvider
      *
@@ -33,6 +33,11 @@ class ForbiddenNamesSniffTest extends BaseSniffTest
      */
     public function testForbiddenNames($usecase)
     {
+        if (version_compare(phpversion(), '5.3', '<') === true && $usecase === 'nested-namespace') {
+            $this->markTestSkipped('PHP 5.2 does not recognize namespaces.');
+            return;
+        }
+
         // These use cases were generated using the PHP script
         // `generate-forbidden-names-test-files` in sniff-examples
         $filename = "sniff-examples/forbidden-names/$usecase.php";
@@ -40,7 +45,7 @@ class ForbiddenNamesSniffTest extends BaseSniffTest
         // Set the testVersion to the highest PHP version encountered in the
         // PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff::$invalidNames list
         // to catch all errors.
-        $file = $this->sniffFile($filename, '7.0');
+        $file = $this->sniffFile($filename, '5.5');
 
         $this->assertNoViolation($file, 2);
 
@@ -60,7 +65,9 @@ class ForbiddenNamesSniffTest extends BaseSniffTest
      */
     public function usecaseProvider()
     {
-        $data = array(
+        return array(
+            array('namespace'),
+            array('nested-namespace'),
             array('use'),
             array('use-as'),
             array('class'),
@@ -72,19 +79,19 @@ class ForbiddenNamesSniffTest extends BaseSniffTest
             array('class-use-trait-alias-public-method'),
             array('class-use-trait-alias-protected-method'),
             array('class-use-trait-alias-private-method'),
+            array('class-use-trait-alias-final-method'),
             array('trait'),
             array('function-declare'),
+            array('function-declare-reference'),
+            array('method-declare'),
             array('const'),
+            array('class-const'),
             array('define'),
             array('interface'),
             array('interface-extends'),
         );
-        if (version_compare(phpversion(), '5.3', '>=')) {
-            $data[] = array('namespace');
-        }
-
-        return $data;
     }
+
 
     /**
      * testCorrectUsageOfKeywords
@@ -93,33 +100,49 @@ class ForbiddenNamesSniffTest extends BaseSniffTest
      */
     public function testCorrectUsageOfKeywords()
     {
-        if (ini_get('date.timezone') == false) {
-            ini_set('date.timezone', 'America/Chicago');
-        }
+        $file = $this->sniffFile('sniff-examples/forbidden_names_correct_usage.php', '5.5');
+        $this->assertNoViolation($file);
+    }
 
-        $file = $this->sniffFile('sniff-examples/forbidden_names_correct_usage.php');
+
+    /**
+     * testNotForbiddenInPHP7
+     *
+     * @dataProvider usecaseProviderPHP7
+     *
+     * @param string $usecase Partial filename of the test case file covering
+     *                        a specific use case.
+     *
+     * @return void
+     */
+    public function testNotForbiddenInPHP7($usecase)
+    {
+        $file = $this->sniffFile("sniff-examples/forbidden-names/$usecase.php", '7.0');
         $this->assertNoViolation($file);
     }
 
     /**
-     * testCorrectUsageUseFunctionConst
+     * Provides use cases to test with each keyword
      *
-     * @return void
+     * @return array
      */
-    public function testCorrectUsageUseFunctionConst()
+    public function usecaseProviderPHP7()
     {
-        $file = $this->sniffFile('sniff-examples/forbidden_names_correct_usage_use.php', '5.6');
-        $this->assertNoViolation($file);
+        return array(
+            array('method-declare'),
+            array('class-const'),
+        );
     }
 
+
     /**
-     * Test setting test version option
+     * testNoFalsePositives
      *
      * @return void
      */
-    public function testSettingTestVersion()
+    public function testNoFalsePositives()
     {
-        $file = $this->sniffFile('sniff-examples/forbidden-names/class.php', '4.4');
+        $file = $this->sniffFile('sniff-examples/forbidden-names/class.php', '4.4'); // Version number specific to the line being tested.
         $this->assertNoViolation($file, 3);
     }
 }

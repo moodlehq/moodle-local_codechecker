@@ -35,8 +35,8 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
      */
     public static function setUpBeforeClass()
     {
-        // When using PHPCS 1.x combined with PHP 5.3 or lower, traits are not recognized.
-        if (version_compare(PHP_CodeSniffer::VERSION, '2.0', '<') && version_compare(phpversion(), '5.4', '<')) {
+        // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are not recognized.
+        if (version_compare(PHP_CodeSniffer::VERSION, '2.4.0', '<') && version_compare(phpversion(), '5.4', '<')) {
             self::$recognizesTraits = false;
         }
 
@@ -63,48 +63,13 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
      *
      * @return PHP_CodeSniffer_File File object|false
      */
-    protected function getTestFile($isTrait, $testVersion = null) {
+    protected function getTestFile($isTrait, $testVersion = null)
+    {
         if ($isTrait === false) {
             return $this->sniffFile('sniff-examples/new_magic_methods.php', $testVersion);
-        }
-        else {
+        } else {
             return $this->sniffFile('sniff-examples/new_magic_methods_traits.php', $testVersion);
         }
-    }
-
-
-    /**
-     * Test magic methods that shouldn't be flagged by this sniff.
-     *
-     * @dataProvider dataMagicMethodsThatShouldntBeFlagged
-     *
-     * @param int $line The line number.
-     *
-     * @return void
-     */
-    public function testMagicMethodsThatShouldntBeFlagged($line)
-    {
-        $file = $this->getTestFile(false, '5.0');
-        $this->assertNoViolation($file, $line);
-    }
-
-    /**
-     * Data provider.
-     *
-     * @see testMagicMethodsThatShouldntBeFlagged()
-     *
-     * @return array
-     */
-    public function dataMagicMethodsThatShouldntBeFlagged() {
-        return array(
-            array(8),
-            array(9),
-            array(10),
-            array(11),
-            array(12),
-            array(13),
-            array(14),
-        );
     }
 
 
@@ -124,13 +89,14 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
     public function testNewMagicMethod($methodName, $lastVersionBefore, $lines, $okVersion, $isTrait = false)
     {
         if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
             return;
         }
 
-        $file = $this->getTestFile($isTrait, $lastVersionBefore);
+        $file  = $this->getTestFile($isTrait, $lastVersionBefore);
+        $error = "The method {$methodName}() was not magical in PHP version {$lastVersionBefore} and earlier. The associated magic functionality will not be invoked.";
         foreach ($lines as $line) {
-            $this->assertWarning($file, $line, "The method {$methodName}() was not magical in PHP version {$lastVersionBefore} and earlier. The associated magic functionality will not be invoked.");
+            $this->assertWarning($file, $line, $error);
         }
 
         $file = $this->getTestFile($isTrait, $okVersion);
@@ -146,15 +112,17 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewMagicMethod() {
+    public function dataNewMagicMethod()
+    {
         return array(
             // new_magic_methods.php
-            array('__get', '4.4', array(22, 34), '5.0'),
-            array('__isset', '5.0', array(23, 35), '5.1'),
-            array('__unset', '5.0', array(24, 36), '5.1'),
-            array('__set_state', '5.0', array(25, 37), '5.1'),
-            array('__callStatic', '5.2', array(27, 39), '5.3'),
-            array('__invoke', '5.2', array(28, 40), '5.3'),
+            array('__get', '4.4', array(22, 34, 61), '5.0'),
+            array('__isset', '5.0', array(23, 35, 62), '5.1'),
+            array('__unset', '5.0', array(24, 36, 63), '5.1'),
+            array('__set_state', '5.0', array(25, 37, 64), '5.1'),
+            array('__callStatic', '5.2', array(27, 39, 66), '5.3'),
+            array('__invoke', '5.2', array(28, 40, 67), '5.3'),
+            array('__debugInfo', '5.5', array(29, 41, 68), '5.6'),
 
             // new_magic_methods_traits.php
             array('__get', '4.4', array(5), '5.0', true),
@@ -163,60 +131,6 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
             array('__set_state', '5.0', array(8), '5.1', true),
             array('__callStatic', '5.2', array(10), '5.3', true),
             array('__invoke', '5.2', array(11), '5.3', true),
-        );
-    }
-
-
-    /**
-     * testNewDebugInfo
-     *
-     * {@internal Separate test for __debugInfo() as the noViolation check needs a wrapper
-	 * for PHPCS 2.5.1 as the Naming Convention sniff in PHPCS < 2.5.1 does not recognize
-	 * __debugInfo() yet, causing the noViolation sniff to fail.
-     *
-     * @dataProvider dataNewDebugInfo
-     *
-     * @param string $methodName        Name of the method.
-     * @param string $lastVersionBefore The PHP version just *before* the method became magic.
-     * @param array  $lines             The line numbers in the test file which apply to this method.
-     * @param string $okVersion         A PHP version in which the method was magic.
-     * @param bool   $isTrait           Whether the test relates to a method in a trait.
-     *
-     * @return void
-     */
-    public function testNewDebugInfo($methodName, $lastVersionBefore, $lines, $okVersion, $isTrait = false)
-    {
-        if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
-            return;
-        }
-
-        $file = $this->getTestFile($isTrait, $lastVersionBefore);
-        foreach ($lines as $line) {
-            $this->assertWarning($file, $line, "The method {$methodName}() was not magical in PHP version {$lastVersionBefore} and earlier. The associated magic functionality will not be invoked.");
-        }
-
-		if (version_compare(PHP_CodeSniffer::VERSION, '2.5.1', '>=')) {
-	        $file = $this->getTestFile($isTrait, $okVersion);
-	        foreach ($lines as $line) {
-	            $this->assertNoViolation($file, $line);
-	        }
-		}
-    }
-
-    /**
-     * Data provider.
-     *
-     * @see testNewDebugInfo()
-     *
-     * @return array
-     */
-    public function dataNewDebugInfo() {
-        return array(
-            // new_magic_methods.php
-            array('__debugInfo', '5.5', array(29, 41), '5.6'),
-
-            // new_magic_methods_traits.php
             array('__debugInfo', '5.5', array(12), '5.6', true),
         );
     }
@@ -235,12 +149,12 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
     public function testChangedToStringMethod($line, $isTrait = false)
     {
         if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
             return;
         }
 
         $file = $this->getTestFile($isTrait, '5.1');
-        $this->assertWarning($file, $line, "The method __toString() was not truly magical in PHP version 5.1 and earlier. The associated magic functionality will only be called when directly combined with echo or print.");
+        $this->assertWarning($file, $line, 'The method __toString() was not truly magical in PHP version 5.1 and earlier. The associated magic functionality will only be called when directly combined with echo or print.');
 
         $file = $this->getTestFile($isTrait, '5.2');
         $this->assertNoViolation($file, $line);
@@ -253,15 +167,108 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataChangedToStringMethod() {
+    public function dataChangedToStringMethod()
+    {
         return array(
             // new_magic_methods.php
             array(26),
             array(38),
+            array(65),
 
             // new_magic_methods_traits.php
             array(9, true),
         );
+    }
+
+
+    /**
+     * Test magic methods that shouldn't be flagged by this sniff.
+     *
+     * @dataProvider dataMagicMethodsThatShouldntBeFlagged
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testMagicMethodsThatShouldntBeFlagged($line)
+    {
+        $file = $this->getTestFile(false, '4.4'); // Low version below the first addition.
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testMagicMethodsThatShouldntBeFlagged()
+     *
+     * @return array
+     */
+    public function dataMagicMethodsThatShouldntBeFlagged()
+    {
+        return array(
+            array(8),
+            array(9),
+            array(10),
+            array(11),
+            array(12),
+            array(13),
+            array(14),
+        );
+    }
+
+
+    /**
+     * testNoFalsePositives
+     *
+     * @dataProvider dataNoFalsePositives
+     *
+     * @param int  $line The line number.
+     *
+     * @return void
+     */
+    public function testNoFalsePositives($line)
+    {
+        $file = $this->getTestFile(false, '4.4'); // Low version below the first addition.
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositives()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositives()
+    {
+        return array(
+            // Functions of same name outside class context.
+            array(47),
+            array(48),
+            array(49),
+            array(50),
+            array(51),
+            array(52),
+            array(53),
+            array(54),
+        );
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        // new_magic_methods.php
+        $file = $this->getTestFile(false, '99.0'); // High version beyond newest addition.
+        $this->assertNoViolation($file);
+
+        // new_magic_methods_traits.php
+        $file = $this->getTestFile(true, '99.0'); // High version beyond newest addition.
+        $this->assertNoViolation($file);
     }
 
 }

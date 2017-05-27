@@ -22,40 +22,18 @@ class ForbiddenCallTimePassByReferenceSniffTest extends BaseSniffTest
 {
     const TEST_FILE = 'sniff-examples/call_time_pass_by_reference.php';
 
-    /**
-     * Sniffed file
-     *
-     * @var PHP_CodeSniffer_File
-     */
-    protected $_sniffFile;
-
-    /**
-     * Set up the test file for this unit test.
-     *
-     * @return void
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->_sniffFile = $this->sniffFile(self::TEST_FILE);
-    }
-
 
     /**
      * testForbiddenCallTimePassByReference
      *
      * @dataProvider dataForbiddenCallTimePassByReference
      *
-     * @param int    $line  Line number where the error should occur.
+     * @param int $line Line number where the error should occur.
      *
      * @return void
      */
     public function testForbiddenCallTimePassByReference($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.2');
-        $this->assertNoViolation($file, $line);
-
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertWarning($file, $line, 'Using a call-time pass-by-reference is deprecated since PHP 5.3');
 
@@ -70,7 +48,8 @@ class ForbiddenCallTimePassByReferenceSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenCallTimePassByReference() {
+    public function dataForbiddenCallTimePassByReference()
+    {
         return array(
             array(10), // Bad: call time pass by reference.
             array(14), // Bad: call time pass by reference with multi-parameter call.
@@ -85,27 +64,28 @@ class ForbiddenCallTimePassByReferenceSniffTest extends BaseSniffTest
 
 
     /**
-     * testNoViolation
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
-        $this->assertNoViolation($this->_sniffFile, $line);
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file, $line);
     }
 
     /**
      * Data provider.
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation()
+    public function dataNoFalsePositives()
     {
         return array(
             array(4), // OK: Declaring a parameter by reference.
@@ -146,5 +126,16 @@ class ForbiddenCallTimePassByReferenceSniffTest extends BaseSniffTest
         );
     }
 
-}
 
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.2');
+        $this->assertNoViolation($file);
+    }
+
+}

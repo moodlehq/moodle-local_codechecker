@@ -24,39 +24,6 @@ class NewIniDirectivesSniffTest extends BaseSniffTest
     const TEST_FILE = 'sniff-examples/new_ini_directives.php';
 
     /**
-     * Test functions that shouldn't be flagged by this sniff
-     *
-     * @dataProvider dataFunctionThatShouldntBeFlagged
-     *
-     * @param int $line The line number.
-     *
-     * @return void
-     */
-    public function testFunctionThatShouldntBeFlagged($line)
-    {
-        $file = $this->sniffFile(self::TEST_FILE, '5.1');
-        $this->assertNoViolation($file, $line);
-    }
-
-    /**
-     * Data provider.
-     *
-     * @see testFunctionThatShouldntBeFlagged()
-     *
-     * @return array
-     */
-    public function dataFunctionThatShouldntBeFlagged()
-    {
-        return array(
-            array(2),
-            array(3),
-            array(4),
-            array(5),
-        );
-    }
-
-
-    /**
      * testNewIniDirectives
      *
      * @dataProvider dataNewIniDirectives
@@ -72,15 +39,11 @@ class NewIniDirectivesSniffTest extends BaseSniffTest
      */
     public function testNewIniDirectives($iniName, $okVersion, $lines, $lastVersionBefore, $testVersion = null)
     {
-        if (isset($testVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $testVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $lastVersionBefore);
-        }
-        $this->assertError($file, $lines[0], "INI directive '{$iniName}' is not present in PHP version {$lastVersionBefore} or earlier");
-        $this->assertWarning($file, $lines[1], "INI directive '{$iniName}' is not present in PHP version {$lastVersionBefore} or earlier");
-
+        $errorVersion = (isset($testVersion)) ? $testVersion : $lastVersionBefore;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "INI directive '{$iniName}' is not present in PHP version {$lastVersionBefore} or earlier";
+        $this->assertError($file, $lines[0], $error);
+        $this->assertWarning($file, $lines[1], $error);
 
         $file = $this->sniffFile(self::TEST_FILE, $okVersion);
         foreach( $lines as $line ) {
@@ -232,20 +195,16 @@ class NewIniDirectivesSniffTest extends BaseSniffTest
      * @param string $lastVersionBefore The last PHP version in which the ini directive was not present.
      * @param string $testVersion       Optional PHP version to test error/warning message with -
      *                                  if different from the $lastVersionBeforeversion.
-
      *
      * @return void
      */
     public function testNewIniDirectivesWithAlternative($iniName, $okVersion, $alternative, $lines, $lastVersionBefore, $testVersion = null)
     {
-        if (isset($testVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $testVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $lastVersionBefore);
-        }
-        $this->assertError($file, $lines[0], "INI directive '{$iniName}' is not present in PHP version {$lastVersionBefore} or earlier. This directive was previously called '{$alternative}'.");
-        $this->assertWarning($file, $lines[1], "INI directive '{$iniName}' is not present in PHP version {$lastVersionBefore} or earlier. This directive was previously called '{$alternative}'.");
+        $errorVersion = (isset($testVersion)) ? $testVersion : $lastVersionBefore;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "INI directive '{$iniName}' is not present in PHP version {$lastVersionBefore} or earlier. This directive was previously called '{$alternative}'.";
+        $this->assertError($file, $lines[0], $error);
+        $this->assertWarning($file, $lines[1], $error);
 
         $file = $this->sniffFile(self::TEST_FILE, $okVersion);
         foreach($lines as $line) {
@@ -266,6 +225,51 @@ class NewIniDirectivesSniffTest extends BaseSniffTest
             array('fbsql.batchsize', '5.1', 'fbsql.batchSize', array(167, 168), '5.0'),
             array('zend.detect_unicode', '5.4', 'detect_unicode', array(260, 261), '5.3'),
         );
+    }
+
+
+    /**
+     * testNoFalsePositives
+     *
+     * @dataProvider dataNoFalsePositives
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testNoFalsePositives($line)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '4.4'); // Low version below the first addition.
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositives()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositives()
+    {
+        return array(
+            array(2),
+            array(3),
+            array(4),
+            array(5),
+        );
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '99.0'); // High version beyond newest addition.
+        $this->assertNoViolation($file);
     }
 
 }

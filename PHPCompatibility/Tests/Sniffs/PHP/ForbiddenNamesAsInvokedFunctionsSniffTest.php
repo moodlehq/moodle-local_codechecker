@@ -37,9 +37,10 @@ class ForbiddenNamesAsInvokedFunctionsSniffTest extends BaseSniffTest
      */
     public function testReservedKeyword($keyword, $lines, $introducedIn, $okVersion)
     {
-        $file = $this->sniffFile(self::TEST_FILE, $introducedIn);
+        $file  = $this->sniffFile(self::TEST_FILE, $introducedIn);
+        $error = "'{$keyword}' is a reserved keyword introduced in PHP version {$introducedIn} and cannot be invoked as a function";
         foreach ($lines as $line) {
-            $this->assertError($file, $line, "'{$keyword}' is a reserved keyword introduced in PHP version {$introducedIn} and cannot be invoked as a function");
+            $this->assertError($file, $line, $error);
         }
 
         $file = $this->sniffFile(self::TEST_FILE, $okVersion);
@@ -100,7 +101,8 @@ class ForbiddenNamesAsInvokedFunctionsSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives() {
+    public function dataNoFalsePositives()
+    {
         return array(
             array(34),
             array(35),
@@ -118,4 +120,17 @@ class ForbiddenNamesAsInvokedFunctionsSniffTest extends BaseSniffTest
             array(47),
         );
     }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '4.4'); // Low version below the first introduced reserved word.
+        $this->assertNoViolation($file);
+    }
+
 }

@@ -28,6 +28,11 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
      * @var array(string => array(string => int|string|null))
      */
     protected $newInterfaces = array(
+                                'Traversable' => array(
+                                    '4.4' => false,
+                                    '5.0' => true
+                                ),
+
                                 'Countable' => array(
                                     '5.0' => false,
                                     '5.1' => true
@@ -66,6 +71,16 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
                                     '5.4' => true
                                 ),
 
+                                'DateTimeInterface' => array(
+                                    '5.4' => false,
+                                    '5.5' => true
+                                ),
+
+                                'Throwable' => array(
+                                    '5.6' => false,
+                                    '7.0' => true
+                                ),
+
                                );
 
     /**
@@ -91,7 +106,17 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
         $this->newInterfaces      = $this->arrayKeysToLowercase($this->newInterfaces);
         $this->unsupportedMethods = $this->arrayKeysToLowercase($this->unsupportedMethods);
 
-        return array(T_CLASS);
+        $targets = array(
+            T_CLASS,
+            T_FUNCTION,
+            T_CLOSURE,
+        );
+
+        if (defined('T_ANON_CLASS')) {
+            $targets[] = constant('T_ANON_CLASS');
+        }
+
+        return $targets;
 
     }//end register()
 
@@ -106,6 +131,41 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
      * @return void
      */
     public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        switch($tokens[$stackPtr]['type']) {
+            case 'T_CLASS':
+            case 'T_ANON_CLASS':
+                $this->processClassToken($phpcsFile, $stackPtr);
+                break;
+
+            case 'T_FUNCTION':
+            case 'T_CLOSURE':
+                $this->processFunctionToken($phpcsFile, $stackPtr);
+                break;
+
+            default:
+                // Deliberately left empty.
+                break;
+        }
+
+    }//end process()
+
+
+    /**
+     * Processes this test for when a class token is encountered.
+     *
+     * - Detect classes implementing the new interfaces.
+     * - Detect classes implementing the new interfaces with unsupported functions.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                  $stackPtr  The position of the current token in
+     *                                        the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processClassToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $interfaces = $this->findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
@@ -155,8 +215,40 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
                 }
             }
         }
+    }//end processClassToken()
 
-    }//end process()
+
+    /**
+     * Processes this test for when a function token is encountered.
+     *
+     * - Detect new interfaces when used as a type hint.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                  $stackPtr  The position of the current token in
+     *                                        the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processFunctionToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $typeHints = $this->getTypeHintsFromFunctionDeclaration($phpcsFile, $stackPtr);
+        if (empty($typeHints) || is_array($typeHints) === false) {
+            return;
+        }
+
+        foreach ($typeHints as $hint) {
+
+            $typeHintLc = strtolower($hint);
+
+            if (isset($this->newInterfaces[$typeHintLc]) === true) {
+                $itemInfo = array(
+                    'name'   => $hint,
+                    'nameLc' => $typeHintLc,
+                );
+                $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+            }
+        }
+    }
 
 
     /**

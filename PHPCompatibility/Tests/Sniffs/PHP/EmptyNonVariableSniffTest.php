@@ -34,9 +34,6 @@ class EmptyNonVariableSniffTest extends BaseSniffTest
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.4');
         $this->assertError($file, $line, 'Only variables can be passed to empty() prior to PHP 5.5.');
-
-        $file = $this->sniffFile(self::TEST_FILE, '5.5');
-        $this->assertNoViolation($file, $line);
     }
 
     /**
@@ -80,28 +77,28 @@ class EmptyNonVariableSniffTest extends BaseSniffTest
 
 
     /**
-     * testNoViolation
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.3');
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
         $this->assertNoViolation($file, $line);
     }
 
     /**
      * Data provider.
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation()
+    public function dataNoFalsePositives()
     {
         return array(
             array(4),
@@ -137,4 +134,17 @@ class EmptyNonVariableSniffTest extends BaseSniffTest
             array(65),
         );
     }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.5');
+        $this->assertNoViolation($file);
+    }
+
 }

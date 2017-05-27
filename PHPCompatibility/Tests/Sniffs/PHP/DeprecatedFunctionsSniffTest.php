@@ -45,14 +45,11 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             $this->assertNoViolation($file, $line);
         }
 
-        if (isset($deprecatedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedIn);
-        }
+        $errorVersion = (isset($deprecatedVersion)) ? $deprecatedVersion : $deprecatedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is deprecated since PHP {$deprecatedIn}";
         foreach($lines as $line) {
-            $this->assertWarning($file, $line, "Function {$functionName}() is deprecated since PHP {$deprecatedIn}");
+            $this->assertWarning($file, $line, $error);
         }
     }
 
@@ -95,14 +92,11 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             $this->assertNoViolation($file, $line);
         }
 
-        if (isset($deprecatedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedIn);
-        }
+        $errorVersion = (isset($deprecatedVersion)) ? $deprecatedVersion : $deprecatedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is deprecated since PHP {$deprecatedIn}; Use {$alternative} instead";
         foreach($lines as $line) {
-            $this->assertWarning($file, $line, "Function {$functionName}() is deprecated since PHP {$deprecatedIn}; Use {$alternative} instead");
+            $this->assertWarning($file, $line, $error);
         }
     }
 
@@ -198,6 +192,8 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             array('mcrypt_module_self_test', '7.1', 'OpenSSL', array(130), '7.0'),
             array('mdecrypt_generic', '7.1', 'OpenSSL', array(131), '7.0'),
 
+            array('jpeg2wbmp', '7.2', 'imagecreatefromjpeg() and imagewbmp()', array(143), '7.1'),
+            array('png2wbmp', '7.2', 'imagecreatefrompng() or imagewbmp()', array(144), '7.1'),
         );
     }
 
@@ -223,14 +219,11 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             $this->assertNoViolation($file, $line);
         }
 
-        if (isset($removedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $removedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $removedIn);
-        }
+        $errorVersion = (isset($removedVersion)) ? $removedVersion : $removedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is removed since PHP {$removedIn}";
         foreach($lines as $line) {
-            $this->assertError($file, $line, "Function {$functionName}() is removed since PHP {$removedIn}");
+            $this->assertError($file, $line, $error);
         }
     }
 
@@ -286,24 +279,18 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             $this->assertNoViolation($file, $line);
         }
 
-        if (isset($deprecatedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedIn);
-        }
+        $errorVersion = (isset($deprecatedVersion)) ? $deprecatedVersion : $deprecatedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is deprecated since PHP {$deprecatedIn}";
         foreach($lines as $line) {
-            $this->assertWarning($file, $line, "Function {$functionName}() is deprecated since PHP {$deprecatedIn}");
+            $this->assertWarning($file, $line, $error);
         }
 
-        if (isset($removedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $removedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $removedIn);
-        }
+        $errorVersion = (isset($removedVersion)) ? $removedVersion : $removedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is deprecated since PHP {$deprecatedIn} and removed since PHP {$removedIn}";
         foreach($lines as $line) {
-            $this->assertError($file, $line, "Function {$functionName}() is deprecated since PHP {$deprecatedIn} and removed since PHP {$removedIn}");
+            $this->assertError($file, $line, $error);
         }
     }
 
@@ -357,24 +344,18 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             $this->assertNoViolation($file, $line);
         }
 
-        if (isset($deprecatedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $deprecatedIn);
-        }
+        $errorVersion = (isset($deprecatedVersion)) ? $deprecatedVersion : $deprecatedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is deprecated since PHP {$deprecatedIn}; Use {$alternative} instead";
         foreach($lines as $line) {
-            $this->assertWarning($file, $line, "Function {$functionName}() is deprecated since PHP {$deprecatedIn}; Use {$alternative} instead");
+            $this->assertWarning($file, $line, $error);
         }
 
-        if (isset($removedVersion)){
-            $file = $this->sniffFile(self::TEST_FILE, $removedVersion);
-        }
-        else {
-            $file = $this->sniffFile(self::TEST_FILE, $removedIn);
-        }
+        $errorVersion = (isset($removedVersion)) ? $removedVersion : $removedIn;
+        $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
+        $error        = "Function {$functionName}() is deprecated since PHP {$deprecatedIn} and removed since PHP {$removedIn}; Use {$alternative} instead";
         foreach($lines as $line) {
-            $this->assertError($file, $line, "Function {$functionName}() is deprecated since PHP {$deprecatedIn} and removed since PHP {$removedIn}; Use {$alternative} instead");
+            $this->assertError($file, $line, $error);
         }
     }
 
@@ -413,6 +394,61 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
             array('datefmt_set_timezone_id', '5.5', '7.0', 'datefmt_set_timezone', array(36), '5.4'),
 
         );
+    }
+
+
+    /**
+     * testNoFalsePositives
+     *
+     * @dataProvider dataNoFalsePositives
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testNoFalsePositives($line)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '99.0'); // High version beyond latest deprecation.
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositives()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositives()
+    {
+        $testCases = array(
+            array(134),
+            array(135),
+            // array(137), // Not yet accounted for in the code, uncomment when fixed.
+            array(138),
+            array(139),
+            array(140),
+            array(141),
+        );
+
+        // Add an additional testcase which will only be 'no violation' if namespaces are recognized.
+        if (version_compare(phpversion(), '5.3', '>=')) {
+            $testCases[] = array(136);
+        }
+
+        return $testCases;
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.0'); // Low version below the first deprecation.
+        $this->assertNoViolation($file);
     }
 
 }

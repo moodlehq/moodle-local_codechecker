@@ -51,7 +51,263 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     }
 
 
-   /**
+    /**
+     * testGetTestVersion
+     *
+     * @dataProvider dataGetTestVersion
+     *
+     * @covers PHPCompatibility_Sniff::getTestVersion
+     *
+     * @requires PHP 5.3.2
+     * @internal Requirement is needed to be able to test the private method
+     *           using `ReflectionMethod::setAccessible()`.
+     *           The function itself works fine in PHP < 5.3.2.
+     *
+     * @param string $testVersion The testVersion as normally set via the command line or ruleset.
+     * @param string $expected    The expected testVersion array.
+     */
+    public function testGetTestVersion($testVersion, $expected)
+    {
+        if (isset($testVersion)) {
+            PHP_CodeSniffer::setConfigData('testVersion', $testVersion, true);
+        }
+
+        $this->assertSame($expected, $this->invokeMethod($this->helperClass, 'GetTestVersion'));
+
+		// Verify that the caching of the function results is working correctly.
+        $this->assertSame($expected, $this->invokeMethod($this->helperClass, 'GetTestVersion'));
+
+        // Clean up / reset the value.
+        PHP_CodeSniffer::setConfigData('testVersion', null, true);
+    }
+
+    /**
+     * dataGetTestVersion
+     *
+     * @see testGetTestVersion()
+     *
+     * @return array
+     */
+    public function dataGetTestVersion()
+    {
+        return array(
+            array(null, array(null, null)), // No testVersion provided.
+            array('5.0', array('5.0', '5.0')), // Single version.
+            array('7.1', array('7.1', '7.1')), // Single version.
+            array('4.0-99.0', array('4.0', '99.0')), // Range of versions.
+            array('5.1-5.5', array('5.1', '5.5')), // Range of versions.
+            array('7.0-7.5', array('7.0', '7.5')), // Range of versions.
+            array('5.6-5.6', array('5.6', '5.6')), // Range of versions - min & max the same.
+            array('4.0 - 99.0', array('4.0', '99.0')), // Range of versions with spaces around dash.
+            array('-5.6', array('4.0', '5.6')), // Range, with no minimum.
+            array('7.0-', array('7.0', '99.9')), // Range, with no maximum.
+
+		// Whitespace tests.  Shouldn't really come up in standard command-line use,
+		// but could occur if command-line argument is quoted or added via
+		// ruleset.xml.
+            array(' 5.0', array('5.0', '5.0')), // Single version.
+            array('5.0 ', array('5.0', '5.0')), // Single version.
+            array('5.1 - 5.5', array('5.1', '5.5')), // Range of versions.
+            array(' 5.1 - 5.5 ', array('5.1', '5.5')), // Range of versions.
+        );
+    }
+
+
+    /**
+     * testGetTestVersionInvalidRange
+     *
+     * @dataProvider dataGetTestVersionInvalidRange
+     *
+     * @covers PHPCompatibility_Sniff::getTestVersion
+     *
+     * @requires PHP 5.3.2
+     * @internal Requirement is needed to be able to test the private method
+     *           using `ReflectionMethod::setAccessible()`.
+     *           The function itself works fine in PHP < 5.3.2.
+     *
+     * @param string $testVersion The testVersion as normally set via the command line or ruleset.
+     */
+    public function testGetTestVersionInvalidRange($testVersion)
+    {
+        if (method_exists($this, 'setExpectedException')) {
+            $this->setExpectedException(
+                'PHPUnit_Framework_Error_Warning',
+                sprintf('Invalid range in testVersion setting: \'%s\'', $testVersion)
+            );
+        } else {
+            $this->expectException('PHPUnit\Framework\Error\Warning');
+            $this->expectExceptionMessage(sprintf('Invalid range in testVersion setting: \'%s\'', $testVersion));
+        }
+
+        $this->testGetTestVersion($testVersion, array(null, null));
+    }
+
+    /**
+     * dataGetTestVersionInvalidRange
+     *
+     * @see testGetTestVersionInvalidRange()
+     *
+     * @return array
+     */
+    public function dataGetTestVersionInvalidRange()
+    {
+        return array(
+            array('5.6-5.4'), // Range of versions - min > max.
+        );
+    }
+
+
+    /**
+     * testGetTestVersionInvalidVersion
+     *
+     * @dataProvider dataGetTestVersionInvalidVersion
+     *
+     * @covers PHPCompatibility_Sniff::getTestVersion
+     *
+     * @requires PHP 5.3.2
+     * @internal Requirement is needed to be able to test the private method
+     *           using `ReflectionMethod::setAccessible()`.
+     *           The function itself works fine in PHP < 5.3.2.
+     *
+     * @param string $testVersion The testVersion as normally set via the command line or ruleset.
+     */
+    public function testGetTestVersionInvalidVersion($testVersion)
+    {
+        if (method_exists($this, 'setExpectedException')) {
+            $this->setExpectedException(
+                'PHPUnit_Framework_Error_Warning',
+                sprintf('Invalid testVersion setting: \'%s\'', $testVersion)
+            );
+        } else {
+            $this->expectException('PHPUnit\Framework\Error\Warning');
+            $this->expectExceptionMessage(sprintf('Invalid testVersion setting: \'%s\'', $testVersion));
+        }
+
+        $this->testGetTestVersion($testVersion, array(null, null));
+    }
+
+    /**
+     * dataGetTestVersionInvalidVersion
+     *
+     * @see testGetTestVersionInvalidVersion()
+     *
+     * @return array
+     */
+    public function dataGetTestVersionInvalidVersion()
+    {
+        return array(
+            array('5'), // Not in major.minor format.
+            array('568'), // Not in major.minor format.
+            array('5.6.28'), // Not in major.minor format.
+            array('seven.one'), // Non numeric.
+
+            array('-'), // blank range.
+            array('5.4-5.5-5.6'), // mutiple ranges.
+
+            array('5-7.0'), // invalid left half.
+            array('5.1.2-7.0'), // invalid left half.
+            array('5AndJunk-7.0'), // invalid left half.
+
+            array('5.5-7'), // invalid right half.
+            array('5.5-7.0.5'), // invalid right half.
+            array('5.5-7AndJunk'), // invalid right half.
+        );
+    }
+
+
+    /**
+     * testSupportsAbove
+     *
+     * @dataProvider dataSupportsAbove
+     *
+     * @covers PHPCompatibility_Sniff::supportsAbove
+     *
+     * @param string $phpVersion  The PHP version we want to test.
+     * @param string $testVersion The testVersion as normally set via the command line or ruleset.
+     * @param string $expected    Expected result.
+     */
+    public function testSupportsAbove($phpVersion, $testVersion, $expected)
+    {
+        if (isset($testVersion)) {
+            PHP_CodeSniffer::setConfigData('testVersion', $testVersion, true);
+        }
+
+        $this->assertSame($expected, $this->helperClass->supportsAbove($phpVersion));
+
+        // Clean up / reset the value.
+        PHP_CodeSniffer::setConfigData('testVersion', null, true);
+    }
+
+    /**
+     * dataSupportsAbove
+     *
+     * @see testSupportsAbove()
+     *
+     * @return array
+     */
+    public function dataSupportsAbove()
+    {
+        return array(
+            array('5.0', null, true),
+            array('5.0', '5.2', true),
+            array('5.0', '5.1-5.4', true),
+            array('5.0', '5.3-7.0', true),
+
+            array('7.1', null, true),
+            array('7.1', '5.2', false),
+            array('7.1', '5.1-5.4', false),
+            array('7.1', '5.3-7.0', false),
+        );
+    }
+
+
+    /**
+     * testSupportsBelow
+     *
+     * @dataProvider dataSupportsBelow
+     *
+     * @covers PHPCompatibility_Sniff::supportsBelow
+     *
+     * @param string $phpVersion  The PHP version we want to test.
+     * @param string $testVersion The testVersion as normally set via the command line or ruleset.
+     * @param string $expected    Expected result.
+     */
+    public function testSupportsBelow($phpVersion, $testVersion, $expected)
+    {
+        if (isset($testVersion)) {
+            PHP_CodeSniffer::setConfigData('testVersion', $testVersion, true);
+        }
+
+        $this->assertSame($expected, $this->helperClass->supportsBelow($phpVersion));
+
+        // Clean up / reset the value.
+        PHP_CodeSniffer::setConfigData('testVersion', null, true);
+    }
+
+    /**
+     * dataSupportsBelow
+     *
+     * @see testSupportsBelow()
+     *
+     * @return array
+     */
+    public function dataSupportsBelow()
+    {
+        return array(
+            array('5.0', null, false),
+            array('5.0', '5.2', false),
+            array('5.0', '5.1-5.4', false),
+            array('5.0', '5.3-7.0', false),
+
+            array('7.1', null, false),
+            array('7.1', '5.2', true),
+            array('7.1', '5.1-5.4', true),
+            array('7.1', '5.3-7.0', true),
+        );
+    }
+
+
+    /**
      * testStringToErrorCode
      *
      * @dataProvider dataStringToErrorCode
@@ -220,6 +476,25 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
             array('"This is { $great}"', '"This is { }"'),
             array('"This is the return value of getName(): {getName()}"', '"This is the return value of getName(): {getName()}"'),
         );
+    }
+
+
+    /**
+     * Test helper: Call protected/private method of a class.
+     *
+     * @param object &$object    Instantiated object that we will run method on.
+     * @param string $methodName Method name to call
+     * @param array  $parameters Array of parameters to pass into method.
+     *
+     * @return mixed Method return.
+     */
+    private function invokeMethod(&$object, $methodName, array $parameters = array())
+    {
+        $reflection = new ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $parameters);
     }
 
 }

@@ -6,7 +6,7 @@
 $okay = new StdClass();
 $okay = new \myNamespace\DateTime();
 $okay = \myNamespace\DateTime::static_method();
-$okay = namespace\DateTime::static_method();
+$okay = SomeNamespace\DateTime::static_method();
 // Left empty for additional test cases to be added.
 
 /*
@@ -58,7 +58,7 @@ $test = new IntlTimeZone();
 $test = new IntlBreakIterator();
 $test = new IntlRuleBasedBreakIterator();
 $test = new IntlCodePointBreakIterator();
-
+$test = new libXMLError();
 
 
 
@@ -98,7 +98,7 @@ class MyIntlTimeZone extends IntlTimeZone {}
 class MyIntlBreakIterator extends IntlBreakIterator {}
 class MyIntlRuleBasedBreakIterator extends IntlRuleBasedBreakIterator {}
 class MyIntlCodePointBreakIterator extends IntlCodePointBreakIterator {}
-
+class MylibXMLError extends libXMLError {}
 
 
 
@@ -138,11 +138,129 @@ IntlTimeZone::$static_property;
 IntlBreakIterator::$static_property;
 IntlRuleBasedBreakIterator::$static_property;
 IntlCodePointBreakIterator::$static_property;
+libXMLError::$static_property;
 
-
-/**
+/*
  * These should all be flagged too as classnames are case-insensitive.
  */
 $test = new DATETIME(); // Uppercase.
 class MyDateTime extends datetime {} // Lowercase.
 dATeTiMe::static_method(); // Mixed case.
+
+// Test anonymous classes extending a new class.
+new class extends DateTime {}
+new class extends \Phar {}
+new class extends SplMinHeap {}
+new class extends \Transliterator {}
+
+// Check against false positives.
+new class extends \My\IntlRuleBasedBreakIterator {}
+new class extends My\IntlRuleBasedBreakIterator {}
+
+class MyClass {
+    // New Classes as typehints.
+    function DateTimeZoneTypeHint( DateTimeZone $a ) {}
+    function RegexIteratorTypeHint( RegexIterator $a ) {}
+    function SplHeapTypeHint( SplHeap $a ) {}
+    function IntlCalendarTypeHint( IntlCalendar $a ) {}
+
+    // Namespaced classes as typehints.
+    function GlobIteratorTypeHint( \GlobIterator $a ) {} // Error: global namespace.
+    function SplQueueTypeHint( myNameSpace\SplQueue $a ) {} // Ok.
+    function CURLFileTypeHint( \some\other\CURLFile $a ) {} // Ok.
+
+    // New classes as nullable typehints (PHP 7.1+).
+    function DatePeriodTypeHint( ?DatePeriod $a ) {}
+    function FilesystemIteratorTypeHint( ?\FilesystemIterator $a ) {}
+}
+
+// New classes as type hints in anonymous functions.
+function ( MultipleIterator $a ) {}
+function(\RecursiveCallbackFilterIterator $a) {}
+function ( ?SNMP $a ) {}
+function(myNameSpace\IntlTimeZone $a) {} // Ok.
+
+/*
+ * Exception classes should be caught too.
+ */
+throw new DomainException($msg);
+throw new ReflectionException($msg);
+throw new UI\Exception\RuntimeException($msg);
+
+class MyException extends Exception {}
+class MyException extends UnexpectedValueException {}
+class MyException extends UI\Exception\InvalidArgumentException {}
+
+ErrorException::static_method();
+LengthException::static_method();
+OverflowException::CLASS_CONSTANT;
+UnderflowException::CLASS_CONSTANT;
+PDOException::$static_property;
+UI\Exception\RuntimeException::$static_property;
+
+new class extends BadFunctionCallException {}
+new class extends mysqli_sql_exception {}
+new class extends DivisionByZeroError {}
+
+class MyExceptionHandler {
+    // New Exceptions as typehints.
+    function ExceptionTypeHint( BadMethodCallException $e ) {}
+    function ExceptionTypeHint( RangeException $e ) {}
+    function ExceptionTypeHint( ArithmeticError $e ) {}
+    function ExceptionTypeHint( UI\Exception\InvalidArgumentException $e ) {}
+}
+
+// New exceptions as type hints in anonymous functions.
+function ( Error $e ) {}
+
+try {
+} catch (Exception $e) {
+} catch (ErrorException $e) {
+} catch (BadFunctionCallException $e) {
+} catch (BadMethodCallException $e) {
+} catch (DomainException $e) {
+} catch (InvalidArgumentException $e) {
+} catch (LengthException $e) {
+} catch (LogicException $e) {
+} catch (OutOfBoundsException $e) {
+} catch (OutOfRangeException $e) {
+} catch (OverflowException $e) {
+} catch (RangeException $e) {
+} catch (RuntimeException $e) {
+} catch (UnderflowException $e) {
+} catch (UnexpectedValueException $e) {
+} catch (DOMException $e) {
+} catch (mysqli_sql_exception $e) {
+} catch (PDOException $e) {
+} catch (ReflectionException $e) {
+} catch (SoapFault $e) {
+} catch (PharException $e) {
+} catch (SNMPException $e) {
+} catch (IntlException $e) {
+} catch (Error $e) {
+} catch (ArithmeticError $e) {
+} catch (AssertionError $e) {
+} catch (DivisionByZeroError $e) {
+} catch (ParseError $e) {
+} catch (TypeError $e) {
+} catch (UI\Exception\InvalidArgumentException $e) {
+} catch (UI\Exception\RuntimeException $e) {
+}
+
+
+
+
+// Multi-catch.
+try {
+} catch (InvalidArgumentException | \LogicException | OutOfBoundsException | \OutOfRangeException | RuntimeException $e) {
+}
+
+// Global namespace, should throw error.
+try {
+} catch (\DOMException $e) {
+}
+
+// Namespaced, should be ignored.
+try {
+} catch (\My\Except\DOMException $e) {
+}

@@ -10,6 +10,7 @@
  * New function array dereferencing sniff tests
  *
  * @group newFunctionArrayDereferencing
+ * @group dereferencing
  *
  * @covers PHPCompatibility_Sniffs_PHP_NewFunctionArrayDereferencingSniff
  *
@@ -34,9 +35,6 @@ class NewFunctionArrayDereferencingSniffTest extends BaseSniffTest
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertError($file, $line, 'Function array dereferencing is not present in PHP version 5.3 or earlier');
-
-        $file = $this->sniffFile(self::TEST_FILE, '5.4');
-        $this->assertNoViolation($file, $line);
     }
 
     /**
@@ -46,7 +44,8 @@ class NewFunctionArrayDereferencingSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataArrayDereferencing() {
+    public function dataArrayDereferencing()
+    {
         return array(
             array(3),
             array(14),
@@ -57,28 +56,29 @@ class NewFunctionArrayDereferencingSniffTest extends BaseSniffTest
 
 
     /**
-     * testNoViolation
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line Line number with valid code.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.2');
+        $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertNoViolation($file, $line);
     }
 
     /**
-     * dataNoViolation
+     * dataNoFalsePositives
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation() {
+    public function dataNoFalsePositives()
+    {
         return array(
             array(5),
             array(8),
@@ -88,4 +88,17 @@ class NewFunctionArrayDereferencingSniffTest extends BaseSniffTest
             array(19),
         );
     }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file);
+    }
+
 }

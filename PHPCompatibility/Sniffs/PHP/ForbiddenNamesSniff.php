@@ -109,6 +109,13 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
     protected $isLowPHPCS = false;
 
     /**
+     * Scope modifiers and other keywords allowed in trait use statements.
+     *
+     * @var array
+     */
+    private $allowed_modifiers = array();
+
+    /**
      * targetedTokens
      *
      * @var array
@@ -134,6 +141,11 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
     public function register()
     {
         $this->isLowPHPCS = version_compare(PHP_CodeSniffer::VERSION, '2.0', '<');
+
+        $this->allowed_modifiers          = array_combine(
+            PHP_CodeSniffer_Tokens::$scopeModifiers, PHP_CodeSniffer_Tokens::$scopeModifiers
+        );
+        $this->allowed_modifiers[T_FINAL] = T_FINAL;
 
         $tokens = $this->targetedTokens;
         if (defined('T_ANON_CLASS')) {
@@ -184,13 +196,24 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
         }
 
         /*
+         * Deal with anonymous classes - `class` before a reserved keyword is sometimes
+         * misidentified as `T_ANON_CLASS`.
+         * In PHPCS < 2.3.4 these were tokenized as T_CLASS no matter what.
+         */
+        if ($tokens[$stackPtr]['type'] === 'T_ANON_CLASS' || $tokens[$stackPtr]['type'] === 'T_CLASS') {
+            $prevNonEmpty = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            if ($prevNonEmpty !== false && $tokens[$prevNonEmpty]['type'] === 'T_NEW') {
+                return;
+            }
+        }
+
+        /*
          * PHP 5.6 allows for use const and use function, but only if followed by the function/constant name.
          * - `use function HelloWorld` => move to the next token (HelloWorld) to verify.
          * - `use const HelloWorld` => move to the next token (HelloWorld) to verify.
          */
-        if ($tokens[$stackPtr]['type'] === 'T_USE'
+        else if ($tokens[$stackPtr]['type'] === 'T_USE'
             && isset($this->validUseNames[strtolower($tokens[$nextNonEmpty]['content'])]) === true
-            && $this->supportsAbove('5.6')
         ) {
             $maybeUseNext = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
             if ($maybeUseNext !== false && $this->isEndOfUseStatement($tokens[$maybeUseNext]) === false) {
@@ -208,7 +231,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
          * - `use HelloWorld { sayHello as private myPrivateHello; }` => move to the next token to verify.
          */
         else if ($tokens[$stackPtr]['type'] === 'T_AS'
-            && in_array($tokens[$nextNonEmpty]['code'], PHP_CodeSniffer_Tokens::$scopeModifiers, true) === true
+            && isset($this->allowed_modifiers[$tokens[$nextNonEmpty]['code']]) === true
             && $this->inUseScope($phpcsFile, $stackPtr) === true
         ) {
             $maybeUseNext = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
@@ -219,16 +242,74 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
             $nextNonEmpty = $maybeUseNext;
         }
 
+        /*
+         * Deal with functions declared to return by reference.
+         */
+        else if ($tokens[$stackPtr]['type'] === 'T_FUNCTION'
+            && $tokens[$nextNonEmpty]['type'] === 'T_BITWISE_AND'
+        ) {
+            $maybeUseNext = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
+            if ($maybeUseNext === false) {
+                // Live coding.
+                return;
+            }
+
+            $nextNonEmpty = $maybeUseNext;
+        }
+
+        /*
+         * Deal with nested namespaces.
+         */
+        else if ($tokens[$stackPtr]['type'] === 'T_NAMESPACE') {
+            if ($tokens[$stackPtr + 1]['code'] === T_NS_SEPARATOR) {
+                // Not a namespace declaration, but use of, i.e. namespace\someFunction();
+                return;
+            }
+
+            $endToken      = $phpcsFile->findNext(array(T_SEMICOLON, T_OPEN_CURLY_BRACKET), ($stackPtr + 1), null, false, null, true);
+            $namespaceName = trim($phpcsFile->getTokensAsString(($stackPtr + 1), ($endToken - $stackPtr - 1)));
+            if (empty($namespaceName) === true) {
+                return;
+            }
+
+            $namespaceParts = explode('\\', $namespaceName);
+            foreach ($namespaceParts as $namespacePart) {
+                $partLc = strtolower($namespacePart);
+                if (isset($this->invalidNames[$partLc]) === false) {
+                    continue;
+                }
+
+                // Find the token position of the part which matched.
+                for ($i = ($stackPtr + 1); $i < $endToken; $i++) {
+                    if ($tokens[$i]['content'] === $namespacePart) {
+                        $nextNonEmpty = $i;
+                        break;
+                    }
+                }
+            }
+            unset($i, $namespacePart, $partLc);
+        }
+
+
         $nextContentLc = strtolower($tokens[$nextNonEmpty]['content']);
         if (isset($this->invalidNames[$nextContentLc]) === false) {
             return;
         }
 
-        // Deal with anonymous classes.
-        $prevNonEmpty = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
-        if ($prevNonEmpty !== false
-            && $tokens[$prevNonEmpty]['type'] === 'T_NEW'
-            && ($tokens[$stackPtr]['type'] === 'T_ANON_CLASS' || $tokens[$stackPtr]['type'] === 'T_CLASS')
+        /*
+         * Deal with PHP 7 relaxing the rules.
+         * "As of PHP 7.0.0 these keywords are allowed as property, constant, and method names
+         * of classes, interfaces and traits, except that class may not be used as constant name."
+         */
+        if (
+            ((
+                $tokens[$stackPtr]['type'] === 'T_FUNCTION'
+                && $this->inClassScope($phpcsFile, $stackPtr, false) === true
+            ) || (
+                $tokens[$stackPtr]['type'] === 'T_CONST'
+                && $this->isClassConstant($phpcsFile, $stackPtr) === true
+                && $nextContentLc !== 'class'
+            )) && $this->supportsBelow('5.6') === false
         ) {
             return;
         }
@@ -258,9 +339,15 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
     {
         $tokenContentLc = strtolower($tokens[$stackPtr]['content']);
 
-        // Special case for 5.3 where we want to find usage of traits, but
-        // trait is not a token.
-        if ($tokenContentLc === 'trait') {
+        /*
+         * Special case for PHP versions where the target is not yet identified as
+         * its own token, but presents as T_STRING.
+         * - namespace keyword in PHP < 5.3
+         * - trait keyword in PHP < 5.4
+         */
+        if ((version_compare(phpversion(), '5.3', '<') && $tokenContentLc === 'namespace')
+            || (version_compare(phpversion(), '5.4', '<') && $tokenContentLc === 'trait')
+        ) {
             $this->processNonString($phpcsFile, $stackPtr, $tokens);
             return;
         }

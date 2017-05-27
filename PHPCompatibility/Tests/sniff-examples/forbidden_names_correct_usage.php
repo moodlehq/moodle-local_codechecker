@@ -143,3 +143,28 @@ class MyClass2 {
 class MyClass3 {
     use HelloWorld { sayHello as public myPublicHello; }
 }
+
+class MyClass3 {
+    use HelloWorld { sayHello as final; }
+}
+
+class MyClass4 {
+    use HelloWorld { sayHello as final myFinalHello; }
+}
+
+// Functions declared to return by reference.
+function &mySayHello() {}
+
+// Anonymous classes.
+$a = new class {}
+
+// Nested namespace declarations.
+namespace Foo\Bar\Baz;
+namespace Foo\Bar\Baz {}
+
+/**
+ * Issue #124/#126: Valid use statements with function or const (PHP 5.6+).
+ */
+use function MyFunctionName;
+use function MyFunctionName as func;
+use const MyCONSTANT;

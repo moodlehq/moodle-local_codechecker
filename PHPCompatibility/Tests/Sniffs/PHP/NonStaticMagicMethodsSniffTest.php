@@ -35,8 +35,8 @@ class NonStaticMagicMethodsSniffTest extends BaseSniffTest
      */
     public static function setUpBeforeClass()
     {
-        // When using PHPCS 1.x combined with PHP 5.3 or lower, traits are not recognized.
-        if (version_compare(PHP_CodeSniffer::VERSION, '2.0', '<') && version_compare(phpversion(), '5.4', '<')) {
+        // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are not recognized.
+        if (version_compare(PHP_CodeSniffer::VERSION, '2.4.0', '<') && version_compare(phpversion(), '5.4', '<')) {
             self::$recognizesTraits = false;
         }
 
@@ -58,48 +58,273 @@ class NonStaticMagicMethodsSniffTest extends BaseSniffTest
      * mixed in one file anyway, so this issue for which this is a work-around,
      * should not cause real world issues anyway.}}
      *
-     * @param bool $isTrait Whether to load the class/interface test file or the trait test file.
+     * @param bool   $isTrait     Whether to load the class/interface test file or the trait test file.
+     * @param string $testVersion Value of 'testVersion' to set on PHPCS object.
      *
      * @return PHP_CodeSniffer_File File object|false
      */
-    protected function getTestFile($isTrait) {
+    protected function getTestFile($isTrait, $testVersion = null)
+    {
         if ($isTrait === false) {
-            return $this->sniffFile('sniff-examples/nonstatic_magic_methods.php');
-        }
-        else {
-            return $this->sniffFile('sniff-examples/nonstatic_magic_methods_traits.php');
+            return $this->sniffFile('sniff-examples/nonstatic_magic_methods.php', $testVersion);
+        } else {
+            return $this->sniffFile('sniff-examples/nonstatic_magic_methods_traits.php', $testVersion);
         }
     }
 
+
     /**
-     * testCorrectImplementation
+     * testWrongMethodVisibility
      *
-     * @dataProvider dataCorrectImplementation
+     * @dataProvider dataWrongMethodVisibility
+     *
+     * @param string $methodName        Method name.
+     * @param string $desiredVisibility The visibility the method should have.
+     * @param string $testVisibility    The visibility the method actually has in the test.
+     * @param int    $line              The line number.
+     * @param bool   $isTrait           Whether the test relates to method in a trait.
+     *
+     * @return void
+     */
+    public function testWrongMethodVisibility($methodName, $desiredVisibility, $testVisibility, $line, $isTrait = false)
+    {
+        if ($isTrait === true && self::$recognizesTraits === false) {
+            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
+            return;
+        }
+
+        $file = $this->getTestFile($isTrait, '5.3-99.0');
+        $this->assertError($file, $line, "Visibility for magic method {$methodName} must be {$desiredVisibility}. Found: {$testVisibility}");
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testWrongMethodVisibility()
+     *
+     * @return array
+     */
+    public function dataWrongMethodVisibility()
+    {
+        return array(
+            /*
+             * nonstatic_magic_methods.php
+             */
+            // Class.
+            array('__get', 'public', 'private', 32),
+            array('__set', 'public', 'protected', 33),
+            array('__isset', 'public', 'private', 34),
+            array('__unset', 'public', 'protected', 35),
+            array('__call', 'public', 'private', 36),
+            array('__callStatic', 'public', 'protected', 37),
+            array('__sleep', 'public', 'private', 38),
+            array('__toString', 'public', 'protected', 39),
+
+            // Alternative property order & stacked.
+            array('__set', 'public', 'protected', 56),
+            array('__isset', 'public', 'private', 57),
+            array('__get', 'public', 'private', 65),
+
+            // Interface.
+            array('__get', 'public', 'protected', 98),
+            array('__set', 'public', 'private', 99),
+            array('__isset', 'public', 'protected', 100),
+            array('__unset', 'public', 'private', 101),
+            array('__call', 'public', 'protected', 102),
+            array('__callStatic', 'public', 'private', 103),
+            array('__sleep', 'public', 'protected', 104),
+            array('__toString', 'public', 'private', 105),
+
+            // Anonymous class.
+            array('__get', 'public', 'private', 149),
+            array('__set', 'public', 'protected', 150),
+            array('__isset', 'public', 'private', 151),
+            array('__unset', 'public', 'protected', 152),
+            array('__call', 'public', 'private', 153),
+            array('__callStatic', 'public', 'protected', 154),
+            array('__sleep', 'public', 'private', 155),
+            array('__toString', 'public', 'protected', 156),
+
+            /*
+             * nonstatic_magic_methods_traits.php
+             */
+            // Trait.
+            array('__get', 'public', 'private', 32, true),
+            array('__set', 'public', 'protected', 33, true),
+            array('__isset', 'public', 'private', 34, true),
+            array('__unset', 'public', 'protected', 35, true),
+            array('__call', 'public', 'private', 36, true),
+            array('__callStatic', 'public', 'protected', 37, true),
+            array('__sleep', 'public', 'private', 38, true),
+            array('__toString', 'public', 'protected', 39, true),
+
+        );
+    }
+
+
+    /**
+     * testWrongStaticMethod
+     *
+     * @dataProvider dataWrongStaticMethod
+     *
+     * @param string $methodName Method name.
+     * @param int    $line       The line number.
+     * @param bool   $isTrait    Whether the test relates to a method in a trait.
+     *
+     * @return void
+     */
+    public function testWrongStaticMethod($methodName, $line, $isTrait = false)
+    {
+        if ($isTrait === true && self::$recognizesTraits === false) {
+            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
+            return;
+        }
+
+        $file = $this->getTestFile($isTrait, '5.3-99.0');
+        $this->assertError($file, $line, "Magic method {$methodName} cannot be defined as static.");
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testWrongStaticMethod()
+     *
+     * @return array
+     */
+    public function dataWrongStaticMethod()
+    {
+        return array(
+            /*
+             * nonstatic_magic_methods.php
+             */
+            // Class.
+            array('__get', 44),
+            array('__set', 45),
+            array('__isset', 46),
+            array('__unset', 47),
+            array('__call', 48),
+
+            // Alternative property order & stacked.
+            array('__get', 55),
+            array('__set', 56),
+            array('__isset', 57),
+            array('__get', 65),
+
+            // Interface.
+            array('__get', 110),
+            array('__set', 111),
+            array('__isset', 112),
+            array('__unset', 113),
+            array('__call', 114),
+
+            // Anonymous class.
+            array('__get', 161),
+            array('__set', 162),
+            array('__isset', 163),
+            array('__unset', 164),
+            array('__call', 165),
+
+            /*
+             * nonstatic_magic_methods_traits.php
+             */
+            // Trait.
+            array('__get', 44, true),
+            array('__set', 45, true),
+            array('__isset', 46, true),
+            array('__unset', 47, true),
+            array('__call', 48, true),
+
+        );
+    }
+
+
+    /**
+     * testWrongNonStaticMethod
+     *
+     * @dataProvider dataWrongNonStaticMethod
+     *
+     * @param string $methodName Method name.
+     * @param int    $line       The line number.
+     * @param bool   $isTrait    Whether the test relates to a method in a trait.
+     *
+     * @return void
+     */
+    public function testWrongNonStaticMethod($methodName, $line, $isTrait = false)
+    {
+        if ($isTrait === true && self::$recognizesTraits === false) {
+            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
+            return;
+        }
+
+        $file = $this->getTestFile($isTrait, '5.3-99.0');
+        $this->assertError($file, $line, "Magic method {$methodName} must be defined as static.");
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testWrongNonStaticMethod()
+     *
+     * @return array
+     */
+    public function dataWrongNonStaticMethod()
+    {
+        return array(
+            /*
+             * nonstatic_magic_methods.php
+             */
+            // Class.
+            array('__callStatic', 49),
+            array('__set_state', 50),
+
+            // Interface.
+            array('__callStatic', 115),
+            array('__set_state', 116),
+
+            // Anonymous class.
+            array('__callStatic', 166),
+            array('__set_state', 167),
+
+            /*
+             * nonstatic_magic_methods_traits.php
+             */
+            // Trait.
+            array('__callStatic', 49, true),
+            array('__set_state', 50, true),
+
+        );
+    }
+
+
+    /**
+     * testNoFalsePositives
+     *
+     * @dataProvider dataNoFalsePositives
      *
      * @param int  $line    The line number.
      * @param bool $isTrait Whether to load the class/interface test file or the trait test file.
      *
      * @return void
      */
-    public function testCorrectImplementation($line, $isTrait = false)
+    public function testNoFalsePositives($line, $isTrait = false)
     {
         if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
             return;
         }
 
-        $file = $this->getTestFile($isTrait);
+        $file = $this->getTestFile($isTrait, '5.3-99.0');
         $this->assertNoViolation($file, $line);
     }
 
     /**
      * Data provider.
      *
-     * @see testCorrectImplementation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataCorrectImplementation()
+    public function dataNoFalsePositives()
     {
         return array(
             /*
@@ -152,6 +377,28 @@ class NonStaticMagicMethodsSniffTest extends BaseSniffTest
             array(92),
             array(93),
 
+            // Plain anonymous class.
+            array(122),
+            array(123),
+            array(124),
+            array(125),
+            array(126),
+            array(127),
+            array(128),
+            array(129),
+            array(130),
+            // Normal anonymous class.
+            array(135),
+            array(136),
+            array(137),
+            array(138),
+            array(139),
+            array(140),
+            array(141),
+            array(142),
+            array(143),
+            array(144),
+
             /*
              * nonstatic_magic_methods_traits.php
              */
@@ -182,204 +429,19 @@ class NonStaticMagicMethodsSniffTest extends BaseSniffTest
 
 
     /**
-     * testWrongMethodVisibility
-     *
-     * @dataProvider dataWrongMethodVisibility
-     *
-     * @param string $methodName        Method name.
-     * @param string $desiredVisibility The visibility the method should have.
-     * @param string $testVisibility    The visibility the method actually has in the test.
-     * @param int    $line              The line number.
-     * @param bool   $isTrait           Whether the test relates to method in a trait.
+     * Verify no notices are thrown at all.
      *
      * @return void
      */
-    public function testWrongMethodVisibility($methodName, $desiredVisibility, $testVisibility, $line, $isTrait = false)
+    public function testNoViolationsInFileOnValidVersion()
     {
-        if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
-            return;
-        }
+        // nonstatic_magic_methods.php
+        $file = $this->getTestFile(false, '5.2');
+        $this->assertNoViolation($file);
 
-        $file = $this->getTestFile($isTrait);
-        $this->assertError($file, $line, "Visibility for magic method {$methodName} must be {$desiredVisibility}. Found: {$testVisibility}");
-    }
-
-    /**
-     * Data provider.
-     *
-     * @see testWrongMethodVisibility()
-     *
-     * @return array
-     */
-    public function dataWrongMethodVisibility()
-    {
-        return array(
-            /*
-             * nonstatic_magic_methods.php
-             */
-            // Class.
-            array('__get', 'public', 'private', 32),
-            array('__set', 'public', 'protected', 33),
-            array('__isset', 'public', 'private', 34),
-            array('__unset', 'public', 'protected', 35),
-            array('__call', 'public', 'private', 36),
-            array('__callStatic', 'public', 'protected', 37),
-            array('__sleep', 'public', 'private', 38),
-            array('__toString', 'public', 'protected', 39),
-
-            // Alternative property order & stacked.
-            array('__set', 'public', 'protected', 56),
-            array('__isset', 'public', 'private', 57),
-            array('__get', 'public', 'private', 65),
-
-            // Interface.
-            array('__get', 'public', 'protected', 98),
-            array('__set', 'public', 'private', 99),
-            array('__isset', 'public', 'protected', 100),
-            array('__unset', 'public', 'private', 101),
-            array('__call', 'public', 'protected', 102),
-            array('__callStatic', 'public', 'private', 103),
-            array('__sleep', 'public', 'protected', 104),
-            array('__toString', 'public', 'private', 105),
-
-            /*
-             * nonstatic_magic_methods_traits.php
-             */
-            // Trait.
-            array('__get', 'public', 'private', 32, true),
-            array('__set', 'public', 'protected', 33, true),
-            array('__isset', 'public', 'private', 34, true),
-            array('__unset', 'public', 'protected', 35, true),
-            array('__call', 'public', 'private', 36, true),
-            array('__callStatic', 'public', 'protected', 37, true),
-            array('__sleep', 'public', 'private', 38, true),
-            array('__toString', 'public', 'protected', 39, true),
-
-        );
-    }
-
-
-    /**
-     * testWrongStaticMethod
-     *
-     * @dataProvider dataWrongStaticMethod
-     *
-     * @param string $methodName Method name.
-     * @param int    $line       The line number.
-     * @param bool   $isTrait    Whether the test relates to a method in a trait.
-     *
-     * @return void
-     */
-    public function testWrongStaticMethod($methodName, $line, $isTrait = false)
-    {
-        if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
-            return;
-        }
-
-        $file = $this->getTestFile($isTrait);
-        $this->assertError($file, $line, "Magic method {$methodName} cannot be defined as static.");
-    }
-
-    /**
-     * Data provider.
-     *
-     * @see testWrongStaticMethod()
-     *
-     * @return array
-     */
-    public function dataWrongStaticMethod()
-    {
-        return array(
-            /*
-             * nonstatic_magic_methods.php
-             */
-            // Class.
-            array('__get', 44),
-            array('__set', 45),
-            array('__isset', 46),
-            array('__unset', 47),
-            array('__call', 48),
-
-            // Alternative property order & stacked.
-            array('__get', 55),
-            array('__set', 56),
-            array('__isset', 57),
-            array('__get', 65),
-
-            // Interface.
-            array('__get', 110),
-            array('__set', 111),
-            array('__isset', 112),
-            array('__unset', 113),
-            array('__call', 114),
-
-            /*
-             * nonstatic_magic_methods_traits.php
-             */
-            // Trait.
-            array('__get', 44, true),
-            array('__set', 45, true),
-            array('__isset', 46, true),
-            array('__unset', 47, true),
-            array('__call', 48, true),
-
-        );
-    }
-
-
-    /**
-     * testWrongNonStaticMethod
-     *
-     * @dataProvider dataWrongNonStaticMethod
-     *
-     * @param string $methodName Method name.
-     * @param int    $line       The line number.
-     * @param bool   $isTrait    Whether the test relates to a method in a trait.
-     *
-     * @return void
-     */
-    public function testWrongNonStaticMethod($methodName, $line, $isTrait = false)
-    {
-        if ($isTrait === true && self::$recognizesTraits === false) {
-            $this->markTestSkipped();
-            return;
-        }
-
-        $file = $this->getTestFile($isTrait);
-        $this->assertError($file, $line, "Magic method {$methodName} must be defined as static.");
-    }
-
-    /**
-     * Data provider.
-     *
-     * @see testWrongNonStaticMethod()
-     *
-     * @return array
-     */
-    public function dataWrongNonStaticMethod()
-    {
-        return array(
-            /*
-             * nonstatic_magic_methods.php
-             */
-            // Class.
-            array('__callStatic', 49),
-            array('__set_state', 50),
-
-            // Interface.
-            array('__callStatic', 115),
-            array('__set_state', 116),
-
-            /*
-             * nonstatic_magic_methods_traits.php
-             */
-            // Trait.
-            array('__callStatic', 49, true),
-            array('__set_state', 50, true),
-
-        );
+        // nonstatic_magic_methods_traits.php
+        $file = $this->getTestFile(true, '5.2');
+        $this->assertNoViolation($file);
     }
 
 }

@@ -26,18 +26,16 @@ class ShortArraySniffTest extends BaseSniffTest
      *
      * @dataProvider dataViolation
      *
-     * @param int $line The line number.
+     * @param int $lineOpen   The line number for the short array opener.
+     * @param int $lineCloser The line number for the short array closer.
      *
      * @return void
      */
-    public function testViolation($line)
+    public function testViolation($lineOpen, $lineClose)
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
-        $this->assertError($file, $line, 'Short array syntax (open) is available since 5.4');
-        $this->assertError($file, $line, 'Short array syntax (close) is available since 5.4');
-
-        $file = $this->sniffFile(self::TEST_FILE, '5.4');
-        $this->assertNoViolation($file, $line);
+        $this->assertError($file, $lineOpen, 'Short array syntax (open) is available since 5.4');
+        $this->assertError($file, $lineClose, 'Short array syntax (close) is available since 5.4');
     }
 
     /**
@@ -50,23 +48,24 @@ class ShortArraySniffTest extends BaseSniffTest
     public function dataViolation()
     {
         return array(
-            array(12),
-            array(13),
-            array(14),
+            array(12, 12),
+            array(13, 13),
+            array(14, 14),
+            array(16, 19),
         );
     }
 
 
     /**
-     * testNoViolation
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertNoViolation($file, $line);
@@ -75,11 +74,11 @@ class ShortArraySniffTest extends BaseSniffTest
     /**
      * Data provider.
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation()
+    public function dataNoFalsePositives()
     {
         return array(
             array(5),
@@ -87,4 +86,17 @@ class ShortArraySniffTest extends BaseSniffTest
             array(7),
         );
     }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file);
+    }
+
 }

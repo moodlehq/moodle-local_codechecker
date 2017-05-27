@@ -62,54 +62,52 @@ class RemovedHashAlgorithmsSniffTest extends BaseSniffTest
             array('salsa10', '5.4', 20, '5.3'),
             array('salsa10', '5.4', 22, '5.3'),
             array('salsa10', '5.4', 23, '5.3'),
+            array('salsa20', '5.4', 25, '5.3'),
         );
     }
 
 
     /**
-     * testRemovedHashAlgorithmsPbkdf2
+     * testNoFalsePositives
      *
-     * As the function hash_pbkdf2() itself was only introduced in PHP 5.5, we cannot test the noViolation case
-     * (as it would still show an error for use of a new function).
-     *
-     * return void
-     */
-    public function testRemovedHashAlgorithmsPbkdf2()
-    {
-        $file = $this->sniffFile(self::TEST_FILE, '5.5');
-        $this->assertError($file, 25, "The salsa20 hash algorithm is removed since PHP 5.4");
-    }
-
-
-    /**
-     * testNoViolation
-     *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.0-99.0');
+        $file = $this->sniffFile(self::TEST_FILE, '99.0'); // High version beyond latest deprecation.
         $this->assertNoViolation($file, $line);
     }
 
     /**
      * Data provider.
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation()
+    public function dataNoFalsePositives()
     {
         return array(
             array(6),
             array(7),
             array(8),
         );
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.3'); // Low version below the first removal.
+        $this->assertNoViolation($file);
     }
 
 }

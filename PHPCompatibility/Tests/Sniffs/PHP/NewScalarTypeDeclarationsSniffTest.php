@@ -59,6 +59,10 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
             array('float', '5.6', 13, '7.0'),
             array('string', '5.6', 14, '7.0'),
             array('iterable', '7.0', 17, '7.1'),
+            array('callable', '5.3', 52, '5.4'),
+            array('int', '5.6', 53, '7.0'),
+            array('callable', '5.3', 56, '5.4'),
+            array('int', '5.6', 57, '7.0'),
         );
     }
 
@@ -75,7 +79,7 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
      */
     public function testInvalidTypeDeclaration($type, $alternative, $line)
     {
-        $file = $this->sniffFile(self::TEST_FILE);
+        $file = $this->sniffFile(self::TEST_FILE, '5.0'); // Lowest version in which this message will show.
         $this->assertError($file, $line, "'{$type}' is not a valid type declaration. Did you mean {$alternative} ?");
     }
 
@@ -108,8 +112,8 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
      */
     public function testInvalidSelfTypeDeclaration($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE);
-        $this->assertError($file, $line, "'self' type cannot be used outside of class scope");
+        $file = $this->sniffFile(self::TEST_FILE, '5.0'); // Lowest version in which this message will show.
+        $this->assertError($file, $line, '\'self\' type cannot be used outside of class scope');
     }
 
     /**
@@ -178,6 +182,8 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
             array(37),
             array(41, true),
             array(44),
+            array(52),
+            array(53),
         );
     }
 
@@ -193,7 +199,7 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
      */
     public function testNoFalsePositives($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.0-7.1');
+        $file = $this->sniffFile(self::TEST_FILE, '4.4'); // Low version below the first addition.
         $this->assertNoViolation($file, $line);
     }
 
@@ -211,4 +217,11 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
             array(49),
         );
     }
+
+
+    /*
+     * `testNoViolationsInFileOnValidVersion` test omitted as this sniff will throw errors
+     * for invalid type hints and incorrect usage.
+     */
+
 }

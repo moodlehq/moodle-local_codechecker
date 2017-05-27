@@ -38,9 +38,6 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.6');
         $this->assertError($file, $line, 'Group use declarations are not allowed in PHP 5.6 or earlier');
-
-        $file = $this->sniffFile(self::TEST_FILE, '7.0');
-        $this->assertNoViolation($file, $line);
     }
 
     /**
@@ -61,15 +58,15 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
 
 
     /**
-     * testValidUseDeclaration
+     * testNoFalsePositives
      *
-     * @dataProvider dataValidUseDeclaration
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testValidUseDeclaration($line)
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.6');
         $this->assertNoViolation($file, $line);
@@ -78,11 +75,11 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
     /**
      * Data provider.
      *
-     * @see testValidUseDeclaration()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataValidUseDeclaration()
+    public function dataNoFalsePositives()
     {
         return array(
             array(4),
@@ -97,4 +94,17 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
             array(20),
         );
     }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '7.0');
+        $this->assertNoViolation($file);
+    }
+
 }

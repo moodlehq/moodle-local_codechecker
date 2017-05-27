@@ -24,46 +24,76 @@ class ForbiddenFunctionParametersWithSameNameSniffTest extends BaseSniffTest
 
 
     /**
-     * testSettingTestVersion
+     * testFunctionParametersWithSameName
+     *
+     * @dataProvider dataFunctionParametersWithSameName
+     *
+     * @param int $line Line number.
      *
      * @return void
      */
-    public function testSettingTestVersion()
+    public function testFunctionParametersWithSameName($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.6');
-        $this->assertNoViolation($file, 3);
-
         $file = $this->sniffFile(self::TEST_FILE, '7.0');
-        $this->assertError($file, 3, 'Functions can not have multiple parameters with the same name since PHP 7.0');
+        $this->assertError($file, $line, 'Functions can not have multiple parameters with the same name since PHP 7.0');
     }
 
     /**
-     * testNoViolation
+     * dataFunctionParametersWithSameName
      *
-     * @dataProvider dataNoViolation
+     * @see testFunctionParametersWithSameName()
+     *
+     * @return array
+     */
+    public function dataFunctionParametersWithSameName()
+    {
+        return array(
+            array(3),
+            array(7),
+        );
+    }
+
+
+    /**
+     * testNoFalsePositives
+     *
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line Line number with valid code.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(self::TEST_FILE, '7.0');
         $this->assertNoViolation($file, $line);
     }
 
     /**
-     * dataNoViolation
+     * dataNoFalsePositives
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation() {
+    public function dataNoFalsePositives()
+    {
         return array(
             array(5),
-            array(8),
+            array(10),
         );
     }
-}
 
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.6');
+        $this->assertNoViolation($file);
+    }
+
+}

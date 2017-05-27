@@ -34,5 +34,10 @@ else {
     }
 }
 
+// PHPUnit cross version compatibility.
+if (class_exists('PHPUnit\Runner\Version')) {
+    require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'PHPUnit6Compat.php';
+}
+
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'BaseSniffTest.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'BaseClass' . DIRECTORY_SEPARATOR . 'MethodTestFrame.php';

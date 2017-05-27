@@ -35,9 +35,6 @@ class PregReplaceEModifierSniffTest extends BaseSniffTest
      */
     public function testDeprecatedEModifier($line, $functionName = 'preg_replace')
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.4');
-        $this->assertNoViolation($file, $line);
-
         $file = $this->sniffFile(self::TEST_FILE, '5.5');
         $this->assertWarning($file, $line, "{$functionName}() - /e modifier is deprecated since PHP 5.5");
 
@@ -52,7 +49,8 @@ class PregReplaceEModifierSniffTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDeprecatedEModifier() {
+    public function dataDeprecatedEModifier()
+    {
         return array(
             // preg_replace()
             array(50),
@@ -103,39 +101,37 @@ class PregReplaceEModifierSniffTest extends BaseSniffTest
             // Interpolated variables.
             array(204),
             array(205),
+
+            // Quote as a delimiter.
+            array(211),
         );
     }
 
 
     /**
-     * testNoViolation
+     * testNoFalsePositives
      *
-     * @dataProvider dataNoViolation
+     * @dataProvider dataNoFalsePositives
      *
      * @param int $line Line number where no error should occur.
      *
      * @return void
      */
-    public function testNoViolation($line)
+    public function testNoFalsePositives($line)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.4');
-        $this->assertNoViolation($file, $line);
-
-        $file = $this->sniffFile(self::TEST_FILE, '5.5');
-        $this->assertNoViolation($file, $line);
-
         $file = $this->sniffFile(self::TEST_FILE, '7.0');
         $this->assertNoViolation($file, $line);
     }
 
     /**
-     * dataNoViolation
+     * dataNoFalsePositives
      *
-     * @see testNoViolation()
+     * @see testNoFalsePositives()
      *
      * @return array
      */
-    public function dataNoViolation() {
+    public function dataNoFalsePositives()
+    {
         return array(
             // No or only valid modifiers.
             array(9),
@@ -173,7 +169,22 @@ class PregReplaceEModifierSniffTest extends BaseSniffTest
 
             // Interpolated variables.
             array(206),
+
+            // Quote as a delimiter.
+            array(210),
         );
+    }
+
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersion()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file);
     }
 
 }

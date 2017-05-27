@@ -18,7 +18,14 @@ The project aims to cover all PHP compatibility changes introduced since PHP 5.0
 
 Pull requests that check for compatibility issues in PHP4 code - in particular between PHP 4 and PHP 5.0 - are very welcome as there are still situations where people need help upgrading legacy systems. However, coverage for changes introduced before PHP 5.1 will remain patchy as sniffs for this are not actively being developed at this time.
 
-The sniffs are designed to give the same results regardless of which PHP version you are using to run CodeSniffer.  Therefore you should get consistent results independently of the PHP version used in your test environment.
+Requirements
+-------
+
+The sniffs are designed to give the same results regardless of which PHP version you are using to run CodeSniffer.  You should get reasonably consistent results independently of the PHP version used in your test environment, though for the best results it is recommended to run the sniffs on PHP 5.3 or higher.
+
+PHP CodeSniffer 1.5.1 is required for 90% of the sniffs, PHPCS 2.6 or later is required for full support, notices may be thrown on older versions.
+
+The PHPCompatibility standard is currently not compatible with PHPCS 3.0, though the [intention is to fix this](https://github.com/wimg/PHPCompatibility/issues/367) in the near future.
 
 Thank you
 ---------
@@ -29,10 +36,10 @@ Thanks to all contributors for their valuable contributions.
 Thanks to [WP Engine](https://wpengine.com) for their support on the PHP 7.0 sniffs.
 
 
-Installation (method 1)
+Installation using PEAR (method 1)
 -----------------------
 
-* Install [PHP_CodeSniffer](http://pear.php.net/PHP_CodeSniffer) with `pear install PHP_CodeSniffer` (PHP_CodeSniffer 1.5.1 is required for 90% of the sniffs, 2.6 or later is required for full support, notices may be thrown on older versions).
+* Install [PHP_CodeSniffer](http://pear.php.net/PHP_CodeSniffer) with `pear install PHP_CodeSniffer`.
 * Checkout the latest release from https://github.com/wimg/PHPCompatibility/releases into the `PHP/CodeSniffer/Standards/PHPCompatibility` directory.
 
 
@@ -45,7 +52,7 @@ Installation in Composer project (method 2)
 "require-dev": {
    "squizlabs/php_codesniffer": "*",
    "wimg/php-compatibility": "*",
-   "simplyadmire/composer-plugins" : "@dev",
+   "simplyadmire/composer-plugins" : "@dev"
 },
 "prefer-stable" : true
 
@@ -54,12 +61,29 @@ Installation in Composer project (method 2)
 * Use the coding standard with `./vendor/bin/phpcs --standard=PHPCompatibility`
 
 
+Installation via a git check-out to an arbitrary directory (method 3)
+-----------------------
+
+* Install [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) via [your preferred method](https://github.com/squizlabs/PHP_CodeSniffer#installation) (Composer, PEAR, Phar file, Git checkout).
+* Checkout the latest release from https://github.com/wimg/PHPCompatibility/releases into an arbitrary directory.
+* Add the path to the directory **_above_** the directory in which you cloned the PHPCompability repo to the PHPCS configuration using the below command.
+   ```bash
+   phpcs --config-set installed_paths /path/to/dir/above
+   ```
+   I.e. if you cloned the `PHPCompatibility` repository to the `/my/custom/standards/PHPCompatibility` directory, you will need to add the `/my/custom/standards` directory to the PHPCS [`installed_paths` configuration variable](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Configuration-Options#setting-the-installed-standard-paths).
+
+   **Pro-tip:** Alternatively, _and only if you use PHPCS version 2.6.0 or higher_, you can tell PHP_CodeSniffer the path to the PHPCompatibility standard by adding the following snippet to your custom ruleset:
+   ```xml
+   <config name="installed_paths" value="/path/to/dir/above" />
+   ```
+
+
 Using the compatibility sniffs
 ------------------------------
 * Use the coding standard with `phpcs --standard=PHPCompatibility`
 * You can specify which PHP version you want to test against by specifying `--runtime-set testVersion 5.5`.
 * You can also specify a range of PHP versions that your code needs to support.  In this situation, compatibility issues that affect any of the PHP versions in that range will be reported:
-`--runtime-set testVersion 5.3-5.5`
+`--runtime-set testVersion 5.3-5.5`.  You can omit one or other part of the range if you want to support everything above/below a particular version (e.g. `--runtime-set testVersion 7.0-` to support PHP 7 and above).
 
 More information can be found on Wim Godden's [blog](http://techblog.wimgodden.be/tag/codesniffer).
 
@@ -106,62 +130,6 @@ To whitelist userland functions, you can pass a comma-delimited list of function
 	</rule>
 ```
 
-
-Running the Sniff Tests
------------------------
-All the sniffs are fully tested with PHPUnit tests. In order to run the tests
-on the sniffs, the following installation steps are required.
-
-1. Install the master branch of `PHP_CodeSniffer`
-   [https://github.com/squizlabs/PHP_CodeSniffer.git].
-
-   This can be done with composer by adding the following into
-   `~/.composer/composer.json`:
-
-        {
-            "require": {
-                "phpunit/phpunit": "3.7.*",
-                "squizlabs/php_codesniffer": ">=2.0"
-            }
-        }
-
-2. Run the following command to compose in the versions indicated in the above
-   global composer.json file:
-
-        $ composer.phar global install
-
-3. Update your system `$PATH` to include the globally composed files:
-
-        $ export PATH=~/.composer/vendor/bin:$PATH
-
-4. Be sure that the `PHPCompatibility` directory is symlinked into
-   `PHP_Codesniffer`'s standards directory:
-
-        $ ln -s /path/to/PHPCompatibility ~/.composer/vendor/squizlabs/php_codesniffer/CodeSniffer/Standards/PHPCompatibility
-
-5. Verify standard is available with `phpcs -i`. The output should include
-   `PHPCompatibility`
-
-6. Run the tests by running `phpunit` in the root directory of
-   PHPCompatibility. It will read the `phpunit.xml` file and execute the tests
-
-
-#### Issues when running the PHPCS Unit tests for another standard
-
-This sniff library uses its own PHPUnit setup rather than the PHPCS native unit testing framework to allow for testing the sniffs with various config settings for the `testVersion` variable.
-
-If you are running the PHPCS native unit tests or the unit tests for another sniff library which uses the PHPCS native unit testing framework, PHPUnit might throw errors related to this sniff library depending on your setup.
-
-This will generally only happen if you have both PHPCompatibility as well as another custom sniff library in your PHPCS `installed_paths` setting.
-
-To fix these errors, make sure you are running PHPCS 2.7.1 or higher and add the following to the `phpunit.xml` file for the sniff library you are testing:
-```xml
-	<php>
-		<env name="PHPCS_IGNORE_TESTS" value="PHPCompatibility"/>
-	</php>
-```
-
-This will prevent PHPCS trying to include the PHPCompatibility unit tests when creating the test suite.
 
 License
 -------
