@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Checks variable names are all lower-case, no underscores.
+ * Checks variable names are all lower-case.
  *
  * @package    local_codechecker
  * @copyright  2009 Nicolas Connault
@@ -52,13 +52,6 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
 
         if (preg_match('/[A-Z]+/', $membername)) {
             $error = "Member variable \"$membername\" must be all lower-case";
-            $phpcsfile->addError($error, $stackptr);
-        }
-
-        // Find underscores in variable names (accepting $_foo for private vars).
-        $pos = strpos($membername, '_');
-        if ($pos > 1) {
-            $error = "Member variable \"$membername\" must not contain underscores.";
             $phpcsfile->addError($error, $stackptr);
         }
 
@@ -118,11 +111,6 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     private function validate_moodle_variable_name($varname, PHP_CodeSniffer_File $phpcsfile, $stackptr) {
         if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must be all lower-case";
-            $phpcsfile->addError($error, $stackptr);
-        }
-
-        if (strpos($varname, '_') !== false && !in_array($varname, self::$allowedglobals)) {
-            $error = "Variable \"$varname\" must not contain underscores.";
             $phpcsfile->addError($error, $stackptr);
         }
     }
