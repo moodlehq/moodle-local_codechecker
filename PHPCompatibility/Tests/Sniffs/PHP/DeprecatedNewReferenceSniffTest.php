@@ -14,9 +14,9 @@
  *
  * @covers PHPCompatibility_Sniffs_PHP_DeprecatedNewReferenceSniff
  *
- * @uses BaseSniffTest
+ * @uses    BaseSniffTest
  * @package PHPCompatibility
- * @author Jansen Price <jansen.price@gmail.com>
+ * @author  Jansen Price <jansen.price@gmail.com>
  */
 class DeprecatedNewReferenceSniffTest extends BaseSniffTest
 {
@@ -53,6 +53,8 @@ class DeprecatedNewReferenceSniffTest extends BaseSniffTest
         return array(
             array(9),
             array(10),
+            array(11),
+            array(12),
         );
     }
 

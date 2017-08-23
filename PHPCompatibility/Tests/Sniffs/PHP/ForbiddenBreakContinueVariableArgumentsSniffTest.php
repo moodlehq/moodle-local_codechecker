@@ -18,9 +18,9 @@
  *
  * @covers PHPCompatibility_Sniffs_PHP_ForbiddenBreakContinueVariableArgumentsSniff
  *
- * @uses BaseSniffTest
+ * @uses    BaseSniffTest
  * @package PHPCompatibility
- * @author Jansen Price <jansen.price@gmail.com>
+ * @author  Jansen Price <jansen.price@gmail.com>
  */
 class ForbiddenBreakContinueVariableArgumentsSniffTest extends BaseSniffTest
 {
@@ -34,7 +34,7 @@ class ForbiddenBreakContinueVariableArgumentsSniffTest extends BaseSniffTest
      *
      * @dataProvider dataBreakAndContinueVariableArgument
      *
-     * @param int $line The line number.
+     * @param int    $line      The line number.
      * @param string $errorType The error type.
      *
      * @return void
@@ -69,6 +69,8 @@ class ForbiddenBreakContinueVariableArgumentsSniffTest extends BaseSniffTest
             array(102, self::ERROR_TYPE_VARIABLE),
             array(107, self::ERROR_TYPE_ZERO),
             array(111, self::ERROR_TYPE_ZERO),
+            array(118, self::ERROR_TYPE_ZERO),
+            array(122, self::ERROR_TYPE_VARIABLE),
         );
     }
 
@@ -108,6 +110,7 @@ class ForbiddenBreakContinueVariableArgumentsSniffTest extends BaseSniffTest
             array(39),
             array(44),
             array(48),
+            array(126),
         );
     }
 

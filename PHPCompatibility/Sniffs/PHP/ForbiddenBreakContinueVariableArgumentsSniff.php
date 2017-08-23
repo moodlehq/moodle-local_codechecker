@@ -63,7 +63,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenBreakContinueVariableArgumentsSniff e
         }
 
         $tokens             = $phpcsFile->getTokens();
-        $nextSemicolonToken = $phpcsFile->findNext(T_SEMICOLON, ($stackPtr), null, false);
+        $nextSemicolonToken = $phpcsFile->findNext(array(T_SEMICOLON, T_CLOSE_TAG), ($stackPtr), null, false);
         $errorType          = '';
         for ($curToken = $stackPtr + 1; $curToken < $nextSemicolonToken; $curToken++) {
             if ($tokens[$curToken]['type'] === 'T_STRING') {
@@ -74,12 +74,12 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenBreakContinueVariableArgumentsSniff e
                     $errorType = 'variableArgument';
                     break;
                 }
-            }
-            else if (in_array($tokens[$curToken]['type'], array('T_VARIABLE', 'T_FUNCTION', 'T_CLOSURE'), true)) {
+
+            } elseif (in_array($tokens[$curToken]['type'], array('T_VARIABLE', 'T_FUNCTION', 'T_CLOSURE'), true)) {
                 $errorType = 'variableArgument';
                 break;
-            }
-            else if ($tokens[$curToken]['type'] === 'T_LNUMBER' && $tokens[$curToken]['content'] === '0') {
+
+            } elseif ($tokens[$curToken]['type'] === 'T_LNUMBER' && $tokens[$curToken]['content'] === '0') {
                 $errorType = 'zeroArgument';
                 break;
             }

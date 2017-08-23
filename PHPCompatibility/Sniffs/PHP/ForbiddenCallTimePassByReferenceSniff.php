@@ -9,7 +9,6 @@
  * @author    Gary Rogers <gmrwebde@gmail.com>
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009 Florian Grandel
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
 /**
@@ -24,7 +23,6 @@
  * @author    Gary Rogers <gmrwebde@gmail.com>
  * @author    Florian Grandel <jerico.dev@gmail.com>
  * @copyright 2009 Florian Grandel
- * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends PHPCompatibility_Sniff
 {
@@ -61,10 +59,8 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
         // within their definitions. For example: function myFunction...
         // "myFunction" is T_STRING but we should skip because it is not a
         // function or method *call*.
-        $findTokens = array_merge(
-            PHP_CodeSniffer_Tokens::$emptyTokens,
-            array(T_BITWISE_AND)
-        );
+        $findTokens   = PHP_CodeSniffer_Tokens::$emptyTokens;
+        $findTokens[] = T_BITWISE_AND;
 
         $prevNonEmpty = $phpcsFile->findPrevious(
             $findTokens,
@@ -87,7 +83,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
         );
 
         if ($openBracket === false || $tokens[$openBracket]['code'] !== T_OPEN_PARENTHESIS
-           || isset($tokens[$openBracket]['parenthesis_closer']) === false
+            || isset($tokens[$openBracket]['parenthesis_closer']) === false
         ) {
             return;
         }
@@ -111,7 +107,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
                 $isError   = false;
                 $errorCode = 'Deprecated';
 
-                if($this->supportsAbove('5.4')) {
+                if ($this->supportsAbove('5.4')) {
                     $error    .= ' and prohibited since PHP 5.4';
                     $isError   = true;
                     $errorCode = 'NotAllowed';
@@ -123,6 +119,16 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
     }//end process()
 
 
+    /**
+     * Determine whether a parameter is passed by reference.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param array                $parameter    Information on the current parameter
+     *                                           to be examined.
+     * @param int                  $nestingLevel Target nesting level.
+     *
+     * @return bool
+     */
     protected function isCallTimePassByReferenceParam(PHP_CodeSniffer_File $phpcsFile, $parameter, $nestingLevel)
     {
         $tokens   = $phpcsFile->getTokens();
@@ -138,8 +144,8 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
 
             // Make sure the variable belongs directly to this function call
             // and is not inside a nested function call or array.
-            if (isset($tokens[$nextVariable]['nested_parenthesis']) === false ||
-               (count($tokens[$nextVariable]['nested_parenthesis']) !== $nestingLevel)
+            if (isset($tokens[$nextVariable]['nested_parenthesis']) === false
+                || (count($tokens[$nextVariable]['nested_parenthesis']) !== $nestingLevel)
             ) {
                 continue;
             }
@@ -210,15 +216,15 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
                         $searchStartToken,
                         true
                     );
-                    if ($tokens[$tokenBeforePlus]['code'] === T_DOUBLE_COLON ||
-                        $tokens[$tokenBeforePlus]['code'] === T_OBJECT_OPERATOR
+                    if ($tokens[$tokenBeforePlus]['code'] === T_DOUBLE_COLON
+                        || $tokens[$tokenBeforePlus]['code'] === T_OBJECT_OPERATOR
                     ) {
                         break;
                     }
                     // If not a class constant: fall through.
 
                 default:
-                    // Deal with T_POW_EQUAL which doesn't exist in PHPCS 1.x
+                    // Deal with T_POW_EQUAL which doesn't exist in PHPCS 1.x.
                     if (defined('T_POW_EQUAL') && $tokens[$tokenBefore]['type'] === 'T_POW_EQUAL') {
                         break;
                     }
@@ -226,8 +232,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff extends 
                     // The found T_BITWISE_AND represents a pass-by-reference.
                     return true;
             }
-
-        } while($nextVariable < $searchEndToken);
+        } while ($nextVariable < $searchEndToken);
 
         // This code should never be reached, but here in case of weird bugs ;-)
         return false;

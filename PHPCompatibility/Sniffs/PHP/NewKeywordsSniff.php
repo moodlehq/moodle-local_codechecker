@@ -2,8 +2,6 @@
 /**
  * PHPCompatibility_Sniffs_PHP_NewKeywordsSniff.
  *
- * PHP version 5.5
- *
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
@@ -16,7 +14,6 @@
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
- * @version   1.0.0
  * @copyright 2013 Cu.be Solutions bvba
  */
 class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_AbstractNewFeatureSniff
@@ -38,83 +35,92 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
      * @var array(string => array(string => int|string|null))
      */
     protected $newKeywords = array(
-                                        'T_HALT_COMPILER' => array(
-                                            '5.0' => false,
-                                            '5.1' => true,
-                                            'description' => '"__halt_compiler" keyword'
-                                        ),
-                                        'T_CONST' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => '"const" keyword',
-                                            'condition' => 'isClassConstant', // Keyword is only new when not in class context.
-                                        ),
-                                        'T_CALLABLE' => array(
-                                            '5.3' => false,
-                                            '5.4' => true,
-                                            'description' => '"callable" keyword',
-                                            'content' => 'callable',
-                                        ),
-                                        'T_DIR' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => '__DIR__ magic constant',
-                                            'content' => '__DIR__',
-                                        ),
-                                        'T_GOTO' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => '"goto" keyword',
-                                            'content' => 'goto',
-                                        ),
-                                        'T_INSTEADOF' => array(
-                                            '5.3' => false,
-                                            '5.4' => true,
-                                            'description' => '"insteadof" keyword (for traits)',
-                                            'content' => 'insteadof',
-                                        ),
-                                        'T_NAMESPACE' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => '"namespace" keyword',
-                                            'content' => 'namespace',
-                                        ),
-                                        'T_NS_C' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => '__NAMESPACE__ magic constant',
-                                            'content' => '__NAMESPACE__',
-                                        ),
-                                        'T_USE' => array(
-                                            '5.2' => false,
-                                            '5.3' => true,
-                                            'description' => '"use" keyword (for traits/namespaces/anonymous functions)'
-                                        ),
-                                        'T_TRAIT' => array(
-                                            '5.3' => false,
-                                            '5.4' => true,
-                                            'description' => '"trait" keyword',
-                                            'content' => 'trait',
-                                        ),
-                                        'T_TRAIT_C' => array(
-                                            '5.3' => false,
-                                            '5.4' => true,
-                                            'description' => '__TRAIT__ magic constant',
-                                            'content' => '__TRAIT__',
-                                        ),
-                                        'T_YIELD' => array(
-                                            '5.4' => false,
-                                            '5.5' => true,
-                                            'description' => '"yield" keyword (for generators)',
-                                            'content' => 'yield',
-                                        ),
-                                        'T_FINALLY' => array(
-                                            '5.4' => false,
-                                            '5.5' => true,
-                                            'description' => '"finally" keyword (in exception handling)',
-                                            'content' => 'finally',
-                                        ),
-                                    );
+        'T_HALT_COMPILER' => array(
+            '5.0' => false,
+            '5.1' => true,
+            'description' => '"__halt_compiler" keyword',
+        ),
+        'T_CONST' => array(
+            '5.2' => false,
+            '5.3' => true,
+            'description' => '"const" keyword',
+            'condition' => 'isClassConstant', // Keyword is only new when not in class context.
+        ),
+        'T_CALLABLE' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'description' => '"callable" keyword',
+            'content' => 'callable',
+        ),
+        'T_DIR' => array(
+            '5.2' => false,
+            '5.3' => true,
+            'description' => '__DIR__ magic constant',
+            'content' => '__DIR__',
+        ),
+        'T_GOTO' => array(
+            '5.2' => false,
+            '5.3' => true,
+            'description' => '"goto" keyword',
+            'content' => 'goto',
+        ),
+        'T_INSTEADOF' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'description' => '"insteadof" keyword (for traits)',
+            'content' => 'insteadof',
+        ),
+        'T_NAMESPACE' => array(
+            '5.2' => false,
+            '5.3' => true,
+            'description' => '"namespace" keyword',
+            'content' => 'namespace',
+        ),
+        'T_NS_C' => array(
+            '5.2' => false,
+            '5.3' => true,
+            'description' => '__NAMESPACE__ magic constant',
+            'content' => '__NAMESPACE__',
+        ),
+        'T_USE' => array(
+            '5.2' => false,
+            '5.3' => true,
+            'description' => '"use" keyword (for traits/namespaces/anonymous functions)',
+        ),
+        'T_TRAIT' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'description' => '"trait" keyword',
+            'content' => 'trait',
+        ),
+        'T_TRAIT_C' => array(
+            '5.3' => false,
+            '5.4' => true,
+            'description' => '__TRAIT__ magic constant',
+            'content' => '__TRAIT__',
+        ),
+        // The specifics for distinguishing between 'yield' and 'yield from' are dealt
+        // with in the translation logic.
+        // This token has to be placed above the `T_YIELD` token in this array to allow for this.
+        'T_YIELD_FROM' => array(
+            '5.6' => false,
+            '7.0' => true,
+            'description' => '"yield from" keyword (for generators)',
+            'content' => 'yield',
+        ),
+        'T_YIELD' => array(
+            '5.4' => false,
+            '5.5' => true,
+            'description' => '"yield" keyword (for generators)',
+            'content' => 'yield',
+        ),
+        'T_FINALLY' => array(
+            '5.4' => false,
+            '5.5' => true,
+            'description' => '"finally" keyword (in exception handling)',
+            'content' => 'finally',
+        ),
+    );
 
     /**
      * Translation table for T_STRING tokens.
@@ -172,6 +178,9 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
         $tokens    = $phpcsFile->getTokens();
         $tokenType = $tokens[$stackPtr]['type'];
 
+        // Allow for dealing with multi-token keywords, like "yield from".
+        $end = $stackPtr;
+
         // Translate T_STRING token if necessary.
         if ($tokens[$stackPtr]['type'] === 'T_STRING') {
             $content = $tokens[$stackPtr]['content'];
@@ -183,11 +192,40 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
             $tokenType = $this->translateContentToToken[$content];
         }
 
+        /*
+         * Special case: distinguish between `yield` and `yield from`.
+         *
+         * PHPCS currently (at least up to v 3.0.1) does not backfill for the
+         * `yield` nor the `yield from` keywords.
+         * See: https://github.com/squizlabs/PHP_CodeSniffer/issues/1524
+         *
+         * In PHP < 5.5, both `yield` as well as `from` are tokenized as T_STRING.
+         * In PHP 5.5 - 5.6, `yield` is tokenized as T_YIELD and `from` as T_STRING,
+         * but the `T_YIELD_FROM` token *is* defined in PHP.
+         * In PHP 7.0+ both are tokenized as their respective token, however,
+         * a multi-line "yield from" is tokenized as two tokens.
+         */
+        if ($tokenType === 'T_YIELD') {
+            $nextToken = $phpcsFile->findNext(T_WHITESPACE, ($end + 1), null, true);
+            if ($tokens[$nextToken]['code'] === T_STRING
+                && $tokens[$nextToken]['content'] === 'from'
+            ) {
+                $tokenType = 'T_YIELD_FROM';
+                $end       = $nextToken;
+            }
+            unset($nextToken);
+        }
+
+        if ($tokenType === 'T_YIELD_FROM' && $tokens[($stackPtr - 1)]['type'] === 'T_YIELD_FROM') {
+            // Multi-line "yield from", no need to report it twice.
+            return;
+        }
+
         if (isset($this->newKeywords[$tokenType]) === false) {
             return;
         }
 
-        $nextToken = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $nextToken = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($end + 1), null, true);
         $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
 
 
@@ -197,10 +235,11 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
         // Either type will result in false-positives when targetting lower versions
         // of PHP where the name was not reserved, unless we explicitly check for
         // them.
-        if (
-            ($nextToken === false || $tokens[$nextToken]['type'] !== 'T_OPEN_PARENTHESIS')
-            &&
-            ($prevToken === false || $tokens[$prevToken]['type'] !== 'T_CLASS' || $tokens[$prevToken]['type'] !== 'T_INTERFACE')
+        if (($nextToken === false
+                || $tokens[$nextToken]['type'] !== 'T_OPEN_PARENTHESIS')
+            && ($prevToken === false
+                || $tokens[$prevToken]['type'] !== 'T_CLASS'
+                || $tokens[$prevToken]['type'] !== 'T_INTERFACE')
         ) {
             // Skip based on token scope condition.
             if (isset($this->newKeywords[$tokenType]['condition'])
