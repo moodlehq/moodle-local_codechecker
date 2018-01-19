@@ -33,6 +33,19 @@ if (is_file(__DIR__ . '/../pear/PHP/CodeSniffer.php') === true) {
     require_once('PHP/CodeSniffer.php');
 }
 
+// Interim classes providing conditional extension, so I can run
+// these plugin tests against different Moodle branches that are
+// using different phpunit (namespaced or no) clases.
+// @codingStandardsIgnoreStart
+if (class_exists('PHPUnit_Framework_TestCase')) {
+    abstract class conditional_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase {
+    }
+} else {
+    abstract class conditional_PHPUnit_Framework_TestCase extends PHPUnit\Framework\TestCase {
+    }
+}
+// @codingStandardsIgnoreEnd
+
 /**
  * Specialized test case for easy testing of "moodle" CS Sniffs.
  *
@@ -43,7 +56,7 @@ if (is_file(__DIR__ . '/../pear/PHP/CodeSniffer.php') === true) {
  *
  * Note extension & overriding was impossible because of some "final" stuff.
  */
-abstract class local_codechecker_testcase extends PHPUnit_Framework_TestCase {
+abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_TestCase {
 
     /**
      * @var PHP_CodeSniffer The unique CS instance shared by all test cases.
