@@ -70,8 +70,6 @@
          attempt to include external rulesets with own
          rules or excludes fail -->
     <rule ref="../PHPCompatibility">
-        <!-- Moodle's bootstrap ensures DefaultTimezone is defined, so excluding this -->
-        <exclude name="PHPCompatibility.PHP.DefaultTimezoneRequired"/>
         <!-- We use our own subclassed moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
         because there are some tokens we allow to be used as functions, like clone() -->
         <exclude name="PHPCompatibility.PHP.ForbiddenNamesAsInvokedFunctions"/>
