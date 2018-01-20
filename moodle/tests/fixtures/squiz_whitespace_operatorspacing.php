@@ -45,3 +45,18 @@ $c = $a/10;
 $c = $a / 10;
 $c = $a /  10;
 $c = $a  / 10;
+
+// Operators ending in new line instead of space.
+$a = $c == 20 ?
+    "Hottest nerd there!" : "Zombies are comming";
+$a = $c == 20 ? "Hottest nerd there!" :
+    "Zombies are comming";
+$a = 200 -
+    500;
+$a = 200 +
+    500;
+$a = 200 /
+    500;
+$a = 200 *
+    500;
+

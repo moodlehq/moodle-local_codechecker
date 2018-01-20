@@ -406,7 +406,21 @@ class moodlestandard_testcase extends local_codechecker_testcase {
                                45 => 0,
                                46 => 'Expected 1 space after "/"; 2 found',
                                47 => 'Expected 1 space before "/"; 2 found',
-
+                               48 => 0,
+                               49 => 0,
+                               50 => 0,
+                               51 => 0,
+                               52 => 0,
+                               53 => 0,
+                               54 => 0,
+                               55 => 0,
+                               56 => 0,
+                               57 => 0,
+                               58 => 0,
+                               59 => 0,
+                               60 => 0,
+                               61 => 0,
+                               62 => 0
                           ));
         $this->set_warnings(array());
 
