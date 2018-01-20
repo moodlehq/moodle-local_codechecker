@@ -1,3 +1,9 @@
+Changes in version 2.7.1 (20180120) - Slowly yours
+--------------------------------------------------
+- NOBUG: Bump to moodlerooms/moodle-plugin-ci v2. Apply to 32_STABLE and up in travis conf. Problems with behat forces us to keep it disabled.
+- [PR#45](https://github.com/moodlehq/moodle-local_codechecker/pull/45): Upgrade PHPCompatibility to 7.1.5. (Mark Nielsen)
+- [PR#41](https://github.com/moodlehq/moodle-local_codechecker/pull/41): Allow newline characters before or after object operators. (Ankit Agarwal)
+
 Changes in version 2.7.0 (20170527) - Boosting you!
 ---------------------------------------------------
 - [PR#40|](https://github.com/moodlehq/moodle-local_codechecker/pull/40): Update PHPCompatibility to 7.1.4. (Mark Nielsen)
