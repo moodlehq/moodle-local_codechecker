@@ -52,6 +52,7 @@ $string['invalidpath'] = 'Invalid path {$a}';
 $string['moodlecodingguidelines'] = 'Moodle coding guidelines';
 $string['numerrorswarnings'] = '{$a->errors} error(s) and {$a->warnings} warning(s)';
 $string['path'] = 'Path to check';
+$string['privacy:metadata'] = 'The Code checker plugin does not store any personal data.';
 $string['pluginname'] = 'Code checker';
 $string['recheckfile'] = 'Re-check just this file';
 $string['success'] = 'Well done!';
