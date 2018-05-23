@@ -12,7 +12,9 @@ Current checkout:
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
-  - none right now.
+  - b98fcbc : MDLSITE-2825 followup: backport #2009 to phpcs 2.7.x. Once
+    we bump to to phpcs 3.3.0 this hack can be left out. Upstream ref:
+    https://github.com/squizlabs/PHP_CodeSniffer/issues/2009
 
 ===== ===== ===== ===== ===== ===== =====
 

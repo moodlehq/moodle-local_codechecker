@@ -1,3 +1,8 @@
+Changes in version 2.7.2 (still not released)
+---------------------------------------------
+- MDLSITE-2825: Allow obj-op / fluid interfaces + indentation (4 char) checks.
+- [PR#46](https://github.com/moodlehq/moodle-local_codechecker/pull/46): Privacy support (null provider).
+
 Changes in version 2.7.1 (20180120) - Slowly yours
 --------------------------------------------------
 - NOBUG: Bump to moodlerooms/moodle-plugin-ci v2. Apply to 32_STABLE and up in travis conf. Problems with behat forces us to keep it disabled.
