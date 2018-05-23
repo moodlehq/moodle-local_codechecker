@@ -457,7 +457,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
         $this->set_sniff('PEAR.WhiteSpace.ObjectOperatorIndent');
-        $this->set_fixture(__DIR__ . '/fixtures/squiz_whitespace_objectoperatorspacing.php');
+        $this->set_fixture(__DIR__ . '/fixtures/pear_whitespace_objectoperatorspacing.php');
 
         // Define expected results (errors and warnings). Format, array of:
         // - line => number of problems,  or
@@ -471,7 +471,13 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             49 => 'not indented correctly; expected 4 spaces but found 6',
             50 => '@Source: PEAR.WhiteSpace.ObjectOperatorIndent.Incorrect',
             53 => 1,
-            54 => 1
+            54 => 1,
+            61 => 1,
+            62 => 1,
+            65 => 1,
+            66 => 1,
+            69 => 1,
+            70 => 1,
         ));
         $this->set_warnings(array());
 
