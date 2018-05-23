@@ -63,29 +63,23 @@ class PEAR_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSniffe
         $tokens = $phpcsFile->getTokens();
 
         // Make sure this is the first object operator in a chain of them.
-        $varToken = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
-        if ($varToken === false || $tokens[$varToken]['code'] !== T_VARIABLE) {
+        $start = $phpcsFile->findStartOfStatement($stackPtr);
+        $prev  = $phpcsFile->findPrevious(T_OBJECT_OPERATOR, ($stackPtr - 1), $start);
+        if ($prev !== false) {
             return;
         }
 
         // Make sure this is a chained call.
-        $next = $phpcsFile->findNext(
-            T_OBJECT_OPERATOR,
-            ($stackPtr + 1),
-            null,
-            false,
-            null,
-            true
-        );
-
+        $end  = $phpcsFile->findEndOfStatement($stackPtr);
+        $next = $phpcsFile->findNext(T_OBJECT_OPERATOR, ($stackPtr + 1), $end);
         if ($next === false) {
             // Not a chained call.
             return;
         }
 
         // Determine correct indent.
-        for ($i = ($varToken - 1); $i >= 0; $i--) {
-            if ($tokens[$i]['line'] !== $tokens[$varToken]['line']) {
+        for ($i = ($start - 1); $i >= 0; $i--) {
+            if ($tokens[$i]['line'] !== $tokens[$start]['line']) {
                 $i++;
                 break;
             }
@@ -112,7 +106,7 @@ class PEAR_Sniffs_WhiteSpace_ObjectOperatorIndentSniff implements PHP_CodeSniffe
         // Check indentation of each object operator in the chain.
         // If the first object operator is on a different line than
         // the variable, make sure we check its indentation too.
-        if ($tokens[$stackPtr]['line'] > $tokens[$varToken]['line']) {
+        if ($tokens[$stackPtr]['line'] > $tokens[$start]['line']) {
             $next = $stackPtr;
         }
 
