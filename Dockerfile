@@ -7,7 +7,7 @@
 #  Then create a script name phpcs in /usr/local/bin and put following lines
 
 #  #!/bin/bash
-#  docker run -v $(pwd):$(pwd) -w=$(pwd) --rm moodle/phpcs $@
+#  docker run -v $(pwd):$(pwd) -w=$(pwd) --rm moodle/phpcs phpcs $@
 
 
 FROM php:5-alpine
