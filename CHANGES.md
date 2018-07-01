@@ -1,5 +1,6 @@
-Changes in version 2.7.2 (still not released)
----------------------------------------------
+Changes in version 2.7.2 (20180701) - Barcelona awesomeness
+-----------------------------------------------------------
+- NOBUG: Upgrade PHPCompatibility to 8.1.0+ (609be5c).
 - MDLSITE-2825: Allow obj-op / fluid interfaces + indentation (4 char) checks.
 - [PR#46](https://github.com/moodlehq/moodle-local_codechecker/pull/46): Privacy support (null provider).
 
