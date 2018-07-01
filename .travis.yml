@@ -1,6 +1,6 @@
 language: php
 
-sudo: false
+sudo: required
 
 addons:
   firefox: "47.0.1"
@@ -77,6 +77,6 @@ script:
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit
-  - if [ $BEHAT == '__stopped_while_fails' ]; then
+  - if [ $BEHAT == 'yes' ]; then
         moodle-plugin-ci behat || travis_terminate 1;
     fi
