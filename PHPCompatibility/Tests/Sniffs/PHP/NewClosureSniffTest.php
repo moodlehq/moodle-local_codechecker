@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New Closure Sniff tests
@@ -12,9 +15,9 @@
  * @group newClosure
  * @group closures
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewClosureSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewClosureSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Wim Godden <wim@cu.be>
  */
@@ -57,7 +60,7 @@ class NewClosureSniffTest extends BaseSniffTest
             array(40),
             array(47),
             array(52),
-            array(57),
+            array(59),
         );
     }
 
@@ -143,6 +146,7 @@ class NewClosureSniffTest extends BaseSniffTest
             array(32, false),
             array(33, false),
             array(53, false),
+            array(68),
         );
     }
 
@@ -198,7 +202,7 @@ class NewClosureSniffTest extends BaseSniffTest
     public function testThisInClosureOutsideClass()
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.4');
-        $this->assertError($file, 53, 'Closures / anonymous functions only have access to $this if used within a class');
+        $this->assertWarning($file, 53, 'Closures / anonymous functions only have access to $this if used within a class or when bound to an object using bindTo(). Please verify.');
     }
 
 
@@ -228,9 +232,78 @@ class NewClosureSniffTest extends BaseSniffTest
     {
         return array(
             array(48),
-            array(58),
+            array(60),
         );
     }
+
+
+    /**
+     * Test using self/parent/static in closures.
+     *
+     * @dataProvider dataClassRefInClosure
+     *
+     * @param int    $line The line number.
+     * @param string $ref  The class reference encountered.
+     *
+     * @return void
+     */
+    public function testClassRefInClosure($line, $ref)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.3');
+        $this->assertError($file, $line, 'Closures / anonymous functions could not use "' . $ref . '::" in PHP 5.3 or earlier');
+
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testClassRefInClosure()
+     *
+     * @return array
+     */
+    public function dataClassRefInClosure()
+    {
+        return array(
+            array(83, 'self'),
+            array(84, 'self'),
+            array(85, 'parent'),
+            array(86, 'static'),
+        );
+    }
+
+
+    /**
+     * Test no false positives for other uses of static within closures.
+     *
+     * @dataProvider dataNoFalsePositivesClassRefInClosure
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testNoFalsePositivesClassRefInClosure($line)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.3');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositivesClassRefInClosure()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositivesClassRefInClosure()
+    {
+        return array(
+            array(88),
+            array(90),
+        );
+    }
+
 
     /*
      * `testNoViolationsInFileOnValidVersion` test omitted as this sniff will throw warnings/errors

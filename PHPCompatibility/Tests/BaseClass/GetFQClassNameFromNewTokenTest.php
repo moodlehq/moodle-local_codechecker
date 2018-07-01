@@ -5,6 +5,7 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\BaseClass;
 
 /**
  * Classname determination function tests
@@ -12,11 +13,11 @@
  * @group utilityGetFQClassNameFromNewToken
  * @group utilityFunctions
  *
- * @uses    BaseClass_MethodTestFrame
+ * @uses    \PHPCompatibility\Tests\BaseClass\MethodTestFrame
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class BaseClass_GetFQClassNameFromNewTokenTest extends BaseClass_MethodTestFrame
+class GetFQClassNameFromNewTokenTest extends MethodTestFrame
 {
 
     /**
@@ -30,11 +31,9 @@ class BaseClass_GetFQClassNameFromNewTokenTest extends BaseClass_MethodTestFrame
     /**
      * testGetFQClassNameFromNewToken
      *
-     * @requires PHP 5.3
-     *
      * @dataProvider dataGetFQClassNameFromNewToken
      *
-     * @covers PHPCompatibility_Sniff::getFQClassNameFromNewToken
+     * @covers \PHPCompatibility\Sniff::getFQClassNameFromNewToken
      *
      * @param string $commentString The comment which prefaces the T_NEW token in the test file.
      * @param string $expected      The expected fully qualified class name.

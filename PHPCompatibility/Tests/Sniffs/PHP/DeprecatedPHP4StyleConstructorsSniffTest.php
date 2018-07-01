@@ -5,14 +5,18 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
+
 /**
  * PHP4 style constructors sniff test
  *
  * @group deprecatedPHP4StyleConstructors
  *
- * @covers PHPCompatibility_Sniffs_PHP_DeprecatedPHP4StyleConstructorsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\DeprecatedPHP4StyleConstructorsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Koen Eelen <koen.eelen@cu.be>
  */
@@ -75,16 +79,10 @@ class DeprecatedPHP4StyleConstructorsSniffTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        $testCases = array(
+        return array(
             array(9),
+            array(26),
         );
-
-        // Add an additional testcase which will only be 'no violation' if namespaces are recognized.
-        if (version_compare(phpversion(), '5.3', '>=')) {
-            $testCases[] = array(26);
-        }
-
-        return $testCases;
     }
 
 

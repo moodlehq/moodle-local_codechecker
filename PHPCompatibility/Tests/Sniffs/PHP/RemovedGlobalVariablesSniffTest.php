@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Removed global variables sniff tests
@@ -12,9 +15,9 @@
  * @group removedGlobalVariables
  * @group superglobals
  *
- * @covers PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\RemovedGlobalVariablesSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Wim Godden <wim@cu.be>
  */
@@ -75,6 +78,48 @@ class RemovedGlobalVariablesSniffTest extends BaseSniffTest
             array('HTTP_POST_FILES', '5.3', '5.4', array(15, 37, 77), '$_FILES', '5.2'),
 
             array('HTTP_RAW_POST_DATA', '5.6', '7.0', array(3, 38, 53, 78), 'php://input', '5.5'),
+        );
+    }
+
+
+    /**
+     * testDeprecatedPHPErrorMsg
+     *
+     * @dataProvider dataDeprecatedPHPErrorMsg
+     *
+     * @param array $line The line number in the test file where a warning is expected.
+     *
+     * @return void
+     */
+    public function testDeprecatedPHPErrorMsg($line)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '7.1');
+        $this->assertNoViolation($file, $line);
+
+        $file  = $this->sniffFile(self::TEST_FILE, '7.2');
+        $error = 'The variable \'$php_errormsg\' is deprecated since PHP 7.2; Use error_get_last() instead';
+        $this->assertWarning($file, $line, $error);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testDeprecatedPHPErrorMsg()
+     *
+     * @return array
+     */
+    public function dataDeprecatedPHPErrorMsg()
+    {
+        return array(
+            array(101),
+            array(110),
+            array(111),
+            array(126),
+            array(127),
+            array(140),
+            array(141),
+            array(151), // False positive!
+            array(156),
         );
     }
 
@@ -145,6 +190,26 @@ class RemovedGlobalVariablesSniffTest extends BaseSniffTest
             array(86),
             array(87),
             array(88),
+
+            // PHP 7.2 deprecated $php_errormsg.
+            array(106),
+            array(114),
+            array(116),
+            array(118),
+            array(121),
+            array(123),
+            array(130),
+            array(132),
+            array(133),
+            array(134),
+            array(143),
+            array(145),
+            array(146),
+            array(147),
+            array(150),
+            array(165),
+            array(169),
+
         );
     }
 

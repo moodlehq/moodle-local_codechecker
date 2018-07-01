@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NewClassesSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewClassesSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
@@ -8,15 +8,19 @@
  * @copyright 2013 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractNewFeatureSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_NewClassesSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewClassesSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_AbstractNewFeatureSniff
+class NewClassesSniff extends AbstractNewFeatureSniff
 {
 
     /**
@@ -28,9 +32,128 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
      * @var array(string => array(string => bool))
      */
     protected $newClasses = array(
+        'ArrayObject' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'ArrayIterator' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'CachingIterator' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'DirectoryIterator' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'RecursiveDirectoryIterator' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'RecursiveIteratorIterator' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'php_user_filter' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'tidy' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+
+        'SimpleXMLElement' => array(
+            '5.0.0' => false,
+            '5.0.1' => true,
+        ),
+        'tidyNode' => array(
+            '5.0.0' => false,
+            '5.0.1' => true,
+        ),
+
         'libXMLError' => array(
             '5.0' => false,
             '5.1' => true,
+        ),
+        'PDO' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'PDOStatement' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'AppendIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'EmptyIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'FilterIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'InfiniteIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'IteratorIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'LimitIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'NoRewindIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'ParentIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'RecursiveArrayIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'RecursiveCachingIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'RecursiveFilterIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'SimpleXMLIterator' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'SplFileObject' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'XMLReader' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+
+        'SplFileInfo' => array(
+            '5.1.1' => false,
+            '5.1.2' => true,
+        ),
+        'SplTempFileObject' => array(
+            '5.1.1' => false,
+            '5.1.2' => true,
+        ),
+        'XMLWriter' => array(
+            '5.1.1' => false,
+            '5.1.2' => true,
         ),
 
         'DateTime' => array(
@@ -49,12 +172,52 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
             '5.1' => false,
             '5.2' => true,
         ),
+        'ReflectionFunctionAbstract' => array(
+            '5.1' => false,
+            '5.2' => true,
+        ),
+        'ZipArchive' => array(
+            '5.1' => false,
+            '5.2' => true,
+        ),
 
+        'Closure' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
         'DateInterval' => array(
             '5.2' => false,
             '5.3' => true,
         ),
         'DatePeriod' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'finfo' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'Collator' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'NumberFormatter' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'Locale' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'Normalizer' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'MessageFormatter' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
+        'IntlDateFormatter' => array(
             '5.2' => false,
             '5.3' => true,
         ),
@@ -106,6 +269,10 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
             '5.2' => false,
             '5.3' => true,
         ),
+        'SplObjectStorage' => array(
+            '5.2' => false,
+            '5.3' => true,
+        ),
         'SplPriorityQueue' => array(
             '5.2' => false,
             '5.3' => true,
@@ -117,6 +284,11 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
         'SplStack' => array(
             '5.2' => false,
             '5.3' => true,
+        ),
+
+        'ResourceBundle' => array(
+            '5.3.1' => false,
+            '5.3.2' => true,
         ),
 
         'CallbackFilterIterator' => array(
@@ -148,6 +320,10 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
             '5.4' => true,
         ),
 
+        'Generator' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
         'CURLFile' => array(
             '5.4' => false,
             '5.5' => true,
@@ -179,6 +355,33 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
         'IntlCodePointBreakIterator' => array(
             '5.4' => false,
             '5.5' => true,
+        ),
+        'UConverter' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+
+        'GMP' => array(
+            '5.5' => false,
+            '5.6' => true,
+        ),
+
+        'IntlChar' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ),
+        'ReflectionType' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ),
+        'ReflectionGenerator' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ),
+
+        'ReflectionClassConstant' => array(
+            '7.0' => false,
+            '7.1' => true,
         ),
 
     );
@@ -328,6 +531,10 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
             '7.0' => true,
         ),
 
+        'ArgumentCountError' => array(
+            '7.0' => false,
+            '7.1' => true,
+        ),
     );
 
 
@@ -339,7 +546,7 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
     public function register()
     {
         // Handle case-insensitivity of class names.
-        $this->newClasses = $this->arrayKeysToLowercase($this->newClasses);
+        $this->newClasses    = $this->arrayKeysToLowercase($this->newClasses);
         $this->newExceptions = $this->arrayKeysToLowercase($this->newExceptions);
 
         // Add the Exception classes to the Classes list.
@@ -355,7 +562,12 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
         );
 
         if (defined('T_ANON_CLASS')) {
-            $targets[] = constant('T_ANON_CLASS');
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_anon_classFound
+            $targets[] = T_ANON_CLASS;
+        }
+
+        if (defined('T_RETURN_TYPE')) {
+            $targets[] = T_RETURN_TYPE;
         }
 
         return $targets;
@@ -366,13 +578,13 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -380,10 +592,21 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
             case 'T_FUNCTION':
             case 'T_CLOSURE':
                 $this->processFunctionToken($phpcsFile, $stackPtr);
+
+                // Deal with older PHPCS version which don't recognize return type hints
+                // as well as newer PHPCS versions (3.3.0+) where the tokenization has changed.
+                $returnTypeHint = $this->getReturnTypeHintToken($phpcsFile, $stackPtr);
+                if ($returnTypeHint !== false) {
+                    $this->processReturnTypeToken($phpcsFile, $returnTypeHint);
+                }
                 break;
 
             case 'T_CATCH':
                 $this->processCatchToken($phpcsFile, $stackPtr);
+                break;
+
+            case 'T_RETURN_TYPE':
+                $this->processReturnTypeToken($phpcsFile, $stackPtr);
                 break;
 
             default:
@@ -397,13 +620,13 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
     /**
      * Processes this test for when a token resulting in a singular class name is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    private function processSingularToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    private function processSingularToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens      = $phpcsFile->getTokens();
         $FQClassName = '';
@@ -443,13 +666,13 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
      *
      * - Detect new classes when used as a type hint.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    private function processFunctionToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    private function processFunctionToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         // Retrieve typehints stripped of global NS indicator and/or nullable indicator.
         $typeHints = $this->getTypeHintsFromFunctionDeclaration($phpcsFile, $stackPtr);
@@ -477,13 +700,13 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
      *
      * - Detect exceptions when used in a catch statement.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    private function processCatchToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    private function processCatchToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -535,6 +758,36 @@ class PHPCompatibility_Sniffs_PHP_NewClassesSniff extends PHPCompatibility_Abstr
                 $name = '';
             }
         }
+    }
+
+
+    /**
+     * Processes this test for when a return type token is encountered.
+     *
+     * - Detect new classes when used as a return type declaration.
+     *
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processReturnTypeToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $returnTypeHint   = $this->getReturnTypeHintName($phpcsFile, $stackPtr);
+        $returnTypeHint   = ltrim($returnTypeHint, '\\');
+        $returnTypeHintLc = strtolower($returnTypeHint);
+
+        if (isset($this->newClasses[$returnTypeHintLc]) === false) {
+            return;
+        }
+
+        // Still here ? Then this is a return type declaration using a new class.
+        $itemInfo = array(
+            'name'   => $returnTypeHint,
+            'nameLc' => $returnTypeHintLc,
+        );
+        $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
     }
 
 

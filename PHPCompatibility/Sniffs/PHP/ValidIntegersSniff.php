@@ -1,20 +1,24 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_ValidIntegersSniff.
+ * \PHPCompatibility\Sniffs\PHP\ValidIntegersSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_ValidIntegersSniff.
+ * \PHPCompatibility\Sniffs\PHP\ValidIntegersSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class PHPCompatibility_Sniffs_PHP_ValidIntegersSniff extends PHPCompatibility_Sniff
+class ValidIntegersSniff extends Sniff
 {
 
     /**
@@ -31,7 +35,7 @@ class PHPCompatibility_Sniffs_PHP_ValidIntegersSniff extends PHPCompatibility_Sn
      */
     public function register()
     {
-        $this->isLowPHPVersion = version_compare(phpversion(), '5.4', '<');
+        $this->isLowPHPVersion = version_compare(PHP_VERSION_ID, '50400', '<');
 
         return array(
             T_LNUMBER, // Binary, octal integers.
@@ -44,13 +48,13 @@ class PHPCompatibility_Sniffs_PHP_ValidIntegersSniff extends PHPCompatibility_Sn
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         $token  = $tokens[$stackPtr];
@@ -126,7 +130,7 @@ class PHPCompatibility_Sniffs_PHP_ValidIntegersSniff extends PHPCompatibility_Sn
         // Pre-5.4, binary strings are tokenized as T_LNUMBER (0) + T_STRING ("b01010101").
         // At this point, we don't yet care whether it's a valid binary int, that's a separate check.
         else {
-            return($token['content'] === '0' && $tokens[$stackPtr+1]['code'] === T_STRING && preg_match('`^b[0-9]+$`D', $tokens[$stackPtr+1]['content']) === 1);
+            return($token['content'] === '0' && $tokens[$stackPtr + 1]['code'] === T_STRING && preg_match('`^b[0-9]+$`D', $tokens[$stackPtr + 1]['content']) === 1);
         }
     }
 
@@ -146,23 +150,23 @@ class PHPCompatibility_Sniffs_PHP_ValidIntegersSniff extends PHPCompatibility_Sn
 
         if ($this->isLowPHPVersion === false) {
             // If it's an invalid binary int, the token will be split into two T_LNUMBER tokens.
-            return ($tokens[$stackPtr+1]['code'] === T_LNUMBER);
+            return ($tokens[$stackPtr + 1]['code'] === T_LNUMBER);
         } else {
-            return (preg_match('`^b[0-1]+$`D', $tokens[$stackPtr+1]['content']) === 0);
+            return (preg_match('`^b[0-1]+$`D', $tokens[$stackPtr + 1]['content']) === 0);
         }
     }
 
     /**
      * Retrieve the content of the tokens which together look like a binary integer.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param array                $tokens    Token stack.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param array                 $tokens    Token stack.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack.
      *
      * @return string
      */
-    private function getBinaryInteger(PHP_CodeSniffer_File $phpcsFile, $tokens, $stackPtr)
+    private function getBinaryInteger(\PHP_CodeSniffer_File $phpcsFile, $tokens, $stackPtr)
     {
         $length = 2; // PHP < 5.4 T_LNUMBER + T_STRING.
 

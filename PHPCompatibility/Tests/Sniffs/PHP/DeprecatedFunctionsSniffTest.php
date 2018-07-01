@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Deprecated functions sniff tests
@@ -12,9 +15,9 @@
  * @group deprecatedFunctions
  * @group functions
  *
- * @covers PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\DeprecatedFunctionsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -110,90 +113,61 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
     public function dataDeprecatedFunctionWithAlternative()
     {
         return array(
-            array('ocibindbyname', '5.4', 'oci_bind_by_name', array(41), '5.3'),
-            array('ocicancel', '5.4', 'oci_cancel', array(42), '5.3'),
-            array('ocicloselob', '5.4', 'OCI-Lob::close', array(43), '5.3'),
-            array('ocicollappend', '5.4', 'OCI-Collection::append', array(44), '5.3'),
-            array('ocicollassign', '5.4', 'OCI-Collection::assign', array(45), '5.3'),
-            array('ocicollassignelem', '5.4', 'OCI-Collection::assignElem', array(46), '5.3'),
-            array('ocicollgetelem', '5.4', 'OCI-Collection::getElem', array(47), '5.3'),
-            array('ocicollmax', '5.4', 'OCI-Collection::max', array(48), '5.3'),
-            array('ocicollsize', '5.4', 'OCI-Collection::size', array(49), '5.3'),
-            array('ocicolltrim', '5.4', 'OCI-Collection::trim', array(50), '5.3'),
-            array('ocicolumnisnull', '5.4', 'oci_field_is_null', array(51), '5.3'),
-            array('ocicolumnname', '5.4', 'oci_field_name', array(52), '5.3'),
-            array('ocicolumnprecision', '5.4', 'oci_field_precision', array(53), '5.3'),
-            array('ocicolumnscale', '5.4', 'oci_field_scale', array(54), '5.3'),
-            array('ocicolumnsize', '5.4', 'oci_field_size', array(55), '5.3'),
-            array('ocicolumntype', '5.4', 'oci_field_type', array(56), '5.3'),
-            array('ocicolumntyperaw', '5.4', 'oci_field_type_raw', array(57), '5.3'),
-            array('ocicommit', '5.4', 'oci_commit', array(58), '5.3'),
-            array('ocidefinebyname', '5.4', 'oci_define_by_name', array(59), '5.3'),
-            array('ocierror', '5.4', 'oci_error', array(60), '5.3'),
-            array('ociexecute', '5.4', 'oci_execute', array(61), '5.3'),
-            array('ocifetch', '5.4', 'oci_fetch', array(62), '5.3'),
-            array('ocifetchstatement', '5.4', 'oci_fetch_all', array(64), '5.3'),
-            array('ocifreecollection', '5.4', 'OCI-Collection::free', array(65), '5.3'),
-            array('ocifreecursor', '5.4', 'oci_free_statement', array(66), '5.3'),
-            array('ocifreedesc', '5.4', 'OCI-Lob::free', array(67), '5.3'),
-            array('ocifreestatement', '5.4', 'oci_free_statement', array(68), '5.3'),
-            array('ociinternaldebug', '5.4', 'oci_internal_debug', array(69), '5.3'),
-            array('ociloadlob', '5.4', 'OCI-Lob::load', array(70), '5.3'),
-            array('ocilogoff', '5.4', 'oci_close', array(71), '5.3'),
-            array('ocilogon', '5.4', 'oci_connect', array(72), '5.3'),
-            array('ocinewcollection', '5.4', 'oci_new_collection', array(73), '5.3'),
-            array('ocinewcursor', '5.4', 'oci_new_cursor', array(74), '5.3'),
-            array('ocinewdescriptor', '5.4', 'oci_new_descriptor', array(75), '5.3'),
-            array('ocinlogon', '5.4', 'oci_new_connect', array(76), '5.3'),
-            array('ocinumcols', '5.4', 'oci_num_fields', array(77), '5.3'),
-            array('ociparse', '5.4', 'oci_parse', array(78), '5.3'),
-            array('ociplogon', '5.4', 'oci_pconnect', array(79), '5.3'),
-            array('ociresult', '5.4', 'oci_result', array(80), '5.3'),
-            array('ocirollback', '5.4', 'oci_rollback', array(81), '5.3'),
-            array('ocirowcount', '5.4', 'oci_num_rows', array(82), '5.3'),
-            array('ocisavelob', '5.4', 'OCI-Lob::save', array(83), '5.3'),
-            array('ocisavelobfile', '5.4', 'OCI-Lob::import', array(84), '5.3'),
-            array('ociserverversion', '5.4', 'oci_server_version', array(85), '5.3'),
-            array('ocisetprefetch', '5.4', 'oci_set_prefetch', array(86), '5.3'),
-            array('ocistatementtype', '5.4', 'oci_statement_type', array(87), '5.3'),
-            array('ociwritelobtofile', '5.4', 'OCI-Lob::export', array(88), '5.3'),
-            array('ociwritetemporarylob', '5.4', 'OCI-Lob::writeTemporary', array(89), '5.3'),
-
-            array('mcrypt_create_iv', '7.1', 'OpenSSL', array(100), '7.0'),
-            array('mcrypt_decrypt', '7.1', 'OpenSSL', array(101), '7.0'),
-            array('mcrypt_enc_get_algorithms_name', '7.1', 'OpenSSL', array(102), '7.0'),
-            array('mcrypt_enc_get_block_size', '7.1', 'OpenSSL', array(103), '7.0'),
-            array('mcrypt_enc_get_iv_size', '7.1', 'OpenSSL', array(104), '7.0'),
-            array('mcrypt_enc_get_key_size', '7.1', 'OpenSSL', array(105), '7.0'),
-            array('mcrypt_enc_get_modes_name', '7.1', 'OpenSSL', array(106), '7.0'),
-            array('mcrypt_enc_get_supported_key_sizes', '7.1', 'OpenSSL', array(107), '7.0'),
-            array('mcrypt_enc_is_block_algorithm_mode', '7.1', 'OpenSSL', array(108), '7.0'),
-            array('mcrypt_enc_is_block_algorithm', '7.1', 'OpenSSL', array(109), '7.0'),
-            array('mcrypt_enc_is_block_mode', '7.1', 'OpenSSL', array(110), '7.0'),
-            array('mcrypt_enc_self_test', '7.1', 'OpenSSL', array(111), '7.0'),
-            array('mcrypt_encrypt', '7.1', 'OpenSSL', array(112), '7.0'),
-            array('mcrypt_generic_deinit', '7.1', 'OpenSSL', array(113), '7.0'),
-            array('mcrypt_generic_init', '7.1', 'OpenSSL', array(114), '7.0'),
-            array('mcrypt_generic', '7.1', 'OpenSSL', array(115), '7.0'),
-            array('mcrypt_get_block_size', '7.1', 'OpenSSL', array(116), '7.0'),
-            array('mcrypt_get_cipher_name', '7.1', 'OpenSSL', array(117), '7.0'),
-            array('mcrypt_get_iv_size', '7.1', 'OpenSSL', array(118), '7.0'),
-            array('mcrypt_get_key_size', '7.1', 'OpenSSL', array(119), '7.0'),
-            array('mcrypt_list_algorithms', '7.1', 'OpenSSL', array(120), '7.0'),
-            array('mcrypt_list_modes', '7.1', 'OpenSSL', array(121), '7.0'),
-            array('mcrypt_module_close', '7.1', 'OpenSSL', array(122), '7.0'),
-            array('mcrypt_module_get_algo_block_size', '7.1', 'OpenSSL', array(123), '7.0'),
-            array('mcrypt_module_get_algo_key_size', '7.1', 'OpenSSL', array(124), '7.0'),
-            array('mcrypt_module_get_supported_key_sizes', '7.1', 'OpenSSL', array(125), '7.0'),
-            array('mcrypt_module_is_block_algorithm_mode', '7.1', 'OpenSSL', array(126), '7.0'),
-            array('mcrypt_module_is_block_algorithm', '7.1', 'OpenSSL', array(127), '7.0'),
-            array('mcrypt_module_is_block_mode', '7.1', 'OpenSSL', array(128), '7.0'),
-            array('mcrypt_module_open', '7.1', 'OpenSSL', array(129), '7.0'),
-            array('mcrypt_module_self_test', '7.1', 'OpenSSL', array(130), '7.0'),
-            array('mdecrypt_generic', '7.1', 'OpenSSL', array(131), '7.0'),
+            array('ocibindbyname', '5.4', 'oci_bind_by_name()', array(41), '5.3'),
+            array('ocicancel', '5.4', 'oci_cancel()', array(42), '5.3'),
+            array('ocicloselob', '5.4', 'OCI-Lob::close()', array(43), '5.3'),
+            array('ocicollappend', '5.4', 'OCI-Collection::append()', array(44), '5.3'),
+            array('ocicollassign', '5.4', 'OCI-Collection::assign()', array(45), '5.3'),
+            array('ocicollassignelem', '5.4', 'OCI-Collection::assignElem()', array(46), '5.3'),
+            array('ocicollgetelem', '5.4', 'OCI-Collection::getElem()', array(47), '5.3'),
+            array('ocicollmax', '5.4', 'OCI-Collection::max()', array(48), '5.3'),
+            array('ocicollsize', '5.4', 'OCI-Collection::size()', array(49), '5.3'),
+            array('ocicolltrim', '5.4', 'OCI-Collection::trim()', array(50), '5.3'),
+            array('ocicolumnisnull', '5.4', 'oci_field_is_null()', array(51), '5.3'),
+            array('ocicolumnname', '5.4', 'oci_field_name()', array(52), '5.3'),
+            array('ocicolumnprecision', '5.4', 'oci_field_precision()', array(53), '5.3'),
+            array('ocicolumnscale', '5.4', 'oci_field_scale()', array(54), '5.3'),
+            array('ocicolumnsize', '5.4', 'oci_field_size()', array(55), '5.3'),
+            array('ocicolumntype', '5.4', 'oci_field_type()', array(56), '5.3'),
+            array('ocicolumntyperaw', '5.4', 'oci_field_type_raw()', array(57), '5.3'),
+            array('ocicommit', '5.4', 'oci_commit()', array(58), '5.3'),
+            array('ocidefinebyname', '5.4', 'oci_define_by_name()', array(59), '5.3'),
+            array('ocierror', '5.4', 'oci_error()', array(60), '5.3'),
+            array('ociexecute', '5.4', 'oci_execute()', array(61), '5.3'),
+            array('ocifetch', '5.4', 'oci_fetch()', array(62), '5.3'),
+            array('ocifetchstatement', '5.4', 'oci_fetch_all()', array(64), '5.3'),
+            array('ocifreecollection', '5.4', 'OCI-Collection::free()', array(65), '5.3'),
+            array('ocifreecursor', '5.4', 'oci_free_statement()', array(66), '5.3'),
+            array('ocifreedesc', '5.4', 'OCI-Lob::free()', array(67), '5.3'),
+            array('ocifreestatement', '5.4', 'oci_free_statement()', array(68), '5.3'),
+            array('ociinternaldebug', '5.4', 'oci_internal_debug()', array(69), '5.3'),
+            array('ociloadlob', '5.4', 'OCI-Lob::load()', array(70), '5.3'),
+            array('ocilogoff', '5.4', 'oci_close()', array(71), '5.3'),
+            array('ocilogon', '5.4', 'oci_connect()', array(72), '5.3'),
+            array('ocinewcollection', '5.4', 'oci_new_collection()', array(73), '5.3'),
+            array('ocinewcursor', '5.4', 'oci_new_cursor()', array(74), '5.3'),
+            array('ocinewdescriptor', '5.4', 'oci_new_descriptor()', array(75), '5.3'),
+            array('ocinlogon', '5.4', 'oci_new_connect()', array(76), '5.3'),
+            array('ocinumcols', '5.4', 'oci_num_fields()', array(77), '5.3'),
+            array('ociparse', '5.4', 'oci_parse()', array(78), '5.3'),
+            array('ociplogon', '5.4', 'oci_pconnect()', array(79), '5.3'),
+            array('ociresult', '5.4', 'oci_result()', array(80), '5.3'),
+            array('ocirollback', '5.4', 'oci_rollback()', array(81), '5.3'),
+            array('ocirowcount', '5.4', 'oci_num_rows()', array(82), '5.3'),
+            array('ocisavelob', '5.4', 'OCI-Lob::save()', array(83), '5.3'),
+            array('ocisavelobfile', '5.4', 'OCI-Lob::import()', array(84), '5.3'),
+            array('ociserverversion', '5.4', 'oci_server_version()', array(85), '5.3'),
+            array('ocisetprefetch', '5.4', 'oci_set_prefetch()', array(86), '5.3'),
+            array('ocistatementtype', '5.4', 'oci_statement_type()', array(87), '5.3'),
+            array('ociwritelobtofile', '5.4', 'OCI-Lob::export()', array(88), '5.3'),
+            array('ociwritetemporarylob', '5.4', 'OCI-Lob::writeTemporary()', array(89), '5.3'),
 
             array('jpeg2wbmp', '7.2', 'imagecreatefromjpeg() and imagewbmp()', array(144), '7.1'),
             array('png2wbmp', '7.2', 'imagecreatefrompng() or imagewbmp()', array(145), '7.1'),
+            array('create_function', '7.2', 'an anonymous function', array(146), '7.1'),
+            array('each', '7.2', 'a foreach loop', array(147), '7.1'),
+            array('gmp_random', '7.2', 'gmp_random_bits() or gmp_random_range()', array(148), '7.1'),
+            array('read_exif_data', '7.2', 'exif_read_data()', array(149), '7.1'),
         );
     }
 
@@ -369,29 +343,62 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
     public function dataDeprecatedRemovedFunctionWithAlternative()
     {
         return array(
-            array('call_user_method', '5.3', '7.0', 'call_user_func', array(3), '5.2'),
-            array('call_user_method_array', '5.3', '7.0', 'call_user_func_array', array(4), '5.2'),
-            array('ereg', '5.3', '7.0', 'preg_match', array(7), '5.2'),
-            array('ereg_replace', '5.3', '7.0', 'preg_replace', array(8), '5.2'),
-            array('eregi', '5.3', '7.0', 'preg_match', array(9), '5.2'),
-            array('eregi_replace', '5.3', '7.0', 'preg_replace', array(10), '5.2'),
-            array('mcrypt_generic_end', '5.4', '7.0', 'mcrypt_generic_deinit', array(12), '5.3'),
-            array('mysql_db_query', '5.3', '7.0', 'mysqli_select_db and mysqli_query', array(13), '5.2'),
-            array('mysql_escape_string', '5.3', '7.0', 'mysqli_real_escape_string', array(14), '5.2'),
-            array('mysqli_bind_param', '5.3', '5.4', 'mysqli_stmt_bind_param', array(16), '5.2'),
-            array('mysqli_bind_result', '5.3', '5.4', 'mysqli_stmt_bind_result', array(17), '5.2'),
-            array('mysqli_client_encoding', '5.3', '5.4', 'mysqli_character_set_name', array(18), '5.2'),
-            array('mysqli_fetch', '5.3', '5.4', 'mysqli_stmt_fetch', array(19), '5.2'),
-            array('mysqli_param_count', '5.3', '5.4', 'mysqli_stmt_param_count', array(20), '5.2'),
-            array('mysqli_get_metadata', '5.3', '5.4', 'mysqli_stmt_result_metadata', array(21), '5.2'),
-            array('mysqli_send_long_data', '5.3', '5.4', 'mysqli_stmt_send_long_data', array(22), '5.2'),
+            array('call_user_method', '5.3', '7.0', 'call_user_func()', array(3), '5.2'),
+            array('call_user_method_array', '5.3', '7.0', 'call_user_func_array()', array(4), '5.2'),
+            array('ereg', '5.3', '7.0', 'preg_match()', array(7), '5.2'),
+            array('ereg_replace', '5.3', '7.0', 'preg_replace()', array(8), '5.2'),
+            array('eregi', '5.3', '7.0', 'preg_match()', array(9), '5.2'),
+            array('eregi_replace', '5.3', '7.0', 'preg_replace()', array(10), '5.2'),
+            array('mcrypt_generic_end', '5.3', '7.0', 'mcrypt_generic_deinit()', array(12), '5.2'),
+            array('mysql_db_query', '5.3', '7.0', 'mysqli::select_db() and mysqli::query()', array(13), '5.2'),
+            array('mysql_escape_string', '5.3', '7.0', 'mysqli::real_escape_string()', array(14), '5.2'),
+            array('mysqli_bind_param', '5.3', '5.4', 'mysqli_stmt::bind_param()', array(16), '5.2'),
+            array('mysqli_bind_result', '5.3', '5.4', 'mysqli_stmt::bind_result()', array(17), '5.2'),
+            array('mysqli_client_encoding', '5.3', '5.4', 'mysqli::character_set_name()', array(18), '5.2'),
+            array('mysqli_fetch', '5.3', '5.4', 'mysqli_stmt::fetch()', array(19), '5.2'),
+            array('mysqli_param_count', '5.3', '5.4', 'mysqli_stmt_param_count()', array(20), '5.2'),
+            array('mysqli_get_metadata', '5.3', '5.4', 'mysqli_stmt::result_metadata()', array(21), '5.2'),
+            array('mysqli_send_long_data', '5.3', '5.4', 'mysqli_stmt::send_long_data()', array(22), '5.2'),
             array('session_register', '5.3', '5.4', '$_SESSION', array(24), '5.2'),
             array('session_unregister', '5.3', '5.4', '$_SESSION', array(25), '5.2'),
             array('session_is_registered', '5.3', '5.4', '$_SESSION', array(26), '5.2'),
-            array('set_socket_blocking', '5.3', '7.0', 'stream_set_blocking', array(28), '5.2'),
-            array('split', '5.3', '7.0', 'preg_split', array(29), '5.2'),
-            array('spliti', '5.3', '7.0', 'preg_split', array(30), '5.2'),
-            array('datefmt_set_timezone_id', '5.5', '7.0', 'datefmt_set_timezone', array(36), '5.4'),
+            array('set_socket_blocking', '5.3', '7.0', 'stream_set_blocking()', array(28), '5.2'),
+            array('split', '5.3', '7.0', 'preg_split()', array(29), '5.2'),
+            array('spliti', '5.3', '7.0', 'preg_split()', array(30), '5.2'),
+            array('datefmt_set_timezone_id', '5.5', '7.0', 'IntlDateFormatter::setTimeZone()', array(36), '5.4'),
+
+            array('mcrypt_create_iv', '7.1', '7.2', 'random_bytes() or OpenSSL', array(100), '7.0'),
+            array('mcrypt_decrypt', '7.1', '7.2', 'OpenSSL', array(101), '7.0'),
+            array('mcrypt_enc_get_algorithms_name', '7.1', '7.2', 'OpenSSL', array(102), '7.0'),
+            array('mcrypt_enc_get_block_size', '7.1', '7.2', 'OpenSSL', array(103), '7.0'),
+            array('mcrypt_enc_get_iv_size', '7.1', '7.2', 'OpenSSL', array(104), '7.0'),
+            array('mcrypt_enc_get_key_size', '7.1', '7.2', 'OpenSSL', array(105), '7.0'),
+            array('mcrypt_enc_get_modes_name', '7.1', '7.2', 'OpenSSL', array(106), '7.0'),
+            array('mcrypt_enc_get_supported_key_sizes', '7.1', '7.2', 'OpenSSL', array(107), '7.0'),
+            array('mcrypt_enc_is_block_algorithm_mode', '7.1', '7.2', 'OpenSSL', array(108), '7.0'),
+            array('mcrypt_enc_is_block_algorithm', '7.1', '7.2', 'OpenSSL', array(109), '7.0'),
+            array('mcrypt_enc_is_block_mode', '7.1', '7.2', 'OpenSSL', array(110), '7.0'),
+            array('mcrypt_enc_self_test', '7.1', '7.2', 'OpenSSL', array(111), '7.0'),
+            array('mcrypt_encrypt', '7.1', '7.2', 'OpenSSL', array(112), '7.0'),
+            array('mcrypt_generic_deinit', '7.1', '7.2', 'OpenSSL', array(113), '7.0'),
+            array('mcrypt_generic_init', '7.1', '7.2', 'OpenSSL', array(114), '7.0'),
+            array('mcrypt_generic', '7.1', '7.2', 'OpenSSL', array(115), '7.0'),
+            array('mcrypt_get_block_size', '7.1', '7.2', 'OpenSSL', array(116), '7.0'),
+            array('mcrypt_get_cipher_name', '7.1', '7.2', 'OpenSSL', array(117), '7.0'),
+            array('mcrypt_get_iv_size', '7.1', '7.2', 'OpenSSL', array(118), '7.0'),
+            array('mcrypt_get_key_size', '7.1', '7.2', 'OpenSSL', array(119), '7.0'),
+            array('mcrypt_list_algorithms', '7.1', '7.2', 'OpenSSL', array(120), '7.0'),
+            array('mcrypt_list_modes', '7.1', '7.2', 'OpenSSL', array(121), '7.0'),
+            array('mcrypt_module_close', '7.1', '7.2', 'OpenSSL', array(122), '7.0'),
+            array('mcrypt_module_get_algo_block_size', '7.1', '7.2', 'OpenSSL', array(123), '7.0'),
+            array('mcrypt_module_get_algo_key_size', '7.1', '7.2', 'OpenSSL', array(124), '7.0'),
+            array('mcrypt_module_get_supported_key_sizes', '7.1', '7.2', 'OpenSSL', array(125), '7.0'),
+            array('mcrypt_module_is_block_algorithm_mode', '7.1', '7.2', 'OpenSSL', array(126), '7.0'),
+            array('mcrypt_module_is_block_algorithm', '7.1', '7.2', 'OpenSSL', array(127), '7.0'),
+            array('mcrypt_module_is_block_mode', '7.1', '7.2', 'OpenSSL', array(128), '7.0'),
+            array('mcrypt_module_open', '7.1', '7.2', 'OpenSSL', array(129), '7.0'),
+            array('mcrypt_module_self_test', '7.1', '7.2', 'OpenSSL', array(130), '7.0'),
+            array('mdecrypt_generic', '7.1', '7.2', 'OpenSSL', array(131), '7.0'),
 
         );
     }
@@ -421,22 +428,16 @@ class DeprecatedFunctionsSniffTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        $testCases = array(
+        return array(
             array(134),
             array(135),
+            array(136),
             // array(137), // Not yet accounted for in the code, uncomment when fixed.
             array(138),
             array(139),
             array(140),
             array(141),
         );
-
-        // Add an additional testcase which will only be 'no violation' if namespaces are recognized.
-        if (version_compare(phpversion(), '5.3', '>=')) {
-            $testCases[] = array(136);
-        }
-
-        return $testCases;
     }
 
 

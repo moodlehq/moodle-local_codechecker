@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\BaseClass;
+
+use PHPCompatibility\PHPCSHelper;
 
 /**
  * Generic sniff functions sniff tests
@@ -12,17 +15,17 @@
  * @group utilityMiscFunctions
  * @group utilityFunctions
  *
- * @uses    PHPUnit_Framework_TestCase
+ * @uses    \PHPUnit_Framework_TestCase
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
+class FunctionsTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * A wrapper for the abstract PHPCompatibility sniff.
      *
-     * @var PHPCompatibility_Sniff
+     * @var \PHPCompatibility\Sniff
      */
     protected $helperClass;
 
@@ -34,7 +37,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      */
     public static function setUpBeforeClass()
     {
-        require_once dirname(__FILE__) . '/TestHelperPHPCompatibility.php';
+        require_once __DIR__ . '/TestHelperPHPCompatibility.php';
         parent::setUpBeforeClass();
     }
 
@@ -47,7 +50,20 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->helperClass = new BaseClass_TestHelperPHPCompatibility;
+        $this->helperClass = new TestHelperPHPCompatibility;
+    }
+
+    /**
+     * Clean up after finished test.
+     *
+     * @return void
+     */
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        // Only really needed for the testVersion related tests, but doesn't harm the other test in this file.
+        PHPCSHelper::setConfigData('testVersion', null, true);
     }
 
 
@@ -56,7 +72,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataGetTestVersion
      *
-     * @covers PHPCompatibility_Sniff::getTestVersion
+     * @covers \PHPCompatibility\Sniff::getTestVersion
      *
      * @requires PHP 5.3.2
      * @internal Requirement is needed to be able to test the private method
@@ -71,16 +87,13 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     public function testGetTestVersion($testVersion, $expected)
     {
         if (isset($testVersion)) {
-            PHP_CodeSniffer::setConfigData('testVersion', $testVersion, true);
+            PHPCSHelper::setConfigData('testVersion', $testVersion, true);
         }
 
         $this->assertSame($expected, $this->invokeMethod($this->helperClass, 'GetTestVersion'));
 
         // Verify that the caching of the function results is working correctly.
         $this->assertSame($expected, $this->invokeMethod($this->helperClass, 'GetTestVersion'));
-
-        // Clean up / reset the value.
-        PHP_CodeSniffer::setConfigData('testVersion', null, true);
     }
 
     /**
@@ -104,9 +117,9 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
             array('-5.6', array('4.0', '5.6')), // Range, with no minimum.
             array('7.0-', array('7.0', '99.9')), // Range, with no maximum.
 
-        // Whitespace tests.  Shouldn't really come up in standard command-line use,
-        // but could occur if command-line argument is quoted or added via
-        // ruleset.xml.
+            // Whitespace tests.  Shouldn't really come up in standard command-line use,
+            // but could occur if command-line argument is quoted or added via
+            // ruleset.xml.
             array(' 5.0', array('5.0', '5.0')), // Single version.
             array('5.0 ', array('5.0', '5.0')), // Single version.
             array('5.1 - 5.5', array('5.1', '5.5')), // Range of versions.
@@ -120,7 +133,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataGetTestVersionInvalidRange
      *
-     * @covers PHPCompatibility_Sniff::getTestVersion
+     * @covers \PHPCompatibility\Sniff::getTestVersion
      *
      * @requires PHP 5.3.2
      * @internal Requirement is needed to be able to test the private method
@@ -157,6 +170,8 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     {
         return array(
             array('5.6-5.4'), // Range of versions - min > max.
+            array('-3.0'), // Range of versions - min > max. Absolute minimum is 4.0.
+            array('105.0-'), // Range of versions - min > max. Absolute maximum is 99.9.
         );
     }
 
@@ -166,7 +181,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataGetTestVersionInvalidVersion
      *
-     * @covers PHPCompatibility_Sniff::getTestVersion
+     * @covers \PHPCompatibility\Sniff::getTestVersion
      *
      * @requires PHP 5.3.2
      * @internal Requirement is needed to be able to test the private method
@@ -182,11 +197,11 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
         if (method_exists($this, 'setExpectedException')) {
             $this->setExpectedException(
                 'PHPUnit_Framework_Error_Warning',
-                sprintf('Invalid testVersion setting: \'%s\'', $testVersion)
+                sprintf('Invalid testVersion setting: \'%s\'', trim($testVersion))
             );
         } else {
             $this->expectException('PHPUnit\Framework\Error\Warning');
-            $this->expectExceptionMessage(sprintf('Invalid testVersion setting: \'%s\'', $testVersion));
+            $this->expectExceptionMessage(sprintf('Invalid testVersion setting: \'%s\'', trim($testVersion)));
         }
 
         $this->testGetTestVersion($testVersion, array(null, null));
@@ -208,7 +223,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
             array('seven.one'), // Non numeric.
 
             array('-'), // Blank range.
-            array('5.4-5.5-5.6'), // Mutiple ranges.
+            array('5.4-5.5-5.6'), // Multiple ranges.
 
             array('5-7.0'), // Invalid left half.
             array('5.1.2-7.0'), // Invalid left half.
@@ -216,7 +231,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
 
             array('5.5-7'), // Invalid right half.
             array('5.5-7.0.5'), // Invalid right half.
-            array('5.5-7AndJunk'), // invalid right half.
+            array('5.5-7AndJunk'), // Invalid right half.
         );
     }
 
@@ -226,7 +241,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataSupportsAbove
      *
-     * @covers PHPCompatibility_Sniff::supportsAbove
+     * @covers \PHPCompatibility\Sniff::supportsAbove
      *
      * @param string $phpVersion  The PHP version we want to test.
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
@@ -237,13 +252,10 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     public function testSupportsAbove($phpVersion, $testVersion, $expected)
     {
         if (isset($testVersion)) {
-            PHP_CodeSniffer::setConfigData('testVersion', $testVersion, true);
+            PHPCSHelper::setConfigData('testVersion', $testVersion, true);
         }
 
         $this->assertSame($expected, $this->helperClass->supportsAbove($phpVersion));
-
-        // Clean up / reset the value.
-        PHP_CodeSniffer::setConfigData('testVersion', null, true);
     }
 
     /**
@@ -274,7 +286,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataSupportsBelow
      *
-     * @covers PHPCompatibility_Sniff::supportsBelow
+     * @covers \PHPCompatibility\Sniff::supportsBelow
      *
      * @param string $phpVersion  The PHP version we want to test.
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
@@ -285,13 +297,10 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     public function testSupportsBelow($phpVersion, $testVersion, $expected)
     {
         if (isset($testVersion)) {
-            PHP_CodeSniffer::setConfigData('testVersion', $testVersion, true);
+            PHPCSHelper::setConfigData('testVersion', $testVersion, true);
         }
 
         $this->assertSame($expected, $this->helperClass->supportsBelow($phpVersion));
-
-        // Clean up / reset the value.
-        PHP_CodeSniffer::setConfigData('testVersion', null, true);
     }
 
     /**
@@ -322,7 +331,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataStringToErrorCode
      *
-     * @covers PHPCompatibility_Sniff::stringToErrorCode
+     * @covers \PHPCompatibility\Sniff::stringToErrorCode
      *
      * @param string $input    The input string.
      * @param string $expected The expected error code.
@@ -347,23 +356,23 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
             array('dir_name', 'dir_name'), // No change.
             array('soap.wsdl_cache', 'soap_wsdl_cache'), // No dot.
             array('arbitrary-string with space', 'arbitrary_string_with_space'), // No dashes, no spaces.
-            array('^%*&%*€éáø', '__________'), // No non alpha-numeric characters.
+            array('^%*&%*â‚¬Ã ?', '____________'), // No non alpha-numeric characters.
         );
     }
 
 
-   /**
-    * testStripQuotes
-    *
-    * @dataProvider dataStripQuotes
-    *
-    * @covers PHPCompatibility_Sniff::stripQuotes
-    *
-    * @param string $input    The input string.
-    * @param string $expected The expected function output.
-    *
-    * @return void
-    */
+    /**
+     * testStripQuotes
+     *
+     * @dataProvider dataStripQuotes
+     *
+     * @covers \PHPCompatibility\Sniff::stripQuotes
+     *
+     * @param string $input    The input string.
+     * @param string $expected The expected function output.
+     *
+     * @return void
+     */
     public function testStripQuotes($input, $expected)
     {
         $this->assertSame($expected, $this->helperClass->stripQuotes($input));
@@ -393,7 +402,7 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @dataProvider dataArrayKeysToLowercase
      *
-     * @covers PHPCompatibility_Sniff::arrayKeysToLowercase
+     * @covers \PHPCompatibility\Sniff::arrayKeysToLowercase
      *
      * @param string $input    The input string.
      * @param string $expected The expected function output.
@@ -431,18 +440,18 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
     }
 
 
-   /**
-    * testStripVariables
-    *
-    * @dataProvider dataStripVariables
-    *
-    * @covers PHPCompatibility_Sniff::stripQuotes
-    *
-    * @param string $input    The input string.
-    * @param string $expected The expected function output.
-    *
-    * @return void
-    */
+    /**
+     * testStripVariables
+     *
+     * @dataProvider dataStripVariables
+     *
+     * @covers \PHPCompatibility\Sniff::stripQuotes
+     *
+     * @param string $input    The input string.
+     * @param string $expected The expected function output.
+     *
+     * @return void
+     */
     public function testStripVariables($input, $expected)
     {
         $this->assertSame($expected, $this->helperClass->stripVariables($input));
@@ -508,8 +517,8 @@ class BaseClass_FunctionsTest extends PHPUnit_Framework_TestCase
      */
     private function invokeMethod(&$object, $methodName, array $parameters = array())
     {
-        $reflection = new ReflectionClass(get_class($object));
-        $method = $reflection->getMethod($methodName);
+        $reflection = new \ReflectionClass(get_class($object));
+        $method     = $reflection->getMethod($methodName);
         $method->setAccessible(true);
 
         return $method->invokeArgs($object, $parameters);

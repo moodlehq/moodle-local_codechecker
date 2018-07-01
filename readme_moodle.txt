@@ -20,15 +20,15 @@ Local modifications (only allowed if there is a PR upstream backing it):
 
 Instructions to upgrade the PHPCompatibility bundled version:
 
-- Drop a checkout of https://github.com/wimg/PHPCompatibility.git
-  within the "PHPCompatibility" directory of the plugin.
+- Drop a checkout of the PHPCompatibility dir of https://github.com/wimg/PHPCompatibility.git
+  within the "PHPCompatibility" directory of the local_codechecker plugin.
 - Don't delete anything. 100% complete drop.
 
 Current checkout:
 
-  7.1.4 (95e143e)
+  8.1.0+ (609be5c)
 
-Local modifications (only allowed if there is a PR upstrea backing it):
+Local modifications (only allowed if there is a PR upstream backing it):
 
   - none right now
 

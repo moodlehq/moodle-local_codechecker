@@ -5,6 +5,10 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\PHPCSHelper;
 
 /**
  * New Magic Methods Sniff tests.
@@ -12,9 +16,9 @@
  * @group newMagicMethods
  * @group magicMethods
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewMagicMethodsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewMagicMethodsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -36,7 +40,7 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
     public static function setUpBeforeClass()
     {
         // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are not recognized.
-        if (version_compare(PHP_CodeSniffer::VERSION, '2.4.0', '<') && version_compare(phpversion(), '5.4', '<')) {
+        if (version_compare(PHPCSHelper::getVersion(), '2.4.0', '<') && version_compare(PHP_VERSION_ID, '50400', '<')) {
             self::$recognizesTraits = false;
         }
 
@@ -61,7 +65,7 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
      * @param bool   $isTrait     Whether to load the class/interface test file or the trait test file.
      * @param string $testVersion Value of 'testVersion' to set on PHPCS object.
      *
-     * @return PHP_CodeSniffer_File File object|false
+     * @return \PHP_CodeSniffer_File File object|false
      */
     protected function getTestFile($isTrait, $testVersion = null)
     {
@@ -115,7 +119,7 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
     public function dataNewMagicMethod()
     {
         return array(
-            // new_magic_methods.php
+            // File: new_magic_methods.php.
             array('__get', '4.4', array(22, 34, 61), '5.0'),
             array('__isset', '5.0', array(23, 35, 62), '5.1'),
             array('__unset', '5.0', array(24, 36, 63), '5.1'),
@@ -124,7 +128,7 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
             array('__invoke', '5.2', array(28, 40, 67), '5.3'),
             array('__debugInfo', '5.5', array(29, 41, 68), '5.6'),
 
-            // new_magic_methods_traits.php
+            // File: new_magic_methods_traits.php.
             array('__get', '4.4', array(5), '5.0', true),
             array('__isset', '5.0', array(6), '5.1', true),
             array('__unset', '5.0', array(7), '5.1', true),
@@ -170,12 +174,12 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
     public function dataChangedToStringMethod()
     {
         return array(
-            // new_magic_methods.php
+            // File: new_magic_methods.php.
             array(26),
             array(38),
             array(65),
 
-            // new_magic_methods_traits.php
+            // File: new_magic_methods_traits.php.
             array(9, true),
         );
     }
@@ -262,11 +266,11 @@ class NewMagicMethodsSniffTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        // new_magic_methods.php
+        // File: new_magic_methods.php.
         $file = $this->getTestFile(false, '99.0'); // High version beyond newest addition.
         $this->assertNoViolation($file);
 
-        // new_magic_methods_traits.php
+        // File: new_magic_methods_traits.php.
         $file = $this->getTestFile(true, '99.0'); // High version beyond newest addition.
         $this->assertNoViolation($file);
     }

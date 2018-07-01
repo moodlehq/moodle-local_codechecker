@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New type declarations test file
@@ -12,9 +15,9 @@
  * @group newScalarTypeDeclarations
  * @group typeDeclarations
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewScalarTypeDeclarationsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Wim Godden <wim@cu.be>
  */
@@ -31,16 +34,20 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
      * @param string $lastVersionBefore The PHP version just *before* the type hint was introduced.
      * @param array  $line              The line number where the error is expected.
      * @param string $okVersion         A PHP version in which the type hint was ok to be used.
+     * @param bool   $testNoViolation   Whether or not to test noViolation.
+     *                                  Defaults to true. Only set to false for self/parent outside class scope.
      *
      * @return void
      */
-    public function testNewTypeDeclaration($type, $lastVersionBefore, $line, $okVersion)
+    public function testNewTypeDeclaration($type, $lastVersionBefore, $line, $okVersion, $testNoViolation = true)
     {
         $file = $this->sniffFile(self::TEST_FILE, $lastVersionBefore);
         $this->assertError($file, $line, "'{$type}' type declaration is not present in PHP version {$lastVersionBefore} or earlier");
 
-        $file = $this->sniffFile(self::TEST_FILE, $okVersion);
-        $this->assertNoViolation($file, $line);
+        if ($testNoViolation === true) {
+            $file = $this->sniffFile(self::TEST_FILE, $okVersion);
+            $this->assertNoViolation($file, $line);
+        }
     }
 
     /**
@@ -61,10 +68,18 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
             array('float', '5.6', 13, '7.0'),
             array('string', '5.6', 14, '7.0'),
             array('iterable', '7.0', 17, '7.1'),
+            array('parent', '5.1', 24, '5.2'),
+            array('self', '5.1', 34, '5.2'),
+            array('self', '5.1', 37, '5.2', false),
+            array('self', '5.1', 41, '5.2'),
+            array('self', '5.1', 44, '5.2', false),
             array('callable', '5.3', 52, '5.4'),
             array('int', '5.6', 53, '7.0'),
             array('callable', '5.3', 56, '5.4'),
             array('int', '5.6', 57, '7.0'),
+            array('object', '7.1', 60, '7.2'),
+            array('parent', '5.1', 63, '5.2', false),
+            array('parent', '5.1', 66, '5.2', false),
         );
     }
 
@@ -98,7 +113,6 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
         return array(
             array('boolean', 'bool', 20),
             array('integer', 'int', 21),
-            array('parent', 'self', 24),
             array('static', 'self', 25),
         );
     }
@@ -109,14 +123,15 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
      *
      * @dataProvider dataInvalidSelfTypeDeclaration
      *
-     * @param int $line Line number on which to expect an error.
+     * @param int    $line Line number on which to expect an error.
+     * @param string $type The invalid type which should eb expected.
      *
      * @return void
      */
-    public function testInvalidSelfTypeDeclaration($line)
+    public function testInvalidSelfTypeDeclaration($line, $type)
     {
-        $file = $this->sniffFile(self::TEST_FILE, '5.0'); // Lowest version in which this message will show.
-        $this->assertError($file, $line, '\'self\' type cannot be used outside of class scope');
+        $file = $this->sniffFile(self::TEST_FILE, '5.2'); // Lowest version in which this message will show.
+        $this->assertError($file, $line, "'$type' type cannot be used outside of class scope");
     }
 
     /**
@@ -129,8 +144,10 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
     public function dataInvalidSelfTypeDeclaration()
     {
         return array(
-            array(37),
-            array(44),
+            array(37, 'self'),
+            array(44, 'self'),
+            array(63, 'parent'),
+            array(66, 'parent'),
         );
     }
 
@@ -150,7 +167,7 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
     public function testTypeDeclaration($line, $testNoViolation = false)
     {
         $file = $this->sniffFile(self::TEST_FILE, '4.4');
-        $this->assertError($file, $line, 'Type hints were not present in PHP 4.4 or earlier');
+        $this->assertError($file, $line, 'Type declarations were not present in PHP 4.4 or earlier');
 
         if ($testNoViolation === true) {
             $file = $this->sniffFile(self::TEST_FILE, '5.0');
@@ -181,12 +198,17 @@ class NewScalarTypeDeclarationsSniffTest extends BaseSniffTest
             array(24),
             array(25),
             array(29, true),
-            array(34, true),
+            array(34),
             array(37),
-            array(41, true),
+            array(41),
             array(44),
             array(52),
             array(53),
+            array(56),
+            array(57),
+            array(60),
+            array(63),
+            array(66),
         );
     }
 

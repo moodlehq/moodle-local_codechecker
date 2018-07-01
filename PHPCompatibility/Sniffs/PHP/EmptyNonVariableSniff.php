@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff.
+ * \PHPCompatibility\Sniffs\PHP\EmptyNonVariableSniff.
  *
  * PHP version 5.5
  *
@@ -9,8 +9,12 @@
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff.
+ * \PHPCompatibility\Sniffs\PHP\EmptyNonVariableSniff.
  *
  * Verify that nothing but variables are passed to empty().
  *
@@ -20,7 +24,7 @@
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff extends PHPCompatibility_Sniff
+class EmptyNonVariableSniff extends Sniff
 {
     /**
      * List of tokens to check against.
@@ -37,8 +41,8 @@ class PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff extends PHPCompatibility
      * @var array
      */
     protected $bracketTokens = array(
-        T_OPEN_CURLY_BRACKET   => T_CLOSE_CURLY_BRACKET,
-        T_OPEN_SQUARE_BRACKET  => T_CLOSE_SQUARE_BRACKET,
+        T_OPEN_CURLY_BRACKET  => T_CLOSE_CURLY_BRACKET,
+        T_OPEN_SQUARE_BRACKET => T_CLOSE_SQUARE_BRACKET,
     );
 
 
@@ -50,15 +54,17 @@ class PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff extends PHPCompatibility
     public function register()
     {
         // Set the token blacklist only once.
-        $tokenBlackList = array_unique(array_merge(
-            PHP_CodeSniffer_Tokens::$assignmentTokens,
-            PHP_CodeSniffer_Tokens::$equalityTokens,
-            PHP_CodeSniffer_Tokens::$comparisonTokens,
-            PHP_CodeSniffer_Tokens::$operators,
-            PHP_CodeSniffer_Tokens::$booleanOperators,
-            PHP_CodeSniffer_Tokens::$castTokens,
-            array(T_OPEN_PARENTHESIS, T_STRING_CONCAT)
-        ));
+        $tokenBlackList = array_unique(
+            array_merge(
+                \PHP_CodeSniffer_Tokens::$assignmentTokens,
+                \PHP_CodeSniffer_Tokens::$equalityTokens,
+                \PHP_CodeSniffer_Tokens::$comparisonTokens,
+                \PHP_CodeSniffer_Tokens::$operators,
+                \PHP_CodeSniffer_Tokens::$booleanOperators,
+                \PHP_CodeSniffer_Tokens::$castTokens,
+                array(T_OPEN_PARENTHESIS, T_STRING_CONCAT)
+            )
+        );
         $this->tokenBlackList = array_combine($tokenBlackList, $tokenBlackList);
 
         return array(T_EMPTY);
@@ -67,13 +73,13 @@ class PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff extends PHPCompatibility
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         if ($this->supportsBelow('5.4') === false) {
             return;
@@ -140,13 +146,13 @@ class PHPCompatibility_Sniffs_PHP_EmptyNonVariableSniff extends PHPCompatibility
     /**
      * Add the error message.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
      *
      * @return void
      */
-    protected function addError($phpcsFile, $stackPtr)
+    protected function addError(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $phpcsFile->addError(
             'Only variables can be passed to empty() prior to PHP 5.5.',

@@ -1,20 +1,25 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NewInterfacesSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewInterfacesSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractNewFeatureSniff;
+use PHPCompatibility\PHPCSHelper;
+
 /**
- * PHPCompatibility_Sniffs_PHP_NewInterfacesSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewInterfacesSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_AbstractNewFeatureSniff
+class NewInterfacesSniff extends AbstractNewFeatureSniff
 {
 
     /**
@@ -27,6 +32,10 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
      */
     protected $newInterfaces = array(
         'Traversable' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        'Reflector' => array(
             '4.4' => false,
             '5.0' => true,
         ),
@@ -111,7 +120,12 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
         );
 
         if (defined('T_ANON_CLASS')) {
-            $targets[] = constant('T_ANON_CLASS');
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_anon_classFound
+            $targets[] = T_ANON_CLASS;
+        }
+
+        if (defined('T_RETURN_TYPE')) {
+            $targets[] = T_RETURN_TYPE;
         }
 
         return $targets;
@@ -122,13 +136,13 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -141,6 +155,17 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
             case 'T_FUNCTION':
             case 'T_CLOSURE':
                 $this->processFunctionToken($phpcsFile, $stackPtr);
+
+                // Deal with older PHPCS versions which don't recognize return type hints
+                // as well as newer PHPCS versions (3.3.0+) where the tokenization has changed.
+                $returnTypeHint = $this->getReturnTypeHintToken($phpcsFile, $stackPtr);
+                if ($returnTypeHint !== false) {
+                    $this->processReturnTypeToken($phpcsFile, $returnTypeHint);
+                }
+                break;
+
+            case 'T_RETURN_TYPE':
+                $this->processReturnTypeToken($phpcsFile, $stackPtr);
                 break;
 
             default:
@@ -157,15 +182,15 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
      * - Detect classes implementing the new interfaces.
      * - Detect classes implementing the new interfaces with unsupported functions.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    private function processClassToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    private function processClassToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $interfaces = $this->findImplementedInterfaceNames($phpcsFile, $stackPtr);
+        $interfaces = PHPCSHelper::findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
         if (is_array($interfaces) === false || $interfaces === array()) {
             return;
@@ -221,13 +246,13 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
      *
      * - Detect new interfaces when used as a type hint.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    private function processFunctionToken(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    private function processFunctionToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $typeHints = $this->getTypeHintsFromFunctionDeclaration($phpcsFile, $stackPtr);
         if (empty($typeHints) || is_array($typeHints) === false) {
@@ -246,6 +271,36 @@ class PHPCompatibility_Sniffs_PHP_NewInterfacesSniff extends PHPCompatibility_Ab
                 $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
             }
         }
+    }
+
+
+    /**
+     * Processes this test for when a return type token is encountered.
+     *
+     * - Detect new interfaces when used as a return type declaration.
+     *
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processReturnTypeToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $returnTypeHint   = $this->getReturnTypeHintName($phpcsFile, $stackPtr);
+        $returnTypeHint   = ltrim($returnTypeHint, '\\');
+        $returnTypeHintLc = strtolower($returnTypeHint);
+
+        if (isset($this->newInterfaces[$returnTypeHintLc]) === false) {
+            return;
+        }
+
+        // Still here ? Then this is a return type declaration using a new interface.
+        $itemInfo = array(
+            'name'   => $returnTypeHint,
+            'nameLc' => $returnTypeHintLc,
+        );
+        $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
     }
 
 

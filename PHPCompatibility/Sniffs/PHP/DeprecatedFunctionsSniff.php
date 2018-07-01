@@ -1,20 +1,24 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff.
+ * \PHPCompatibility\Sniffs\PHP\DeprecatedFunctionsSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractRemovedFeatureSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff.
+ * \PHPCompatibility\Sniffs\PHP\DeprecatedFunctionsSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
-class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibility_AbstractRemovedFeatureSniff
+class DeprecatedFunctionsSniff extends AbstractRemovedFeatureSniff
 {
     /**
      * A list of deprecated and removed functions with their alternatives.
@@ -35,7 +39,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'call_user_func',
+            'alternative' => 'call_user_func()',
         ),
         'call_user_method_array' => array(
             '5.3' => false,
@@ -43,7 +47,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'call_user_func_array',
+            'alternative' => 'call_user_func_array()',
         ),
         'define_syslog_variables' => array(
             '5.3' => false,
@@ -65,7 +69,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'preg_match',
+            'alternative' => 'preg_match()',
         ),
         'ereg_replace' => array(
             '5.3' => false,
@@ -73,7 +77,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'preg_replace',
+            'alternative' => 'preg_replace()',
         ),
         'eregi' => array(
             '5.3' => false,
@@ -81,7 +85,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'preg_match',
+            'alternative' => 'preg_match()',
         ),
         'eregi_replace' => array(
             '5.3' => false,
@@ -89,7 +93,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'preg_replace',
+            'alternative' => 'preg_replace()',
         ),
         'imagepsbbox' => array(
             '7.0' => true,
@@ -129,11 +133,12 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             'alternative' => null,
         ),
         'mcrypt_generic_end' => array(
+            '5.3' => false,
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'mcrypt_generic_deinit',
+            'alternative' => 'mcrypt_generic_deinit()',
         ),
         'mysql_db_query' => array(
             '5.3' => false,
@@ -141,7 +146,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'mysqli_select_db and mysqli_query',
+            'alternative' => 'mysqli::select_db() and mysqli::query()',
         ),
         'mysql_escape_string' => array(
             '5.3' => false,
@@ -149,7 +154,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'mysqli_real_escape_string',
+            'alternative' => 'mysqli::real_escape_string()',
         ),
         'mysql_list_dbs' => array(
             '5.4' => false,
@@ -163,49 +168,49 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_stmt_bind_param',
+            'alternative' => 'mysqli_stmt::bind_param()',
         ),
         'mysqli_bind_result' => array(
             '5.3' => false,
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_stmt_bind_result',
+            'alternative' => 'mysqli_stmt::bind_result()',
         ),
         'mysqli_client_encoding' => array(
             '5.3' => false,
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_character_set_name',
+            'alternative' => 'mysqli::character_set_name()',
         ),
         'mysqli_fetch' => array(
             '5.3' => false,
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_stmt_fetch',
+            'alternative' => 'mysqli_stmt::fetch()',
         ),
         'mysqli_param_count' => array(
             '5.3' => false,
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_stmt_param_count',
+            'alternative' => 'mysqli_stmt_param_count()',
         ),
         'mysqli_get_metadata' => array(
             '5.3' => false,
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_stmt_result_metadata',
+            'alternative' => 'mysqli_stmt::result_metadata()',
         ),
         'mysqli_send_long_data' => array(
             '5.3' => false,
             '5.4' => true,
             '5.5' => true,
             '5.6' => true,
-            'alternative' => 'mysqli_stmt_send_long_data',
+            'alternative' => 'mysqli_stmt::send_long_data()',
         ),
         'magic_quotes_runtime' => array(
             '5.3' => false,
@@ -250,7 +255,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'stream_set_blocking',
+            'alternative' => 'stream_set_blocking()',
         ),
         'split' => array(
             '5.3' => false,
@@ -258,7 +263,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'preg_split',
+            'alternative' => 'preg_split()',
         ),
         'spliti' => array(
             '5.3' => false,
@@ -266,7 +271,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'preg_split',
+            'alternative' => 'preg_split()',
         ),
         'sql_regcase' => array(
             '5.3' => false,
@@ -300,7 +305,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.5' => false,
             '5.6' => false,
             '7.0' => true,
-            'alternative' => 'datefmt_set_timezone',
+            'alternative' => 'IntlDateFormatter::setTimeZone()',
         ),
         'mcrypt_ecb' => array(
             '5.5' => false,
@@ -330,133 +335,133 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_bind_by_name',
+            'alternative' => 'oci_bind_by_name()',
         ),
         'ocicancel' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_cancel',
+            'alternative' => 'oci_cancel()',
         ),
         'ocicloselob' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::close',
+            'alternative' => 'OCI-Lob::close()',
         ),
         'ocicollappend' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::append',
+            'alternative' => 'OCI-Collection::append()',
         ),
         'ocicollassign' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::assign',
+            'alternative' => 'OCI-Collection::assign()',
         ),
         'ocicollassignelem' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::assignElem',
+            'alternative' => 'OCI-Collection::assignElem()',
         ),
         'ocicollgetelem' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::getElem',
+            'alternative' => 'OCI-Collection::getElem()',
         ),
         'ocicollmax' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::max',
+            'alternative' => 'OCI-Collection::max()',
         ),
         'ocicollsize' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::size',
+            'alternative' => 'OCI-Collection::size()',
         ),
         'ocicolltrim' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::trim',
+            'alternative' => 'OCI-Collection::trim()',
         ),
         'ocicolumnisnull' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_is_null',
+            'alternative' => 'oci_field_is_null()',
         ),
         'ocicolumnname' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_name',
+            'alternative' => 'oci_field_name()',
         ),
         'ocicolumnprecision' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_precision',
+            'alternative' => 'oci_field_precision()',
         ),
         'ocicolumnscale' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_scale',
+            'alternative' => 'oci_field_scale()',
         ),
         'ocicolumnsize' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_size',
+            'alternative' => 'oci_field_size()',
         ),
         'ocicolumntype' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_type',
+            'alternative' => 'oci_field_type()',
         ),
         'ocicolumntyperaw' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_field_type_raw',
+            'alternative' => 'oci_field_type_raw()',
         ),
         'ocicommit' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_commit',
+            'alternative' => 'oci_commit()',
         ),
         'ocidefinebyname' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_define_by_name',
+            'alternative' => 'oci_define_by_name()',
         ),
         'ocierror' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_error',
+            'alternative' => 'oci_error()',
         ),
         'ociexecute' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_execute',
+            'alternative' => 'oci_execute()',
         ),
         'ocifetch' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_fetch',
+            'alternative' => 'oci_fetch()',
         ),
         'ocifetchinto' => array(
             '5.4' => false,
@@ -468,157 +473,157 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_fetch_all',
+            'alternative' => 'oci_fetch_all()',
         ),
         'ocifreecollection' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Collection::free',
+            'alternative' => 'OCI-Collection::free()',
         ),
         'ocifreecursor' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_free_statement',
+            'alternative' => 'oci_free_statement()',
         ),
         'ocifreedesc' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::free',
+            'alternative' => 'OCI-Lob::free()',
         ),
         'ocifreestatement' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_free_statement',
+            'alternative' => 'oci_free_statement()',
         ),
         'ociinternaldebug' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_internal_debug',
+            'alternative' => 'oci_internal_debug()',
         ),
         'ociloadlob' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::load',
+            'alternative' => 'OCI-Lob::load()',
         ),
         'ocilogoff' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_close',
+            'alternative' => 'oci_close()',
         ),
         'ocilogon' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_connect',
+            'alternative' => 'oci_connect()',
         ),
         'ocinewcollection' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_new_collection',
+            'alternative' => 'oci_new_collection()',
         ),
         'ocinewcursor' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_new_cursor',
+            'alternative' => 'oci_new_cursor()',
         ),
         'ocinewdescriptor' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_new_descriptor',
+            'alternative' => 'oci_new_descriptor()',
         ),
         'ocinlogon' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_new_connect',
+            'alternative' => 'oci_new_connect()',
         ),
         'ocinumcols' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_num_fields',
+            'alternative' => 'oci_num_fields()',
         ),
         'ociparse' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_parse',
+            'alternative' => 'oci_parse()',
         ),
         'ociplogon' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_pconnect',
+            'alternative' => 'oci_pconnect()',
         ),
         'ociresult' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_result',
+            'alternative' => 'oci_result()',
         ),
         'ocirollback' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_rollback',
+            'alternative' => 'oci_rollback()',
         ),
         'ocirowcount' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_num_rows',
+            'alternative' => 'oci_num_rows()',
         ),
         'ocisavelob' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::save',
+            'alternative' => 'OCI-Lob::save()',
         ),
         'ocisavelobfile' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::import',
+            'alternative' => 'OCI-Lob::import()',
         ),
         'ociserverversion' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_server_version',
+            'alternative' => 'oci_server_version()',
         ),
         'ocisetprefetch' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_set_prefetch',
+            'alternative' => 'oci_set_prefetch()',
         ),
         'ocistatementtype' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'oci_statement_type',
+            'alternative' => 'oci_statement_type()',
         ),
         'ociwritelobtofile' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::export',
+            'alternative' => 'OCI-Lob::export()',
         ),
         'ociwritetemporarylob' => array(
             '5.4' => false,
             '5.5' => false,
             '5.6' => false,
-            'alternative' => 'OCI-Lob::writeTemporary',
+            'alternative' => 'OCI-Lob::writeTemporary()',
         ),
         'mysqli_get_cache_stats' => array(
             '5.4' => true,
@@ -627,130 +632,162 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
 
         'mcrypt_create_iv' => array(
             '7.1' => false,
-            'alternative' => 'OpenSSL',
+            '7.2' => true,
+            'alternative' => 'random_bytes() or OpenSSL',
         ),
         'mcrypt_decrypt' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_get_algorithms_name' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_get_block_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_get_iv_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_get_key_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_get_modes_name' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_get_supported_key_sizes' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_is_block_algorithm_mode' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_is_block_algorithm' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_is_block_mode' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_enc_self_test' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_encrypt' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_generic_deinit' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_generic_init' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_generic' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_get_block_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_get_cipher_name' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_get_iv_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_get_key_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_list_algorithms' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_list_modes' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_close' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_get_algo_block_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_get_algo_key_size' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_get_supported_key_sizes' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_is_block_algorithm_mode' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_is_block_algorithm' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_is_block_mode' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_open' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mcrypt_module_self_test' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'mdecrypt_generic' => array(
             '7.1' => false,
+            '7.2' => true,
             'alternative' => 'OpenSSL',
         ),
         'jpeg2wbmp' => array(
@@ -760,6 +797,22 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
         'png2wbmp' => array(
             '7.2' => false,
             'alternative' => 'imagecreatefrompng() or imagewbmp()',
+        ),
+        'create_function' => array(
+            '7.2' => false,
+            'alternative' => 'an anonymous function',
+        ),
+        'each' => array(
+            '7.2' => false,
+            'alternative' => 'a foreach loop',
+        ),
+        'gmp_random' => array(
+            '7.2' => false,
+            'alternative' => 'gmp_random_bits() or gmp_random_range()',
+        ),
+        'read_exif_data' => array(
+            '7.2' => false,
+            'alternative' => 'exif_read_data()',
         ),
     );
 
@@ -782,13 +835,13 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedFunctionsSniff extends PHPCompatibil
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

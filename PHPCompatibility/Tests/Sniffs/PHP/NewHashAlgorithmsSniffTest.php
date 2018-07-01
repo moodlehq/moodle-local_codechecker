@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New hash algorithms sniff tests.
@@ -12,9 +15,9 @@
  * @group newHashAlgorithms
  * @group hashAlgorithms
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewHashAlgorithmsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewHashAlgorithmsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -64,6 +67,12 @@ class NewHashAlgorithmsSniffTest extends BaseSniffTest
             array('fnv132', '5.3', 23, '5.4'),
             array('fnv164', '5.3', 24, '5.4'),
             array('gost-crypto', '5.5', 26, '5.6'),
+            array('sha512/224', '7.0', 28, '7.1'),
+            array('sha512/256', '7.0', 29, '7.1'),
+            array('sha3-224', '7.0', 30, '7.1'),
+            array('sha3-256', '7.0', 31, '7.1'),
+            array('sha3-384', '7.0', 32, '7.1'),
+            array('sha3-512', '7.0', 33, '7.1'),
         );
     }
 

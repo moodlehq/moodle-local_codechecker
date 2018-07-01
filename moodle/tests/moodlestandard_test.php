@@ -280,7 +280,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            5 => array('Function ereg_replace', 'Use call_user_func instead', '@Source: PHPCompat')
+            5 => array('Function ereg_replace', 'Use call_user_func() instead', '@Source: PHPCompat')
         ));
         $this->set_warnings(array());
 

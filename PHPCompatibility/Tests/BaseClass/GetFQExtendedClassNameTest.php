@@ -5,6 +5,7 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\BaseClass;
 
 /**
  * Extended class name determination function tests
@@ -12,11 +13,11 @@
  * @group utilityGetFQExtendedClassName
  * @group utilityFunctions
  *
- * @uses    BaseClass_MethodTestFrame
+ * @uses    \PHPCompatibility\Tests\BaseClass\MethodTestFrame
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class BaseClass_GetFQExtendedClassNameTest extends BaseClass_MethodTestFrame
+class GetFQExtendedClassNameTest extends MethodTestFrame
 {
 
     /**
@@ -30,11 +31,9 @@ class BaseClass_GetFQExtendedClassNameTest extends BaseClass_MethodTestFrame
     /**
      * testGetFQExtendedClassName
      *
-     * @requires PHP 5.3
-     *
      * @dataProvider dataGetFQExtendedClassName
      *
-     * @covers PHPCompatibility_Sniff::getFQExtendedClassName
+     * @covers \PHPCompatibility\Sniff::getFQExtendedClassName
      *
      * @param string $commentString The comment which prefaces the T_CLASS token in the test file.
      * @param string $expected      The expected fully qualified class name.
@@ -43,7 +42,7 @@ class BaseClass_GetFQExtendedClassNameTest extends BaseClass_MethodTestFrame
      */
     public function testGetFQExtendedClassName($commentString, $expected)
     {
-        $stackPtr = $this->getTargetToken($commentString, T_CLASS);
+        $stackPtr = $this->getTargetToken($commentString, array(T_CLASS, T_INTERFACE));
         $result   = $this->helperClass->getFQExtendedClassName($this->phpcsFile, $stackPtr);
         $this->assertSame($expected, $result);
     }
@@ -73,6 +72,8 @@ class BaseClass_GetFQExtendedClassNameTest extends BaseClass_MethodTestFrame
             array('/* Case 13 */', '\Yet\More\Testing\DateTime'),
             array('/* Case 14 */', '\Yet\More\Testing\anotherNS\DateTime'),
             array('/* Case 15 */', '\FQNS\DateTime'),
+            array('/* Case 16 */', '\SomeInterface'),
+            array('/* Case 17 */', '\Yet\More\Testing\SomeInterface'),
         );
     }
 

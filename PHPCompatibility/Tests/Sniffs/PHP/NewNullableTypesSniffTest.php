@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New nullable type hints / return types sniff test file
@@ -12,9 +15,9 @@
  * @group nullableTypes
  * @group typeDeclarations
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewNullableTypesSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewNullableTypesSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -58,6 +61,7 @@ class NewNullableTypesSniffTest extends BaseSniffTest
             array(29),
 
             array(63),
+            array(77),
         );
     }
 
@@ -100,6 +104,8 @@ class NewNullableTypesSniffTest extends BaseSniffTest
             array(59), // Three errors of the same.
 
             array(64),
+            array(68),
+            array(74),
         );
     }
 

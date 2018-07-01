@@ -1,20 +1,24 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff.
+ * \PHPCompatibility\Sniffs\PHP\RequiredOptionalFunctionParametersSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractComplexVersionSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff.
+ * \PHPCompatibility\Sniffs\PHP\RequiredOptionalFunctionParametersSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff extends PHPCompatibility_AbstractComplexVersionSniff
+class RequiredOptionalFunctionParametersSniff extends AbstractComplexVersionSniff
 {
 
     /**
@@ -28,18 +32,32 @@ class PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff extend
      * @var array
      */
     protected $functionParameters = array(
+        'bcscale' => array(
+            0 => array(
+                'name' => 'scale',
+                '7.2'  => true,
+                '7.3'  => false,
+            ),
+        ),
+        'getenv' => array(
+            0 => array(
+                'name' => 'varname',
+                '7.0'  => true,
+                '7.1'  => false,
+            ),
+        ),
         'preg_match_all' => array(
             2 => array(
                 'name' => 'matches',
-                '5.3' => true,
-                '5.4' => false,
+                '5.3'  => true,
+                '5.4'  => false,
             ),
         ),
         'stream_socket_enable_crypto' => array(
             2 => array(
                 'name' => 'crypto_type',
-                '5.5' => true,
-                '5.6' => false,
+                '5.5'  => true,
+                '5.6'  => false,
             ),
         ),
     );
@@ -61,13 +79,13 @@ class PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff extend
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -91,13 +109,14 @@ class PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff extend
             return;
         }
 
-        $parameterCount = $this->getFunctionCallParameterCount($phpcsFile, $stackPtr);
-        if ($parameterCount === 0) {
+        $parameterCount  = $this->getFunctionCallParameterCount($phpcsFile, $stackPtr);
+        $openParenthesis = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
+
+        // If the parameter count returned > 0, we know there will be valid open parenthesis.
+        if ($parameterCount === 0 && $tokens[$openParenthesis]['code'] !== T_OPEN_PARENTHESIS) {
             return;
         }
 
-        // If the parameter count returned > 0, we know there will be valid open parenthesis.
-        $openParenthesis      = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
         $parameterOffsetFound = $parameterCount - 1;
 
         foreach ($this->functionParameters[$functionLc] as $offset => $parameterDetails) {
@@ -168,9 +187,11 @@ class PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff extend
 
         $versionArray = $this->getVersionArray($itemArray);
 
-        foreach ($versionArray as $version => $required) {
-            if ($version !== 'name' && $required === true && $this->supportsBelow($version) === true) {
-                $errorInfo['requiredVersion'] = $version;
+        if (empty($versionArray) === false) {
+            foreach ($versionArray as $version => $required) {
+                if ($required === true && $this->supportsBelow($version) === true) {
+                    $errorInfo['requiredVersion'] = $version;
+                }
             }
         }
 
@@ -188,23 +209,23 @@ class PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff extend
      */
     protected function getErrorMsgTemplate()
     {
-        return 'The "%s" parameter for function %s is missing, but was required for PHP version %s and lower';
+        return 'The "%s" parameter for function %s() is missing, but was required for PHP version %s and lower';
     }
 
 
     /**
      * Generates the error or warning for this item.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the relevant token in
-     *                                        the stack.
-     * @param array                $itemInfo  Base information about the item.
-     * @param array                $errorInfo Array with detail (version) information
-     *                                        relevant to the item.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the relevant token in
+     *                                         the stack.
+     * @param array                 $itemInfo  Base information about the item.
+     * @param array                 $errorInfo Array with detail (version) information
+     *                                         relevant to the item.
      *
      * @return void
      */
-    public function addError(PHP_CodeSniffer_File $phpcsFile, $stackPtr, array $itemInfo, array $errorInfo)
+    public function addError(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, array $itemInfo, array $errorInfo)
     {
         $error     = $this->getErrorMsgTemplate();
         $errorCode = $this->stringToErrorCode($itemInfo['name'].'_'.$errorInfo['paramName']).'Missing';

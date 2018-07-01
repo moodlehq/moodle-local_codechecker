@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NonStaticMagicMethodsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NonStaticMagicMethodsSniff.
  *
  * PHP version 5.4
  *
@@ -10,8 +10,12 @@
  * @copyright 2012 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_NonStaticMagicMethodsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NonStaticMagicMethodsSniff.
  *
  * Verifies the use of the correct visibility and static properties of magic methods.
  *
@@ -20,7 +24,7 @@
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2012 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NonStaticMagicMethodsSniff extends PHPCompatibility_Sniff
+class NonStaticMagicMethodsSniff extends Sniff
 {
 
     /**
@@ -81,11 +85,16 @@ class PHPCompatibility_Sniffs_PHP_NonStaticMagicMethodsSniff extends PHPCompatib
         $targets = array(
             T_CLASS,
             T_INTERFACE,
-            T_TRAIT,
         );
 
+        if (defined('T_TRAIT')) {
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_traitFound
+            $targets[] = T_TRAIT;
+        }
+
         if (defined('T_ANON_CLASS')) {
-            $targets[] = constant('T_ANON_CLASS');
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_anon_classFound
+            $targets[] = T_ANON_CLASS;
         }
 
         return $targets;
@@ -96,13 +105,13 @@ class PHPCompatibility_Sniffs_PHP_NonStaticMagicMethodsSniff extends PHPCompatib
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         // Should be removed, the requirement was previously also there, 5.3 just started throwing a warning about it.
         if ($this->supportsAbove('5.3') === false) {
@@ -126,10 +135,11 @@ class PHPCompatibility_Sniffs_PHP_NonStaticMagicMethodsSniff extends PHPCompatib
              * If no body of function (e.g. for interfaces), there is
              * no closing curly brace; advance the pointer differently.
              */
-            $scopeCloser = isset($tokens[$functionToken]['scope_closer'])
-                ? $tokens[$functionToken]['scope_closer']
-                : $functionToken + 1;
-
+            if (isset($tokens[$functionToken]['scope_closer'])) {
+                $scopeCloser = $tokens[$functionToken]['scope_closer'];
+            } else {
+                $scopeCloser = ($functionToken + 1);
+            }
 
             $methodName   = $phpcsFile->getDeclarationName($functionToken);
             $methodNameLc = strtolower($methodName);

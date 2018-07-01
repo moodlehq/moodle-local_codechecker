@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Constant arrays using the const keyword in PHP 5.6 sniff test file
@@ -12,9 +15,9 @@
  * @group constantArraysUsingConst
  * @group constants
  *
- * @covers PHPCompatibility_Sniffs_PHP_ConstantArraysUsingConstSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\ConstantArraysUsingConstSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -53,6 +56,9 @@ class ConstantArraysUsingConstSniffTest extends BaseSniffTest
             array(12),
             array(19),
             array(25),
+            array(37),
+            array(39),
+            array(41),
         );
     }
 
@@ -84,6 +90,10 @@ class ConstantArraysUsingConstSniffTest extends BaseSniffTest
         return array(
             array(31),
             array(33),
+            array(36),
+            array(38),
+            array(40),
+            array(42),
         );
     }
 

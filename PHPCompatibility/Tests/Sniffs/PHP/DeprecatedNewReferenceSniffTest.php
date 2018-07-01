@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Deprecated new reference sniff tests
@@ -12,9 +15,9 @@
  * @group deprecatedNewReference
  * @group references
  *
- * @covers PHPCompatibility_Sniffs_PHP_DeprecatedNewReferenceSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\DeprecatedNewReferenceSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -37,7 +40,7 @@ class DeprecatedNewReferenceSniffTest extends BaseSniffTest
         $this->assertWarning($file, $line, 'Assigning the return value of new by reference is deprecated in PHP 5.3');
 
         $file = $this->sniffFile(self::TEST_FILE, '7.0');
-        $this->assertError($file, $line, 'Assigning the return value of new by reference is deprecated in PHP 5.3 and forbidden in PHP 7.0');
+        $this->assertError($file, $line, 'Assigning the return value of new by reference is deprecated in PHP 5.3 and has been removed in PHP 7.0');
 
     }
 

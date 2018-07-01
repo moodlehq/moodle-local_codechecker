@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New Functions Sniff tests
@@ -12,9 +15,9 @@
  * @group newFunctions
  * @group functions
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewFunctionsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewFunctionsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -372,10 +375,130 @@ class NewFunctionsSniffTest extends BaseSniffTest
             array('session_create_id', '7.0', array(319), '7.1'),
             array('session_gc', '7.0', array(320), '7.1'),
 
-            array('socket_addrinfo_lookup', '7.1', array(322), '7.2'),
-            array('socket_addrinfo_connect', '7.1', array(323), '7.2'),
-            array('socket_addrinfo_bind', '7.1', array(324), '7.2'),
-            array('socket_addrinfo_explain', '7.1', array(325), '7.2'),
+            array('oci_register_taf_callback', '7.1.6', array(322), '7.2', '7.1'),
+            array('oci_unregister_taf_callback', '7.1.8', array(323), '7.2', '7.1'),
+
+            array('ldap_exop', '7.1', array(325), '7.2'),
+            array('ldap_exop_passwd', '7.1', array(326), '7.2'),
+            array('ldap_exop_whoami', '7.1', array(327), '7.2'),
+            array('ldap_parse_exop', '7.1', array(328), '7.2'),
+            array('socket_addrinfo_lookup', '7.1', array(329), '7.2'),
+            array('socket_addrinfo_connect', '7.1', array(330), '7.2'),
+            array('socket_addrinfo_bind', '7.1', array(331), '7.2'),
+            array('socket_addrinfo_explain', '7.1', array(332), '7.2'),
+            array('stream_isatty', '7.1', array(333), '7.2'),
+            array('sapi_windows_vt100_support', '7.1', array(334), '7.2'),
+            array('ftp_append', '7.1', array(335), '7.2'),
+            array('imagebmp', '7.1', array(336), '7.2'),
+            array('imagecreatefrombmp', '7.1', array(337), '7.2'),
+            array('imagegetclip', '7.1', array(338), '7.2'),
+            array('imageopenpolygon', '7.1', array(339), '7.2'),
+            array('imageresolution', '7.1', array(340), '7.2'),
+            array('imagesetclip', '7.1', array(341), '7.2'),
+            array('hash_hmac_algos', '7.1', array(342), '7.2'),
+            array('mb_chr', '7.1', array(343), '7.2'),
+            array('mb_ord', '7.1', array(344), '7.2'),
+            array('mb_scrub', '7.1', array(345), '7.2'),
+            array('sodium_add', '7.1', array(346), '7.2'),
+            array('sodium_base642bin', '7.1', array(421), '7.2'),
+            array('sodium_bin2base64', '7.1', array(422), '7.2'),
+            array('sodium_bin2hex', '7.1', array(347), '7.2'),
+            array('sodium_compare', '7.1', array(348), '7.2'),
+            array('sodium_crypto_aead_aes256gcm_decrypt', '7.1', array(349), '7.2'),
+            array('sodium_crypto_aead_aes256gcm_encrypt', '7.1', array(350), '7.2'),
+            array('sodium_crypto_aead_aes256gcm_is_available', '7.1', array(351), '7.2'),
+            array('sodium_crypto_aead_aes256gcm_keygen', '7.1', array(352), '7.2'),
+            array('sodium_crypto_aead_chacha20poly1305_decrypt', '7.1', array(353), '7.2'),
+            array('sodium_crypto_aead_chacha20poly1305_encrypt', '7.1', array(354), '7.2'),
+            array('sodium_crypto_aead_chacha20poly1305_ietf_decrypt', '7.1', array(355), '7.2'),
+            array('sodium_crypto_aead_chacha20poly1305_ietf_encrypt', '7.1', array(356), '7.2'),
+            array('sodium_crypto_aead_chacha20poly1305_ietf_keygen', '7.1', array(357), '7.2'),
+            array('sodium_crypto_aead_chacha20poly1305_keygen', '7.1', array(358), '7.2'),
+            array('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt', '7.1', array(423), '7.2'),
+            array('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt', '7.1', array(424), '7.2'),
+            array('sodium_crypto_aead_xchacha20poly1305_ietf_keygen', '7.1', array(425), '7.2'),
+            array('sodium_crypto_auth_keygen', '7.1', array(359), '7.2'),
+            array('sodium_crypto_auth_verify', '7.1', array(360), '7.2'),
+            array('sodium_crypto_auth', '7.1', array(361), '7.2'),
+            array('sodium_crypto_box_keypair_from_secretkey_and_publickey', '7.1', array(362), '7.2'),
+            array('sodium_crypto_box_keypair', '7.1', array(363), '7.2'),
+            array('sodium_crypto_box_open', '7.1', array(364), '7.2'),
+            array('sodium_crypto_box_publickey_from_secretkey', '7.1', array(365), '7.2'),
+            array('sodium_crypto_box_publickey', '7.1', array(366), '7.2'),
+            array('sodium_crypto_box_seal_open', '7.1', array(367), '7.2'),
+            array('sodium_crypto_box_seal', '7.1', array(368), '7.2'),
+            array('sodium_crypto_box_secretkey', '7.1', array(369), '7.2'),
+            array('sodium_crypto_box_seed_keypair', '7.1', array(370), '7.2'),
+            array('sodium_crypto_box', '7.1', array(371), '7.2'),
+            array('sodium_crypto_generichash_final', '7.1', array(372), '7.2'),
+            array('sodium_crypto_generichash_init', '7.1', array(373), '7.2'),
+            array('sodium_crypto_generichash_keygen', '7.1', array(374), '7.2'),
+            array('sodium_crypto_generichash_update', '7.1', array(375), '7.2'),
+            array('sodium_crypto_generichash', '7.1', array(376), '7.2'),
+            array('sodium_crypto_kdf_derive_from_key', '7.1', array(377), '7.2'),
+            array('sodium_crypto_kdf_keygen', '7.1', array(378), '7.2'),
+            array('sodium_crypto_kx_client_session_keys', '7.1', array(379), '7.2'),
+            array('sodium_crypto_kx_keypair', '7.1', array(380), '7.2'),
+            array('sodium_crypto_kx_publickey', '7.1', array(381), '7.2'),
+            array('sodium_crypto_kx_secretkey', '7.1', array(382), '7.2'),
+            array('sodium_crypto_kx_seed_keypair', '7.1', array(383), '7.2'),
+            array('sodium_crypto_kx_server_session_keys', '7.1', array(384), '7.2'),
+            array('sodium_crypto_pwhash_scryptsalsa208sha256_str_verify', '7.1', array(385), '7.2'),
+            array('sodium_crypto_pwhash_scryptsalsa208sha256_str', '7.1', array(386), '7.2'),
+            array('sodium_crypto_pwhash_scryptsalsa208sha256', '7.1', array(387), '7.2'),
+            array('sodium_crypto_pwhash_str_needs_rehash', '7.1', array(426), '7.2'),
+            array('sodium_crypto_pwhash_str_verify', '7.1', array(388), '7.2'),
+            array('sodium_crypto_pwhash_str', '7.1', array(389), '7.2'),
+            array('sodium_crypto_pwhash', '7.1', array(390), '7.2'),
+            array('sodium_crypto_scalarmult_base', '7.1', array(391), '7.2'),
+            array('sodium_crypto_scalarmult', '7.1', array(392), '7.2'),
+            array('sodium_crypto_secretbox_keygen', '7.1', array(393), '7.2'),
+            array('sodium_crypto_secretbox_open', '7.1', array(394), '7.2'),
+            array('sodium_crypto_secretbox', '7.1', array(395), '7.2'),
+            array('sodium_crypto_secretstream_xchacha20poly1305_init_pull', '7.1', array(427), '7.2'),
+            array('sodium_crypto_secretstream_xchacha20poly1305_init_push', '7.1', array(428), '7.2'),
+            array('sodium_crypto_secretstream_xchacha20poly1305_keygen', '7.1', array(429), '7.2'),
+            array('sodium_crypto_secretstream_xchacha20poly1305_pull', '7.1', array(430), '7.2'),
+            array('sodium_crypto_secretstream_xchacha20poly1305_push', '7.1', array(431), '7.2'),
+            array('sodium_crypto_secretstream_xchacha20poly1305_rekey', '7.1', array(432), '7.2'),
+            array('sodium_crypto_shorthash_keygen', '7.1', array(396), '7.2'),
+            array('sodium_crypto_shorthash', '7.1', array(397), '7.2'),
+            array('sodium_crypto_sign_detached', '7.1', array(398), '7.2'),
+            array('sodium_crypto_sign_ed25519_pk_to_curve25519', '7.1', array(399), '7.2'),
+            array('sodium_crypto_sign_ed25519_sk_to_curve25519', '7.1', array(400), '7.2'),
+            array('sodium_crypto_sign_keypair_from_secretkey_and_publickey', '7.1', array(401), '7.2'),
+            array('sodium_crypto_sign_keypair', '7.1', array(402), '7.2'),
+            array('sodium_crypto_sign_open', '7.1', array(403), '7.2'),
+            array('sodium_crypto_sign_publickey_from_secretkey', '7.1', array(404), '7.2'),
+            array('sodium_crypto_sign_publickey', '7.1', array(405), '7.2'),
+            array('sodium_crypto_sign_secretkey', '7.1', array(406), '7.2'),
+            array('sodium_crypto_sign_seed_keypair', '7.1', array(407), '7.2'),
+            array('sodium_crypto_sign_verify_detached', '7.1', array(408), '7.2'),
+            array('sodium_crypto_sign', '7.1', array(409), '7.2'),
+            array('sodium_crypto_stream_keygen', '7.1', array(410), '7.2'),
+            array('sodium_crypto_stream_xor', '7.1', array(411), '7.2'),
+            array('sodium_crypto_stream', '7.1', array(412), '7.2'),
+            array('sodium_hex2bin', '7.1', array(413), '7.2'),
+            array('sodium_increment', '7.1', array(414), '7.2'),
+            array('sodium_memcmp', '7.1', array(415), '7.2'),
+            array('sodium_memzero', '7.1', array(416), '7.2'),
+            array('sodium_pad', '7.1', array(417), '7.2'),
+            array('sodium_unpad', '7.1', array(418), '7.2'),
+            array('spl_object_id', '7.1', array(419), '7.2'),
+
+            array('pg_lo_truncate', '5.5', array(420), '5.6'),
+
+            array('is_countable', '7.2', array(433), '7.3'),
+
+            array('iterator_count', '5.0', array(434), '5.1'),
+            array('iterator_to_array', '5.0', array(435), '5.1'),
+            array('spl_autoload_call', '5.0', array(436), '5.1'),
+            array('spl_autoload_extensions', '5.0', array(437), '5.1'),
+            array('spl_autoload_functions', '5.0', array(438), '5.1'),
+            array('spl_autoload_register', '5.0', array(439), '5.1'),
+            array('spl_autoload_unregister', '5.0', array(440), '5.1'),
+            array('spl_autoload', '5.0', array(441), '5.1'),
+            array('hash_hmac', '5.1.1', array(442), '5.2', '5.1'),
         );
     }
 
@@ -406,18 +529,12 @@ class NewFunctionsSniffTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        $testCases = array(
+        return array(
             array(4),
             array(5),
+            array(6),
             array(7),
         );
-
-        // Add an additional testcase which will only be 'no violation' if namespaces are recognized.
-        if (version_compare(phpversion(), '5.3', '>=')) {
-            $testCases[] = array(6);
-        }
-
-        return $testCases;
     }
 
 

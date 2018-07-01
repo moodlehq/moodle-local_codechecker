@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Deprecated ini directives sniff tests
@@ -12,9 +15,9 @@
  * @group deprecatedIniDirectives
  * @group iniDirectives
  *
- * @covers PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\DeprecatedIniDirectivesSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -90,6 +93,10 @@ class DeprecatedIniDirectivesSniffTest extends BaseSniffTest
             array('safe_mode_protected_env_vars', '5.3', '5.4', array(54, 55), '5.2'),
 
             array('always_populate_raw_post_data', '5.6', '7.0', array(80, 81), '5.5'),
+
+            array('mcrypt.algorithms_dir', '7.1', '7.2', array(135, 136), '7.0'),
+            array('mcrypt.modes_dir', '7.1', '7.2', array(138, 139), '7.0'),
+
         );
     }
 
@@ -142,10 +149,8 @@ class DeprecatedIniDirectivesSniffTest extends BaseSniffTest
             array('mbstring.http_output', '5.6', array(74, 75), '5.5'),
             array('mbstring.internal_encoding', '5.6', array(77, 78), '5.5'),
 
-            array('mcrypt.algorithms_dir', '7.1', array(135, 136), '7.0'),
-            array('mcrypt.modes_dir', '7.1', array(138, 139), '7.0'),
-
             array('mbstring.func_overload', '7.2', array(166, 167), '7.1'),
+            array('track_errors', '7.2', array(172, 173), '7.1'),
         );
     }
 
@@ -255,6 +260,9 @@ class DeprecatedIniDirectivesSniffTest extends BaseSniffTest
             array('session.entropy_length', '7.1', array(144, 145), '7.0'),
             array('session.hash_function', '7.1', array(147, 148), '7.0'),
             array('session.hash_bits_per_character', '7.1', array(150, 151), '7.0'),
+
+            array('sql.safe_mode', '7.2', array(169, 170), '7.1'),
+            array('opcache.fast_shutdown', '7.2', array(175, 176), '7.1'),
         );
     }
 

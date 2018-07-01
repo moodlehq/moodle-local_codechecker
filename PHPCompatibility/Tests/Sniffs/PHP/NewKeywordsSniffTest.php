@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New keywords sniff tests
@@ -12,9 +15,9 @@
  * @group newKeywords
  * @group reservedKeywords
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewKeywordsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewKeywordsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -47,7 +50,6 @@ class NewKeywordsSniffTest extends BaseSniffTest
         $this->assertError($file, 15, '"insteadof" keyword (for traits) is not present in PHP version 5.3 or earlier');
         $this->assertError($file, 16, '"insteadof" keyword (for traits) is not present in PHP version 5.3 or earlier');
 
-
         $file = $this->sniffFile(self::TEST_FILE, '5.4');
         $this->assertNoViolation($file, 15);
         $this->assertNoViolation($file, 16);
@@ -65,6 +67,17 @@ class NewKeywordsSniffTest extends BaseSniffTest
 
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertNoViolation($file, 20);
+    }
+
+    /**
+     * Test against false positives for the namespace keyword.
+     *
+     * @return void
+     */
+    public function testNamespaceNoFalsePositives()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.2');
+        $this->assertNoViolation($file, 117);
     }
 
     /**
@@ -90,9 +103,11 @@ class NewKeywordsSniffTest extends BaseSniffTest
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertError($file, 24, '"trait" keyword is not present in PHP version 5.3 or earlier');
+        $this->assertError($file, 105, '"trait" keyword is not present in PHP version 5.3 or earlier');
 
         $file = $this->sniffFile(self::TEST_FILE, '5.4');
         $this->assertNoViolation($file, 24);
+        $this->assertNoViolation($file, 105);
     }
 
     /**
@@ -157,6 +172,17 @@ class NewKeywordsSniffTest extends BaseSniffTest
     }
 
     /**
+     * Test against false positives for the yield keyword.
+     *
+     * @return void
+     */
+    public function testYieldNoFalsePositives()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.4');
+        $this->assertNoViolation($file, 120);
+    }
+
+    /**
      * Test yield from
      *
      * @dataProvider dataYieldFrom
@@ -198,9 +224,11 @@ class NewKeywordsSniffTest extends BaseSniffTest
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.4');
         $this->assertError($file, 9, '"finally" keyword (in exception handling) is not present in PHP version 5.4 or earlier');
+        $this->assertError($file, 108, '"finally" keyword (in exception handling) is not present in PHP version 5.4 or earlier');
 
         $file = $this->sniffFile(self::TEST_FILE, '5.5');
         $this->assertNoViolation($file, 9);
+        $this->assertNoViolation($file, 108);
     }
 
     /**
@@ -303,23 +331,57 @@ class NewKeywordsSniffTest extends BaseSniffTest
     }
 
     /**
-     * testHaltCompiler
+     * testNowdoc
      *
-     * @requires PHP 5.3
+     * @return void
+     */
+    public function testNowdoc()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.2');
+        $this->assertError($file, 89, 'nowdoc functionality is not present in PHP version 5.2 or earlier');
+        $this->assertError($file, 93, 'nowdoc functionality is not present in PHP version 5.2 or earlier');
+
+        $file = $this->sniffFile(self::TEST_FILE, '5.3');
+        $this->assertNoViolation($file, 89);
+        $this->assertNoViolation($file, 93);
+    }
+
+    /**
+     * testQuotedHeredoc
+     *
+     * @return void
+     */
+    public function testQuotedHeredoc()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.2');
+        $this->assertError($file, 96, '(Double) quoted Heredoc identifier is not present in PHP version 5.2 or earlier');
+
+        $file = $this->sniffFile(self::TEST_FILE, '5.3');
+        $this->assertNoViolation($file, 96);
+    }
+
+    /**
+     * testQuotedHeredocNoFalsePositives
+     *
+     * @return void
+     */
+    public function testQuotedHeredocNoFalsePositives()
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '5.2');
+        $this->assertNoViolation($file, 82);
+    }
+
+    /**
+     * testHaltCompiler
      *
      * @return void
      */
     public function testHaltCompiler()
     {
-        if (defined('HHVM_VERSION') === true) {
-            $this->markTestSkipped('HHVM: investigation needed. It might be that the compiler *is* halted, but the tokenizer is not ?');
-            return;
-        }
-
-        if (version_compare(phpversion(), '5.3', '=')) {
+        if (PHP_MAJOR_VERSION === 5 && PHP_MINOR_VERSION === 3) {
             // PHP 5.3 actually shows the warning.
             $file = $this->sniffFile(self::TEST_FILE, '5.0');
-            $this->assertError($file, 82, '"__halt_compiler" keyword is not present in PHP version 5.0 or earlier');
+            $this->assertError($file, 122, '"__halt_compiler" keyword is not present in PHP version 5.0 or earlier');
         } else {
             /*
              * Usage of `__halt_compiler()` cannot be tested on its own token as the compiler
@@ -328,7 +390,7 @@ class NewKeywordsSniffTest extends BaseSniffTest
              * not be reported.
              */
             $file = $this->sniffFile(self::TEST_FILE, '5.2');
-            $this->assertNoViolation($file, 85);
+            $this->assertNoViolation($file, 125);
         }
     }
 

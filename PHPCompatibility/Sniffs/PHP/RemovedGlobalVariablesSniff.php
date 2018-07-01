@@ -1,14 +1,19 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff.
+ * \PHPCompatibility\Sniffs\PHP\RemovedGlobalVariablesSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractRemovedFeatureSniff;
+use PHPCompatibility\PHPCSHelper;
+
 /**
- * PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff.
+ * \PHPCompatibility\Sniffs\PHP\RemovedGlobalVariablesSniff.
  *
  * Discourages the use of removed global variables. Suggests alternative extensions if available
  *
@@ -16,7 +21,7 @@
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
-class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompatibility_AbstractRemovedFeatureSniff
+class RemovedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
 {
 
     /**
@@ -69,6 +74,11 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
             '7.0' => true,
             'alternative' => 'php://input',
         ),
+
+        'php_errormsg' => array(
+            '7.2' => false,
+            'alternative' => 'error_get_last()',
+        ),
     );
 
 
@@ -87,13 +97,13 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         if ($this->supportsAbove('5.3') === false) {
             return;
@@ -113,10 +123,17 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
 
         // Check for static usage of class properties shadowing the removed global variables.
         if ($this->inClassScope($phpcsFile, $stackPtr, false) === true) {
-            $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
+            $prevToken = $phpcsFile->findPrevious(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
             if ($prevToken !== false && $tokens[$prevToken]['code'] === T_DOUBLE_COLON) {
                 return;
             }
+        }
+
+        // Do some additional checks for the $php_errormsg variable.
+        if ($varName === 'php_errormsg'
+            && $this->isTargetPHPErrormsgVar($phpcsFile, $stackPtr, $tokens) === false
+        ) {
+            return;
         }
 
         // Still here, so throw an error/warning.
@@ -149,6 +166,139 @@ class PHPCompatibility_Sniffs_PHP_RemovedGlobalVariablesSniff extends PHPCompati
     protected function getErrorMsgTemplate()
     {
         return "Global variable '\$%s' is ";
+    }
+
+
+    /**
+     * Filter the error message before it's passed to PHPCS.
+     *
+     * @param string $error     The error message which was created.
+     * @param array  $itemInfo  Base information about the item this error message applied to.
+     * @param array  $errorInfo Detail information about an item this error message applied to.
+     *
+     * @return string
+     */
+    protected function filterErrorMsg($error, array $itemInfo, array $errorInfo)
+    {
+        if ($itemInfo['name'] === 'php_errormsg') {
+            $error = str_replace('Global', 'The', $error);
+        }
+        return $error;
+    }
+
+    /**
+     * Run some additional checks for the `$php_errormsg` variable.
+     *
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
+     * @param array                 $tokens    Token array of the current file.
+     *
+     * @return bool
+     */
+    private function isTargetPHPErrormsgVar(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, array $tokens)
+    {
+        $scopeStart = 0;
+
+        /*
+         * If the variable is detected within the scope of a function/closure, limit the checking.
+         */
+        $function = $phpcsFile->getCondition($stackPtr, T_CLOSURE);
+        if ($function === false) {
+            $function = $phpcsFile->getCondition($stackPtr, T_FUNCTION);
+        }
+
+        // It could also be a function param, which is not in the function scope.
+        if ($function === false && isset($tokens[$stackPtr]['nested_parenthesis']) === true) {
+            $nestedParentheses = $tokens[$stackPtr]['nested_parenthesis'];
+            $parenthesisCloser = end($nestedParentheses);
+            if (isset($tokens[$parenthesisCloser]['parenthesis_owner'])
+                && ($tokens[$tokens[$parenthesisCloser]['parenthesis_owner']]['code'] === T_FUNCTION
+                    || $tokens[$tokens[$parenthesisCloser]['parenthesis_owner']]['code'] === T_CLOSURE)
+            ) {
+                $function = $tokens[$parenthesisCloser]['parenthesis_owner'];
+            }
+        }
+
+        if ($function !== false) {
+            $scopeStart = $tokens[$function]['scope_opener'];
+        }
+
+        /*
+         * Now, let's do some additional checks.
+         */
+        $nextNonEmpty = $phpcsFile->findNext(
+            \PHP_CodeSniffer_Tokens::$emptyTokens,
+            ($stackPtr + 1),
+            null,
+            true
+        );
+
+        // Is the variable being used as an array ?
+        if ($nextNonEmpty !== false && $tokens[$nextNonEmpty]['code'] === T_OPEN_SQUARE_BRACKET) {
+            // The PHP native variable is a string, so this is probably not it
+            // (except for array access to string, but why would you in this case ?).
+            return false;
+        }
+
+        // Is this a variable assignment ?
+        if ($nextNonEmpty !== false
+            && in_array($tokens[$nextNonEmpty]['code'], \PHP_CodeSniffer_Tokens::$assignmentTokens, true)
+        ) {
+            return false;
+        }
+
+        // Is this a function param shadowing the PHP native one ?
+        if ($function !== false) {
+            $parameters = PHPCSHelper::getMethodParameters($phpcsFile, $function);
+            if (is_array($parameters) === true && empty($parameters) === false) {
+                foreach ($parameters as $param) {
+                    if ($param['name'] === '$php_errormsg') {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        $skipPast = array(
+            'T_CLASS'      => true,
+            'T_ANON_CLASS' => true,
+            'T_INTERFACE'  => true,
+            'T_TRAIT'      => true,
+            'T_FUNCTION'   => true,
+            'T_CLOSURE'    => true,
+        );
+
+        // Walk back and see if there is an assignment to the variable within the same scope.
+        for ($i = ($stackPtr - 1); $i >= $scopeStart; $i--) {
+            if ($tokens[$i]['code'] === T_CLOSE_CURLY_BRACKET
+                && isset($tokens[$i]['scope_condition'])
+                && isset($skipPast[$tokens[$tokens[$i]['scope_condition']]['type']])
+            ) {
+                // Skip past functions, classes etc.
+                $i = $tokens[$i]['scope_condition'];
+                continue;
+            }
+
+            if ($tokens[$i]['code'] !== T_VARIABLE || $tokens[$i]['content'] !== '$php_errormsg') {
+                continue;
+            }
+
+            $nextNonEmpty = $phpcsFile->findNext(
+                \PHP_CodeSniffer_Tokens::$emptyTokens,
+                ($i + 1),
+                null,
+                true
+            );
+
+            if ($nextNonEmpty !== false
+                && in_array($tokens[$nextNonEmpty]['code'], \PHP_CodeSniffer_Tokens::$assignmentTokens, true)
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 

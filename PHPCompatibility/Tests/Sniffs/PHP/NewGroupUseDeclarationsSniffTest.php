@@ -5,15 +5,18 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New use group declaration sniff tests
  *
  * @group newGroupUseDeclarations
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewGroupUseDeclarationsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewGroupUseDeclarationsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Wim Godden <wim@cu.be>
  */
@@ -25,8 +28,6 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
 
     /**
      * testGroupUseDeclaration
-     *
-     * @requires PHP 5.3
      *
      * @dataProvider dataGroupUseDeclaration
      *
@@ -53,6 +54,77 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
             array(23),
             array(24),
             array(25),
+            array(26),
+            array(33),
+            array(34),
+            array(35),
+            array(36),
+        );
+    }
+
+
+    /**
+     * testGroupUseTrailingComma
+     *
+     * @dataProvider dataGroupUseTrailingComma
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testGroupUseTrailingComma($line)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '7.1');
+        $this->assertError($file, $line, 'Trailing comma\'s are not allowed in group use statements in PHP 7.1 or earlier');
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testGroupUseTrailingComma()
+     *
+     * @return array
+     */
+    public function dataGroupUseTrailingComma()
+    {
+        return array(
+            array(33),
+            array(34),
+            array(35),
+            array(39),
+        );
+    }
+
+
+    /**
+     * testNoFalsePositivesTrailingComma
+     *
+     * @dataProvider dataNoFalsePositivesTrailingComma
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testNoFalsePositivesTrailingComma($line)
+    {
+        $file = $this->sniffFile(self::TEST_FILE, '7.1');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositivesTrailingComma()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositivesTrailingComma()
+    {
+        return array(
+            array(23),
+            array(24),
+            array(25),
+            array(29),
         );
     }
 
@@ -103,7 +175,7 @@ class NewGroupUseDeclarationsSniffTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        $file = $this->sniffFile(self::TEST_FILE, '7.0');
+        $file = $this->sniffFile(self::TEST_FILE, '7.2');
         $this->assertNoViolation($file);
     }
 

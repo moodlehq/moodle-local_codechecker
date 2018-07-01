@@ -5,6 +5,10 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\PHPCSHelper;
 
 /**
  * New initialize with heredoc in PHP 5.3 sniff test file
@@ -13,9 +17,9 @@
  * @group constants
  * @group variables
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewHeredocInitializeSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewHeredocInitializeSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -39,7 +43,7 @@ class NewHeredocInitializeSniffTest extends BaseSniffTest
     public static function setUpBeforeClass()
     {
         // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are not recognized.
-        if (version_compare(PHP_CodeSniffer::VERSION, '2.4.0', '<') && version_compare(phpversion(), '5.4', '<')) {
+        if (version_compare(PHPCSHelper::getVersion(), '2.4.0', '<') && version_compare(PHP_VERSION_ID, '50400', '<')) {
             self::$recognizesTraits = false;
         }
 
@@ -78,21 +82,15 @@ class NewHeredocInitializeSniffTest extends BaseSniffTest
      */
     public function dataHeredocInitialize()
     {
-        $data = array(
+        return array(
             array(5, 'static variables'),
             array(13, 'class constants'),
+            array(19, 'class properties'),
             array(27, 'class constants'),
             array(31, 'class properties'),
             array(39, 'class constants'),
             array(47, 'class properties', true),
         );
-
-        // Quoted heredoc identifier is not recognized in PHP 5.2.
-        if (version_compare(phpversion(), '5.3', '>=')) {
-            $data[] = array(19, 'class properties');
-        }
-
-        return $data;
     }
 
 

@@ -5,15 +5,18 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New language constructs sniff tests
  *
  * @group newLanguageConstructs
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewLanguageConstructsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -23,8 +26,6 @@ class NewLanguageConstructsSniffTest extends BaseSniffTest
 
     /**
      * testNamespaceSeparator
-     *
-     * @requires PHP 5.3
      *
      * @return void
      */
@@ -100,10 +101,10 @@ class NewLanguageConstructsSniffTest extends BaseSniffTest
      */
     public function testCoalesceEquals()
     {
-        $file = $this->sniffFile(self::TEST_FILE, '7.1');
-        $this->assertError($file, 10, 'null coalesce equal operator (??=) is not present in PHP version 7.1 or earlier');
-
         $file = $this->sniffFile(self::TEST_FILE, '7.2');
+        $this->assertError($file, 10, 'null coalesce equal operator (??=) is not present in PHP version 7.2 or earlier');
+
+        $file = $this->sniffFile(self::TEST_FILE, '7.3');
         $this->assertNoViolation($file, 10);
     }
 

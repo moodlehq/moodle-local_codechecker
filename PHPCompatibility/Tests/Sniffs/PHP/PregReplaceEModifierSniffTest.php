@@ -5,16 +5,19 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * preg_replace() /e modifier sniff tests
  *
  * @group pregReplaceEModifier
- * @group regexEModifier
+ * @group regexModifiers
  *
- * @covers PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\PregReplaceEModifierSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */

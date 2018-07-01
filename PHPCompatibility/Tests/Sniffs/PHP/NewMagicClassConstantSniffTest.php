@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New magic ::class constant sniff test file.
@@ -12,9 +15,9 @@
  * @group newMagicClassConstant
  * @group constants
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewMagicClassConstantSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewMagicClassConstantSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -93,12 +96,6 @@ class NewMagicClassConstantSniffTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        // Namespace detection does not work on PHP 5.2.
-        if (version_compare(phpversion(), '5.3.0', '>=') === false) {
-            $this->markTestSkipped();
-            return;
-        }
-
         $file = $this->sniffFile(self::TEST_FILE, '5.5');
         $this->assertNoViolation($file);
     }

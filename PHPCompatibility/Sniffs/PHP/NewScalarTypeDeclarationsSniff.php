@@ -1,24 +1,29 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewScalarTypeDeclarationsSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractNewFeatureSniff;
+use PHPCompatibility\PHPCSHelper;
+
 /**
- * PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewScalarTypeDeclarationsSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
-class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPCompatibility_AbstractNewFeatureSniff
+class NewScalarTypeDeclarationsSniff extends AbstractNewFeatureSniff
 {
 
     /**
-     * A list of new types
+     * A list of new types.
      *
      * The array lists : version number with false (not present) or true (present).
      * If's sufficient to list the first version where the keyword appears.
@@ -29,6 +34,14 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
         'array' => array(
             '5.0' => false,
             '5.1' => true,
+        ),
+        'self' => array(
+            '5.1' => false,
+            '5.2' => true,
+        ),
+        'parent' => array(
+            '5.1' => false,
+            '5.2' => true,
         ),
         'callable' => array(
             '5.3' => false,
@@ -54,6 +67,10 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
             '7.0' => false,
             '7.1' => true,
         ),
+        'object' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
     );
 
 
@@ -65,7 +82,6 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
      * @var array(string => string)
      */
     protected $invalidTypes = array(
-        'parent'  => 'self',
         'static'  => 'self',
         'boolean' => 'bool',
         'integer' => 'int',
@@ -89,16 +105,16 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         // Get all parameters from method signature.
-        $paramNames = $this->getMethodParameters($phpcsFile, $stackPtr);
+        $paramNames = PHPCSHelper::getMethodParameters($phpcsFile, $stackPtr);
         if (empty($paramNames)) {
             return;
         }
@@ -111,38 +127,43 @@ class PHPCompatibility_Sniffs_PHP_NewScalarTypeDeclarationsSniff extends PHPComp
             }
 
             // Strip off potential nullable indication.
-            $type_hint = ltrim($param['type_hint'], '?');
+            $typeHint = ltrim($param['type_hint'], '?');
 
             if ($supportsPHP4 === true) {
                 $phpcsFile->addError(
-                    'Type hints were not present in PHP 4.4 or earlier.',
+                    'Type declarations were not present in PHP 4.4 or earlier.',
                     $param['token'],
                     'TypeHintFound'
                 );
 
-            } elseif (isset($this->newTypes[$type_hint])) {
+            } elseif (isset($this->newTypes[$typeHint])) {
                 $itemInfo = array(
-                    'name'   => $type_hint,
+                    'name' => $typeHint,
                 );
                 $this->handleFeature($phpcsFile, $param['token'], $itemInfo);
 
-            } elseif (isset($this->invalidTypes[$type_hint])) {
+                // As of PHP 7.0, using `self` or `parent` outside class scope throws a fatal error.
+                // Only throw this error for PHP 5.2+ as before that the "type hint not supported" error
+                // will be thrown.
+                if (($typeHint === 'self' || $typeHint === 'parent')
+                    && $this->inClassScope($phpcsFile, $stackPtr, false) === false
+                    && $this->supportsAbove('5.2') !== false
+                ) {
+                    $phpcsFile->addError(
+                        "'%s' type cannot be used outside of class scope",
+                        $param['token'],
+                        ucfirst($typeHint) . 'OutsideClassScopeFound',
+                        array($typeHint)
+                    );
+                }
+            } elseif (isset($this->invalidTypes[$typeHint])) {
                 $error = "'%s' is not a valid type declaration. Did you mean %s ?";
                 $data  = array(
-                    $type_hint,
-                    $this->invalidTypes[$type_hint],
+                    $typeHint,
+                    $this->invalidTypes[$typeHint],
                 );
 
                 $phpcsFile->addError($error, $param['token'], 'InvalidTypeHintFound', $data);
-
-            } elseif ($type_hint === 'self') {
-                if ($this->inClassScope($phpcsFile, $stackPtr, false) === false) {
-                    $phpcsFile->addError(
-                        "'self' type cannot be used outside of class scope",
-                        $param['token'],
-                        'SelfOutsideClassScopeFound'
-                    );
-                }
             }
         }
     }//end process()

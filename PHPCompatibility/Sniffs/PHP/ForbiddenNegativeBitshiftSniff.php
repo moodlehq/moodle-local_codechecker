@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_ForbiddenNegativeBitshift.
+ * \PHPCompatibility\Sniffs\PHP\ForbiddenNegativeBitshift.
  *
  * PHP version 7.0
  *
@@ -9,8 +9,13 @@
  * @author   Wim Godden <wim@cu.be>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+use PHPCompatibility\PHPCSHelper;
+
 /**
- * PHPCompatibility_Sniffs_PHP_ForbiddenNegativeBitshift.
+ * \PHPCompatibility\Sniffs\PHP\ForbiddenNegativeBitshift.
  *
  * Bitwise shifts by negative number will throw an ArithmeticError in PHP 7.0.
  *
@@ -20,8 +25,23 @@
  * @package  PHPCompatibility
  * @author   Wim Godden <wim@cu.be>
  */
-class PHPCompatibility_Sniffs_PHP_ForbiddenNegativeBitshiftSniff extends PHPCompatibility_Sniff
+class ForbiddenNegativeBitshiftSniff extends Sniff
 {
+    /**
+     * Potential end tokens for which the end pointer has to be set back by one.
+     *
+     * {@internal The PHPCS `findEndOfStatement()` method is not completely consistent
+     * in how it returns the statement end. This is just a simple way to bypass
+     * the inconsistency for our purposes.}}
+     *
+     * @var array
+     */
+    private $inclusiveStopPoints = array(
+        T_COLON        => true,
+        T_COMMA        => true,
+        T_DOUBLE_ARROW => true,
+        T_SEMICOLON    => true,
+    );
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -30,39 +50,54 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNegativeBitshiftSniff extends PHPComp
      */
     public function register()
     {
-        return array(T_SR);
+        return array(
+            T_SL,
+            T_SL_EQUAL,
+            T_SR,
+            T_SR_EQUAL,
+        );
 
     }//end register()
 
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token
+     *                                         in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         if ($this->supportsAbove('7.0') === false) {
             return;
         }
 
-        $nextNumber = $phpcsFile->findNext(T_LNUMBER, $stackPtr + 1, null, false, null, true);
-        if ($nextNumber === false || ($stackPtr + 1) === $nextNumber) {
-            return;
+        $tokens = $phpcsFile->getTokens();
+
+        // Determine the start and end of the part of the statement we need to examine.
+        $start  = ($stackPtr + 1);
+        $next   = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $start, null, true);
+        if ($next !== false && $tokens[$next]['code'] === T_OPEN_PARENTHESIS) {
+            $start = ($next + 1);
         }
 
-        $hasMinusSign = $phpcsFile->findNext(T_MINUS, $stackPtr + 1, $nextNumber, false, null, true);
-        if ($hasMinusSign === false) {
+        $end = PHPCSHelper::findEndOfStatement($phpcsFile, $start);
+        if (isset($this->inclusiveStopPoints[$tokens[$end]['code']]) === true) {
+            --$end;
+        }
+
+        if ($this->isNegativeNumber($phpcsFile, $start, $end, true) !== true) {
+            // Not a negative number or undetermined.
             return;
         }
 
         $phpcsFile->addError(
-            'Bitwise shifts by negative number will throw an ArithmeticError in PHP 7.0',
-            $hasMinusSign,
-            'Found'
+            'Bitwise shifts by negative number will throw an ArithmeticError in PHP 7.0. Found: %s',
+            $stackPtr,
+            'Found',
+            array($phpcsFile->getTokensAsString($start, ($end - $start + 1)))
         );
 
     }//end process()

@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NewKeywordsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewKeywordsSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
@@ -8,15 +8,19 @@
  * @copyright 2013 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractNewFeatureSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_NewKeywordsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewKeywordsSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_AbstractNewFeatureSniff
+class NewKeywordsSniff extends AbstractNewFeatureSniff
 {
 
     /**
@@ -36,89 +40,105 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
      */
     protected $newKeywords = array(
         'T_HALT_COMPILER' => array(
-            '5.0' => false,
-            '5.1' => true,
+            '5.0'         => false,
+            '5.1'         => true,
             'description' => '"__halt_compiler" keyword',
         ),
         'T_CONST' => array(
-            '5.2' => false,
-            '5.3' => true,
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => '"const" keyword',
-            'condition' => 'isClassConstant', // Keyword is only new when not in class context.
+            'condition'   => 'isClassConstant', // Keyword is only new when not in class context.
         ),
         'T_CALLABLE' => array(
-            '5.3' => false,
-            '5.4' => true,
+            '5.3'         => false,
+            '5.4'         => true,
             'description' => '"callable" keyword',
-            'content' => 'callable',
+            'content'     => 'callable',
         ),
         'T_DIR' => array(
-            '5.2' => false,
-            '5.3' => true,
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => '__DIR__ magic constant',
-            'content' => '__DIR__',
+            'content'     => '__DIR__',
         ),
         'T_GOTO' => array(
-            '5.2' => false,
-            '5.3' => true,
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => '"goto" keyword',
-            'content' => 'goto',
+            'content'     => 'goto',
         ),
         'T_INSTEADOF' => array(
-            '5.3' => false,
-            '5.4' => true,
+            '5.3'         => false,
+            '5.4'         => true,
             'description' => '"insteadof" keyword (for traits)',
-            'content' => 'insteadof',
+            'content'     => 'insteadof',
         ),
         'T_NAMESPACE' => array(
-            '5.2' => false,
-            '5.3' => true,
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => '"namespace" keyword',
-            'content' => 'namespace',
+            'content'     => 'namespace',
         ),
         'T_NS_C' => array(
-            '5.2' => false,
-            '5.3' => true,
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => '__NAMESPACE__ magic constant',
-            'content' => '__NAMESPACE__',
+            'content'     => '__NAMESPACE__',
         ),
         'T_USE' => array(
-            '5.2' => false,
-            '5.3' => true,
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => '"use" keyword (for traits/namespaces/anonymous functions)',
         ),
+        'T_START_NOWDOC' => array(
+            '5.2'         => false,
+            '5.3'         => true,
+            'description' => 'nowdoc functionality',
+        ),
+        'T_END_NOWDOC' => array(
+            '5.2'         => false,
+            '5.3'         => true,
+            'description' => 'nowdoc functionality',
+        ),
+        'T_START_HEREDOC' => array(
+            '5.2'         => false,
+            '5.3'         => true,
+            'description' => '(Double) quoted Heredoc identifier',
+            'condition'   => 'isNotQuoted', // Heredoc is only new with quoted identifier.
+        ),
         'T_TRAIT' => array(
-            '5.3' => false,
-            '5.4' => true,
+            '5.3'         => false,
+            '5.4'         => true,
             'description' => '"trait" keyword',
-            'content' => 'trait',
+            'content'     => 'trait',
         ),
         'T_TRAIT_C' => array(
-            '5.3' => false,
-            '5.4' => true,
+            '5.3'         => false,
+            '5.4'         => true,
             'description' => '__TRAIT__ magic constant',
-            'content' => '__TRAIT__',
+            'content'     => '__TRAIT__',
         ),
         // The specifics for distinguishing between 'yield' and 'yield from' are dealt
         // with in the translation logic.
         // This token has to be placed above the `T_YIELD` token in this array to allow for this.
         'T_YIELD_FROM' => array(
-            '5.6' => false,
-            '7.0' => true,
+            '5.6'         => false,
+            '7.0'         => true,
             'description' => '"yield from" keyword (for generators)',
-            'content' => 'yield',
+            'content'     => 'yield',
         ),
         'T_YIELD' => array(
-            '5.4' => false,
-            '5.5' => true,
+            '5.4'         => false,
+            '5.5'         => true,
             'description' => '"yield" keyword (for generators)',
-            'content' => 'yield',
+            'content'     => 'yield',
         ),
         'T_FINALLY' => array(
-            '5.4' => false,
-            '5.5' => true,
+            '5.4'         => false,
+            '5.5'         => true,
             'description' => '"finally" keyword (in exception handling)',
-            'content' => 'finally',
+            'content'     => 'finally',
         ),
     );
 
@@ -167,13 +187,13 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens    = $phpcsFile->getTokens();
         $tokenType = $tokens[$stackPtr]['type'];
@@ -184,6 +204,10 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
         // Translate T_STRING token if necessary.
         if ($tokens[$stackPtr]['type'] === 'T_STRING') {
             $content = $tokens[$stackPtr]['content'];
+            if (strpos($content, '__') !== 0) {
+                $content = strtolower($tokens[$stackPtr]['content']);
+            }
+
             if (isset($this->translateContentToToken[$content]) === false) {
                 // Not one of the tokens we're looking for.
                 return;
@@ -225,9 +249,16 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
             return;
         }
 
-        $nextToken = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($end + 1), null, true);
-        $prevToken = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        $nextToken = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($end + 1), null, true);
+        $prevToken = $phpcsFile->findPrevious(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
 
+        if ($prevToken !== false
+            && ($tokens[$prevToken]['code'] === T_DOUBLE_COLON
+            || $tokens[$prevToken]['code'] === T_OBJECT_OPERATOR)
+        ) {
+            // Class property of the same name as one of the keywords. Ignore.
+            return;
+        }
 
         // Skip attempts to use keywords as functions or class names - the former
         // will be reported by ForbiddenNamesAsInvokedFunctionsSniff, whilst the
@@ -316,6 +347,25 @@ class PHPCompatibility_Sniffs_PHP_NewKeywordsSniff extends PHPCompatibility_Abst
     {
         $data[0] = $errorInfo['description'];
         return $data;
+    }
+
+
+    /**
+     * Callback for the quoted heredoc identifier condition.
+     *
+     * A double quoted identifier will have the opening quote on position 3
+     * in the string: `<<<"ID"`.
+     *
+     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                  $stackPtr  The position of the current token in
+     *                                        the stack passed in $tokens.
+     *
+     * @return bool
+     */
+    public function isNotQuoted(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+        return ($tokens[$stackPtr]['content'][3] !== '"');
     }
 
 

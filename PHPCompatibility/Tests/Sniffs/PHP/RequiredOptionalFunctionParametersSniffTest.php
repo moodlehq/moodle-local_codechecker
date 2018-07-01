@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Required Optional Parameter Sniff test file
@@ -12,9 +15,9 @@
  * @group requiredOptionalFunctionParameters
  * @group functionParameters
  *
- * @covers PHPCompatibility_Sniffs_PHP_RequiredOptionalFunctionParametersSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\RequiredOptionalFunctionParametersSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -39,7 +42,7 @@ class RequiredOptionalFunctionParametersSniffTest extends BaseSniffTest
     public function testRequiredOptionalParameter($functionName, $parameterName, $requiredUpTo, $lines, $okVersion)
     {
         $file  = $this->sniffFile(self::TEST_FILE, $requiredUpTo);
-        $error = "The \"{$parameterName}\" parameter for function {$functionName} is missing, but was required for PHP version {$requiredUpTo} and lower";
+        $error = "The \"{$parameterName}\" parameter for function {$functionName}() is missing, but was required for PHP version {$requiredUpTo} and lower";
         foreach ($lines as $line) {
             $this->assertError($file, $line, $error);
         }
@@ -62,6 +65,8 @@ class RequiredOptionalFunctionParametersSniffTest extends BaseSniffTest
         return array(
             array('preg_match_all', 'matches', '5.3', array(8), '5.4'),
             array('stream_socket_enable_crypto', 'crypto_type', '5.5', array(9), '5.6'),
+            array('bcscale', 'scale', '7.2', array(12), '7.3'),
+            array('getenv', 'varname', '7.0', array(15), '7.1'),
         );
     }
 
@@ -93,6 +98,8 @@ class RequiredOptionalFunctionParametersSniffTest extends BaseSniffTest
         return array(
             array(4),
             array(5),
+            array(11),
+            array(14),
         );
     }
 

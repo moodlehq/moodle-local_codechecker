@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTags.
+ * \PHPCompatibility\Sniffs\PHP\RemovedAlternativePHPTags.
  *
  * PHP version 7.0
  *
@@ -9,8 +9,12 @@
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTags.
+ * \PHPCompatibility\Sniffs\PHP\RemovedAlternativePHPTags.
  *
  * Check for usage of alternative PHP tags - removed in PHP 7.0.
  *
@@ -23,7 +27,7 @@
  * Based on `Generic_Sniffs_PHP_DisallowAlternativePHPTags` by Juliette Reinders Folmer
  * which was merged into PHPCS 2.7.0.
  */
-class PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTagsSniff extends PHPCompatibility_Sniff
+class RemovedAlternativePHPTagsSniff extends Sniff
 {
 
     /**
@@ -40,7 +44,8 @@ class PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTagsSniff extends PHPComp
      */
     public function register()
     {
-        if (version_compare(phpversion(), '7.0', '<') === true) {
+        if (version_compare(PHP_VERSION_ID, '70000', '<') === true) {
+            // phpcs:ignore PHPCompatibility.PHP.DeprecatedIniDirectives.asp_tagsRemoved
             $this->aspTags = (boolean) ini_get('asp_tags');
         }
 
@@ -56,13 +61,13 @@ class PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTagsSniff extends PHPComp
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token
+     *                                         in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         if ($this->supportsAbove('7.0') === false) {
             return;
@@ -101,12 +106,7 @@ class PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTagsSniff extends PHPComp
             && preg_match('`((?:<s)?cript (?:[^>]+)?language=[\'"]?php[\'"]?(?:[^>]+)?>)`i', $content, $match) === 1
         ) {
             $found = $match[1];
-            if (version_compare(phpversion(), '5.3', '<')) {
-                // Add the missing '<s' at the start of the match for PHP 5.2.
-                $found = '<s' . $match[1];
-            }
-
-            $data = array(
+            $data  = array(
                 'Script',
                 $found,
             );
@@ -122,7 +122,6 @@ class PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTagsSniff extends PHPComp
             );
             return;
         }
-
 
         // If we're still here, we can't be sure if what we find was really intended as ASP open tags.
         if ($openTag['code'] === T_INLINE_HTML && $this->aspTags === false) {
@@ -141,25 +140,25 @@ class PHPCompatibility_Sniffs_PHP_RemovedAlternativePHPTagsSniff extends PHPComp
     /**
      * Get a snippet from a HTML token.
      *
-     * @param string $content  The content of the HTML token.
-     * @param string $start_at Partial string to use as a starting point for the snippet.
-     * @param int    $length   The target length of the snippet to get. Defaults to 25.
+     * @param string $content The content of the HTML token.
+     * @param string $startAt Partial string to use as a starting point for the snippet.
+     * @param int    $length  The target length of the snippet to get. Defaults to 25.
      *
      * @return string
      */
-    protected function getSnippet($content, $start_at = '', $length = 25)
+    protected function getSnippet($content, $startAt = '', $length = 25)
     {
-        $start_pos = 0;
+        $startPos = 0;
 
-        if ($start_at !== '') {
-            $start_pos = strpos($content, $start_at);
-            if ($start_pos !== false) {
-                $start_pos += strlen($start_at);
+        if ($startAt !== '') {
+            $startPos = strpos($content, $startAt);
+            if ($startPos !== false) {
+                $startPos += strlen($startAt);
             }
         }
 
-        $snippet = substr($content, $start_pos, $length);
-        if ((strlen($content) - $start_pos) > $length) {
+        $snippet = substr($content, $startPos, $length);
+        if ((strlen($content) - $startPos) > $length) {
             $snippet .= '...';
         }
 

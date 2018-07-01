@@ -78,6 +78,46 @@ function testYieldFrom() {
     yield /*something*/ from [3, 4]; // Test against false positive.
 }
 
+// Normal Heredoc is ok.
+$str = <<<EOD
+Example of string
+spanning multiple lines
+using nowdoc syntax.
+EOD;
+
+// PHP 5.3 Nowdoc.
+$str = <<<'LABEL'
+Example of string
+spanning multiple lines
+using nowdoc syntax.
+LABEL;
+
+// PHP 5.3 quoted heredoc.
+$str = <<<"LABEL"
+Example of string
+spanning multiple lines
+using nowdoc syntax.
+LABEL;
+
+/*
+ * Test case-insensitive matching of the PHPCS cross-version compat layer.
+ */
+TRAIT MyFoobarTrait {}
+
+try {
+} FINALLY {
+}
+
+/*
+ * Check against false positives/correct PHPCS cross-version compat layer.
+ * The fact that these keywords are reserved, is not our concern. That is handled by the forbiddenNames sniff.
+ */
+
+// "namespace" is a property (allowed use, though confusing), not the keyword.
+$response->header( 'Location', rest_url( sprintf( '%s/%s/%d', $this->namespace, $this->rest_base, $id ) ) );
+
+// yield used as a class constant.
+echo MyClass::yield;
 
 __halt_compiler();
 

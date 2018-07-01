@@ -1,20 +1,24 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NewFunctionsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewFunctionsSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractNewFeatureSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_newFunctionsSniff.
+ * \PHPCompatibility\Sniffs\PHP\newFunctionsSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Wim Godden <wim.godden@cu.be>
  */
-class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_AbstractNewFeatureSniff
+class NewFunctionsSniff extends AbstractNewFeatureSniff
 {
     /**
      * A list of new functions, not present in older versions.
@@ -25,6 +29,42 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Abs
      * @var array(string => array(string => int|string|null))
      */
     protected $newFunctions = array(
+        'iterator_count' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'iterator_to_array' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'spl_autoload_call' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'spl_autoload_extensions' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'spl_autoload_functions' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'spl_autoload_register' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'spl_autoload_unregister' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'spl_autoload' => array(
+            '5.0' => false,
+            '5.1' => true,
+        ),
+        'hash_hmac' => array(
+            '5.1.1' => false,
+            '5.1.2' => true,
+        ),
         'array_fill_keys' => array(
             '5.1' => false,
             '5.2' => true,
@@ -1095,10 +1135,10 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Abs
         ),
         'ldap_modify_batch' => array(
             '5.4.25' => false,
-            '5.5.9' => false,
+            '5.5.9'  => false,
             '5.4.26' => true,
             '5.5.10' => true,
-            '5.6.0' => true,
+            '5.6.0'  => true,
         ),
         'mysqli_get_links_stats' => array(
             '5.5' => false,
@@ -1137,6 +1177,10 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Abs
             '5.6' => true,
         ),
         'pg_flush' => array(
+            '5.5' => false,
+            '5.6' => true,
+        ),
+        'pg_lo_truncate' => array(
             '5.5' => false,
             '5.6' => true,
         ),
@@ -1240,6 +1284,83 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Abs
             '7.1' => true,
         ),
 
+        'oci_register_taf_callback' => array(
+            '7.1.6' => false,
+            '7.1.7' => true,
+        ),
+        'oci_unregister_taf_callback' => array(
+            '7.1.8' => false,
+            '7.1.9' => true,
+        ),
+
+        'stream_isatty' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sapi_windows_vt100_support' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'ftp_append' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'hash_hmac_algos' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'imagebmp' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'imagecreatefrombmp' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'imagegetclip' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'imageopenpolygon' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'imageresolution' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'imagesetclip' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'ldap_exop' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'ldap_exop_passwd' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'ldap_exop_whoami' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'ldap_parse_exop' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'mb_chr' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'mb_ord' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'mb_scrub' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
         'socket_addrinfo_lookup' => array(
             '7.1' => false,
             '7.2' => true,
@@ -1255,6 +1376,355 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Abs
         'socket_addrinfo_explain' => array(
             '7.1' => false,
             '7.2' => true,
+        ),
+        'spl_object_id' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_add' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_base642bin' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_bin2base64' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_bin2hex' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_compare' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_aes256gcm_decrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_aes256gcm_encrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_aes256gcm_is_available' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_aes256gcm_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_chacha20poly1305_decrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_chacha20poly1305_encrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_chacha20poly1305_ietf_decrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_chacha20poly1305_ietf_encrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_chacha20poly1305_ietf_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_chacha20poly1305_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_xchacha20poly1305_ietf_decrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_xchacha20poly1305_ietf_encrypt' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_aead_xchacha20poly1305_ietf_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_auth_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_auth_verify' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_auth' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_keypair_from_secretkey_and_publickey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_keypair' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_open' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_publickey_from_secretkey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_publickey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_seal_open' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_seal' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_secretkey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box_seed_keypair' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_box' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_generichash_final' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_generichash_init' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_generichash_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_generichash_update' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_generichash' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kdf_derive_from_key' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kdf_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kx_client_session_keys' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kx_keypair' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kx_publickey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kx_secretkey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kx_seed_keypair' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_kx_server_session_keys' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash_scryptsalsa208sha256_str_verify' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash_scryptsalsa208sha256_str' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash_scryptsalsa208sha256' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash_str_needs_rehash' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash_str_verify' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash_str' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_pwhash' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_scalarmult_base' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_scalarmult' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretbox_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretbox_open' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretbox' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretstream_xchacha20poly1305_init_pull' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretstream_xchacha20poly1305_init_push' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretstream_xchacha20poly1305_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretstream_xchacha20poly1305_pull' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretstream_xchacha20poly1305_push' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_secretstream_xchacha20poly1305_rekey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_shorthash_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_shorthash' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_detached' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_ed25519_pk_to_curve25519' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_ed25519_sk_to_curve25519' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_keypair_from_secretkey_and_publickey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_keypair' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_open' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_publickey_from_secretkey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_publickey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_secretkey' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_seed_keypair' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign_verify_detached' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_sign' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_stream_keygen' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_stream_xor' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_crypto_stream' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_hex2bin' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_increment' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_memcmp' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_memzero' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_pad' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+        'sodium_unpad' => array(
+            '7.1' => false,
+            '7.2' => true,
+        ),
+
+        'is_countable' => array(
+            '7.2' => false,
+            '7.3' => true,
         ),
     );
 
@@ -1276,13 +1746,13 @@ class PHPCompatibility_Sniffs_PHP_NewFunctionsSniff extends PHPCompatibility_Abs
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

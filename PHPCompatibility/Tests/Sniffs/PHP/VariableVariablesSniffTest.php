@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * VariableVariables sniff test file
@@ -12,9 +15,9 @@
  * @group variableVariables
  * @group variables
  *
- * @covers PHPCompatibility_Sniffs_PHP_VariableVariablesSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\VariableVariablesSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -52,6 +55,8 @@ class VariableVariablesSniffTest extends BaseSniffTest
             array(6),
             array(7),
             array(8),
+            array(37),
+            array(38),
         );
     }
 
@@ -100,7 +105,7 @@ class VariableVariablesSniffTest extends BaseSniffTest
             array(28),
             array(29),
             array(32),
-            array(37),
+            array(42),
         );
     }
 

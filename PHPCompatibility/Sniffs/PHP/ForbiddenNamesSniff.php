@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff.
+ * \PHPCompatibility\Sniffs\PHP\ForbiddenNamesSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
@@ -8,8 +8,13 @@
  * @copyright 2012 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+use PHPCompatibility\PHPCSHelper;
+
 /**
- * PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff.
+ * \PHPCompatibility\Sniffs\PHP\ForbiddenNamesSniff.
  *
  * Prohibits the use of reserved keywords as class, function, namespace or constant names.
  *
@@ -18,7 +23,7 @@
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2012 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_Sniff
+class ForbiddenNamesSniff extends Sniff
 {
 
     /**
@@ -28,62 +33,62 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
      * @var array(string => string)
      */
     protected $invalidNames = array(
-        'abstract' => '5.0',
-        'and' => 'all',
-        'array' => 'all',
-        'as' => 'all',
-        'break' => 'all',
-        'callable' => '5.4',
-        'case' => 'all',
-        'catch' => '5.0',
-        'class' => 'all',
-        'clone' => '5.0',
-        'const' => 'all',
-        'continue' => 'all',
-        'declare' => 'all',
-        'default' => 'all',
-        'do' => 'all',
-        'else' => 'all',
-        'elseif' => 'all',
-        'enddeclare' => 'all',
-        'endfor' => 'all',
-        'endforeach' => 'all',
-        'endif' => 'all',
-        'endswitch' => 'all',
-        'endwhile' => 'all',
-        'extends' => 'all',
-        'final' => '5.0',
-        'finally' => '5.5',
-        'for' => 'all',
-        'foreach' => 'all',
-        'function' => 'all',
-        'global' => 'all',
-        'goto' => '5.3',
-        'if' => 'all',
-        'implements' => '5.0',
-        'interface' => '5.0',
-        'instanceof' => '5.0',
-        'insteadof' => '5.4',
-        'namespace' => '5.3',
-        'new' => 'all',
-        'or' => 'all',
-        'private' => '5.0',
-        'protected' => '5.0',
-        'public' => '5.0',
-        'static' => 'all',
-        'switch' => 'all',
-        'throw' => '5.0',
-        'trait' => '5.4',
-        'try' => '5.0',
-        'use' => 'all',
-        'var' => 'all',
-        'while' => 'all',
-        'xor' => 'all',
-        '__class__' => 'all',
-        '__dir__' => '5.3',
-        '__file__' => 'all',
-        '__function__' => 'all',
-        '__method__' => 'all',
+        'abstract'      => '5.0',
+        'and'           => 'all',
+        'array'         => 'all',
+        'as'            => 'all',
+        'break'         => 'all',
+        'callable'      => '5.4',
+        'case'          => 'all',
+        'catch'         => '5.0',
+        'class'         => 'all',
+        'clone'         => '5.0',
+        'const'         => 'all',
+        'continue'      => 'all',
+        'declare'       => 'all',
+        'default'       => 'all',
+        'do'            => 'all',
+        'else'          => 'all',
+        'elseif'        => 'all',
+        'enddeclare'    => 'all',
+        'endfor'        => 'all',
+        'endforeach'    => 'all',
+        'endif'         => 'all',
+        'endswitch'     => 'all',
+        'endwhile'      => 'all',
+        'extends'       => 'all',
+        'final'         => '5.0',
+        'finally'       => '5.5',
+        'for'           => 'all',
+        'foreach'       => 'all',
+        'function'      => 'all',
+        'global'        => 'all',
+        'goto'          => '5.3',
+        'if'            => 'all',
+        'implements'    => '5.0',
+        'interface'     => '5.0',
+        'instanceof'    => '5.0',
+        'insteadof'     => '5.4',
+        'namespace'     => '5.3',
+        'new'           => 'all',
+        'or'            => 'all',
+        'private'       => '5.0',
+        'protected'     => '5.0',
+        'public'        => '5.0',
+        'static'        => 'all',
+        'switch'        => 'all',
+        'throw'         => '5.0',
+        'trait'         => '5.4',
+        'try'           => '5.0',
+        'use'           => 'all',
+        'var'           => 'all',
+        'while'         => 'all',
+        'xor'           => 'all',
+        '__class__'     => 'all',
+        '__dir__'       => '5.3',
+        '__file__'      => 'all',
+        '__function__'  => 'all',
+        '__method__'    => 'all',
         '__namespace__' => '5.3',
     );
 
@@ -109,7 +114,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
      *
      * @var array
      */
-    private $allowed_modifiers = array();
+    private $allowedModifiers = array();
 
     /**
      * Targeted tokens.
@@ -125,7 +130,6 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
         T_USE,
         T_AS,
         T_EXTENDS,
-        T_TRAIT,
         T_INTERFACE,
     );
 
@@ -136,31 +140,39 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
      */
     public function register()
     {
-        $this->isLowPHPCS = version_compare(PHP_CodeSniffer::VERSION, '2.0', '<');
+        $this->isLowPHPCS = version_compare(PHPCSHelper::getVersion(), '2.0', '<');
 
-        $this->allowed_modifiers          = array_combine(
-            PHP_CodeSniffer_Tokens::$scopeModifiers,
-            PHP_CodeSniffer_Tokens::$scopeModifiers
+        $this->allowedModifiers          = array_combine(
+            \PHP_CodeSniffer_Tokens::$scopeModifiers,
+            \PHP_CodeSniffer_Tokens::$scopeModifiers
         );
-        $this->allowed_modifiers[T_FINAL] = T_FINAL;
+        $this->allowedModifiers[T_FINAL] = T_FINAL;
 
         $tokens = $this->targetedTokens;
-        if (defined('T_ANON_CLASS')) {
-            $tokens[] = constant('T_ANON_CLASS');
+
+        if (defined('T_TRAIT')) {
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_traitFound
+            $tokens[] = T_TRAIT;
         }
+
+        if (defined('T_ANON_CLASS')) {
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_anon_classFound
+            $tokens[] = T_ANON_CLASS;
+        }
+
         return $tokens;
     }//end register()
 
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -177,17 +189,17 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
-     * @param array                $tokens    The stack of tokens that make up
-     *                                        the file.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
+     * @param array                 $tokens    The stack of tokens that make up
+     *                                         the file.
      *
      * @return void
      */
-    public function processNonString(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $tokens)
+    public function processNonString(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $tokens)
     {
-        $nextNonEmpty = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $nextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if ($nextNonEmpty === false) {
             return;
         }
@@ -198,7 +210,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
          * In PHPCS < 2.3.4 these were tokenized as T_CLASS no matter what.
          */
         if ($tokens[$stackPtr]['type'] === 'T_ANON_CLASS' || $tokens[$stackPtr]['type'] === 'T_CLASS') {
-            $prevNonEmpty = $phpcsFile->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+            $prevNonEmpty = $phpcsFile->findPrevious(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
             if ($prevNonEmpty !== false && $tokens[$prevNonEmpty]['type'] === 'T_NEW') {
                 return;
             }
@@ -212,7 +224,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
         elseif ($tokens[$stackPtr]['type'] === 'T_USE'
             && isset($this->validUseNames[strtolower($tokens[$nextNonEmpty]['content'])]) === true
         ) {
-            $maybeUseNext = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
+            $maybeUseNext = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
             if ($maybeUseNext !== false && $this->isEndOfUseStatement($tokens[$maybeUseNext]) === false) {
                 // Prevent duplicate messages: `const` is T_CONST in PHPCS 1.x and T_STRING in PHPCS 2.x.
                 if ($this->isLowPHPCS === true) {
@@ -228,10 +240,10 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
          * - `use HelloWorld { sayHello as private myPrivateHello; }` => move to the next token to verify.
          */
         elseif ($tokens[$stackPtr]['type'] === 'T_AS'
-            && isset($this->allowed_modifiers[$tokens[$nextNonEmpty]['code']]) === true
+            && isset($this->allowedModifiers[$tokens[$nextNonEmpty]['code']]) === true
             && $this->inUseScope($phpcsFile, $stackPtr) === true
         ) {
-            $maybeUseNext = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
+            $maybeUseNext = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
             if ($maybeUseNext === false || $this->isEndOfUseStatement($tokens[$maybeUseNext]) === true) {
                 return;
             }
@@ -245,7 +257,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
         elseif ($tokens[$stackPtr]['type'] === 'T_FUNCTION'
             && $tokens[$nextNonEmpty]['type'] === 'T_BITWISE_AND'
         ) {
-            $maybeUseNext = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
+            $maybeUseNext = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true, null, true);
             if ($maybeUseNext === false) {
                 // Live coding.
                 return;
@@ -287,7 +299,6 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
             unset($i, $namespacePart, $partLc);
         }
 
-
         $nextContentLc = strtolower($tokens[$nextNonEmpty]['content']);
         if (isset($this->invalidNames[$nextContentLc]) === false) {
             return;
@@ -302,14 +313,14 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
                 && $this->inClassScope($phpcsFile, $stackPtr, false) === true)
             || ($tokens[$stackPtr]['type'] === 'T_CONST'
                 && $this->isClassConstant($phpcsFile, $stackPtr) === true
-                && $nextContentLc !== 'class')
-            ) && $this->supportsBelow('5.6') === false
+                && $nextContentLc !== 'class'))
+            && $this->supportsBelow('5.6') === false
         ) {
             return;
         }
 
         if ($this->supportsAbove($this->invalidNames[$nextContentLc])) {
-            $data  = array(
+            $data = array(
                 $tokens[$nextNonEmpty]['content'],
                 $this->invalidNames[$nextContentLc],
             );
@@ -321,15 +332,15 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
-     * @param array                $tokens    The stack of tokens that make up
-     *                                        the file.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
+     * @param array                 $tokens    The stack of tokens that make up
+     *                                         the file.
      *
      * @return void
      */
-    public function processString(PHP_CodeSniffer_File $phpcsFile, $stackPtr, $tokens)
+    public function processString(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $tokens)
     {
         $tokenContentLc = strtolower($tokens[$stackPtr]['content']);
 
@@ -339,9 +350,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
          * - namespace keyword in PHP < 5.3
          * - trait keyword in PHP < 5.4
          */
-        if ((version_compare(phpversion(), '5.3', '<') && $tokenContentLc === 'namespace')
-            || (version_compare(phpversion(), '5.4', '<') && $tokenContentLc === 'trait')
-        ) {
+        if (version_compare(PHP_VERSION_ID, '50400', '<') && $tokenContentLc === 'trait') {
             $this->processNonString($phpcsFile, $stackPtr, $tokens);
             return;
         }
@@ -361,7 +370,7 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
         $defineNameLc = strtolower($defineName);
 
         if (isset($this->invalidNames[$defineNameLc]) && $this->supportsAbove($this->invalidNames[$defineNameLc])) {
-            $data  = array(
+            $data = array(
                 $defineName,
                 $this->invalidNames[$defineNameLc],
             );
@@ -373,11 +382,11 @@ class PHPCompatibility_Sniffs_PHP_ForbiddenNamesSniff extends PHPCompatibility_S
     /**
      * Add the error message.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
-     * @param string               $content   The token content found.
-     * @param array                $data      The data to pass into the error message.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
+     * @param string                $content   The token content found.
+     * @param array                 $data      The data to pass into the error message.
      *
      * @return void
      */

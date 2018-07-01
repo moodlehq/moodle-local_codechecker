@@ -5,15 +5,18 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Valid Integers Sniff tests
  *
  * @group validIntegers
  *
- * @covers PHPCompatibility_Sniffs_PHP_ValidIntegersSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\ValidIntegersSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
@@ -39,7 +42,6 @@ class ValidIntegersSniffTest extends BaseSniffTest
     {
         $file = $this->sniffFile(self::TEST_FILE, '5.3');
         $this->assertError($file, $line, "Binary integer literals were not present in PHP version 5.3 or earlier. Found: {$binary}");
-
 
         if ($testNoViolation === true) {
             $file = $this->sniffFile(self::TEST_FILE, '5.4');

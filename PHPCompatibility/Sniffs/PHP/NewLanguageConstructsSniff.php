@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewLanguageConstructsSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
@@ -8,15 +8,19 @@
  * @copyright 2013 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractNewFeatureSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff.
+ * \PHPCompatibility\Sniffs\PHP\NewLanguageConstructsSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2013 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff extends PHPCompatibility_AbstractNewFeatureSniff
+class NewLanguageConstructsSniff extends AbstractNewFeatureSniff
 {
 
     /**
@@ -58,9 +62,13 @@ class PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff extends PHPCompatib
             '7.0' => true,
             'description' => 'null coalescing operator (??)',
         ), // Identified in PHPCS 1.5 as T_INLINE_THEN + T_INLINE_THEN.
+        /*
+         * Was slated for 7.2, but still not implemented. PHPCS however does already tokenize it.
+         * @link https://wiki.php.net/rfc/null_coalesce_equal_operator
+         */
         'T_COALESCE_EQUAL' => array(
-            '7.1' => false,
-            '7.2' => true,
+            '7.2' => false,
+            '7.3' => true,
             'description' => 'null coalesce equal operator (??=)',
         ), // Identified in PHPCS 1.5 as T_INLINE_THEN + T_INLINE_THEN + T_EQUAL and pre-PHPCS 2.8.1 as T_COALESCE + T_EQUAL.
     );
@@ -100,23 +108,23 @@ class PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff extends PHPCompatib
      */
     protected $PHPCSCompatTranslate = array(
         'T_MULTIPLY' => array(
-            'before' => 'T_MULTIPLY',
+            'before'     => 'T_MULTIPLY',
             'real_token' => 'T_POW',
         ),
         'T_MUL_EQUAL' => array(
-            'before' => 'T_MULTIPLY',
+            'before'     => 'T_MULTIPLY',
             'real_token' => 'T_POW_EQUAL',
         ),
         'T_GREATER_THAN' => array(
-            'before' => 'T_IS_SMALLER_OR_EQUAL',
+            'before'     => 'T_IS_SMALLER_OR_EQUAL',
             'real_token' => 'T_SPACESHIP',
         ),
         'T_INLINE_THEN' => array(
-            'callback' => 'isTCoalesce',
+            'callback'   => 'isTCoalesce',
             'real_token' => 'T_COALESCE',
         ),
         'T_EQUAL' => array(
-            'callback' => 'isTCoalesceEqual',
+            'callback'   => 'isTCoalesceEqual',
             'real_token' => 'T_COALESCE_EQUAL',
         ),
     );
@@ -143,13 +151,13 @@ class PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff extends PHPCompatib
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens    = $phpcsFile->getTokens();
         $tokenType = $tokens[$stackPtr]['type'];
@@ -262,7 +270,7 @@ class PHPCompatibility_Sniffs_PHP_NewLanguageConstructsSniff extends PHPCompatib
             return true;
         }
         if ($tokens[($stackPtr - 1)]['type'] === 'T_INLINE_THEN'
-            && ( isset($tokens[($stackPtr - 2)]) && $tokens[($stackPtr - 2)]['type'] === 'T_INLINE_THEN')
+            && (isset($tokens[($stackPtr - 2)]) && $tokens[($stackPtr - 2)]['type'] === 'T_INLINE_THEN')
         ) {
             return true;
         }

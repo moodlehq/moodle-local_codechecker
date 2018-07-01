@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New return types test file
@@ -12,9 +15,9 @@
  * @group newReturnTypeDeclarations
  * @group typeDeclarations
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewReturnTypeDeclarationsSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewReturnTypeDeclarationsSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Wim Godden <wim@cu.be>
  */
@@ -60,14 +63,19 @@ class NewReturnTypeDeclarationsSniffTest extends BaseSniffTest
             array('array', '5.6', 8, '7.0'),
             array('callable', '5.6', 9, '7.0'),
             array('self', '5.6', 10, '7.0'),
-            array('Class name', '5.6', 11, '7.0'),
+            array('parent', '5.6', 11, '7.0'),
             array('Class name', '5.6', 12, '7.0'),
             array('Class name', '5.6', 13, '7.0'),
             array('Class name', '5.6', 14, '7.0'),
+            array('Class name', '5.6', 15, '7.0'),
+            array('Class name', '5.6', 37, '7.0'),
 
-            array('void', '7.0', 17, '7.1'),
+            array('iterable', '7.0', 18, '7.1'),
+            array('void', '7.0', 19, '7.1'),
 
-            array('callable', '5.6', 20, '7.0'),
+            array('callable', '5.6', 22, '7.0'),
+
+            array('object', '7.1', 29, '7.2'),
         );
     }
 
@@ -97,8 +105,8 @@ class NewReturnTypeDeclarationsSniffTest extends BaseSniffTest
     public function dataNoFalsePositives()
     {
         return array(
-            array(23),
-            array(24),
+            array(25),
+            array(26),
         );
     }
 

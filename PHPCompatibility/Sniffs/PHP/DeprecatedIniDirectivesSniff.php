@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff.
+ * \PHPCompatibility\Sniffs\PHP\DeprecatedIniDirectivesSniff.
  *
  * @category  PHP
  * @package   PHPCompatibility
@@ -8,8 +8,12 @@
  * @copyright 2012 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractRemovedFeatureSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff.
+ * \PHPCompatibility\Sniffs\PHP\DeprecatedIniDirectivesSniff.
  *
  * Discourages the use of deprecated INI directives through ini_set() or ini_get().
  *
@@ -18,7 +22,7 @@
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2012 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff extends PHPCompatibility_AbstractRemovedFeatureSniff
+class DeprecatedIniDirectivesSniff extends AbstractRemovedFeatureSniff
 {
     /**
      * A list of deprecated INI directives.
@@ -30,7 +34,7 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff extends PHPCompat
      */
     protected $deprecatedIniDirectives = array(
         'fbsql.batchSize' => array(
-            '5.1' => true,
+            '5.1'         => true,
             'alternative' => 'fbsql.batchsize',
         ),
 
@@ -181,9 +185,11 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff extends PHPCompat
 
         'mcrypt.algorithms_dir' => array(
             '7.1' => false,
+            '7.2' => true,
         ),
         'mcrypt.modes_dir' => array(
             '7.1' => false,
+            '7.2' => true,
         ),
         'session.entropy_file' => array(
             '7.1' => true,
@@ -201,6 +207,15 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff extends PHPCompat
         'mbstring.func_overload' => array(
             '7.2' => false,
         ),
+        'sql.safe_mode' => array(
+            '7.2' => true,
+        ),
+        'track_errors' => array(
+            '7.2' => false,
+        ),
+        'opcache.fast_shutdown' => array(
+            '7.2' => true,
+        ),
     );
 
     /**
@@ -217,13 +232,13 @@ class PHPCompatibility_Sniffs_PHP_DeprecatedIniDirectivesSniff extends PHPCompat
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in the
+     *                                         stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 

@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\BaseClass;
+
+use PHPCompatibility\PHPCSHelper;
 
 /**
  * isClassProperty() function tests
@@ -12,11 +15,11 @@
  * @group utilityIsClassProperty
  * @group utilityFunctions
  *
- * @uses    BaseClass_MethodTestFrame
+ * @uses    \PHPCompatibility\Tests\BaseClass\MethodTestFrame
  * @package PHPCompatibility
  * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class BaseClass_isClassPropertyTest extends BaseClass_MethodTestFrame
+class IsClassPropertyTest extends MethodTestFrame
 {
 
     /**
@@ -43,7 +46,7 @@ class BaseClass_isClassPropertyTest extends BaseClass_MethodTestFrame
     public static function setUpBeforeClass()
     {
         // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are not recognized.
-        if (version_compare(PHP_CodeSniffer::VERSION, '2.4.0', '<') && version_compare(phpversion(), '5.4', '<')) {
+        if (version_compare(PHPCSHelper::getVersion(), '2.4.0', '<') && version_compare(PHP_VERSION_ID, '50400', '<')) {
             self::$recognizesTraits = false;
         }
 
@@ -56,7 +59,7 @@ class BaseClass_isClassPropertyTest extends BaseClass_MethodTestFrame
      *
      * @dataProvider dataIsClassProperty
      *
-     * @covers PHPCompatibility_Sniff::isClassProperty
+     * @covers \PHPCompatibility\Sniff::isClassProperty
      *
      * @param string $commentString The comment which prefaces the target token in the test file.
      * @param string $expected      The expected boolean return value.
@@ -106,13 +109,18 @@ class BaseClass_isClassPropertyTest extends BaseClass_MethodTestFrame
             array('/* Case 18 */', false),
             array('/* Case 19 */', false),
             array('/* Case 20 */', false),
-            array('/* Case 21 */', false),
+            array('/* Case 21 */', true, true),
             array('/* Case 22 */', true, true),
             array('/* Case 23 */', true, true),
             array('/* Case 24 */', true, true),
-            array('/* Case 25 */', true, true),
+            array('/* Case 25 */', false, true),
             array('/* Case 26 */', false, true),
-            array('/* Case 27 */', false, true),
+            array('/* Case 27 */', true),
+            array('/* Case 28 */', true),
+            array('/* Case 29 */', true),
+            array('/* Case 30 */', true),
+            array('/* Case 31 */', true),
+            array('/* Case 32 */', true),
         );
     }
 }

@@ -1,20 +1,25 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_InternalInterfacesSniff.
+ * \PHPCompatibility\Sniffs\PHP\InternalInterfacesSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\Sniff;
+use PHPCompatibility\PHPCSHelper;
+
 /**
- * PHPCompatibility_Sniffs_PHP_InternalInterfacesSniff.
+ * \PHPCompatibility\Sniffs\PHP\InternalInterfacesSniff.
  *
  * @category PHP
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class PHPCompatibility_Sniffs_PHP_InternalInterfacesSniff extends PHPCompatibility_Sniff
+class InternalInterfacesSniff extends Sniff
 {
 
     /**
@@ -44,7 +49,8 @@ class PHPCompatibility_Sniffs_PHP_InternalInterfacesSniff extends PHPCompatibili
         $targets = array(T_CLASS);
 
         if (defined('T_ANON_CLASS')) {
-            $targets[] = constant('T_ANON_CLASS');
+            // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_anon_classFound
+            $targets[] = T_ANON_CLASS;
         }
 
         return $targets;
@@ -55,15 +61,15 @@ class PHPCompatibility_Sniffs_PHP_InternalInterfacesSniff extends PHPCompatibili
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $stackPtr  The position of the current token in
+     *                                         the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
     {
-        $interfaces = $this->findImplementedInterfaceNames($phpcsFile, $stackPtr);
+        $interfaces = PHPCSHelper::findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
         if (is_array($interfaces) === false || $interfaces === array()) {
             return;

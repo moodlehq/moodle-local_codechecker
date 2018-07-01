@@ -17,7 +17,7 @@
 /**
  * Sniff to prevent some reserved words to be used as function calls.
  *
- * This Sniff is a subclass of {@link PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff}
+ * This Sniff is a subclass of {@link \PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff}
  * that does the job pretty well, but whitelisting some uses that
  * are historically allowed in Moodle, no matter they are not very PHP-elegant.
  *
@@ -26,13 +26,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (class_exists('PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff', true) === false) {
+if (class_exists('\PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff', true) === false) {
     throw new PHP_CodeSniffer_Exception(
-            'PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff not found');
+            '\PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff');
 }
 
 class moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
-        extends PHPCompatibility_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff {
+        extends \PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff {
     /** Constructor. */
     public function __construct() {
         // Moodle allows clone to be used as function for now.

@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * Forbidden call time pass by reference sniff test
@@ -12,9 +15,9 @@
  * @group forbiddenCallTimePassByReference
  * @group references
  *
- * @covers PHPCompatibility_Sniffs_PHP_ForbiddenCallTimePassByReferenceSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\ForbiddenCallTimePassByReferenceSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -99,7 +102,7 @@ class ForbiddenCallTimePassByReferenceSniffTest extends BaseSniffTest
             array(24),
             array(39),
             array(40),
-            //array(41), // Currently not yet covered.
+            array(41),
 
             array(51), // OK: No variables.
             array(53), // OK: Outside scope of this sniff.
@@ -123,6 +126,11 @@ class ForbiddenCallTimePassByReferenceSniffTest extends BaseSniffTest
             // Comparison with reference.
             array(74),
             array(75),
+
+            // Issue #39 - Bitwise operations with (class) constants.
+            array(78),
+            array(79),
+            array(80),
         );
     }
 

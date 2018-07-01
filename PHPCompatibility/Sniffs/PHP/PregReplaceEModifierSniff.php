@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff.
+ * \PHPCompatibility\Sniffs\PHP\PregReplaceEModifierSniff.
  *
  * PHP version 5.5
  *
@@ -10,8 +10,12 @@
  * @copyright 2014 Cu.be Solutions bvba
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractFunctionCallParameterSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff.
+ * \PHPCompatibility\Sniffs\PHP\PregReplaceEModifierSniff.
  *
  * Check for usage of the `e` modifier with PCRE functions which is deprecated since PHP 5.5
  * and removed as of PHP 7.0.
@@ -23,7 +27,7 @@
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2014 Cu.be Solutions bvba
  */
-class PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff extends PHPCompatibility_Sniff
+class PregReplaceEModifierSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
@@ -31,7 +35,7 @@ class PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff extends PHPCompatibi
      *
      * @var array
      */
-    protected $functions = array(
+    protected $targetFunctions = array(
         'preg_replace' => true,
         'preg_filter'  => true,
     );
@@ -48,81 +52,90 @@ class PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff extends PHPCompatibi
         '<' => '>',
     );
 
-    /**
-     * Returns an array of tokens this test wants to listen for.
-     *
-     * @return array
-     */
-    public function register()
-    {
-        return array(T_STRING);
-    }//end register()
 
     /**
-     * Processes this test, when one of its tokens is encountered.
+     * Process the parameters of a matched function.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                   $stackPtr     The position of the current token in the stack.
+     * @param string                $functionName The token content (function name) which was matched.
+     * @param array                 $parameters   Array with information about the parameters.
      *
-     * @return void
+     * @return int|void Integer stack pointer to skip forward or void to continue
+     *                  normal file processing.
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processParameters(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionName, $parameters)
     {
-        if ($this->supportsAbove('5.5') === false) {
+        // Check the first parameter in the function call as that should contain the regex(es).
+        if (isset($parameters[1]) === false) {
             return;
         }
 
         $tokens         = $phpcsFile->getTokens();
-        $functionName   = $tokens[$stackPtr]['content'];
         $functionNameLc = strtolower($functionName);
-
-        // Bow out if not one of the functions we're targetting.
-        if (isset($this->functions[$functionNameLc]) === false) {
-            return;
-        }
-
-        // Get the first parameter in the function call as that should contain the regex(es).
-        $firstParam = $this->getFunctionCallParameter($phpcsFile, $stackPtr, 1);
-        if ($firstParam === false) {
-            return;
-        }
+        $firstParam     = $parameters[1];
 
         // Differentiate between an array of patterns passed and a single pattern.
-        $nextNonEmpty = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$emptyTokens, $firstParam['start'], ($firstParam['end'] +1), true);
+        $nextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $firstParam['start'], ($firstParam['end'] + 1), true);
         if ($nextNonEmpty !== false && ($tokens[$nextNonEmpty]['code'] === T_ARRAY || $tokens[$nextNonEmpty]['code'] === T_OPEN_SHORT_ARRAY)) {
             $arrayValues = $this->getFunctionCallParameters($phpcsFile, $nextNonEmpty);
-            foreach ($arrayValues as $value) {
-                $hasKey = $phpcsFile->findNext(T_DOUBLE_ARROW, $value['start'], ($value['end'] + 1));
-                if ($hasKey !== false) {
-                    $value['start'] = ($hasKey + 1);
-                    $value['raw']   = trim($phpcsFile->getTokensAsString($value['start'], (($value['end'] + 1) - $value['start'])));
+            if ($functionNameLc === 'preg_replace_callback_array') {
+                // For preg_replace_callback_array(), the patterns will be in the array keys.
+                foreach ($arrayValues as $value) {
+                    $hasKey = $phpcsFile->findNext(T_DOUBLE_ARROW, $value['start'], ($value['end'] + 1));
+                    if ($hasKey === false) {
+                        continue;
+                    }
+
+                    $value['end'] = ($hasKey - 1);
+                    $value['raw'] = trim($phpcsFile->getTokensAsString($value['start'], ($hasKey - $value['start'])));
+                    $this->processRegexPattern($value, $phpcsFile, $value['end'], $functionName);
                 }
 
-                $this->processRegexPattern($value, $phpcsFile, $value['end'], $functionName);
+            } else {
+                // Otherwise, the patterns will be in the array values.
+                foreach ($arrayValues as $value) {
+                    $hasKey = $phpcsFile->findNext(T_DOUBLE_ARROW, $value['start'], ($value['end'] + 1));
+                    if ($hasKey !== false) {
+                        $value['start'] = ($hasKey + 1);
+                        $value['raw']   = trim($phpcsFile->getTokensAsString($value['start'], (($value['end'] + 1) - $value['start'])));
+                    }
+
+                    $this->processRegexPattern($value, $phpcsFile, $value['end'], $functionName);
+                }
             }
 
         } else {
             $this->processRegexPattern($firstParam, $phpcsFile, $stackPtr, $functionName);
         }
+    }
 
-    }//end process()
+
+    /**
+     * Do a version check to determine if this sniff needs to run at all.
+     *
+     * @return bool
+     */
+    protected function bowOutEarly()
+    {
+        return ($this->supportsAbove('5.5') === false);
+    }
 
 
     /**
      * Analyse a potential regex pattern for usage of the /e modifier.
      *
-     * @param array                $pattern      Array containing the start and end token
-     *                                           pointer of the potential regex pattern and
-     *                                           the raw string value of the pattern.
-     * @param PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                  $stackPtr     The position of the current token in the
-     *                                           stack passed in $tokens.
-     * @param string               $functionName The function which contained the pattern.
+     * @param array                 $pattern      Array containing the start and end token
+     *                                            pointer of the potential regex pattern and
+     *                                            the raw string value of the pattern.
+     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                   $stackPtr     The position of the current token in the
+     *                                            stack passed in $tokens.
+     * @param string                $functionName The function which contained the pattern.
      *
      * @return void
      */
-    protected function processRegexPattern($pattern, $phpcsFile, $stackPtr, $functionName)
+    protected function processRegexPattern($pattern, \PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionName)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -132,7 +145,7 @@ class PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff extends PHPCompatibi
          */
         $regex = '';
         for ($i = $pattern['start']; $i <= $pattern['end']; $i++) {
-            if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$stringTokens, true) === true) {
+            if (in_array($tokens[$i]['code'], \PHP_CodeSniffer_Tokens::$stringTokens, true) === true) {
                 $content = $this->stripQuotes($tokens[$i]['content']);
                 if ($tokens[$i]['code'] === T_DOUBLE_QUOTED_STRING) {
                     $content = $this->stripVariables($content);
@@ -168,22 +181,38 @@ class PHPCompatibility_Sniffs_PHP_PregReplaceEModifierSniff extends PHPCompatibi
 
         if ($regexEndPos !== false) {
             $modifiers = substr($regex, $regexEndPos + 1);
-
-            if (strpos($modifiers, 'e') !== false) {
-                $error     = '%s() - /e modifier is deprecated since PHP 5.5';
-                $isError   = false;
-                $errorCode = 'Deprecated';
-                $data      = array($functionName);
-
-                if ($this->supportsAbove('7.0')) {
-                    $error    .= ' and removed since PHP 7.0';
-                    $isError   = true;
-                    $errorCode = 'Removed';
-                }
-
-                $this->addMessage($phpcsFile, $error, $stackPtr, $isError, $errorCode, $data);
-            }
+            $this->examineModifiers($phpcsFile, $stackPtr, $functionName, $modifiers);
         }
     }//end processRegexPattern()
+
+
+    /**
+     * Examine the regex modifier string.
+     *
+     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                   $stackPtr     The position of the current token in the
+     *                                            stack passed in $tokens.
+     * @param string                $functionName The function which contained the pattern.
+     * @param string                $modifiers    The regex modifiers found.
+     *
+     * @return void
+     */
+    protected function examineModifiers(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionName, $modifiers)
+    {
+        if (strpos($modifiers, 'e') !== false) {
+            $error     = '%s() - /e modifier is deprecated since PHP 5.5';
+            $isError   = false;
+            $errorCode = 'Deprecated';
+            $data      = array($functionName);
+
+            if ($this->supportsAbove('7.0')) {
+                $error    .= ' and removed since PHP 7.0';
+                $isError   = true;
+                $errorCode = 'Removed';
+            }
+
+            $this->addMessage($phpcsFile, $error, $stackPtr, $isError, $errorCode, $data);
+        }
+    }
 
 }//end class

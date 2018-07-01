@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff.
+ * \PHPCompatibility\Sniffs\PHP\MbstringReplaceEModifierSniff.
  *
  * PHP version 7.1
  *
@@ -9,8 +9,12 @@
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
 
+namespace PHPCompatibility\Sniffs\PHP;
+
+use PHPCompatibility\AbstractFunctionCallParameterSniff;
+
 /**
- * PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff.
+ * \PHPCompatibility\Sniffs\PHP\MbstringReplaceEModifierSniff.
  *
  * PHP version 7.1
  *
@@ -18,7 +22,7 @@
  * @package  PHPCompatibility
  * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
  */
-class PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff extends PHPCompatibility_Sniff
+class MbstringReplaceEModifierSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
@@ -28,7 +32,7 @@ class PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff extends PHPCompa
      *
      * @var array
      */
-    protected $functions = array(
+    protected $targetFunctions = array(
         'mb_ereg_replace'      => 4,
         'mb_eregi_replace'     => 4,
         'mb_regex_set_options' => 1,
@@ -36,46 +40,44 @@ class PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff extends PHPCompa
 
 
     /**
-     * Returns an array of tokens this test wants to listen for.
+     * Do a version check to determine if this sniff needs to run at all.
      *
-     * @return array
+     * @return bool
      */
-    public function register()
+    protected function bowOutEarly()
     {
-        return array(T_STRING);
-    }//end register()
+        // Version used here should be the highest version from the `$newModifiers` array,
+        // i.e. the last PHP version in which a new modifier was introduced.
+        return ($this->supportsAbove('7.1') === false);
+    }
 
 
     /**
-     * Processes this test, when one of its tokens is encountered.
+     * Process the parameters of a matched function.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * This method has to be made concrete in child classes.
      *
-     * @return void
+     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
+     * @param int                   $stackPtr     The position of the current token in the stack.
+     * @param string                $functionName The token content (function name) which was matched.
+     * @param array                 $parameters   Array with information about the parameters.
+     *
+     * @return int|void Integer stack pointer to skip forward or void to continue
+     *                  normal file processing.
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function processParameters(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $functionName, $parameters)
     {
-        if ($this->supportsAbove('7.1') === false) {
-            return;
-        }
-
         $tokens         = $phpcsFile->getTokens();
-        $functionNameLc = strtolower($tokens[$stackPtr]['content']);
+        $functionNameLc = strtolower($functionName);
 
-        // Bow out if not one of the functions we're targetting.
-        if (isset($this->functions[$functionNameLc]) === false) {
+        // Check whether the options parameter in the function call is passed.
+        if (isset($parameters[$this->targetFunctions[$functionNameLc]]) === false) {
             return;
         }
 
-        // Get the options parameter in the function call.
-        $optionsParam = $this->getFunctionCallParameter($phpcsFile, $stackPtr, $this->functions[$functionNameLc]);
-        if ($optionsParam === false) {
-            return;
-        }
+        $optionsParam = $parameters[$this->targetFunctions[$functionNameLc]];
 
-        $stringToken = $phpcsFile->findNext(PHP_CodeSniffer_Tokens::$stringTokens, $optionsParam['start'], $optionsParam['end'] + 1);
+        $stringToken = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$stringTokens, $optionsParam['start'], $optionsParam['end'] + 1);
         if ($stringToken === false) {
             // No string token found in the options parameter, so skip it (e.g. variable passed in).
             return;
@@ -87,7 +89,7 @@ class PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff extends PHPCompa
          * Get the content of any string tokens in the options parameter and remove the quotes and variables.
          */
         for ($i = $stringToken; $i <= $optionsParam['end']; $i++) {
-            if (in_array($tokens[$i]['code'], PHP_CodeSniffer_Tokens::$stringTokens, true) === false) {
+            if (in_array($tokens[$i]['code'], \PHP_CodeSniffer_Tokens::$stringTokens, true) === false) {
                 continue;
             }
 
@@ -112,7 +114,5 @@ class PHPCompatibility_Sniffs_PHP_MbstringReplaceEModifierSniff extends PHPCompa
 
             $phpcsFile->addWarning($error, $stackPtr, 'Deprecated');
         }
-
-    }//end process()
-
+    }
 }//end class

@@ -5,6 +5,9 @@
  * @package PHPCompatibility
  */
 
+namespace PHPCompatibility\Tests\Sniffs\PHP;
+
+use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
  * New Classes Sniff tests
@@ -12,9 +15,9 @@
  * @group newClasses
  * @group classes
  *
- * @covers PHPCompatibility_Sniffs_PHP_NewClassesSniff
+ * @covers \PHPCompatibility\Sniffs\PHP\NewClassesSniff
  *
- * @uses    BaseSniffTest
+ * @uses    \PHPCompatibility\Tests\BaseSniffTest
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
@@ -39,11 +42,6 @@ class NewClassesSniffTest extends BaseSniffTest
      */
     public function testNewClass($className, $lastVersionBefore, $lines, $okVersion, $testVersion = null)
     {
-        if (version_compare(phpversion(), '5.3', '<') === true && strpos($className, '\\') !== false) {
-            $this->markTestSkipped('PHP 5.2 does not recognize namespaces.');
-            return;
-        }
-
         $errorVersion = (isset($testVersion)) ? $testVersion : $lastVersionBefore;
         $file         = $this->sniffFile(self::TEST_FILE, $errorVersion);
         $error        = "The built-in class {$className} is not present in PHP version {$lastVersionBefore} or earlier";
@@ -67,12 +65,52 @@ class NewClassesSniffTest extends BaseSniffTest
     public function dataNewClass()
     {
         return array(
-            array('DateTime', '5.1', array(25, 65, 105, 151), '5.2'),
-            array('DateTimeZone', '5.1', array(26, 66, 106, 162), '5.2'),
+            array('ArrayObject', '4.4', array(305), '5.0'),
+            array('ArrayIterator', '4.4', array(283), '5.0'),
+            array('CachingIterator', '4.4', array(284), '5.0'),
+            array('DirectoryIterator', '4.4', array(285), '5.0'),
+            array('RecursiveDirectoryIterator', '4.4', array(286), '5.0'),
+            array('RecursiveIteratorIterator', '4.4', array(287), '5.0'),
+            array('php_user_filter', '4.4', array(299), '5.0'),
+            array('tidy', '4.4', array(300), '5.0'),
+            array('SimpleXMLElement', '5.0.0', array(310), '5.1', '5.0'),
+            array('tidyNode', '5.0.0', array(301), '5.1', '5.0'),
+            array('libXMLError', '5.0', array(61, 101, 141), '5.1'),
+            array('PDO', '5.0', array(314), '5.1'),
+            array('PDOStatement', '5.0', array(315), '5.1'),
+            array('AppendIterator', '5.0', array(288), '5.1'),
+            array('EmptyIterator', '5.0', array(289), '5.1'),
+            array('FilterIterator', '5.0', array(290), '5.1'),
+            array('InfiniteIterator', '5.0', array(291), '5.1'),
+            array('IteratorIterator', '5.0', array(292), '5.1'),
+            array('LimitIterator', '5.0', array(293), '5.1'),
+            array('NoRewindIterator', '5.0', array(294), '5.1'),
+            array('ParentIterator', '5.0', array(295), '5.1'),
+            array('RecursiveArrayIterator', '5.0', array(296), '5.1'),
+            array('RecursiveCachingIterator', '5.0', array(297), '5.1'),
+            array('RecursiveFilterIterator', '5.0', array(298), '5.1'),
+            array('SimpleXMLIterator', '5.0', array(311), '5.1'),
+            array('XMLReader', '5.0', array(312, 336), '5.1'),
+            array('SplFileObject', '5.0', array(302, 336), '5.1'),
+            array('SplFileInfo', '5.1.1', array(303), '5.2', '5.1'),
+            array('SplTempFileObject', '5.1.1', array(304), '5.2', '5.1'),
+            array('XMLWriter', '5.1.1', array(313), '5.2', '5.1'),
+            array('DateTime', '5.1', array(25, 65, 105, 151, 318, 319, 321, 331), '5.2'),
+            array('DateTimeZone', '5.1', array(26, 66, 106, 162, 331), '5.2'),
             array('RegexIterator', '5.1', array(27, 67, 107, 163), '5.2'),
             array('RecursiveRegexIterator', '5.1', array(28, 68, 108), '5.2'),
+            array('ReflectionFunctionAbstract', '5.1', array(307), '5.2'),
+            array('ZipArchive', '5.1', array(268), '5.2'),
+            array('Closure', '5.2', array(279), '5.3'),
             array('DateInterval', '5.2', array(17, 18, 19, 20, 29, 69, 109), '5.3'),
             array('DatePeriod', '5.2', array(30, 70, 110, 173), '5.3'),
+            array('finfo', '5.2', array(278), '5.3'),
+            array('Collator', '5.2', array(269), '5.3'),
+            array('NumberFormatter', '5.2', array(270), '5.3'),
+            array('Locale', '5.2', array(271), '5.3'),
+            array('Normalizer', '5.2', array(272), '5.3'),
+            array('MessageFormatter', '5.2', array(273), '5.3'),
+            array('IntlDateFormatter', '5.2', array(274), '5.3'),
             array('Phar', '5.2', array(31, 71, 111, 152), '5.3'),
             array('PharData', '5.2', array(32, 72, 112), '5.3'),
             array('PharException', '5.2', array(33, 73, 113), '5.3'),
@@ -86,15 +124,18 @@ class NewClassesSniffTest extends BaseSniffTest
             array('SplHeap', '5.2', array(41, 81, 121, 164), '5.3'),
             array('SplMaxHeap', '5.2', array(42, 82, 122), '5.3'),
             array('SplMinHeap', '5.2', array(43, 83, 123, 153), '5.3'),
+            array('SplObjectStorage', '5.2', array(282), '5.3'),
             array('SplPriorityQueue', '5.2', array(44, 84, 124), '5.3'),
             array('SplQueue', '5.2', array(45, 85, 125), '5.3'),
             array('SplStack', '5.2', array(46, 86, 126), '5.3'),
+            array('ResourceBundle', '5.3.1', array(275), '5.4', '5.3'),
             array('CallbackFilterIterator', '5.3', array(47, 87, 127), '5.4'),
             array('RecursiveCallbackFilterIterator', '5.3', array(48, 88, 128, 179), '5.4'),
             array('ReflectionZendExtension', '5.3', array(49, 89, 129), '5.4'),
             array('SessionHandler', '5.3', array(50, 90, 130), '5.4'),
             array('SNMP', '5.3', array(51, 91, 131, 180), '5.4'),
             array('Transliterator', '5.3', array(52, 92, 132, 154), '5.4'),
+            array('Generator', '5.4', array(280), '5.5'),
             array('CURLFile', '5.4', array(53, 93, 133), '5.5'),
             array('DateTimeImmutable', '5.4', array(54, 94, 134), '5.5'),
             array('IntlCalendar', '5.4', array(55, 95, 135, 165), '5.5'),
@@ -103,10 +144,15 @@ class NewClassesSniffTest extends BaseSniffTest
             array('IntlBreakIterator', '5.4', array(58, 98, 138), '5.5'),
             array('IntlRuleBasedBreakIterator', '5.4', array(59, 99, 139), '5.5'),
             array('IntlCodePointBreakIterator', '5.4', array(60, 100, 140), '5.5'),
-            array('libXMLError', '5.0', array(61, 101, 141), '5.1'),
+            array('UConverter', '5.4', array(276), '5.5'),
+            array('GMP', '5.5', array(281), '5.6'),
+            array('IntlChar', '5.6', array(277), '7.0'),
+            array('ReflectionType', '5.6', array(308), '7.0'),
+            array('ReflectionGenerator', '5.6', array(309), '7.0'),
+            array('ReflectionClassConstant', '7.0', array(306), '7.1'),
 
             array('DATETIME', '5.1', array(146), '5.2'),
-            array('datetime', '5.1', array(147), '5.2'),
+            array('datetime', '5.1', array(147, 320), '5.2'),
             array('dATeTiMe', '5.1', array(148), '5.2'),
 
             array('Exception', '4.4', array(190, 217), '5.0'),
@@ -138,8 +184,9 @@ class NewClassesSniffTest extends BaseSniffTest
             array('DivisionByZeroError', '5.6', array(203, 243), '7.0'),
             array('ParseError', '5.6', array(244), '7.0'),
             array('TypeError', '5.6', array(245), '7.0'),
-            array('UI\Exception\InvalidArgumentException', '5.6', array(192, 210, 246), '7.0'),
+            array('UI\Exception\InvalidArgumentException', '5.6', array(192, 210, 246, 322), '7.0'),
             array('UI\Exception\RuntimeException', '5.6', array(188, 199, 247), '7.0'),
+            array('ArgumentCountError', '7.0', array(248), '7.1'),
         );
     }
 
@@ -179,6 +226,9 @@ class NewClassesSniffTest extends BaseSniffTest
             array(170),
             array(181),
             array(265),
+            array(325),
+            array(326),
+            array(327),
         );
     }
 
