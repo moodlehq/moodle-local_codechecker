@@ -153,6 +153,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                         $foundvar = trim($matches[0]);
                         // Does the found variable match any next line beginning with any of:
                         //   - a list() statement containing the variable.
+                        //   - a foreach() statement containing the variable 'as'.
                         //   - the variable.
                         $nextToken = $phpcsFile->findNext(
                             PHP_CodeSniffer_Tokens::$emptyTokens,
@@ -185,6 +186,22 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                                 $error = 'Inline doc block type-hinting for \'%s\' does not match next list() variables';
                                 $data = array($foundvar);
                                 $phpcsFile->addError($error, $stackPtr, 'TypeHintingList', $data);
+                            }
+                        } else if ($tokens[$nextToken]['code'] === T_FOREACH) {
+                            // Let's look within the foreach if the variable appear after the 'as' token.
+                            $astoken = $phpcsFile->findNext(
+                                T_AS,
+                                ($nextToken + 1)
+                            );
+                            $variabletoken = $phpcsFile->findNext(
+                                T_VARIABLE,
+                                ($astoken + 1)
+                            );
+                            if ($tokens[$variabletoken]['content'] !== $foundvar) {
+                                // Not valid type-hinting, specialised error.
+                                $error = 'Inline doc block type-hinting for \'%s\' does not match next foreach() as variable';
+                                $data = array($foundvar, $tokens[$nextToken]['content']);
+                                $phpcsFile->addError($error, $stackPtr, 'TypeHintingMatch', $data);
                             }
                         } else if ($tokens[$nextToken]['content'] !== $foundvar) {
                             // Not valid type-hinting, specialised error.
