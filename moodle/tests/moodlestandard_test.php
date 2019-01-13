@@ -299,7 +299,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('PHPCompatibility.PHP.DeprecatedFunctions');
+        $this->set_sniff('PHPCompatibility.FunctionUse.RemovedFunctions');
         $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_deprecatedfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -322,7 +322,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('PHPCompatibility.PHP.ForbiddenCallTimePassByReference');
+        $this->set_sniff('PHPCompatibility.Syntax.ForbiddenCallTimePassByReference');
         $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_forbiddencalltimepassbyreference.php');
 
         // Define expected results (errors and warnings). Format, array of:
