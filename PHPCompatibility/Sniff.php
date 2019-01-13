@@ -11,6 +11,10 @@
 namespace PHPCompatibility;
 
 use PHPCompatibility\PHPCSHelper;
+use PHP_CodeSniffer_Exception as PHPCS_Exception;
+use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer_Sniff as PHPCS_Sniff;
+use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
  * \PHPCompatibility\Sniff.
@@ -20,7 +24,7 @@ use PHPCompatibility\PHPCSHelper;
  * @author    Wim Godden <wim.godden@cu.be>
  * @copyright 2014 Cu.be Solutions bvba
  */
-abstract class Sniff implements \PHP_CodeSniffer_Sniff
+abstract class Sniff implements PHPCS_Sniff
 {
 
     const REGEX_COMPLEX_VARS = '`(?:(\{)?(?<!\\\\)\$)?(\{)?(?<!\\\\)\$(\{)?(?P<varname>[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)(?:->\$?(?P>varname)|\[[^\]]+\]|::\$?(?P>varname)|\([^\)]*\))*(?(3)\}|)(?(2)\}|)(?(1)\}|)`';
@@ -33,15 +37,15 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      * @var array
      */
     protected $superglobals = array(
-        '$GLOBALS',
-        '$_SERVER',
-        '$_GET',
-        '$_POST',
-        '$_FILES',
-        '$_COOKIE',
-        '$_SESSION',
-        '$_REQUEST',
-        '$_ENV',
+        '$GLOBALS'  => true,
+        '$_SERVER'  => true,
+        '$_GET'     => true,
+        '$_POST'    => true,
+        '$_FILES'   => true,
+        '$_COOKIE'  => true,
+        '$_SESSION' => true,
+        '$_REQUEST' => true,
+        '$_ENV'     => true,
     );
 
     /**
@@ -132,11 +136,10 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
                     if (version_compare($min, $max, '>')) {
                         trigger_error(
                             "Invalid range in testVersion setting: '" . $testVersion . "'",
-                            E_USER_WARNING
+                            \E_USER_WARNING
                         );
                         return $default;
-                    }
-                    else {
+                    } else {
                         $arrTestVersions[$testVersion] = array($min, $max);
                         return $arrTestVersions[$testVersion];
                     }
@@ -145,7 +148,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
 
             trigger_error(
                 "Invalid testVersion setting: '" . $testVersion . "'",
-                E_USER_WARNING
+                \E_USER_WARNING
             );
             return $default;
         }
@@ -182,7 +185,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         } else {
             return false;
         }
-    }//end supportsAbove()
+    }
 
 
     /**
@@ -209,7 +212,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         } else {
             return false;
         }
-    }//end supportsBelow()
+    }
 
 
     /**
@@ -228,7 +231,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return void
      */
-    public function addMessage(\PHP_CodeSniffer_File $phpcsFile, $message, $stackPtr, $isError, $code = 'Found', $data = array())
+    public function addMessage(File $phpcsFile, $message, $stackPtr, $isError, $code = 'Found', $data = array())
     {
         if ($isError === true) {
             $phpcsFile->addError($message, $stackPtr, $code, $data);
@@ -256,7 +259,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     /**
      * Strip quotes surrounding an arbitrary string.
      *
-     * Intended for use with the content of a T_CONSTANT_ENCAPSED_STRING / T_DOUBLE_QUOTED_STRING.
+     * Intended for use with the contents of a T_CONSTANT_ENCAPSED_STRING / T_DOUBLE_QUOTED_STRING.
      *
      * @param string $string The raw string.
      *
@@ -271,7 +274,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     /**
      * Strip variables from an arbitrary double quoted string.
      *
-     * Intended for use with the content of a T_DOUBLE_QUOTED_STRING.
+     * Intended for use with the contents of a T_DOUBLE_QUOTED_STRING.
      *
      * @param string $string The raw string.
      *
@@ -305,21 +308,21 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     /**
      * Checks if a function call has parameters.
      *
-     * Expects to be passed the T_STRING stack pointer for the function call.
+     * Expects to be passed the T_STRING or T_VARIABLE stack pointer for the function call.
      * If passed a T_STRING which is *not* a function call, the behaviour is unreliable.
      *
      * Extra feature: If passed an T_ARRAY or T_OPEN_SHORT_ARRAY stack pointer, it
      * will detect whether the array has values or is empty.
      *
-     * @link https://github.com/wimg/PHPCompatibility/issues/120
-     * @link https://github.com/wimg/PHPCompatibility/issues/152
+     * @link https://github.com/PHPCompatibility/PHPCompatibility/issues/120
+     * @link https://github.com/PHPCompatibility/PHPCompatibility/issues/152
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the function call token.
      *
      * @return bool
      */
-    public function doesFunctionCallHaveParameters(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function doesFunctionCallHaveParameters(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -329,14 +332,14 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         // Is this one of the tokens this function handles ?
-        if (in_array($tokens[$stackPtr]['code'], array(T_STRING, T_ARRAY, T_OPEN_SHORT_ARRAY), true) === false) {
+        if (in_array($tokens[$stackPtr]['code'], array(\T_STRING, \T_ARRAY, \T_OPEN_SHORT_ARRAY, \T_VARIABLE), true) === false) {
             return false;
         }
 
-        $nextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
+        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
 
         // Deal with short array syntax.
-        if ($tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY) {
+        if ($tokens[$stackPtr]['code'] === \T_OPEN_SHORT_ARRAY) {
             if (isset($tokens[$stackPtr]['bracket_closer']) === false) {
                 return false;
             }
@@ -351,7 +354,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
 
         // Deal with function calls & long arrays.
         // Next non-empty token should be the open parenthesis.
-        if ($nextNonEmpty === false && $tokens[$nextNonEmpty]['code'] !== T_OPEN_PARENTHESIS) {
+        if ($nextNonEmpty === false && $tokens[$nextNonEmpty]['code'] !== \T_OPEN_PARENTHESIS) {
             return false;
         }
 
@@ -360,7 +363,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         $closeParenthesis = $tokens[$nextNonEmpty]['parenthesis_closer'];
-        $nextNextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $nextNonEmpty + 1, $closeParenthesis + 1, true);
+        $nextNextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, $nextNonEmpty + 1, $closeParenthesis + 1, true);
 
         if ($nextNextNonEmpty === $closeParenthesis) {
             // No parameters.
@@ -374,22 +377,22 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     /**
      * Count the number of parameters a function call has been passed.
      *
-     * Expects to be passed the T_STRING stack pointer for the function call.
+     * Expects to be passed the T_STRING or T_VARIABLE stack pointer for the function call.
      * If passed a T_STRING which is *not* a function call, the behaviour is unreliable.
      *
      * Extra feature: If passed an T_ARRAY or T_OPEN_SHORT_ARRAY stack pointer,
      * it will return the number of values in the array.
      *
-     * @link https://github.com/wimg/PHPCompatibility/issues/111
-     * @link https://github.com/wimg/PHPCompatibility/issues/114
-     * @link https://github.com/wimg/PHPCompatibility/issues/151
+     * @link https://github.com/PHPCompatibility/PHPCompatibility/issues/111
+     * @link https://github.com/PHPCompatibility/PHPCompatibility/issues/114
+     * @link https://github.com/PHPCompatibility/PHPCompatibility/issues/151
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the function call token.
      *
      * @return int
      */
-    public function getFunctionCallParameterCount(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getFunctionCallParameterCount(File $phpcsFile, $stackPtr)
     {
         if ($this->doesFunctionCallHaveParameters($phpcsFile, $stackPtr) === false) {
             return 0;
@@ -402,7 +405,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     /**
      * Get information on all parameters passed to a function call.
      *
-     * Expects to be passed the T_STRING stack pointer for the function call.
+     * Expects to be passed the T_STRING or T_VARIABLE stack pointer for the function call.
      * If passed a T_STRING which is *not* a function call, the behaviour is unreliable.
      *
      * Will return an multi-dimentional array with the start token pointer, end token
@@ -417,25 +420,25 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return array
      */
-    public function getFunctionCallParameters(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getFunctionCallParameters(File $phpcsFile, $stackPtr)
     {
         if ($this->doesFunctionCallHaveParameters($phpcsFile, $stackPtr) === false) {
             return array();
         }
 
-        // Ok, we know we have a T_STRING, T_ARRAY or T_OPEN_SHORT_ARRAY with parameters
+        // Ok, we know we have a T_STRING, T_VARIABLE, T_ARRAY or T_OPEN_SHORT_ARRAY with parameters
         // and valid open & close brackets/parenthesis.
         $tokens = $phpcsFile->getTokens();
 
         // Mark the beginning and end tokens.
-        if ($tokens[$stackPtr]['code'] === T_OPEN_SHORT_ARRAY) {
+        if ($tokens[$stackPtr]['code'] === \T_OPEN_SHORT_ARRAY) {
             $opener = $stackPtr;
             $closer = $tokens[$stackPtr]['bracket_closer'];
 
             $nestedParenthesisCount = 0;
 
         } else {
-            $opener = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
+            $opener = $phpcsFile->findNext(Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
             $closer = $tokens[$opener]['parenthesis_closer'];
 
             $nestedParenthesisCount = 1;
@@ -450,7 +453,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         $nextComma  = $opener;
         $paramStart = $opener + 1;
         $cnt        = 1;
-        while (($nextComma = $phpcsFile->findNext(array(T_COMMA, $tokens[$closer]['code'], T_OPEN_SHORT_ARRAY), $nextComma + 1, $closer + 1)) !== false) {
+        while (($nextComma = $phpcsFile->findNext(array(\T_COMMA, $tokens[$closer]['code'], \T_OPEN_SHORT_ARRAY, \T_CLOSURE), $nextComma + 1, $closer + 1)) !== false) {
             // Ignore anything within short array definition brackets.
             if ($tokens[$nextComma]['type'] === 'T_OPEN_SHORT_ARRAY'
                 && (isset($tokens[$nextComma]['bracket_opener'])
@@ -459,6 +462,17 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             ) {
                 // Skip forward to the end of the short array definition.
                 $nextComma = $tokens[$nextComma]['bracket_closer'];
+                continue;
+            }
+
+            // Skip past closures passed as function parameters.
+            if ($tokens[$nextComma]['type'] === 'T_CLOSURE'
+                && (isset($tokens[$nextComma]['scope_condition'])
+                    && $tokens[$nextComma]['scope_condition'] === $nextComma)
+                && isset($tokens[$nextComma]['scope_closer'])
+            ) {
+                // Skip forward to the end of the closure declaration.
+                $nextComma = $tokens[$nextComma]['scope_closer'];
                 continue;
             }
 
@@ -483,7 +497,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             // Check if there are more tokens before the closing parenthesis.
             // Prevents code like the following from setting a third parameter:
             // functionCall( $param1, $param2, );
-            $hasNextParam = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $nextComma + 1, $closer, true, null, true);
+            $hasNextParam = $phpcsFile->findNext(Tokens::$emptyTokens, $nextComma + 1, $closer, true, null, true);
             if ($hasNextParam === false) {
                 break;
             }
@@ -500,7 +514,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     /**
      * Get information on a specific parameter passed to a function call.
      *
-     * Expects to be passed the T_STRING stack pointer for the function call.
+     * Expects to be passed the T_STRING or T_VARIABLE stack pointer for the function call.
      * If passed a T_STRING which is *not* a function call, the behaviour is unreliable.
      *
      * Will return a array with the start token pointer, end token pointer and the raw value
@@ -513,7 +527,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return array|false
      */
-    public function getFunctionCallParameter(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $paramOffset)
+    public function getFunctionCallParameter(File $phpcsFile, $stackPtr, $paramOffset)
     {
         $parameters = $this->getFunctionCallParameters($phpcsFile, $stackPtr);
 
@@ -543,7 +557,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *              If the $scopeTypes are set: True if *one* of the conditions is a
      *              valid scope, false otherwise.
      */
-    public function tokenHasScope(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $validScopes = null)
+    public function tokenHasScope(File $phpcsFile, $stackPtr, $validScopes = null)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -577,70 +591,19 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return bool True if within class scope, false otherwise.
      */
-    public function inClassScope(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $strict = true)
+    public function inClassScope(File $phpcsFile, $stackPtr, $strict = true)
     {
-        $validScopes = array(T_CLASS);
+        $validScopes = array(\T_CLASS);
         if (defined('T_ANON_CLASS') === true) {
-            $validScopes[] = T_ANON_CLASS;
+            $validScopes[] = \T_ANON_CLASS;
         }
 
         if ($strict === false) {
-            $validScopes[] = T_INTERFACE;
-
-            if (defined('T_TRAIT')) {
-                // phpcs:ignore PHPCompatibility.PHP.NewConstants.t_traitFound
-                $validScopes[] = T_TRAIT;
-            }
+            $validScopes[] = \T_INTERFACE;
+            $validScopes[] = \T_TRAIT;
         }
 
         return $phpcsFile->hasCondition($stackPtr, $validScopes);
-    }
-
-
-    /**
-     * Verify whether a token is within a scoped use statement.
-     *
-     * PHPCS cross-version compatibility method.
-     *
-     * In PHPCS 1.x no conditions are set for a scoped use statement.
-     * This method works around that limitation.
-     *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the token.
-     *
-     * @return bool True if within use scope, false otherwise.
-     */
-    public function inUseScope(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
-    {
-        static $isLowPHPCS, $ignoreTokens;
-
-        if (isset($isLowPHPCS) === false) {
-            $isLowPHPCS = version_compare(PHPCSHelper::getVersion(), '2.3.0', '<');
-        }
-        if (isset($ignoreTokens) === false) {
-            $ignoreTokens              = \PHP_CodeSniffer_Tokens::$emptyTokens;
-            $ignoreTokens[T_STRING]    = T_STRING;
-            $ignoreTokens[T_AS]        = T_AS;
-            $ignoreTokens[T_PUBLIC]    = T_PUBLIC;
-            $ignoreTokens[T_PROTECTED] = T_PROTECTED;
-            $ignoreTokens[T_PRIVATE]   = T_PRIVATE;
-        }
-
-        // PHPCS 2.0.
-        if ($isLowPHPCS === false) {
-            return $phpcsFile->hasCondition($stackPtr, T_USE);
-        } else {
-            // PHPCS 1.x.
-            $tokens         = $phpcsFile->getTokens();
-            $maybeCurlyOpen = $phpcsFile->findPrevious($ignoreTokens, ($stackPtr - 1), null, true);
-            if ($tokens[$maybeCurlyOpen]['code'] === T_OPEN_CURLY_BRACKET) {
-                $maybeUseStatement = $phpcsFile->findPrevious($ignoreTokens, ($maybeCurlyOpen - 1), null, true);
-                if ($tokens[$maybeUseStatement]['code'] === T_USE) {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 
 
@@ -654,7 +617,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return string
      */
-    public function getFQClassNameFromNewToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getFQClassNameFromNewToken(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -663,30 +626,30 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             return '';
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_NEW) {
+        if ($tokens[$stackPtr]['code'] !== \T_NEW) {
             return '';
         }
 
-        $start = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
+        $start = $phpcsFile->findNext(Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
         if ($start === false) {
             return '';
         }
 
         // Bow out if the next token is a variable as we don't know where it was defined.
-        if ($tokens[$start]['code'] === T_VARIABLE) {
+        if ($tokens[$start]['code'] === \T_VARIABLE) {
             return '';
         }
 
         // Bow out if the next token is the class keyword.
-        if ($tokens[$start]['type'] === 'T_ANON_CLASS' || $tokens[$start]['code'] === T_CLASS) {
+        if ($tokens[$start]['type'] === 'T_ANON_CLASS' || $tokens[$start]['code'] === \T_CLASS) {
             return '';
         }
 
         $find = array(
-            T_NS_SEPARATOR,
-            T_STRING,
-            T_NAMESPACE,
-            T_WHITESPACE,
+            \T_NS_SEPARATOR,
+            \T_STRING,
+            \T_NAMESPACE,
+            \T_WHITESPACE,
         );
 
         $end       = $phpcsFile->findNext($find, ($start + 1), null, true, null, true);
@@ -708,7 +671,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return string
      */
-    public function getFQExtendedClassName(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getFQExtendedClassName(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -717,7 +680,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             return '';
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_CLASS
+        if ($tokens[$stackPtr]['code'] !== \T_CLASS
             && $tokens[$stackPtr]['type'] !== 'T_ANON_CLASS'
             && $tokens[$stackPtr]['type'] !== 'T_INTERFACE'
         ) {
@@ -744,7 +707,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return string
      */
-    public function getFQClassNameFromDoubleColonToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getFQClassNameFromDoubleColonToken(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -753,23 +716,23 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             return '';
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_DOUBLE_COLON) {
+        if ($tokens[$stackPtr]['code'] !== \T_DOUBLE_COLON) {
             return '';
         }
 
         // Nothing to do if previous token is a variable as we don't know where it was defined.
-        if ($tokens[$stackPtr - 1]['code'] === T_VARIABLE) {
+        if ($tokens[$stackPtr - 1]['code'] === \T_VARIABLE) {
             return '';
         }
 
         // Nothing to do if 'parent' or 'static' as we don't know how far the class tree extends.
-        if (in_array($tokens[$stackPtr - 1]['code'], array(T_PARENT, T_STATIC), true)) {
+        if (in_array($tokens[$stackPtr - 1]['code'], array(\T_PARENT, \T_STATIC), true)) {
             return '';
         }
 
         // Get the classname from the class declaration if self is used.
-        if ($tokens[$stackPtr - 1]['code'] === T_SELF) {
-            $classDeclarationPtr = $phpcsFile->findPrevious(T_CLASS, $stackPtr - 1);
+        if ($tokens[$stackPtr - 1]['code'] === \T_SELF) {
+            $classDeclarationPtr = $phpcsFile->findPrevious(\T_CLASS, $stackPtr - 1);
             if ($classDeclarationPtr === false) {
                 return '';
             }
@@ -778,10 +741,10 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         $find = array(
-            T_NS_SEPARATOR,
-            T_STRING,
-            T_NAMESPACE,
-            T_WHITESPACE,
+            \T_NS_SEPARATOR,
+            \T_STRING,
+            \T_NAMESPACE,
+            \T_WHITESPACE,
         );
 
         $start = $phpcsFile->findPrevious($find, $stackPtr - 1, null, true, null, true);
@@ -809,7 +772,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return string
      */
-    public function getFQName(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $name)
+    public function getFQName(File $phpcsFile, $stackPtr, $name)
     {
         if (strpos($name, '\\') === 0) {
             // Already fully qualified.
@@ -842,7 +805,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
     public function isNamespaced($FQName)
     {
         if (strpos($FQName, '\\') !== 0) {
-            throw new \PHP_CodeSniffer_Exception('$FQName must be a fully qualified name');
+            throw new PHPCS_Exception('$FQName must be a fully qualified name');
         }
 
         return (strpos(substr($FQName, 1), '\\') !== false);
@@ -857,7 +820,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return string Namespace name or empty string if it couldn't be determined or no namespace applies.
      */
-    public function determineNamespace(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function determineNamespace(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -868,7 +831,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
 
         // Check for scoped namespace {}.
         if (empty($tokens[$stackPtr]['conditions']) === false) {
-            $namespacePtr = $phpcsFile->getCondition($stackPtr, T_NAMESPACE);
+            $namespacePtr = $phpcsFile->getCondition($stackPtr, \T_NAMESPACE);
             if ($namespacePtr !== false) {
                 $namespace = $this->getDeclaredNamespaceName($phpcsFile, $namespacePtr);
                 if ($namespace !== false) {
@@ -890,7 +853,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         $previousNSToken = $stackPtr;
         $namespace       = false;
         do {
-            $previousNSToken = $phpcsFile->findPrevious(T_NAMESPACE, ($previousNSToken - 1));
+            $previousNSToken = $phpcsFile->findPrevious(\T_NAMESPACE, ($previousNSToken - 1));
 
             // Stop if we encounter a scoped namespace declaration as we already know we're not in one.
             if (empty($tokens[$previousNSToken]['scope_condition']) === false && $tokens[$previousNSToken]['scope_condition'] === $previousNSToken) {
@@ -921,7 +884,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      * @return string|false Namespace name or false if not a namespace declaration.
      *                      Namespace name can be an empty string for global namespace declaration.
      */
-    public function getDeclaredNamespaceName(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getDeclaredNamespaceName(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -930,17 +893,17 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             return false;
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_NAMESPACE) {
+        if ($tokens[$stackPtr]['code'] !== \T_NAMESPACE) {
             return false;
         }
 
-        if ($tokens[($stackPtr + 1)]['code'] === T_NS_SEPARATOR) {
+        if ($tokens[($stackPtr + 1)]['code'] === \T_NS_SEPARATOR) {
             // Not a namespace declaration, but use of, i.e. namespace\someFunction();
             return false;
         }
 
-        $nextToken = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
-        if ($tokens[$nextToken]['code'] === T_OPEN_CURLY_BRACKET) {
+        $nextToken = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
+        if ($tokens[$nextToken]['code'] === \T_OPEN_CURLY_BRACKET) {
             // Declaration for global namespace when using multiple namespaces in a file.
             // I.e.: namespace {}
             return '';
@@ -948,9 +911,9 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
 
         // Ok, this should be a namespace declaration, so get all the parts together.
         $validTokens = array(
-            T_STRING       => true,
-            T_NS_SEPARATOR => true,
-            T_WHITESPACE   => true,
+            \T_STRING       => true,
+            \T_NS_SEPARATOR => true,
+            \T_WHITESPACE   => true,
         );
 
         $namespaceName = '';
@@ -978,15 +941,15 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *                   no return type was found or the passed token was
      *                   not of the correct type.
      */
-    public function getReturnTypeHintToken(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getReturnTypeHintToken(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (defined('T_RETURN_TYPE') && $tokens[$stackPtr]['code'] === T_RETURN_TYPE) {
+        if (defined('T_RETURN_TYPE') && $tokens[$stackPtr]['code'] === \T_RETURN_TYPE) {
             return $stackPtr;
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_FUNCTION && $tokens[$stackPtr]['code'] !== T_CLOSURE) {
+        if ($tokens[$stackPtr]['code'] !== \T_FUNCTION && $tokens[$stackPtr]['code'] !== \T_CLOSURE) {
             return false;
         }
 
@@ -999,7 +962,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         if (isset($tokens[$stackPtr]['scope_opener'])) {
             $endOfFunctionDeclaration = $tokens[$stackPtr]['scope_opener'];
         } else {
-            $nextSemiColon = $phpcsFile->findNext(T_SEMICOLON, ($tokens[$stackPtr]['parenthesis_closer'] + 1), null, false, null, true);
+            $nextSemiColon = $phpcsFile->findNext(\T_SEMICOLON, ($tokens[$stackPtr]['parenthesis_closer'] + 1), null, false, null, true);
             if ($nextSemiColon !== false) {
                 $endOfFunctionDeclaration = $nextSemiColon;
             }
@@ -1010,7 +973,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         $hasColon = $phpcsFile->findNext(
-            array(T_COLON, T_INLINE_ELSE),
+            array(\T_COLON, \T_INLINE_ELSE),
             ($tokens[$stackPtr]['parenthesis_closer'] + 1),
             $endOfFunctionDeclaration
         );
@@ -1028,11 +991,11 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
          *   As of PHPCS 3.3.0 `array` as a type declaration will be tokenized as `T_STRING`.
          */
         $unrecognizedTypes = array(
-            T_CALLABLE,
-            T_SELF,
-            T_PARENT,
-            T_ARRAY, // PHPCS < 2.4.0.
-            T_STRING,
+            \T_CALLABLE,
+            \T_SELF,
+            \T_PARENT,
+            \T_ARRAY, // PHPCS < 2.4.0.
+            \T_STRING,
         );
 
         return $phpcsFile->findPrevious($unrecognizedTypes, ($endOfFunctionDeclaration - 1), $hasColon);
@@ -1057,26 +1020,24 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return string|false The name of the return type token.
      */
-    public function getReturnTypeHintName(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getReturnTypeHintName(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
         // In older PHPCS versions, the nullable indicator will turn a return type colon into a T_INLINE_ELSE.
-        $colon = $phpcsFile->findPrevious(array(T_COLON, T_INLINE_ELSE, T_FUNCTION, T_CLOSE_PARENTHESIS), ($stackPtr - 1));
+        $colon = $phpcsFile->findPrevious(array(\T_COLON, \T_INLINE_ELSE, \T_FUNCTION, \T_CLOSE_PARENTHESIS), ($stackPtr - 1));
         if ($colon === false
-            || ($tokens[$colon]['code'] !== T_COLON && $tokens[$colon]['code'] !== T_INLINE_ELSE)
+            || ($tokens[$colon]['code'] !== \T_COLON && $tokens[$colon]['code'] !== \T_INLINE_ELSE)
         ) {
             // Shouldn't happen, just in case.
             return;
         }
 
-        $emptyTokens = array_flip(\PHP_CodeSniffer_Tokens::$emptyTokens); // PHPCS 1.x compat.
-
         $returnTypeHint = '';
         for ($i = ($colon + 1); $i <= $stackPtr; $i++) {
             // As of PHPCS 3.3.0+, all tokens are tokenized as "normal", so T_CALLABLE, T_SELF etc are
             // all possible, just exclude anything that's regarded as empty and the nullable indicator.
-            if (isset($emptyTokens[$tokens[$i]['code']])) {
+            if (isset(Tokens::$emptyTokens[$tokens[$i]['code']])) {
                 continue;
             }
 
@@ -1084,7 +1045,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
                 continue;
             }
 
-            if (defined('T_NULLABLE') === false && $tokens[$i]['code'] === T_INLINE_THEN) {
+            if (defined('T_NULLABLE') === false && $tokens[$i]['code'] === \T_INLINE_THEN) {
                 // Old PHPCS.
                 continue;
             }
@@ -1110,11 +1071,11 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return bool
      */
-    public function isClassProperty(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function isClassProperty(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]) === false || $tokens[$stackPtr]['code'] !== T_VARIABLE) {
+        if (isset($tokens[$stackPtr]) === false || $tokens[$stackPtr]['code'] !== \T_VARIABLE) {
             return false;
         }
 
@@ -1124,10 +1085,21 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             'T_ANON_CLASS' => true,
             'T_TRAIT'      => true,
         );
-        if ($this->validDirectScope($phpcsFile, $stackPtr, $validScopes) === true) {
+
+        $scopePtr = $this->validDirectScope($phpcsFile, $stackPtr, $validScopes);
+        if ($scopePtr !== false) {
             // Make sure it's not a method parameter.
             if (empty($tokens[$stackPtr]['nested_parenthesis']) === true) {
                 return true;
+            } else {
+                $parenthesis = array_keys($tokens[$stackPtr]['nested_parenthesis']);
+                $deepestOpen = array_pop($parenthesis);
+                if ($deepestOpen < $scopePtr
+                    || isset($tokens[$deepestOpen]['parenthesis_owner']) === false
+                    || $tokens[$tokens[$deepestOpen]['parenthesis_owner']]['code'] !== \T_FUNCTION
+                ) {
+                    return true;
+                }
             }
         }
 
@@ -1144,11 +1116,11 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return bool
      */
-    public function isClassConstant(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function isClassConstant(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]) === false || $tokens[$stackPtr]['code'] !== T_CONST) {
+        if (isset($tokens[$stackPtr]) === false || $tokens[$stackPtr]['code'] !== \T_CONST) {
             return false;
         }
 
@@ -1158,7 +1130,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             'T_ANON_CLASS' => true,
             'T_INTERFACE'  => true,
         );
-        if ($this->validDirectScope($phpcsFile, $stackPtr, $validScopes) === true) {
+        if ($this->validDirectScope($phpcsFile, $stackPtr, $validScopes) !== false) {
             return true;
         }
 
@@ -1180,9 +1152,9 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *                                           format to allow for newer token types.
      *                                           Value is irrelevant.
      *
-     * @return bool
+     * @return int|bool StackPtr to the scope if valid, false otherwise.
      */
-    protected function validDirectScope(\PHP_CodeSniffer_File $phpcsFile, $stackPtr, $validScopes)
+    protected function validDirectScope(File $phpcsFile, $stackPtr, $validScopes)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -1201,7 +1173,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         if (isset($validScopes[$tokens[$ptr]['type']]) === true) {
-            return true;
+            return $ptr;
         }
 
         return false;
@@ -1224,11 +1196,11 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *               - no type hints were found
      *               - or the passed token was not of the correct type.
      */
-    public function getTypeHintsFromFunctionDeclaration(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getTypeHintsFromFunctionDeclaration(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if ($tokens[$stackPtr]['code'] !== T_FUNCTION && $tokens[$stackPtr]['code'] !== T_CLOSURE) {
+        if ($tokens[$stackPtr]['code'] !== \T_FUNCTION && $tokens[$stackPtr]['code'] !== \T_CLOSURE) {
             return array();
         }
 
@@ -1268,7 +1240,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      * @return string|false The algorithm name without quotes if this was a relevant hash
      *                      function call or false if it was not.
      */
-    public function getHashAlgorithmParameter(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function getHashAlgorithmParameter(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -1277,7 +1249,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             return false;
         }
 
-        if ($tokens[$stackPtr]['code'] !== T_STRING) {
+        if ($tokens[$stackPtr]['code'] !== \T_STRING) {
             return false;
         }
 
@@ -1311,7 +1283,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return bool
      */
-    public function isUseOfGlobalConstant(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function isUseOfGlobalConstant(File $phpcsFile, $stackPtr)
     {
         static $isLowPHPCS, $isLowPHP;
 
@@ -1323,7 +1295,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         // Is this one of the tokens this function handles ?
-        if ($tokens[$stackPtr]['code'] !== T_STRING) {
+        if ($tokens[$stackPtr]['code'] !== \T_STRING) {
             return false;
         }
 
@@ -1331,16 +1303,16 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         if (isset($isLowPHPCS, $isLowPHP) === false) {
             $isLowPHP   = false;
             $isLowPHPCS = false;
-            if (version_compare(PHP_VERSION_ID, '50400', '<')) {
+            if (version_compare(\PHP_VERSION_ID, '50400', '<')) {
                 $isLowPHP   = true;
                 $isLowPHPCS = version_compare(PHPCSHelper::getVersion(), '2.4.0', '<');
             }
         }
 
-        $next = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if ($next !== false
-            && ($tokens[$next]['code'] === T_OPEN_PARENTHESIS
-                || $tokens[$next]['code'] === T_DOUBLE_COLON)
+            && ($tokens[$next]['code'] === \T_OPEN_PARENTHESIS
+                || $tokens[$next]['code'] === \T_DOUBLE_COLON)
         ) {
             // Function call or declaration.
             return false;
@@ -1368,10 +1340,10 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             'T_PRIVATE'         => true,
         );
 
-        $prev = $phpcsFile->findPrevious(\PHP_CodeSniffer_Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
         if ($prev !== false
             && (isset($tokensToIgnore[$tokens[$prev]['type']]) === true
-                || ($tokens[$prev]['code'] === T_STRING
+                || ($tokens[$prev]['code'] === \T_STRING
                     && (($isLowPHPCS === true
                         && $tokens[$prev]['content'] === 'trait')
                     || ($isLowPHP === true
@@ -1382,15 +1354,15 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         if ($prev !== false
-            && $tokens[$prev]['code'] === T_NS_SEPARATOR
-            && $tokens[($prev - 1)]['code'] === T_STRING
+            && $tokens[$prev]['code'] === \T_NS_SEPARATOR
+            && $tokens[($prev - 1)]['code'] === \T_STRING
         ) {
             // Namespaced constant of the same name.
             return false;
         }
 
         if ($prev !== false
-            && $tokens[$prev]['code'] === T_CONST
+            && $tokens[$prev]['code'] === \T_CONST
             && $this->isClassConstant($phpcsFile, $prev) === true
         ) {
             // Class constant declaration of the same name.
@@ -1406,14 +1378,14 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             }
         }
 
-        $firstOnLine = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($i + 1), null, true);
-        if ($firstOnLine !== false && $tokens[$firstOnLine]['code'] === T_USE) {
-            $nextOnLine = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($firstOnLine + 1), null, true);
+        $firstOnLine = $phpcsFile->findNext(Tokens::$emptyTokens, ($i + 1), null, true);
+        if ($firstOnLine !== false && $tokens[$firstOnLine]['code'] === \T_USE) {
+            $nextOnLine = $phpcsFile->findNext(Tokens::$emptyTokens, ($firstOnLine + 1), null, true);
             if ($nextOnLine !== false) {
-                if (($tokens[$nextOnLine]['code'] === T_STRING && $tokens[$nextOnLine]['content'] === 'const')
-                    || $tokens[$nextOnLine]['code'] === T_CONST // Happens in some PHPCS versions.
+                if (($tokens[$nextOnLine]['code'] === \T_STRING && $tokens[$nextOnLine]['content'] === 'const')
+                    || $tokens[$nextOnLine]['code'] === \T_CONST // Happens in some PHPCS versions.
                 ) {
-                    $hasNsSep = $phpcsFile->findNext(T_NS_SEPARATOR, ($nextOnLine + 1), $stackPtr);
+                    $hasNsSep = $phpcsFile->findNext(\T_NS_SEPARATOR, ($nextOnLine + 1), $stackPtr);
                     if ($hasNsSep !== false) {
                         // Namespaced const (group) use statement.
                         return false;
@@ -1449,7 +1421,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *              False if not or if it could not be reliably determined
      *              (variable or calculations and such).
      */
-    public function isPositiveNumber(\PHP_CodeSniffer_File $phpcsFile, $start, $end, $allowFloats = false)
+    public function isPositiveNumber(File $phpcsFile, $start, $end, $allowFloats = false)
     {
         $number = $this->isNumber($phpcsFile, $start, $end, $allowFloats);
 
@@ -1481,7 +1453,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *              False if not or if it could not be reliably determined
      *              (variable or calculations and such).
      */
-    public function isNegativeNumber(\PHP_CodeSniffer_File $phpcsFile, $start, $end, $allowFloats = false)
+    public function isNegativeNumber(File $phpcsFile, $start, $end, $allowFloats = false)
     {
         $number = $this->isNumber($phpcsFile, $start, $end, $allowFloats);
 
@@ -1490,7 +1462,6 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         return ($number < 0);
-
     }
 
     /**
@@ -1519,19 +1490,18 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *                        number or if it could not be reliably determined
      *                        (variable or calculations and such).
      */
-    protected function isNumber(\PHP_CodeSniffer_File $phpcsFile, $start, $end, $allowFloats = false)
+    protected function isNumber(File $phpcsFile, $start, $end, $allowFloats = false)
     {
-        $stringTokens  = array_flip(\PHP_CodeSniffer_Tokens::$heredocTokens); // Flipping for PHPCS 1.x compat.
-        $stringTokens += array_flip(\PHP_CodeSniffer_Tokens::$stringTokens); // Flipping for PHPCS 1.x compat.
+        $stringTokens  = Tokens::$heredocTokens + Tokens::$stringTokens;
 
-        $validTokens            = array();
-        $validTokens[T_LNUMBER] = true;
-        $validTokens[T_TRUE]    = true; // Evaluates to int 1.
-        $validTokens[T_FALSE]   = true; // Evaluates to int 0.
-        $validTokens[T_NULL]    = true; // Evaluates to int 0.
+        $validTokens             = array();
+        $validTokens[\T_LNUMBER] = true;
+        $validTokens[\T_TRUE]    = true; // Evaluates to int 1.
+        $validTokens[\T_FALSE]   = true; // Evaluates to int 0.
+        $validTokens[\T_NULL]    = true; // Evaluates to int 0.
 
         if ($allowFloats === true) {
-            $validTokens[T_DNUMBER] = true;
+            $validTokens[\T_DNUMBER] = true;
         }
 
         $maybeValidTokens = $stringTokens + $validTokens;
@@ -1544,17 +1514,17 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             return false;
         }
 
-        $nextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, $start, $searchEnd, true);
+        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, $start, $searchEnd, true);
         while ($nextNonEmpty !== false
-            && ($tokens[$nextNonEmpty]['code'] === T_PLUS
-            || $tokens[$nextNonEmpty]['code'] === T_MINUS)
+            && ($tokens[$nextNonEmpty]['code'] === \T_PLUS
+            || $tokens[$nextNonEmpty]['code'] === \T_MINUS)
         ) {
 
-            if ($tokens[$nextNonEmpty]['code'] === T_MINUS) {
-                $negativeNumber = ($negativeNumber === false ) ? true : false;
+            if ($tokens[$nextNonEmpty]['code'] === \T_MINUS) {
+                $negativeNumber = ($negativeNumber === false) ? true : false;
             }
 
-            $nextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), $searchEnd, true);
+            $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($nextNonEmpty + 1), $searchEnd, true);
         }
 
         if ($nextNonEmpty === false || isset($maybeValidTokens[$tokens[$nextNonEmpty]['code']]) === false) {
@@ -1562,23 +1532,23 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         $content = false;
-        if ($tokens[$nextNonEmpty]['code'] === T_LNUMBER
-            || $tokens[$nextNonEmpty]['code'] === T_DNUMBER
+        if ($tokens[$nextNonEmpty]['code'] === \T_LNUMBER
+            || $tokens[$nextNonEmpty]['code'] === \T_DNUMBER
         ) {
             $content = (float) $tokens[$nextNonEmpty]['content'];
-        } elseif ($tokens[$nextNonEmpty]['code'] === T_TRUE) {
+        } elseif ($tokens[$nextNonEmpty]['code'] === \T_TRUE) {
             $content = 1.0;
-        } elseif ($tokens[$nextNonEmpty]['code'] === T_FALSE
-            || $tokens[$nextNonEmpty]['code'] === T_NULL
+        } elseif ($tokens[$nextNonEmpty]['code'] === \T_FALSE
+            || $tokens[$nextNonEmpty]['code'] === \T_NULL
         ) {
             $content = 0.0;
         } elseif (isset($stringTokens[$tokens[$nextNonEmpty]['code']]) === true) {
 
-            if ($tokens[$nextNonEmpty]['code'] === T_START_HEREDOC
-                || $tokens[$nextNonEmpty]['code'] === T_START_NOWDOC
+            if ($tokens[$nextNonEmpty]['code'] === \T_START_HEREDOC
+                || $tokens[$nextNonEmpty]['code'] === \T_START_NOWDOC
             ) {
                 // Skip past heredoc/nowdoc opener to the first content.
-                $firstDocToken = $phpcsFile->findNext(array(T_HEREDOC, T_NOWDOC), ($nextNonEmpty + 1), $searchEnd);
+                $firstDocToken = $phpcsFile->findNext(array(\T_HEREDOC, \T_NOWDOC), ($nextNonEmpty + 1), $searchEnd);
                 if ($firstDocToken === false) {
                     // Live coding or parse error.
                     return false;
@@ -1587,7 +1557,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
                 $stringContent = $content = $tokens[$firstDocToken]['content'];
 
                 // Skip forward to the end in preparation for the next part of the examination.
-                $nextNonEmpty = $phpcsFile->findNext(array(T_END_HEREDOC, T_END_NOWDOC), ($nextNonEmpty + 1), $searchEnd);
+                $nextNonEmpty = $phpcsFile->findNext(array(\T_END_HEREDOC, \T_END_NOWDOC), ($nextNonEmpty + 1), $searchEnd);
                 if ($nextNonEmpty === false) {
                     // Live coding or parse error.
                     return false;
@@ -1645,7 +1615,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
                 // use that to get the numeric value if possible.
                 // If the filter extension is not available, the value will be zero, but so be it.
                 if (function_exists('filter_var')) {
-                    $filtered = filter_var($hexNumberString[1], FILTER_VALIDATE_INT, FILTER_FLAG_ALLOW_HEX);
+                    $filtered = filter_var($hexNumberString[1], \FILTER_VALIDATE_INT, \FILTER_FLAG_ALLOW_HEX);
                     if ($filtered !== false) {
                         $content = $filtered;
                     }
@@ -1654,7 +1624,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         // OK, so we have a number, now is there still more code after it ?
-        $nextNonEmpty = $phpcsFile->findNext(\PHP_CodeSniffer_Tokens::$emptyTokens, ($nextNonEmpty + 1), $searchEnd, true);
+        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($nextNonEmpty + 1), $searchEnd, true);
         if ($nextNonEmpty !== false) {
             return false;
         }
@@ -1672,6 +1642,89 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
 
 
     /**
+     * Determine whether the tokens between $start and $end together form a numberic calculation
+     * as recognized by PHP.
+     *
+     * The outcome of this function is reliable for `true`, `false` should be regarded as "undetermined".
+     *
+     * Mainly intended for examining variable assignments, function call parameters, array values
+     * where the start and end of the snippet to examine is very clear.
+     *
+     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
+     * @param int                   $start     Start of the snippet (inclusive), i.e. this
+     *                                         token will be examined as part of the snippet.
+     * @param int                   $end       End of the snippet (inclusive), i.e. this
+     *                                         token will be examined as part of the snippet.
+     *
+     * @return bool
+     */
+    protected function isNumericCalculation(File $phpcsFile, $start, $end)
+    {
+        $arithmeticTokens = Tokens::$arithmeticTokens;
+
+        // phpcs:disable PHPCompatibility.Constants.NewConstants.t_powFound
+        if (defined('T_POW') && isset($arithmeticTokens[\T_POW]) === false) {
+            // T_POW was not added to the arithmetic array until PHPCS 2.9.0.
+            $arithmeticTokens[\T_POW] = \T_POW;
+        }
+        // phpcs:enable
+
+        $skipTokens   = Tokens::$emptyTokens;
+        $skipTokens[] = \T_MINUS;
+        $skipTokens[] = \T_PLUS;
+
+        // Find the first arithmetic operator, but skip past +/- signs before numbers.
+        $nextNonEmpty = ($start - 1);
+        do {
+            $nextNonEmpty       = $phpcsFile->findNext($skipTokens, ($nextNonEmpty + 1), ($end + 1), true);
+            $arithmeticOperator = $phpcsFile->findNext($arithmeticTokens, ($nextNonEmpty + 1), ($end + 1));
+        } while ($nextNonEmpty !== false && $arithmeticOperator !== false && $nextNonEmpty === $arithmeticOperator);
+
+        if ($arithmeticOperator === false) {
+            return false;
+        }
+
+        $tokens      = $phpcsFile->getTokens();
+        $subsetStart = $start;
+        $subsetEnd   = ($arithmeticOperator - 1);
+
+        while ($this->isNumber($phpcsFile, $subsetStart, $subsetEnd, true) !== false
+            && isset($tokens[($arithmeticOperator + 1)]) === true
+        ) {
+            // Recognize T_POW for PHPCS < 2.4.0 on low PHP versions.
+            if (defined('T_POW') === false
+                && $tokens[$arithmeticOperator]['code'] === \T_MULTIPLY
+                && $tokens[($arithmeticOperator + 1)]['code'] === \T_MULTIPLY
+                && isset($tokens[$arithmeticOperator + 2]) === true
+            ) {
+                // Move operator one forward to the second * in T_POW.
+                ++$arithmeticOperator;
+            }
+
+            $subsetStart  = ($arithmeticOperator + 1);
+            $nextNonEmpty = $arithmeticOperator;
+            do {
+                $nextNonEmpty       = $phpcsFile->findNext($skipTokens, ($nextNonEmpty + 1), ($end + 1), true);
+                $arithmeticOperator = $phpcsFile->findNext($arithmeticTokens, ($nextNonEmpty + 1), ($end + 1));
+            } while ($nextNonEmpty !== false && $arithmeticOperator !== false && $nextNonEmpty === $arithmeticOperator);
+
+            if ($arithmeticOperator === false) {
+                // Last calculation operator already reached.
+                if ($this->isNumber($phpcsFile, $subsetStart, $end, true) !== false) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            $subsetEnd = ($arithmeticOperator - 1);
+        }
+
+        return false;
+    }
+
+
+    /**
      * Determine whether a T_OPEN/CLOSE_SHORT_ARRAY token is a list() construct.
      *
      * Note: A variety of PHPCS versions have bugs in the tokenizing of short arrays.
@@ -1682,7 +1735,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
      *
      * @return bool
      */
-    public function isShortList(\PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function isShortList(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
@@ -1692,21 +1745,21 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         }
 
         // Is this one of the tokens this function handles ?
-        if ($tokens[$stackPtr]['code'] !== T_OPEN_SHORT_ARRAY
-            && $tokens[$stackPtr]['code'] !== T_CLOSE_SHORT_ARRAY
+        if ($tokens[$stackPtr]['code'] !== \T_OPEN_SHORT_ARRAY
+            && $tokens[$stackPtr]['code'] !== \T_CLOSE_SHORT_ARRAY
         ) {
             return false;
         }
 
         switch ($tokens[$stackPtr]['code']) {
-            case T_OPEN_SHORT_ARRAY:
+            case \T_OPEN_SHORT_ARRAY:
                 if (isset($tokens[$stackPtr]['bracket_closer']) === true) {
                     $opener = $stackPtr;
                     $closer = $tokens[$stackPtr]['bracket_closer'];
                 }
                 break;
 
-            case T_CLOSE_SHORT_ARRAY:
+            case \T_CLOSE_SHORT_ARRAY:
                 if (isset($tokens[$stackPtr]['bracket_opener']) === true) {
                     $opener = $tokens[$stackPtr]['bracket_opener'];
                     $closer = $stackPtr;
@@ -1723,21 +1776,14 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
          * PHPCS cross-version compatibility: work around for square brackets misidentified
          * as short array when preceded by a variable variable in older PHPCS versions.
          */
-        $prevNonEmpty = $phpcsFile->findPrevious(
-            \PHP_CodeSniffer_Tokens::$emptyTokens,
-            ($opener - 1),
-            null,
-            true,
-            null,
-            true
-        );
+        $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($opener - 1), null, true, null, true);
 
         if ($prevNonEmpty !== false
-            && $tokens[$prevNonEmpty]['code'] === T_CLOSE_CURLY_BRACKET
+            && $tokens[$prevNonEmpty]['code'] === \T_CLOSE_CURLY_BRACKET
             && isset($tokens[$prevNonEmpty]['bracket_opener']) === true
         ) {
             $maybeVariableVariable = $phpcsFile->findPrevious(
-                \PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($tokens[$prevNonEmpty]['bracket_opener'] - 1),
                 null,
                 true,
@@ -1745,35 +1791,27 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
                 true
             );
 
-            if ($tokens[$maybeVariableVariable]['code'] === T_VARIABLE
-                || $tokens[$maybeVariableVariable]['code'] === T_DOLLAR
+            if ($tokens[$maybeVariableVariable]['code'] === \T_VARIABLE
+                || $tokens[$maybeVariableVariable]['code'] === \T_DOLLAR
             ) {
                 return false;
             }
         }
 
-        $nextNonEmpty = $phpcsFile->findNext(
-            \PHP_CodeSniffer_Tokens::$emptyTokens,
-            ($closer + 1),
-            null,
-            true,
-            null,
-            true
-        );
+        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($closer + 1), null, true, null, true);
 
-        if ($nextNonEmpty !== false && $tokens[$nextNonEmpty]['code'] === T_EQUAL) {
+        if ($nextNonEmpty !== false && $tokens[$nextNonEmpty]['code'] === \T_EQUAL) {
             return true;
         }
 
         if ($prevNonEmpty !== false
-            && $tokens[$prevNonEmpty]['code'] === T_AS
+            && $tokens[$prevNonEmpty]['code'] === \T_AS
             && isset($tokens[$prevNonEmpty]['nested_parenthesis']) === true
         ) {
-            $parentheses = $tokens[$prevNonEmpty]['nested_parenthesis'];
             $parentheses = array_reverse($tokens[$prevNonEmpty]['nested_parenthesis'], true);
             foreach ($parentheses as $open => $close) {
                 if (isset($tokens[$open]['parenthesis_owner'])
-                    && $tokens[$tokens[$open]['parenthesis_owner']]['code'] === T_FOREACH
+                    && $tokens[$tokens[$open]['parenthesis_owner']]['code'] === \T_FOREACH
                 ) {
                     return true;
                 }
@@ -1784,7 +1822,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
         $parentOpener = $opener;
         do {
             $parentOpener = $phpcsFile->findPrevious(
-                array(T_OPEN_SHORT_ARRAY, T_OPEN_SQUARE_BRACKET),
+                array(\T_OPEN_SHORT_ARRAY, \T_OPEN_SQUARE_BRACKET),
                 ($parentOpener - 1),
                 null,
                 false,
@@ -1807,10 +1845,10 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
             $phpcsVersion = PHPCSHelper::getVersion();
             if ((version_compare($phpcsVersion, '2.0', '>') === true
                 && version_compare($phpcsVersion, '2.8', '<') === true)
-                && $tokens[$parentOpener]['code'] === T_OPEN_SQUARE_BRACKET
+                && $tokens[$parentOpener]['code'] === \T_OPEN_SQUARE_BRACKET
             ) {
                 $nextNonEmpty = $phpcsFile->findNext(
-                    \PHP_CodeSniffer_Tokens::$emptyTokens,
+                    Tokens::$emptyTokens,
                     ($tokens[$parentOpener]['bracket_closer'] + 1),
                     null,
                     true,
@@ -1818,7 +1856,7 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
                     true
                 );
 
-                if ($nextNonEmpty !== false && $tokens[$nextNonEmpty]['code'] === T_EQUAL) {
+                if ($nextNonEmpty !== false && $tokens[$nextNonEmpty]['code'] === \T_EQUAL) {
                     return true;
                 }
 
@@ -1830,4 +1868,93 @@ abstract class Sniff implements \PHP_CodeSniffer_Sniff
 
         return false;
     }
-}//end class
+
+
+    /**
+     * Determine whether the tokens between $start and $end could together represent a variable.
+     *
+     * @param \PHP_CodeSniffer_File $phpcsFile          The file being scanned.
+     * @param int                   $start              Starting point stack pointer. Inclusive.
+     *                                                  I.e. this token should be taken into account.
+     * @param int                   $end                End point stack pointer. Exclusive.
+     *                                                  I.e. this token should not be taken into account.
+     * @param int                   $targetNestingLevel The nesting level the variable should be at.
+     *
+     * @return bool
+     */
+    public function isVariable(File $phpcsFile, $start, $end, $targetNestingLevel)
+    {
+        static $tokenBlackList, $bracketTokens;
+
+        // Create the token arrays only once.
+        if (isset($tokenBlackList, $bracketTokens) === false) {
+
+            $tokenBlackList  = array(
+                \T_OPEN_PARENTHESIS => \T_OPEN_PARENTHESIS,
+                \T_STRING_CONCAT    => \T_STRING_CONCAT,
+            );
+            $tokenBlackList += Tokens::$assignmentTokens;
+            $tokenBlackList += Tokens::$equalityTokens;
+            $tokenBlackList += Tokens::$comparisonTokens;
+            $tokenBlackList += Tokens::$operators;
+            $tokenBlackList += Tokens::$booleanOperators;
+            $tokenBlackList += Tokens::$castTokens;
+
+            /*
+             * List of brackets which can be part of a variable variable.
+             *
+             * Key is the open bracket token, value the close bracket token.
+             */
+            $bracketTokens = array(
+                \T_OPEN_CURLY_BRACKET  => \T_CLOSE_CURLY_BRACKET,
+                \T_OPEN_SQUARE_BRACKET => \T_CLOSE_SQUARE_BRACKET,
+            );
+        }
+
+        $tokens = $phpcsFile->getTokens();
+
+        // If no variable at all was found, then it's definitely a no-no.
+        $hasVariable = $phpcsFile->findNext(\T_VARIABLE, $start, $end);
+        if ($hasVariable === false) {
+            return false;
+        }
+
+        // Check if the variable found is at the right level. Deeper levels are always an error.
+        if (isset($tokens[$hasVariable]['nested_parenthesis'])
+            && count($tokens[$hasVariable]['nested_parenthesis']) !== $targetNestingLevel
+        ) {
+                return false;
+        }
+
+        // Ok, so the first variable is at the right level, now are there any
+        // blacklisted tokens within the empty() ?
+        $hasBadToken = $phpcsFile->findNext($tokenBlackList, $start, $end);
+        if ($hasBadToken === false) {
+            return true;
+        }
+
+        // If there are also bracket tokens, the blacklisted token might be part of a variable
+        // variable, but if there are no bracket tokens, we know we have an error.
+        $hasBrackets = $phpcsFile->findNext($bracketTokens, $start, $end);
+        if ($hasBrackets === false) {
+            return false;
+        }
+
+        // Ok, we have both a blacklisted token as well as brackets, so we need to walk
+        // the tokens of the variable variable.
+        for ($i = $start; $i < $end; $i++) {
+            // If this is a bracket token, skip to the end of the bracketed expression.
+            if (isset($bracketTokens[$tokens[$i]['code']], $tokens[$i]['bracket_closer'])) {
+                $i = $tokens[$i]['bracket_closer'];
+                continue;
+            }
+
+            // If it's a blacklisted token, not within brackets, we have an error.
+            if (isset($tokenBlackList[$tokens[$i]['code']])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}

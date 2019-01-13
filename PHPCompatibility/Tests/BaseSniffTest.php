@@ -7,7 +7,9 @@
 
 namespace PHPCompatibility\Tests;
 
+use PHPUnit_Framework_TestCase as PHPUnit_TestCase;
 use PHPCompatibility\PHPCSHelper;
+use PHP_CodeSniffer_File as File;
 
 /**
  * BaseSniffTest
@@ -19,16 +21,16 @@ use PHPCompatibility\PHPCSHelper;
  * @package PHPCompatibility
  * @author  Jansen Price <jansen.price@gmail.com>
  */
-class BaseSniffTest extends \PHPUnit_Framework_TestCase
+class BaseSniffTest extends PHPUnit_TestCase
 {
     const STANDARD_NAME = 'PHPCompatibility';
 
     /**
      * The PHP_CodeSniffer object used for testing.
      *
-     * Used by PHPCS 1.x and 2.x.
+     * Used by PHPCS 2.x.
      *
-     * @var PHP_CodeSniffer
+     * @var \PHP_CodeSniffer
      */
     protected static $phpcs = null;
 
@@ -59,24 +61,16 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
     {
         if (class_exists('\PHP_CodeSniffer') === true) {
             /*
-             * PHPCS 1.x and 2.x.
+             * PHPCS 2.x.
              */
             if (self::$phpcs === null) {
                 self::$phpcs = new \PHP_CodeSniffer();
             }
 
-            if (method_exists('\PHP_CodeSniffer_CLI', 'setCommandLineValues')) {
-                // For PHPCS 2.x.
-                self::$phpcs->cli->setCommandLineValues(array('-pq', '--colors'));
-            }
+            self::$phpcs->cli->setCommandLineValues(array('-pq', '--colors'));
 
             // Restrict the sniffing of the test case files to the particular sniff being tested.
-            if (method_exists('\PHP_CodeSniffer', 'initStandard')) {
-                self::$phpcs->initStandard(self::STANDARD_NAME, array($this->getSniffCode()));
-            } else {
-                // PHPCS 1.x.
-                self::$phpcs->process(array(), dirname(__DIR__) . '/', array($this->getSniffCode()));
-            }
+            self::$phpcs->initStandard(self::STANDARD_NAME, array($this->getSniffCode()));
 
             self::$phpcs->setIgnorePatterns(array());
         }
@@ -115,7 +109,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
         $class    = get_class($this);
         $parts    = explode('\\', $class);
         $sniff    = array_pop($parts);
-        $sniff    = str_replace('SniffTest', '', $sniff);
+        $sniff    = str_replace('UnitTest', '', $sniff);
         $category = array_pop($parts);
         return self::STANDARD_NAME . '.' . $category . '.' . $sniff;
     }
@@ -123,22 +117,30 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
     /**
      * Sniff a file and return resulting file object.
      *
-     * @param string $filename         Filename to sniff.
+     * @param string $pathToFile       Absolute path to the file to sniff.
+     *                                 Allows for passing __FILE__ from the unit test
+     *                                 file. In that case, the test case file is presumed
+     *                                 to have the same name, but with an `inc` extension.
      * @param string $targetPhpVersion Value of 'testVersion' to set on PHPCS object.
      *
      * @return \PHP_CodeSniffer_File|false File object.
      */
-    public function sniffFile($filename, $targetPhpVersion = 'none')
+    public function sniffFile($pathToFile, $targetPhpVersion = 'none')
     {
-        if (isset(self::$sniffFiles[$filename][$targetPhpVersion])) {
-            return self::$sniffFiles[$filename][$targetPhpVersion];
+        if (strpos($pathToFile, 'UnitTest.php') !== false) {
+            // Ok, so __FILE__ was passed, change the file extension.
+            $pathToFile = str_replace('UnitTest.php', 'UnitTest.inc', $pathToFile);
+        }
+        $pathToFile = realpath($pathToFile);
+
+        if (isset(self::$sniffFiles[$pathToFile][$targetPhpVersion])) {
+            return self::$sniffFiles[$pathToFile][$targetPhpVersion];
         }
 
-        if ('none' !== $targetPhpVersion) {
+        if ($targetPhpVersion !== 'none') {
             PHPCSHelper::setConfigData('testVersion', $targetPhpVersion, true);
         }
 
-        $pathToFile = realpath(__DIR__) . DIRECTORY_SEPARATOR . $filename;
         try {
             if (class_exists('\PHP_CodeSniffer\Files\LocalFile')) {
                 // PHPCS 3.x.
@@ -149,22 +151,19 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
                 $config->ignored   = array();
                 $ruleset           = new \PHP_CodeSniffer\Ruleset($config);
 
-                self::$sniffFiles[$filename][$targetPhpVersion] = new \PHP_CodeSniffer\Files\LocalFile($pathToFile, $ruleset, $config);
-                self::$sniffFiles[$filename][$targetPhpVersion]->process();
-            } elseif (method_exists('\PHP_CodeSniffer', 'initStandard')) {
-                // PHPCS 2.x.
-                self::$sniffFiles[$filename][$targetPhpVersion] = self::$phpcs->processFile($pathToFile);
+                self::$sniffFiles[$pathToFile][$targetPhpVersion] = new \PHP_CodeSniffer\Files\LocalFile($pathToFile, $ruleset, $config);
+                self::$sniffFiles[$pathToFile][$targetPhpVersion]->process();
             } else {
-                // PHPCS 1.x - Sniff code restrictions have to be passed via the function call.
-                self::$sniffFiles[$filename][$targetPhpVersion] = self::$phpcs->processFile($pathToFile, null, array($this->getSniffCode()));
+                // PHPCS 2.x.
+                self::$sniffFiles[$pathToFile][$targetPhpVersion] = self::$phpcs->processFile($pathToFile);
             }
 
         } catch (\Exception $e) {
-            $this->fail('An unexpected exception has been caught: ' . $e->getMessage());
+            $this->fail('An unexpected exception has been caught when loading file "' . $pathToFile . '" : ' . $e->getMessage());
             return false;
         }
 
-        return self::$sniffFiles[$filename][$targetPhpVersion];
+        return self::$sniffFiles[$pathToFile][$targetPhpVersion];
     }
 
     /**
@@ -176,7 +175,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
      *
      * @return bool
      */
-    public function assertError(\PHP_CodeSniffer_File $file, $lineNumber, $expectedMessage)
+    public function assertError(File $file, $lineNumber, $expectedMessage)
     {
         $errors = $this->gatherErrors($file);
 
@@ -192,7 +191,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
      *
      * @return bool
      */
-    public function assertWarning(\PHP_CodeSniffer_File $file, $lineNumber, $expectedMessage)
+    public function assertWarning(File $file, $lineNumber, $expectedMessage)
     {
         $warnings = $this->gatherWarnings($file);
 
@@ -238,7 +237,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
      *
      * @return bool
      */
-    public function assertNoViolation(\PHP_CodeSniffer_File $file, $lineNumber = 0)
+    public function assertNoViolation(File $file, $lineNumber = 0)
     {
         $errors   = $this->gatherErrors($file);
         $warnings = $this->gatherWarnings($file);
@@ -282,7 +281,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function showViolations(\PHP_CodeSniffer_File $file)
+    public function showViolations(File $file)
     {
         $violations = array(
             'errors'   => $this->gatherErrors($file),
@@ -299,7 +298,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function gatherErrors(\PHP_CodeSniffer_File $file)
+    public function gatherErrors(File $file)
     {
         $foundErrors = $file->getErrors();
 
@@ -313,7 +312,7 @@ class BaseSniffTest extends \PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function gatherWarnings(\PHP_CodeSniffer_File $file)
+    public function gatherWarnings(File $file)
     {
         $foundWarnings = $file->getWarnings();
 
