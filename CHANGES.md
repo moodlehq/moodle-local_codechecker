@@ -1,3 +1,10 @@
+Changes in version 2.9.2 (20180115) - Selectivenesses
+-----------------------------------------------------
+- NOBUG: Updated PHP_CodeSniffer to 2.9.2+ (4665f64).
+- NOBUG: Updated PHPCompatibility to 9.1.1+ (4487042)
+- NOBUG: Added support for PHP 7.3 and Moodle 3.6/3.7dev.
+- MDLSITE-5660: Allow spaced, non spaced and nullable return types in function/method declarations.
+
 Changes in version 2.7.2 (20180701) - Barcelona awesomeness
 -----------------------------------------------------------
 - NOBUG: Upgrade PHPCompatibility to 8.1.0+ (609be5c).
