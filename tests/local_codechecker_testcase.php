@@ -95,15 +95,31 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
      * @param string $standard name of the standard to be tested.
      */
     protected function set_standard($standard) {
-        // Look for the standard in the standard directory.
-        $stdfile = __DIR__ . '/../pear/PHP/CodeSniffer/Standards/' . $standard . '/ruleset.xml';
-        if (file_exists($stdfile)) {
-            $this->standard = $stdfile;
-        } else {
-            // Now try plugin top directory, where moodle and others... reside).
-            $stdfile = __DIR__ . '/../' . $standard . '/ruleset.xml';
+
+        // Since 2.9 arbitrary standard directories are not allowed by default,
+        // only those under the CodeSniffer/Standards dir are detected. Other base
+        // dirs containing standards can be added using CodeSniffer.conf or the
+        // PHP_CODESNIFFER_CONFIG_DATA global (installed_paths setting).
+        // We are using the global way here to avoid changes in the phpcs import.
+        // @codingStandardsIgnoreStart
+        if (!isset($GLOBALS['PHP_CODESNIFFER_CONFIG_DATA']['installed_paths'])) {
+            $localcodecheckerpath = realpath(__DIR__ . '/../');
+            $GLOBALS['PHP_CODESNIFFER_CONFIG_DATA'] = ['installed_paths' => $localcodecheckerpath];
+        }
+        // @codingStandardsIgnoreEnd
+
+        // Basic search of standards in the allowed directories.
+        $stdsearch = array(
+            __DIR__ . '/../pear/PHP/CodeSniffer/Standards', // PHPCS standards dir.
+            __DIR__ . '/..',                                // local_codechecker dir, allowed above via global.
+        );
+
+        foreach ($stdsearch as $stdpath) {
+            $stdpath = realpath($stdpath . '/' . $standard);
+            $stdfile = $stdpath . '/ruleset.xml';
             if (file_exists($stdfile)) {
-                $this->standard = $stdfile;
+                $this->standard = $stdpath; // Need to pass the path here.
+                break;
             }
         }
         // Standard not found, fail.
@@ -193,6 +209,7 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
             if (defined('PHP_CODESNIFFER_IN_TESTS') === false) {
                 define('PHP_CODESNIFFER_IN_TESTS', true);
             }
+
             // Instantiate the CS safely now.
             self::$phpcs = new PHP_CodeSniffer();
         }
@@ -213,6 +230,8 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
     protected function verify_cs_results() {
 
         self::$phpcs->initStandard($this->standard, array($this->sniff));
+        self::$phpcs->processRuleset($this->standard . '/ruleset.xml');
+        self::$phpcs->populateTokenListeners();
         self::$phpcs->setIgnorePatterns(array());
 
         // The passed sniff is incorrect.
@@ -277,8 +296,16 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
      */
     private function assert_results($expectations, $results, $type) {
         foreach ($expectations as $line => $expectation) {
-            // Verify counts for a line are the same.
+            // Build some information to be shown in case of problems.
+            $info = '';
+            if (count($expectation)) {
+                $info .= PHP_EOL . 'Expected: ' . json_encode($expectation);
+            }
             $countresults = isset($results[$line]) ? count($results[$line]) : 0;
+            if ($countresults) {
+                $info .= PHP_EOL . 'Actual: ' . json_encode($results[$line]);
+            }
+            // Verify counts for a line are the same.
             $this->assertSame(count($expectation), $countresults,
                     'Failed number of ' . $type . ' for line ' . $line . '.');
             // Now verify every expectation requiring matching.
