@@ -271,8 +271,7 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
                             $i = $semicolon;
                         }
                     }
-                    continue;
-                    break;
+                    continue 2;
             }
 
             // Detect and skip over symbols.
