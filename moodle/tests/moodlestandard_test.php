@@ -276,9 +276,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             10 => 1,
             11 => 'The use of the AS keyword to alias tables is bad for cross-db',
             12 => 0,
-            15 => 'The use of the /e modifier in regular expressions is forbidden',
-            16 => 1,
-            23 => 2,
+            // Only if the engine supported /e. Completely removed in PHP 7.3.
+            15 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 'The use of the /e modifier in regular expressions is forbidden' : 0),
+            16 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 1 : 0),
+            23 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 2 : 1),
             26 => 0,
             27 => 0));
         $this->set_warnings(array(

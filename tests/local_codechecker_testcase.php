@@ -307,7 +307,7 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
             }
             // Verify counts for a line are the same.
             $this->assertSame(count($expectation), $countresults,
-                    'Failed number of ' . $type . ' for line ' . $line . '.');
+                    'Failed number of ' . $type . ' for line ' . $line . '.' . $info);
             // Now verify every expectation requiring matching.
             foreach ($expectation as $key => $expectedcontent) {
                 if (is_string($expectedcontent)) {
