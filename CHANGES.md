@@ -1,4 +1,4 @@
-Changes in version 2.9.2 (20180115) - Selectivenesses
+Changes in version 2.9.2 (20190115) - Selectivenesses
 -----------------------------------------------------
 - NOBUG: Updated PHP_CodeSniffer to 2.9.2+ (4665f64).
 - NOBUG: Updated PHPCompatibility to 9.1.1+ (4487042)
