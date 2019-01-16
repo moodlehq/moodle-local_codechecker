@@ -123,6 +123,33 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_generic_functions_openingfunctionbracekerninghanritchie() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('Generic.Functions.OpeningFunctionBraceKernighanRitchie');
+        $this->set_fixture(__DIR__ . '/fixtures/generic_functions_openingfunctionbracekerninghanritchie.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            6 => 'Expected 1 space before opening brace; found 0',
+            9 => 1,
+           12 => 'Expected 1 space before opening brace; found 3',
+           15 => 1,
+           20 => 'Expected 1 space before opening brace; found 0',
+           23 => 1,
+           26 => 'Expected 1 space before opening brace; found 3',
+           29 => 1));
+
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     public function test_generic_whitespace_scopeindent() {
 
         // Define the standard, sniff and fixture to use.
@@ -249,9 +276,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             10 => 1,
             11 => 'The use of the AS keyword to alias tables is bad for cross-db',
             12 => 0,
-            15 => 'The use of the /e modifier in regular expressions is forbidden',
-            16 => 1,
-            23 => 2,
+            // Only if the engine supported /e. Completely removed in PHP 7.3.
+            15 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 'The use of the /e modifier in regular expressions is forbidden' : 0),
+            16 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 1 : 0),
+            23 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 2 : 1),
             26 => 0,
             27 => 0));
         $this->set_warnings(array(
@@ -272,7 +300,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('PHPCompatibility.PHP.DeprecatedFunctions');
+        $this->set_sniff('PHPCompatibility.FunctionUse.RemovedFunctions');
         $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_deprecatedfunctions.php');
 
         // Define expected results (errors and warnings). Format, array of:
@@ -295,7 +323,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
-        $this->set_sniff('PHPCompatibility.PHP.ForbiddenCallTimePassByReference');
+        $this->set_sniff('PHPCompatibility.Syntax.ForbiddenCallTimePassByReference');
         $this->set_fixture(__DIR__ . '/fixtures/phpcompatibility_php_forbiddencalltimepassbyreference.php');
 
         // Define expected results (errors and warnings). Format, array of:

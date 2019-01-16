@@ -26,13 +26,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (class_exists('\PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff', true) === false) {
+if (class_exists('\PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsInvokedFunctionsSniff', true) === false) {
     throw new PHP_CodeSniffer_Exception(
-            '\PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff');
+            '\PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsInvokedFunctionsSniff');
 }
 
 class moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
-        extends \PHPCompatibility\Sniffs\PHP\ForbiddenNamesAsInvokedFunctionsSniff {
+        extends \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsInvokedFunctionsSniff {
     /** Constructor. */
     public function __construct() {
         // Moodle allows clone to be used as function for now.
