@@ -1,3 +1,8 @@
+Changes in version 2.9.3 (20190118) - Selectivenesses (take #2)
+---------------------------------------------------------------
+- NOBUG: Some minor changes towards stable travis builds.
+- INCOMPETENCE: Fix the version.php information that Eloy missed for 2.9.2 :-)
+
 Changes in version 2.9.2 (20190115) - Selectivenesses
 -----------------------------------------------------
 - NOBUG: Updated PHP_CodeSniffer to 2.9.2+ (4665f64).
