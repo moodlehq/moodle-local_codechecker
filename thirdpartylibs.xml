@@ -3,13 +3,13 @@
     <library>
         <location>pear</location>
         <name>PHP_CodeSniffer</name>
-        <version>2.7.0 (571e27b)</version>
+        <version>2.9.2 (4665f64)</version>
         <license>BSD 3-Clause</license>
     </library>
     <library>
         <location>PHPCompatibility</location>
         <name>PHP Compatibility Coding Standard</name>
-        <version>8.1.0+ (609be5c)</version>
+        <version>9.1.1+ (4487042)</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>
