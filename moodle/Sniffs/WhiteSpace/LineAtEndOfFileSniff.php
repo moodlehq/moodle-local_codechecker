@@ -24,12 +24,19 @@
 
 class moodle_Sniffs_WhiteSpace_LineAtEndOfFileSniff implements PHP_CodeSniffer_Sniff {
 
+    const ERROR_MSG = 'File should have a blank line at the end.';
+
+    private $noBlankLineEmitted = false;
+
     public function register() {
         return [T_WHITESPACE];//array(T_COMMENT);//'// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.');
     }
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * This is a bit of a fudge, in that it gets the last token in the file and
+     * checks if it's white space and ONLY a new line character.
      *
      * @param PHP_CodeSniffer_File $file     The file being scanned.
      * @param int                  $stackptr The position of the current token in
@@ -40,27 +47,25 @@ class moodle_Sniffs_WhiteSpace_LineAtEndOfFileSniff implements PHP_CodeSniffer_S
     public function process(PHP_CodeSniffer_File $file, $stackptr) {
 
         $tokens = $file->getTokens();
-        $laststackptr = count($tokens) - 1;
+        $token = $tokens[$stackptr];
+        $laststackptr = count($tokens) - 1 ;
 
-        if ($stackptr == $laststackptr) {
-            $lasttoken = $tokens[$laststackptr];
-            print_r($lasttoken);
-            if ($lasttoken['type'] !== T_WHITESPACE) {
-                $error = 'File should have a blank line at the end.';
-                $fix = $file->addFixableError($error, $laststackptr, "NoBlankLineAtEof");
-                if ($fix === true) {
-                    $file->fixer->beginChangeset();
-                    $file->fixer->addNewline($stackptr);
-                    $file->fixer->endChangeset();
-                }
+        $lasttoken = $tokens[$laststackptr];
+        if (!$this->noBlankLineEmitted) {
+            $this->test($lasttoken, $file, $laststackptr);
+        }
+    }
+
+    private function test($token, $file, $stackptr) {
+
+        if ($token['code'] !== T_WHITESPACE) {
+            $this->noBlankLineEmitted = true;
+            $file->addError(self::ERROR_MSG, $stackptr, "NoBlankLineAtEof");
+        } else { // it is whitespace but it's not just a new line character.
+            if ($token['content'] !== $file->eolChar) {
+                $this->noBlankLineEmitted = true;
+                $file->addError(self::ERROR_MSG, $stackptr, "NoBlankLineAtEof");
             }
         }
-
-        /*if (strpos($tokens[$stackptr]['content'], self::LICENCE_LAST_LINE) !== false) {
-            if ($tokens[$stackptr + 1]['code'] != T_WHITESPACE) {
-                $error = 'License should have a blank line after.';
-                $file->addError($error, $stackptr, 'NoSpace');
-            }
-        }*/
     }
 }
