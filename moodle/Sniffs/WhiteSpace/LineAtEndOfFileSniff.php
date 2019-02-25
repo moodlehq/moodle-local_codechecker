@@ -29,7 +29,7 @@ class moodle_Sniffs_WhiteSpace_LineAtEndOfFileSniff implements PHP_CodeSniffer_S
     private $noBlankLineEmitted = false;
 
     public function register() {
-        return [T_WHITESPACE];//array(T_COMMENT);//'// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.');
+        return [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO];
     }
 
     /**

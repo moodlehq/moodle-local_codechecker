@@ -172,6 +172,17 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_php_blank_line_at_end() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.WhiteSpace.LineAtEndOfFile');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_blanklineatend.php');
+
+        $this->set_errors([
+            9 => 'File should have a blank line at the end.'
+        ]);
+        $this->set_warnings([]);
+        $this->verify_cs_results();
+    }
     public function test_moodle_php_forbiddenfunctions() {
 
         // Define the standard, sniff and fixture to use.
