@@ -33,7 +33,7 @@ should see a new option in the settings block:
 
 We hope you find this tool useful. Please feel free to enhance it.
 Report any idea or bug @
-<https://tracker.moodle.org/browse/CONTRIB/component/12130>, thanks!
+<https://tracker.moodle.org/issues/?jql=project%20%3D%20CONTRIB%20AND%20component%20%3D%20%22Local%3A+Code+checker%22>, thanks!
 
 
 IDE Integration
