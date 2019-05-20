@@ -24,6 +24,7 @@ php:
 env:
   - MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
   - MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+  - MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
   - MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
   - MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
   - MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
@@ -45,6 +46,8 @@ matrix:
     - php: 7.2
       env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.2
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.2
       env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.2
       env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
@@ -61,6 +64,8 @@ matrix:
     - php: 7.0
       env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.0
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.0
       env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.0
       env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
@@ -68,6 +73,8 @@ matrix:
       env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 5.6
       env: MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 5.6
       env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 5.6
