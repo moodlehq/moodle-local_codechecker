@@ -37,7 +37,7 @@ require_once(__DIR__ . '/../../tests/local_codechecker_testcase.php');
  */
 class moodlestandard_testcase extends local_codechecker_testcase {
 
-    public function test_moodle_comenting_inlinecomment() {
+    public function test_moodle_commenting_inlinecomment() {
 
         // Define the standard, sniff and fixture to use.
         $this->set_standard('moodle');
@@ -74,6 +74,30 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            75 => 2,
            77 => 1,
            79 => 1));
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_commenting_inlinecomment_js() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Commenting.InlineComment');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_comenting_inlinecomment.js');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            1 => array('3 slashes comments are not allowed'),
+            3 => 1,
+            5 => 'No space found before comment text',
+        ));
+        $this->set_warnings(array(
+            3 => array(null, 'Commenting.InlineComment.InvalidEndChar'),
+        ));
 
         // Let's do all the hard work!
         $this->verify_cs_results();

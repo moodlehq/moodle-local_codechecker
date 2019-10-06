@@ -365,6 +365,11 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         // within them if they are full sentences.
         $commentText = rtrim($commentText, "'\")");
 
+        // Respect eslint configuration comments in JS files.
+        if ($phpcsFile->tokenizerType === 'JS' && preg_match('!^eslint(-|\s)!', $commentText)) {
+            return;
+        }
+
         if ($commentText === '') {
             $error = 'Blank comments are not allowed';
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'Empty');
