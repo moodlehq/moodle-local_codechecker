@@ -63,6 +63,7 @@ class moodle_Sniffs_NamingConventions_ValidFunctionNameSniff
         'offsetGet',
         'offsetSet',
         'offsetUnset', // Defined by the PHP ArrayAccess interface.
+        'tearDownAfterClass',
     );
 
     /**
