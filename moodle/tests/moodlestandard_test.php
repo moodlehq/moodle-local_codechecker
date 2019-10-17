@@ -58,7 +58,8 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            78 => '3 slashes comments are not allowed',
            91 => '\'$variable\' does not match next code line \'lets_execute_it...\'',
            94 => 1,
-          102 => '\'$cm\' does not match next list() variables @Source: moodle.Commenting.InlineComment.TypeHintingList'));
+          102 => '\'$cm\' does not match next list() variables @Source: moodle.Commenting.InlineComment.TypeHintingList',
+          112 => '\'$cm\' does not match next foreach() as variable @Source: moodle.Commenting.InlineComment.TypeHintingFor'));
         $this->set_warnings(array(
             4 => 0,
             6 => array(null, 'Commenting.InlineComment.InvalidEndChar'),

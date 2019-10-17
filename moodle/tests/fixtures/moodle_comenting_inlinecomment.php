@@ -101,3 +101,15 @@ list($course, $cm) = get_course_and_cm_from_cmid($cmid);
 // But not this (non matching within the list().
 /** @var cm_info $cm */
 list($course, $something) = $cm->whatever($cmid);
+
+// And also, CONTRIB-7165, consider assignments via foreach() like a viable use.
+/** @var cm_info $cm */
+foreach ($cms as $cm) {
+    echo 'This is a test';
+}
+
+// But not this (non matching within the foreach().
+/** @var cm_info $cm */
+foreach ($cms as $something) {
+    echo 'This is a test';
+}

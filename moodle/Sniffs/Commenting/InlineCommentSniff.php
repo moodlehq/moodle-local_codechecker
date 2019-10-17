@@ -201,7 +201,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                                 // Not valid type-hinting, specialised error.
                                 $error = 'Inline doc block type-hinting for \'%s\' does not match next foreach() as variable';
                                 $data = array($foundvar, $tokens[$nextToken]['content']);
-                                $phpcsFile->addError($error, $stackPtr, 'TypeHintingMatch', $data);
+                                $phpcsFile->addError($error, $stackPtr, 'TypeHintingForeach', $data);
                             }
                         } else if ($tokens[$nextToken]['content'] !== $foundvar) {
                             // Not valid type-hinting, specialised error.
