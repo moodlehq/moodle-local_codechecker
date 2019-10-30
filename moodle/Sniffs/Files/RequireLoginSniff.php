@@ -23,7 +23,7 @@
  */
 
 class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
-    public $loginfunctions = ['require_login', 'require_course_login', 'admin_externalpage_setup'];
+    public $loginfunctions = ['require_login', 'require_course_login', 'require_admin', 'admin_externalpage_setup'];
     public $ignorewhendefined = ['NO_MOODLE_COOKIES', 'CLI_SCRIPT', 'ABORT_AFTER_CONFIG'];
     /**
      * Register for open tag (only process once per file).
