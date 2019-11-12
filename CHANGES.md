@@ -1,3 +1,11 @@
+Changes in version 2.9.4 (20191112) - Late Beorc
+------------------------------------------------
+- [PR#60](https://github.com/moodlehq/moodle-local_codechecker/pull/60): Added support for ``require_admin`` since MDL-58439 (Brendan Heywood).
+- CONTRIB-7165: Allow type-hint for foreach variable (Daniel Thee Roperto).
+- [PR#58](https://github.com/moodlehq/moodle-local_codechecker/pull/58): Allow tearDownAfterClass as a valid function name (Mikhail Golenkov).
+- MDLSITE-5908: Respect eslint configuration comments in JS files (Ruslan Kabalin).
+- Various README, thirdpartylib, travis fixes (Tobias Uhmann and others).
+
 Changes in version 2.9.3 (20190118) - Selectivenesses (take #2)
 ---------------------------------------------------------------
 - NOBUG: Some minor changes towards stable travis builds.
