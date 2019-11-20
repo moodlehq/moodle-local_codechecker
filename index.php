@@ -48,7 +48,7 @@ set_time_limit(300);
 $mform = new local_codechecker_form(new moodle_url('/local/codechecker/'));
 $mform->set_data((object)$pageparams);
 if ($data = $mform->get_data()) {
-    redirect(new moodle_url('/local/codechecker/', $pageparams));
+    redirect(new moodle_url('/local/codechecker/index.php', $pageparams));
 }
 
 if ($path) {
