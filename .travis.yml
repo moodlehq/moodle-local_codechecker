@@ -18,6 +18,7 @@ php:
   - 7.1
   - 7.2
   - 7.3
+  - 7.4
 
 env:
   - MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
@@ -32,6 +33,24 @@ env:
 
 matrix:
   exclude:
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.3
+      env: MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.3
+      env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.3
       env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.3
@@ -88,7 +107,8 @@ matrix:
       env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
 
 before_install:
-  - phpenv config-rm xdebug.ini
+  # Get rid of the || return 0 once we switch to 7.4 with xdebug installed.
+  - phpenv config-rm xdebug.ini || return 0
   - nvm install 8.9
   - nvm use 8.9
   - cd ../..
