@@ -109,6 +109,9 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
                 // Some things like AJAX_SCRIPT NO_MOODLE_COOKIES need to be defined before config inclusion.
                 // Jump to end of define().
                 $pointer = $file->findEndOfStatement($pointer + 1);
+            } else if ($tokens[$pointer]['code'] === T_DECLARE && $tokens[$pointer]['content'] == 'declare') {
+                // Declare statements must be at start of file.
+                $pointer = $file->findEndOfStatement($pointer + 1);
             } else {
                 $relevantcodefound = true;
             }
