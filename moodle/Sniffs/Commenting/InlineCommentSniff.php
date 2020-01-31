@@ -221,7 +221,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
         }//end if
 
-        if ($tokens[$stackPtr]['content']{0} === '#') {
+        if ($tokens[$stackPtr]['content'][0] === '#') {
             $error = 'Perl-style comments are not allowed; use "// Comment." instead';
             $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'WrongStyle');
             if ($fix === true) {
