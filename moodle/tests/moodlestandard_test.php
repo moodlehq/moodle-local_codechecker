@@ -586,8 +586,19 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         $this->set_errors(array());
         $this->set_warnings(array(
-            32 => 'Expected MOODLE_INTERNAL check or config.php inclusion'
+            32 => 'Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts'
         ));
+
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_files_moodleinternal_nowarning() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/nowarning.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
 
         $this->verify_cs_results();
     }
