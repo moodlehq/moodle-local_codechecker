@@ -77,7 +77,11 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
         if ($this->code_changes_global_state($file, $pointer, ($file->numTokens - 1))) {
             $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.', $pointer);
         } else {
-            $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion', $pointer);
+            // Only if there are more than one artifact (class, interface, trait), we show the warning.
+            // (files with only one, are allowed to be MOODLE_INTERNAL free - MDLSITE-5967).
+            if ($this->count_artifacts($file) > 1) {
+                $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.', $pointer);
+            }
         }
     }
 
@@ -220,6 +224,25 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
         }
 
         return true;
+    }
+
+    /**
+     * Counts how many classes, interfaces or traits a file has.
+     *
+     * @param PHP_CodeSniffer_File $file The file being scanned.
+     *
+     * @return int the number of classes, interfaces and traits in the file.
+     */
+    private function count_artifacts(PHP_CodeSniffer_File $file) {
+        $position = 0;
+        $counter = 0;
+        while ($position !== false) {
+            if ($position = $file->findNext([T_CLASS, T_INTERFACE, T_TRAIT], ($position + 1))) {
+                $counter++;
+            }
+
+        }
+        return $counter;
     }
 
     /**
