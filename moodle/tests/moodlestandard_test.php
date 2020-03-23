@@ -33,6 +33,9 @@ require_once(__DIR__ . '/../../tests/local_codechecker_testcase.php');
  *
  * Each case covers one sniff. Self-explanatory
  *
+ * To run these tests, you need to use:
+ *     vendor/bin/phpunit local/codechecker/moodle/tests/moodlestandard_test.php
+ *
  * @todo Complete coverage of all Sniffs.
  */
 class moodlestandard_testcase extends local_codechecker_testcase {
@@ -221,6 +224,85 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             17 => 0,
             ));
         $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
+    public function test_moodle_php_forbidden_global_use() {
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.PHP.ForbiddenGlobalUse');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbidden_global_use.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors([
+                1 => 0,
+                2 => 0,
+                3 => 0,
+                4 => 0,
+                5 => 0,
+                6 => 0,
+                7 => 0,
+                8 => 0,
+                9 => 0,
+                10 => 0,
+                11 => 0,
+                12 => 0,
+                13 => 0,
+                14 => 0,
+                15 => 0,
+                16 => 'global $OUTPUT cannot be used in renderers. Use $this->output.',
+                17 => 'global $OUTPUT cannot be used in renderers. Use $this->output.',
+                18 => 0,
+                19 => 0,
+                20 => 0,
+                21 => 'global $PAGE cannot be used in renderers. Use $this->page.',
+                22 => 'global $PAGE cannot be used in renderers. Use $this->page.',
+                23 => 0,
+                24 => 0,
+                25 => 0,
+                26 => ['global $OUTPUT cannot be used in renderers. Use $this->output.',
+                        'global $PAGE cannot be used in renderers. Use $this->page.'],
+                27 => ['global $OUTPUT cannot be used in renderers. Use $this->output.',
+                        'global $PAGE cannot be used in renderers. Use $this->page.'],
+                28 => 0,
+                29 => 0,
+                30 => 0,
+                31 => 'global $PAGE cannot be used in renderers. Use $this->page.',
+                32 => 'global $PAGE cannot be used in renderers. Use $this->page.',
+                33 => 0,
+                34 => 0,
+                35 => 0,
+                36 => 0,
+                37 => 0,
+                38 => 'global $OUTPUT cannot be used in renderers. Use $this->output.',
+                39 => 'global $OUTPUT cannot be used in renderers. Use $this->output.',
+                40 => 0,
+                41 => 0,
+                42 => 0,
+                43 => 0,
+                44 => 0,
+                45 => 0,
+                46 => 0,
+                47 => 0,
+                48 => 0,
+                49 => 0,
+                50 => 0,
+                51 => 0,
+                52 => 0,
+                53 => 0,
+                54 => 0,
+                55 => 0,
+                56 => 'global $PAGE cannot be used in block classes. Use $this->page.',
+                57 => 'global $PAGE cannot be used in block classes. Use $this->page.',
+                58 => 0,
+                59 => 0,
+                ]);
+        $this->set_warnings([]);
 
         // Let's do all the hard work!
         $this->verify_cs_results();
