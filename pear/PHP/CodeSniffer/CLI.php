@@ -450,7 +450,7 @@ class PHP_CodeSniffer_CLI
                 continue;
             }
 
-            if ($arg[1] === '-') {
+            if ($arg[0] === '-') {
                 if ($arg === '-' || $arg === '--') {
                     // Empty argument, ignore it.
                     continue;
