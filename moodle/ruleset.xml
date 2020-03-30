@@ -3,6 +3,7 @@
     <description>The Moodle coding style</description>
 
     <arg name="extensions" value="php" />
+    <arg name="encoding" value="utf-8" />
 
     <rule ref="Generic.Classes.DuplicateClassName"/>
 
