@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\TypeCasts\NewTypeCastsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\TypeCasts;
@@ -14,11 +15,13 @@ use PHPCompatibility\PHPCSHelper;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\TypeCasts\NewTypeCastsSniff.
+ * Detect use of newly introduced type casts.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * PHP version All
+ *
+ * @link https://www.php.net/manual/en/language.types.type-juggling.php#language.types.typecasting
+ *
+ * @since 8.0.1
  */
 class NewTypeCastsSniff extends AbstractNewFeatureSniff
 {
@@ -29,7 +32,9 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
      * The array lists : version number with false (not present) or true (present).
      * If's sufficient to list the first version where the keyword appears.
      *
-     * @var array(string => array(string => int|string|null))
+     * @since 8.0.1
+     *
+     * @var array(string => array(string => bool|string))
      */
     protected $newTypeCasts = array(
         'T_UNSET_CAST' => array(
@@ -48,13 +53,15 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 8.0.1
+     *
      * @return array
      */
     public function register()
     {
         $tokens = array();
         foreach ($this->newTypeCasts as $token => $versions) {
-            if (defined($token)) {
+            if (\defined($token)) {
                 $tokens[] = constant($token);
             }
         }
@@ -79,6 +86,8 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 8.0.1
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -132,6 +141,8 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 8.0.1
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -145,6 +156,8 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
     /**
      * Get an array of the non-PHP-version array keys used in a sub-array.
      *
+     * @since 8.0.1
+     *
      * @return array
      */
     protected function getNonVersionArrayKeys()
@@ -155,6 +168,8 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
 
     /**
      * Retrieve the relevant detail (version) information for use in an error message.
+     *
+     * @since 8.0.1
      *
      * @param array $itemArray Version and other information about the item.
      * @param array $itemInfo  Base information about the item.
@@ -173,6 +188,8 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
     /**
      * Filter the error message before it's passed to PHPCS.
      *
+     * @since 8.0.1
+     *
      * @param string $error     The error message which was created.
      * @param array  $itemInfo  Base information about the item this error message applies to.
      * @param array  $errorInfo Detail information about an item this error message applies to.
@@ -187,6 +204,8 @@ class NewTypeCastsSniff extends AbstractNewFeatureSniff
 
     /**
      * Filter the error data before it's passed to PHPCS.
+     *
+     * @since 8.0.1
      *
      * @param array $data      The error data array which was created.
      * @param array $itemInfo  Base information about the item this error message applies to.

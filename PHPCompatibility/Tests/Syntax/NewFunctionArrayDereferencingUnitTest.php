@@ -1,8 +1,11 @@
 <?php
 /**
- * New function array dereferencing sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Syntax;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Syntax;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New function array dereferencing sniff tests
+ * Test the NewFunctionArrayDereferencing sniff.
  *
  * @group newFunctionArrayDereferencing
  * @group syntax
  *
  * @covers \PHPCompatibility\Sniffs\Syntax\NewFunctionArrayDereferencingSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim@cu.be>
+ * @since 7.0.0
  */
 class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
 {
@@ -29,14 +30,21 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
      *
      * @dataProvider dataArrayDereferencing
      *
-     * @param int $line Line number with valid code.
+     * @param int  $line            The line number.
+     * @param bool $skipNoViolation Optional. Whether or not to test for no violation.
+     *                              Defaults to false.
      *
      * @return void
      */
-    public function testArrayDereferencing($line)
+    public function testArrayDereferencing($line, $skipNoViolation = false)
     {
         $file = $this->sniffFile(__FILE__, '5.3');
         $this->assertError($file, $line, 'Function array dereferencing is not present in PHP version 5.3 or earlier');
+
+        if ($skipNoViolation === false) {
+            $file = $this->sniffFile(__FILE__, '5.4');
+            $this->assertNoViolation($file, $line);
+        }
     }
 
     /**
@@ -53,6 +61,43 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
             array(14),
             array(15),
             array(16),
+            array(28, true),
+            array(29, true),
+        );
+    }
+
+
+    /**
+     * testArrayDereferencingUsingCurlies
+     *
+     * @dataProvider dataArrayDereferencingUsingCurlies
+     *
+     * @param int $line Line number with valid code.
+     *
+     * @return void
+     */
+    public function testArrayDereferencingUsingCurlies($line)
+    {
+        $file = $this->sniffFile(__FILE__, '5.6');
+        $this->assertError($file, $line, 'Function array dereferencing using curly braces is not present in PHP version 5.6 or earlier');
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testArrayDereferencingUsingCurlies()
+     *
+     * @return array
+     */
+    public function dataArrayDereferencingUsingCurlies()
+    {
+        return array(
+            array(22),
+            array(23),
+            array(24),
+            array(25),
+            array(28),
+            array(29),
         );
     }
 
@@ -87,7 +132,8 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
             array(9),
             array(10),
             array(11),
-            array(19),
+            array(32),
+            array(37),
         );
     }
 
@@ -99,7 +145,7 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        $file = $this->sniffFile(__FILE__, '5.4');
+        $file = $this->sniffFile(__FILE__, '7.0');
         $this->assertNoViolation($file);
     }
 }

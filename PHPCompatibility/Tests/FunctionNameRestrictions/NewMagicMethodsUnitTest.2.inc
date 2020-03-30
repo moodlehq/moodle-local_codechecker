@@ -10,4 +10,8 @@ trait MyTrait
     public static function __callStatic($name, $arguments) {}
     public function __invoke($x) {}
     public function __debugInfo() {}
+    public function __serialize() {}
+    public function __unserialize($data) {}
+    public function __construct() {}
+    public function __destruct() {}
 }

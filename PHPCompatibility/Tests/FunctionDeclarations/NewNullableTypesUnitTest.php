@@ -1,8 +1,11 @@
 <?php
 /**
- * New nullable type hints / return types sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\FunctionDeclarations;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New nullable type hints / return types sniff test file
+ * Test the NewNullableTypes sniff.
  *
  * @group nullableTypes
  * @group functionDeclarations
@@ -19,9 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\NewNullableTypesSniff
  * @covers \PHPCompatibility\Sniff::getReturnTypeHintToken
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.7
  */
 class NewNullableTypesUnitTest extends BaseSniffTest
 {

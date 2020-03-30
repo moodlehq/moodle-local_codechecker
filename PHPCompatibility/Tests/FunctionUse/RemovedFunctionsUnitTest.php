@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed functions sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionUse;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\FunctionUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Removed functions sniff tests
+ * Test the RemovedFunctions sniff.
  *
  * @group removedFunctions
  * @group functionUse
  *
  * @covers \PHPCompatibility\Sniffs\FunctionUse\RemovedFunctionsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class RemovedFunctionsUnitTest extends BaseSniffTest
 {
@@ -68,6 +69,10 @@ class RemovedFunctionsUnitTest extends BaseSniffTest
             array('ldap_sort', '7.0', array(97), '5.6'),
             array('fgetss', '7.3', array(167), '7.2'),
             array('gzgetss', '7.3', array(168), '7.2'),
+            array('ezmlm_hash', '7.4', array(245), '7.3'),
+            array('get_magic_quotes_gpc', '7.4', array(240), '7.3'),
+            array('get_magic_quotes_runtime', '7.4', array(241), '7.3'),
+            array('hebrevc', '7.4', array(242), '7.3'),
         );
     }
 
@@ -183,6 +188,13 @@ class RemovedFunctionsUnitTest extends BaseSniffTest
             array('mbereg_search_getregs', '7.3', 'mb_ereg_search_getregs()', array(164), '7.2'),
             array('mbereg_search_getpos', '7.3', 'mb_ereg_search_getpos()', array(165), '7.2'),
             array('mbereg_search_setpos', '7.3', 'mb_ereg_search_setpos()', array(166), '7.2'),
+
+            array('convert_cyr_string', '7.4', 'mb_convert_encoding(), iconv() or UConverter', array(243), '7.3'),
+            array('is_real', '7.4', 'is_float()', array(239), '7.3'),
+            array('money_format', '7.4', 'NumberFormatter::formatCurrency()', array(244), '7.3'),
+            array('restore_include_path', '7.4', "ini_restore('include_path')", array(246), '7.3'),
+            array('ldap_control_paged_result', '7.4', 'ldap_search()', array(235), '7.3'),
+            array('ldap_control_paged_result', '7.4', 'ldap_search()', array(235), '7.3'),
         );
     }
 
@@ -239,7 +251,114 @@ class RemovedFunctionsUnitTest extends BaseSniffTest
             array('imagepstext', '7.0', array(96), '5.6'),
             array('php_check_syntax', '5.0.5', array(98), '5.0', '5.1'),
             array('mysqli_get_cache_stats', '5.4', array(99), '5.3'),
+            array('ibase_add_user', '7.4', array(171), '7.3'),
+            array('ibase_affected_rows', '7.4', array(172), '7.3'),
+            array('ibase_backup', '7.4', array(173), '7.3'),
+            array('ibase_blob_add', '7.4', array(174), '7.3'),
+            array('ibase_blob_cancel', '7.4', array(175), '7.3'),
+            array('ibase_blob_close', '7.4', array(176), '7.3'),
+            array('ibase_blob_create', '7.4', array(177), '7.3'),
+            array('ibase_blob_echo', '7.4', array(178), '7.3'),
+            array('ibase_blob_get', '7.4', array(179), '7.3'),
+            array('ibase_blob_import', '7.4', array(180), '7.3'),
+            array('ibase_blob_info', '7.4', array(181), '7.3'),
+            array('ibase_blob_open', '7.4', array(182), '7.3'),
+            array('ibase_close', '7.4', array(183), '7.3'),
+            array('ibase_commit_ret', '7.4', array(184), '7.3'),
+            array('ibase_commit', '7.4', array(185), '7.3'),
+            array('ibase_connect', '7.4', array(186), '7.3'),
+            array('ibase_db_info', '7.4', array(187), '7.3'),
+            array('ibase_delete_user', '7.4', array(188), '7.3'),
+            array('ibase_drop_db', '7.4', array(189), '7.3'),
+            array('ibase_errcode', '7.4', array(190), '7.3'),
+            array('ibase_errmsg', '7.4', array(191), '7.3'),
+            array('ibase_execute', '7.4', array(192), '7.3'),
+            array('ibase_fetch_assoc', '7.4', array(193), '7.3'),
+            array('ibase_fetch_object', '7.4', array(194), '7.3'),
+            array('ibase_fetch_row', '7.4', array(195), '7.3'),
+            array('ibase_field_info', '7.4', array(196), '7.3'),
+            array('ibase_free_event_handler', '7.4', array(197), '7.3'),
+            array('ibase_free_query', '7.4', array(198), '7.3'),
+            array('ibase_free_result', '7.4', array(199), '7.3'),
+            array('ibase_gen_id', '7.4', array(200), '7.3'),
+            array('ibase_maintain_db', '7.4', array(201), '7.3'),
+            array('ibase_modify_user', '7.4', array(202), '7.3'),
+            array('ibase_name_result', '7.4', array(203), '7.3'),
+            array('ibase_num_fields', '7.4', array(204), '7.3'),
+            array('ibase_num_params', '7.4', array(205), '7.3'),
+            array('ibase_param_info', '7.4', array(206), '7.3'),
+            array('ibase_pconnect', '7.4', array(207), '7.3'),
+            array('ibase_prepare', '7.4', array(208), '7.3'),
+            array('ibase_query', '7.4', array(209), '7.3'),
+            array('ibase_restore', '7.4', array(210), '7.3'),
+            array('ibase_rollback_ret', '7.4', array(211), '7.3'),
+            array('ibase_rollback', '7.4', array(212), '7.3'),
+            array('ibase_server_info', '7.4', array(213), '7.3'),
+            array('ibase_service_attach', '7.4', array(214), '7.3'),
+            array('ibase_service_detach', '7.4', array(215), '7.3'),
+            array('ibase_set_event_handler', '7.4', array(216), '7.3'),
+            array('ibase_trans', '7.4', array(217), '7.3'),
+            array('ibase_wait_event', '7.4', array(218), '7.3'),
 
+            array('pfpro_cleanup', '5.1', array(221), '5.0'),
+            array('pfpro_init', '5.1', array(222), '5.0'),
+            array('pfpro_process_raw', '5.1', array(223), '5.0'),
+            array('pfpro_process', '5.1', array(224), '5.0'),
+            array('pfpro_version', '5.1', array(225), '5.0'),
+
+            array('wddx_add_vars', '7.4', array(228), '7.3'),
+            array('wddx_deserialize', '7.4', array(229), '7.3'),
+            array('wddx_packet_end', '7.4', array(230), '7.3'),
+            array('wddx_packet_start', '7.4', array(231), '7.3'),
+            array('wddx_serialize_value', '7.4', array(232), '7.3'),
+            array('wddx_serialize_vars', '7.4', array(233), '7.3'),
+        );
+    }
+
+
+    /**
+     * testRemovedFunctionWithAlternative
+     *
+     * @dataProvider dataRemovedFunctionWithAlternative
+     *
+     * @param string $functionName   Name of the function.
+     * @param string $removedIn      The PHP version in which the function was removed.
+     * @param string $alternative    An alternative function.
+     * @param array  $lines          The line numbers in the test file which apply to this function.
+     * @param string $okVersion      A PHP version in which the function was still valid.
+     * @param string $removedVersion Optional PHP version to test removed message with -
+     *                               if different from the $removedIn version.
+     *
+     * @return void
+     */
+    public function testRemovedFunctionWithAlternative($functionName, $removedIn, $alternative, $lines, $okVersion, $removedVersion = null)
+    {
+        $file = $this->sniffFile(__FILE__, $okVersion);
+        foreach ($lines as $line) {
+            $this->assertNoViolation($file, $line);
+        }
+
+        $errorVersion = (isset($removedVersion)) ? $removedVersion : $removedIn;
+        $file         = $this->sniffFile(__FILE__, $errorVersion);
+        $error        = "Function {$functionName}() is removed since PHP {$removedIn}; Use {$alternative} instead";
+        foreach ($lines as $line) {
+            $this->assertError($file, $line, $error);
+        }
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testRemovedFunctionWithAlternative()
+     *
+     * @return array
+     */
+    public function dataRemovedFunctionWithAlternative()
+    {
+        return array(
+            array('recode_file', '7.4', 'the iconv or mbstring extension', array(236), '7.3'),
+            array('recode_string', '7.4', 'the iconv or mbstring extension', array(237), '7.3'),
+            array('recode', '7.4', 'the iconv or mbstring extension', array(238), '7.3'),
         );
     }
 

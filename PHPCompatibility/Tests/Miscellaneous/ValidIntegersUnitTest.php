@@ -1,8 +1,11 @@
 <?php
 /**
- * Valid Integers Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Miscellaneous;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Miscellaneous;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Valid Integers Sniff tests
+ * Test the ValidIntegers sniff.
  *
  * @group validIntegers
  * @group miscellaneous
  *
  * @covers \PHPCompatibility\Sniffs\Miscellaneous\ValidIntegersSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.3
  */
 class ValidIntegersUnitTest extends BaseSniffTest
 {
@@ -60,6 +61,7 @@ class ValidIntegersUnitTest extends BaseSniffTest
         return array(
             array(3, '0b001001101', true),
             array(4, '0b01', false),
+            array(14, '0B10001', true),
         );
     }
 
@@ -129,18 +131,55 @@ class ValidIntegersUnitTest extends BaseSniffTest
     /**
      * testHexNumericString
      *
+     * @dataProvider dataHexNumericString
+     *
+     * @param int    $line Line number where the error should occur.
+     * @param string $hex  Hexidecminal number as a string.
+     *
      * @return void
      */
-    public function testHexNumericString()
+    public function testHexNumericString($line, $hex)
     {
-        $error = 'The behaviour of hexadecimal numeric strings was inconsistent prior to PHP 7 and support has been removed in PHP 7. Found: \'0xaa78b5\'';
+        $error = "The behaviour of hexadecimal numeric strings was inconsistent prior to PHP 7 and support has been removed in PHP 7. Found: '{$hex}'";
 
         $file = $this->sniffFile(__FILE__, '5.6');
-        $this->assertWarning($file, 11, $error);
+        $this->assertWarning($file, $line, $error);
+
+        $file = $this->sniffFile(__FILE__, '7.0');
+        $this->assertError($file, $line, $error);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testHexNumericString()
+     *
+     * @return array
+     */
+    public function dataHexNumericString()
+    {
+        // phpcs:disable PHPCompatibility.Miscellaneous.ValidIntegers.HexNumericStringFound
+        return array(
+            array(11, '0xaa78b5'),
+            array(15, '0Xbb99EF'),
+        );
+        // phpcs:enable
+    }
+
+
+    /**
+     * testHexNumericString.
+     *
+     * @dataProvider dataHexNumericString
+     *
+     * @return void
+     */
+    public function testNoFalsePositivesHexNumericString()
+    {
+        $file = $this->sniffFile(__FILE__, '5.6');
         $this->assertNoViolation($file, 12);
 
         $file = $this->sniffFile(__FILE__, '7.0');
-        $this->assertError($file, 11, $error);
         $this->assertNoViolation($file, 12);
     }
 

@@ -1,8 +1,11 @@
 <?php
 /**
- * Will a certain token combination be recognized as a number by PHP ?
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Util\Tests\Core;
@@ -10,14 +13,12 @@ namespace PHPCompatibility\Util\Tests\Core;
 use PHPCompatibility\Util\Tests\CoreMethodTestFrame;
 
 /**
- * isNumber(), isPositiveNumber() and isNegativeNumber() function tests
+ * Tests for the `isNumber()`, `isPositiveNumber()` and `isNegativeNumber()` utility functions.
  *
  * @group utilityIsNumber
  * @group utilityFunctions
  *
- * @uses    \PHPCompatibility\Util\Tests\CoreMethodTestFrame
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.2.0
  */
 class IsNumberUnitTest extends CoreMethodTestFrame
 {
@@ -62,7 +63,7 @@ class IsNumberUnitTest extends CoreMethodTestFrame
      * {@internal Case I13 is not tested here on purpose as the result depends on the
      * `testVersion` which we don't use in the utility tests.
      * For a `testVersion` with a minimum of PHP 7.0, the result will be false.
-     * For a `testVersion` which includes any PHP 5 version, the result will be true.}}
+     * For a `testVersion` which includes any PHP 5 version, the result will be true.}
      *
      * @return array
      */

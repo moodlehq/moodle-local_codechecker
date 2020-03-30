@@ -1,8 +1,11 @@
 <?php
 /**
- * preg_replace() /e modifier sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ParameterValues;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\ParameterValues;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * preg_replace() /e modifier sniff tests
+ * Test the RemovedPCREModifiers sniff.
  *
  * @group removedPCREModifiers
  * @group parameterValues
@@ -18,9 +21,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @covers \PHPCompatibility\Sniffs\ParameterValues\RemovedPCREModifiersSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.6
  */
 class RemovedPCREModifiersUnitTest extends BaseSniffTest
 {

@@ -1,8 +1,11 @@
 <?php
 /**
- * PHP 5.5 list() in foreach sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ControlStructures;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\ControlStructures;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * PHP 5.5 list() in foreach sniff test file.
+ * Test the NewListInForeach sniff.
  *
  * @group newListInForeach
  * @group controlStructures
  *
  * @covers \PHPCompatibility\Sniffs\ControlStructures\NewListInForeachSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class NewListInForeachUnitTest extends BaseSniffTest
 {

@@ -1,8 +1,11 @@
 <?php
 /**
- * Bitwise shifts by negative number will throw an ArithmeticError in PHP 7.0.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Operators;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Operators;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Bitwise shifts by negative number will throw an ArithmeticError in PHP 7.0.
+ * Test the ForbiddenNegativeBitshift sniff.
  *
  * @group forbiddenNegativeBitshift
  * @group operators
  *
  * @covers \PHPCompatibility\Sniffs\Operators\ForbiddenNegativeBitshiftSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim@cu.be>
+ * @since 7.0.0
  */
 class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTest
 {

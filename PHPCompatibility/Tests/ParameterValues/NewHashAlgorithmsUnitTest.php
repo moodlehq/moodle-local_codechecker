@@ -1,8 +1,11 @@
 <?php
 /**
- * New hash algorithms sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ParameterValues;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\ParameterValues;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New hash algorithms sniff tests.
+ * Test the NewHashAlgorithms sniff.
  *
  * @group newHashAlgorithms
  * @group parameterValues
@@ -19,9 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniffs\ParameterValues\NewHashAlgorithmsSniff
  * @covers \PHPCompatibility\Sniff::getHashAlgorithmParameter
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.7
  */
 class NewHashAlgorithmsUnitTest extends BaseSniffTest
 {
@@ -74,6 +75,7 @@ class NewHashAlgorithmsUnitTest extends BaseSniffTest
             array('sha3-256', '7.0', 31, '7.1'),
             array('sha3-384', '7.0', 32, '7.1'),
             array('sha3-512', '7.0', 33, '7.1'),
+            array('crc32c', '7.3', 34, '7.4'),
         );
     }
 

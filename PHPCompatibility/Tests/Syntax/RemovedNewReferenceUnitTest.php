@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed new reference sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Syntax;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Syntax;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Removed new reference sniff tests
+ * Test the RemovedNewReference sniff.
  *
  * @group removedNewReference
  * @group syntax
  *
  * @covers \PHPCompatibility\Sniffs\Syntax\RemovedNewReferenceSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class RemovedNewReferenceUnitTest extends BaseSniffTest
 {

@@ -1,8 +1,11 @@
 <?php
 /**
- * Is class property ? test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Util\Tests\Core;
@@ -11,14 +14,12 @@ use PHPCompatibility\PHPCSHelper;
 use PHPCompatibility\Util\Tests\CoreMethodTestFrame;
 
 /**
- * isClassProperty() function tests
+ * Tests for the `isClassProperty()` utility function.
  *
  * @group utilityIsClassProperty
  * @group utilityFunctions
  *
- * @uses    \PHPCompatibility\Util\Tests\CoreMethodTestFrame
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.1.4
  */
 class IsClassPropertyUnitTest extends CoreMethodTestFrame
 {

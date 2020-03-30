@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\NewHashAlgorithmsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -13,11 +14,14 @@ use PHPCompatibility\AbstractNewFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\NewHashAlgorithmsSniff.
+ * Detect the use of newly introduced hash algorithms.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * PHP version 5.2+
+ *
+ * @link https://www.php.net/manual/en/function.hash-algos.php#refsect1-function.hash-algos-changelog
+ *
+ * @since 7.0.7
+ * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
  */
 class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
 {
@@ -26,6 +30,8 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
      *
      * The array lists : version number with false (not present) or true (present).
      * If's sufficient to list the first version where the hash algorithm appears.
+     *
+     * @since 7.0.7
      *
      * @var array(string => array(string => bool))
      */
@@ -99,11 +105,17 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
             '7.0' => false,
             '7.1' => true,
         ),
+        'crc32c' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
     );
 
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.7
      *
      * @return array
      */
@@ -116,6 +128,8 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
+     * @since 7.0.7
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
      *                                         stack passed in $tokens.
@@ -125,7 +139,7 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $algo = $this->getHashAlgorithmParameter($phpcsFile, $stackPtr);
-        if (empty($algo) || is_string($algo) === false) {
+        if (empty($algo) || \is_string($algo) === false) {
             return;
         }
 
@@ -145,6 +159,8 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -157,6 +173,8 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
 
     /**
      * Get the error message template for this sniff.
+     *
+     * @since 7.1.0
      *
      * @return string
      */

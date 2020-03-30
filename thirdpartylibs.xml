@@ -9,7 +9,7 @@
     <library>
         <location>PHPCompatibility</location>
         <name>PHP Compatibility Coding Standard</name>
-        <version>9.1.1+ (4487042)</version>
+        <version>9.3.5+ (9fb3244)</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>

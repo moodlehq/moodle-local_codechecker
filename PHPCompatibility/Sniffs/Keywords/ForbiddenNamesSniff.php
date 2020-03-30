@@ -1,11 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2012 Cu.be Solutions bvba
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Keywords;
@@ -15,14 +15,13 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesSniff.
+ * Detects the use of reserved keywords as class, function, namespace or constant names.
  *
- * Prohibits the use of reserved keywords as class, function, namespace or constant names.
+ * PHP version All
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2012 Cu.be Solutions bvba
+ * @link https://www.php.net/manual/en/reserved.keywords.php
+ *
+ * @since 5.5
  */
 class ForbiddenNamesSniff extends Sniff
 {
@@ -30,6 +29,8 @@ class ForbiddenNamesSniff extends Sniff
     /**
      * A list of keywords that can not be used as function, class and namespace name or constant name.
      * Mentions since which version it's not allowed.
+     *
+     * @since 5.5
      *
      * @var array(string => string)
      */
@@ -48,15 +49,20 @@ class ForbiddenNamesSniff extends Sniff
         'continue'      => 'all',
         'declare'       => 'all',
         'default'       => 'all',
+        'die'           => 'all',
         'do'            => 'all',
+        'echo'          => 'all',
         'else'          => 'all',
         'elseif'        => 'all',
+        'empty'         => 'all',
         'enddeclare'    => 'all',
         'endfor'        => 'all',
         'endforeach'    => 'all',
         'endif'         => 'all',
         'endswitch'     => 'all',
         'endwhile'      => 'all',
+        'eval'          => 'all',
+        'exit'          => 'all',
         'extends'       => 'all',
         'final'         => '5.0',
         'finally'       => '5.5',
@@ -67,24 +73,34 @@ class ForbiddenNamesSniff extends Sniff
         'goto'          => '5.3',
         'if'            => 'all',
         'implements'    => '5.0',
-        'interface'     => '5.0',
+        'include'       => 'all',
+        'include_once'  => 'all',
         'instanceof'    => '5.0',
         'insteadof'     => '5.4',
+        'interface'     => '5.0',
+        'isset'         => 'all',
+        'list'          => 'all',
         'namespace'     => '5.3',
         'new'           => 'all',
         'or'            => 'all',
+        'print'         => 'all',
         'private'       => '5.0',
         'protected'     => '5.0',
         'public'        => '5.0',
+        'require'       => 'all',
+        'require_once'  => 'all',
+        'return'        => 'all',
         'static'        => 'all',
         'switch'        => 'all',
         'throw'         => '5.0',
         'trait'         => '5.4',
         'try'           => '5.0',
+        'unset'         => 'all',
         'use'           => 'all',
         'var'           => 'all',
         'while'         => 'all',
         'xor'           => 'all',
+        'yield'         => '5.5',
         '__class__'     => 'all',
         '__dir__'       => '5.3',
         '__file__'      => 'all',
@@ -96,6 +112,8 @@ class ForbiddenNamesSniff extends Sniff
     /**
      * A list of keywords that can follow use statements.
      *
+     * @since 7.0.1
+     *
      * @var array(string => string)
      */
     protected $validUseNames = array(
@@ -106,12 +124,16 @@ class ForbiddenNamesSniff extends Sniff
     /**
      * Scope modifiers and other keywords allowed in trait use statements.
      *
+     * @since 7.1.4
+     *
      * @var array
      */
     private $allowedModifiers = array();
 
     /**
      * Targeted tokens.
+     *
+     * @since 5.5
      *
      * @var array
      */
@@ -131,6 +153,8 @@ class ForbiddenNamesSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 5.5
+     *
      * @return array
      */
     public function register()
@@ -140,7 +164,7 @@ class ForbiddenNamesSniff extends Sniff
 
         $tokens = $this->targetedTokens;
 
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $tokens[] = \T_ANON_CLASS;
         }
 
@@ -149,6 +173,8 @@ class ForbiddenNamesSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -172,6 +198,8 @@ class ForbiddenNamesSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -232,6 +260,23 @@ class ForbiddenNamesSniff extends Sniff
         }
 
         /*
+         * Deal with foreach ( ... as list() ).
+         */
+        elseif ($tokens[$stackPtr]['type'] === 'T_AS'
+            && isset($tokens[$stackPtr]['nested_parenthesis']) === true
+            && $tokens[$nextNonEmpty]['code'] === \T_LIST
+        ) {
+            $parentheses = array_reverse($tokens[$stackPtr]['nested_parenthesis'], true);
+            foreach ($parentheses as $open => $close) {
+                if (isset($tokens[$open]['parenthesis_owner'])
+                    && $tokens[$tokens[$open]['parenthesis_owner']]['code'] === \T_FOREACH
+                ) {
+                    return;
+                }
+            }
+        }
+
+        /*
          * Deal with functions declared to return by reference.
          */
         elseif ($tokens[$stackPtr]['type'] === 'T_FUNCTION'
@@ -251,7 +296,7 @@ class ForbiddenNamesSniff extends Sniff
          */
         elseif ($tokens[$stackPtr]['type'] === 'T_NAMESPACE') {
             if ($tokens[$stackPtr + 1]['code'] === \T_NS_SEPARATOR) {
-                // Not a namespace declaration, but use of, i.e. namespace\someFunction();
+                // Not a namespace declaration, but use of, i.e. `namespace\someFunction();`.
                 return;
             }
 
@@ -311,6 +356,8 @@ class ForbiddenNamesSniff extends Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
+     * @since 5.5
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
      *                                         stack passed in $tokens.
@@ -360,6 +407,8 @@ class ForbiddenNamesSniff extends Sniff
     /**
      * Add the error message.
      *
+     * @since 7.1.0
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
      *                                         stack passed in $tokens.
@@ -380,12 +429,14 @@ class ForbiddenNamesSniff extends Sniff
      * Check if the current token code is for a token which can be considered
      * the end of a (partial) use statement.
      *
+     * @since 7.0.8
+     *
      * @param int $token The current token information.
      *
      * @return bool
      */
     protected function isEndOfUseStatement($token)
     {
-        return in_array($token['code'], array(\T_CLOSE_CURLY_BRACKET, \T_SEMICOLON, \T_COMMA), true);
+        return \in_array($token['code'], array(\T_CLOSE_CURLY_BRACKET, \T_SEMICOLON, \T_COMMA), true);
     }
 }

@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionNameRestrictions\ReservedFunctionNamesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
@@ -15,9 +16,9 @@ use PHP_CodeSniffer_Standards_AbstractScopeSniff as PHPCS_AbstractScopeSniff;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionNameRestrictions\ReservedFunctionNamesSniff.
- *
  * All function and method names starting with double underscore are reserved by PHP.
+ *
+ * PHP version All
  *
  * {@internal Extends an upstream sniff to benefit from the properties contained therein.
  *            The properties are lists of valid PHP magic function and method names, which
@@ -28,22 +29,25 @@ use PHP_CodeSniffer_Tokens as Tokens;
  *            the logic in this sniff is largely the same as used upstream.
  *            Extending the upstream sniff instead of including it via the ruleset, however,
  *            prevents hard to debug issues of errors not being reported from the upstream sniff
- *            if this library is used in combination with other rulesets.}}
+ *            if this library is used in combination with other rulesets.}
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/language.oop5.magic.php
+ *
+ * @since 8.2.0 This was previously, since 7.0.3, checked by the upstream sniff.
+ * @since 9.3.2 The sniff will now ignore functions marked as `@deprecated` by design.
  */
 class ReservedFunctionNamesSniff extends PHPCS_CamelCapsFunctionNameSniff
 {
 
     /**
      * Overload the constructor to work round various PHPCS cross-version compatibility issues.
+     *
+     * @since 8.2.0
      */
     public function __construct()
     {
         $scopeTokens = array(\T_CLASS, \T_INTERFACE, \T_TRAIT);
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $scopeTokens[] = \T_ANON_CLASS;
         }
 
@@ -57,6 +61,8 @@ class ReservedFunctionNamesSniff extends PHPCS_CamelCapsFunctionNameSniff
 
     /**
      * Processes the tokens within the scope.
+     *
+     * @since 8.2.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being processed.
      * @param int                   $stackPtr  The position where this token was
@@ -79,6 +85,15 @@ class ReservedFunctionNamesSniff extends PHPCS_CamelCapsFunctionNameSniff
         end($conditions);
         $deepestScope = key($conditions);
         if ($deepestScope !== $currScope) {
+            return;
+        }
+
+        if ($this->isFunctionDeprecated($phpcsFile, $stackPtr) === true) {
+            /*
+             * Deprecated functions don't have to comply with the naming conventions,
+             * otherwise functions deprecated in favour of a function with a compliant
+             * name would still trigger an error.
+             */
             return;
         }
 
@@ -114,6 +129,8 @@ class ReservedFunctionNamesSniff extends PHPCS_CamelCapsFunctionNameSniff
     /**
      * Processes the tokens outside the scope.
      *
+     * @since 8.2.0
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being processed.
      * @param int                   $stackPtr  The position where this token was
      *                                         found.
@@ -122,6 +139,15 @@ class ReservedFunctionNamesSniff extends PHPCS_CamelCapsFunctionNameSniff
      */
     protected function processTokenOutsideScope(File $phpcsFile, $stackPtr)
     {
+        if ($this->isFunctionDeprecated($phpcsFile, $stackPtr) === true) {
+            /*
+             * Deprecated functions don't have to comply with the naming conventions,
+             * otherwise functions deprecated in favour of a function with a compliant
+             * name would still trigger an error.
+             */
+            return;
+        }
+
         $functionName = $phpcsFile->getDeclarationName($stackPtr);
         if ($functionName === null) {
             // Ignore closures.
@@ -140,5 +166,40 @@ class ReservedFunctionNamesSniff extends PHPCS_CamelCapsFunctionNameSniff
                 );
             }
         }
+    }
+
+
+    /**
+     * Check whether a function has been marked as deprecated via a @deprecated tag
+     * in the function docblock.
+     *
+     * @since 9.3.2
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of a T_FUNCTION
+     *                                               token in the stack.
+     *
+     * @return bool
+     */
+    private function isFunctionDeprecated(File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+        $find   = Tokens::$methodPrefixes;
+        $find[] = \T_WHITESPACE;
+
+        $commentEnd = $phpcsFile->findPrevious($find, ($stackPtr - 1), null, true);
+        if ($tokens[$commentEnd]['code'] !== \T_DOC_COMMENT_CLOSE_TAG) {
+            // Function doesn't have a doc comment or is using the wrong type of comment.
+            return false;
+        }
+
+        $commentStart = $tokens[$commentEnd]['comment_opener'];
+        foreach ($tokens[$commentStart]['comment_tags'] as $tag) {
+            if ($tokens[$tag]['content'] === '@deprecated') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

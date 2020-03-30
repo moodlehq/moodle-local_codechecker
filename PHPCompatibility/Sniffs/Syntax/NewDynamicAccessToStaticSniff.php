@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Syntax\NewDynamicAccessToStaticSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.3
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Syntax;
@@ -16,22 +15,25 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Syntax\NewDynamicAccessToStaticSniff.
+ * Detect dynamic access to static methods and properties, as well as class constants.
  *
  * As of PHP 5.3, static properties and methods as well as class constants
  * can be accessed using a dynamic (variable) class name.
  *
  * PHP version 5.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration53.new-features.php
+ *
+ * @since 8.1.0
+ * @since 9.0.0 Renamed from `DynamicAccessToStaticSniff` to `NewDynamicAccessToStaticSniff`.
  */
 class NewDynamicAccessToStaticSniff extends Sniff
 {
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 8.1.0
      *
      * @return array
      */
@@ -44,6 +46,8 @@ class NewDynamicAccessToStaticSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 8.1.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

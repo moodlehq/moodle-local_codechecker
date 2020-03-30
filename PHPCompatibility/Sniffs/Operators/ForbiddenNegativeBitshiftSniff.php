@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Operators\ForbiddenNegativeBitshift.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim@cu.be>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Operators;
@@ -17,15 +16,14 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Operators\ForbiddenNegativeBitshift.
- *
- * Bitwise shifts by negative number will throw an ArithmeticError in PHP 7.0.
+ * Bitwise shifts by negative number will throw an ArithmeticError since PHP 7.0.
  *
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim@cu.be>
+ * @link https://wiki.php.net/rfc/integer_semantics
+ * @link https://www.php.net/manual/en/migration70.incompatible.php#migration70.incompatible.integers.negative-bitshift
+ *
+ * @since 7.0.0
  */
 class ForbiddenNegativeBitshiftSniff extends Sniff
 {
@@ -34,7 +32,9 @@ class ForbiddenNegativeBitshiftSniff extends Sniff
      *
      * {@internal The PHPCS `findEndOfStatement()` method is not completely consistent
      * in how it returns the statement end. This is just a simple way to bypass
-     * the inconsistency for our purposes.}}
+     * the inconsistency for our purposes.}
+     *
+     * @since 8.2.0
      *
      * @var array
      */
@@ -47,6 +47,9 @@ class ForbiddenNegativeBitshiftSniff extends Sniff
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.0
+     * @since 8.2.0 Now registers all bitshift tokens, not just bitshift right (`T_SR`).
      *
      * @return array
      */
@@ -62,6 +65,8 @@ class ForbiddenNegativeBitshiftSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token

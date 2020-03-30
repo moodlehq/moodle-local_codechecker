@@ -1,8 +1,11 @@
 <?php
 /**
- * Empty with non variable sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\LanguageConstructs;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\LanguageConstructs;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Empty with non variable sniff test file
+ * Test the NewEmptyNonVariable sniff.
  *
  * @group newEmptyNonVariable
  * @group languageConstructs
@@ -18,9 +21,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniffs\LanguageConstructs\NewEmptyNonVariableSniff
  * @covers \PHPCompatibility\Sniff::isVariable
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.4
  */
 class NewEmptyNonVariableUnitTest extends BaseSniffTest
 {

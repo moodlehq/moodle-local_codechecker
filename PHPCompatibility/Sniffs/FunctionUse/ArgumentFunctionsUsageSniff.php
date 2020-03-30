@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionUse\ArgumentFunctionsUsageSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.3
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionUse;
@@ -16,10 +15,10 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionUse\ArgumentFunctionsUsageSniff.
+ * Detect usage of `func_get_args()`, `func_get_arg()` and `func_num_args()` in invalid context.
  *
+ * Checks for:
  * - Prior to PHP 5.3, these functions could not be used as a function call parameter.
- *
  * - Calling these functions from the outermost scope of a file which has been included by
  *   calling `include` or `require` from within a function in the calling file, worked
  *   prior to PHP 5.3. As of PHP 5.3, this will generate a warning and will always return false/-1.
@@ -28,15 +27,17 @@ use PHP_CodeSniffer_Tokens as Tokens;
  *
  * PHP version 5.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration53.incompatible.php
+ *
+ * @since 8.2.0
  */
 class ArgumentFunctionsUsageSniff extends Sniff
 {
 
     /**
      * The target functions for this sniff.
+     *
+     * @since 8.2.0
      *
      * @var array
      */
@@ -50,6 +51,8 @@ class ArgumentFunctionsUsageSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 8.2.0
+     *
      * @return array
      */
     public function register()
@@ -60,6 +63,8 @@ class ArgumentFunctionsUsageSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 8.2.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -100,7 +105,7 @@ class ArgumentFunctionsUsageSniff extends Sniff
         $data = $tokens[$stackPtr]['content'];
 
         /*
-         * Check for usage of the functions in the global scope.
+         * Check for use of the functions in the global scope.
          *
          * As PHPCS can not determine whether a file is included from within a function in
          * another file, so always throw a warning/error.
@@ -118,7 +123,7 @@ class ArgumentFunctionsUsageSniff extends Sniff
         }
 
         /*
-         * Check for usage of the functions as a parameter in a function call.
+         * Check for use of the functions as a parameter in a function call.
          */
         if ($this->supportsBelow('5.2') === false) {
             return;

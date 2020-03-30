@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed Constants Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Constants;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Constants;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Removed Constants Sniff tests
+ * Test the RemovedConstants sniff.
  *
  * @group removedConstants
  * @group constants
  *
  * @covers \PHPCompatibility\Sniffs\Constants\RemovedConstantsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.1.0
  */
 class RemovedConstantsUnitTest extends BaseSniffTest
 {
@@ -66,6 +67,52 @@ class RemovedConstantsUnitTest extends BaseSniffTest
             array('INTL_IDNA_VARIANT_2003', '7.2', array(16), '7.1'),
             array('FILTER_FLAG_SCHEME_REQUIRED', '7.3', array(73), '7.2'),
             array('FILTER_FLAG_HOST_REQUIRED', '7.3', array(74), '7.2'),
+            array('CURLPIPE_HTTP1', '7.4', array(138), '7.3'),
+        );
+    }
+
+
+    /**
+     * testDeprecatedConstantWithAlternative
+     *
+     * @dataProvider dataDeprecatedConstantWithAlternative
+     *
+     * @param string $constantName      Name of the PHP constant.
+     * @param string $deprecatedIn      The PHP version in which the constant was deprecated.
+     * @param string $alternative       An alternative constant.
+     * @param array  $lines             The line numbers in the test file which apply to this constant.
+     * @param string $okVersion         A PHP version in which the constant was still valid.
+     * @param string $deprecatedVersion Optional PHP version to test deprecation message with -
+     *                                  if different from the $deprecatedIn version.
+     *
+     * @return void
+     */
+    public function testDeprecatedConstantWithAlternative($constantName, $deprecatedIn, $alternative, $lines, $okVersion, $deprecatedVersion = null)
+    {
+        $file = $this->sniffFile(__FILE__, $okVersion);
+        foreach ($lines as $line) {
+            $this->assertNoViolation($file, $line);
+        }
+
+        $errorVersion = (isset($deprecatedVersion)) ? $deprecatedVersion : $deprecatedIn;
+        $file         = $this->sniffFile(__FILE__, $errorVersion);
+        $error        = "The constant \"{$constantName}\" is deprecated since PHP {$deprecatedIn}; Use {$alternative} instead";
+        foreach ($lines as $line) {
+            $this->assertWarning($file, $line, $error);
+        }
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testDeprecatedConstantWithAlternative()
+     *
+     * @return array
+     */
+    public function dataDeprecatedConstantWithAlternative()
+    {
+        return array(
+            array('FILTER_SANITIZE_MAGIC_QUOTES', '7.4', 'FILTER_SANITIZE_ADD_SLASHES', array(137), '7.3'),
         );
     }
 
@@ -117,10 +164,75 @@ class RemovedConstantsUnitTest extends BaseSniffTest
             array('CURLCLOSEPOLICY_CALLBACK', '5.6', array(13), '5.5'),
             array('CURLCLOSEPOLICY_OLDEST', '5.6', array(14), '5.5'),
             array('PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT', '7.0', array(15), '5.6'),
+            array('T_CHARACTER', '7.0', array(139), '5.6'),
+            array('T_BAD_CHARACTER', '7.0', array(140), '5.6'),
             array('PHPDBG_FILE', '7.3', array(69), '7.2'),
             array('PHPDBG_METHOD', '7.3', array(70), '7.2'),
             array('PHPDBG_LINENO', '7.3', array(71), '7.2'),
             array('PHPDBG_FUNC', '7.3', array(72), '7.2'),
+
+            array('IBASE_DEFAULT', '7.4', array(75), '7.3'),
+            array('IBASE_READ', '7.4', array(76), '7.3'),
+            array('IBASE_WRITE', '7.4', array(77), '7.3'),
+            array('IBASE_CONSISTENCY', '7.4', array(78), '7.3'),
+            array('IBASE_CONCURRENCY', '7.4', array(79), '7.3'),
+            array('IBASE_COMMITTED', '7.4', array(80), '7.3'),
+            array('IBASE_WAIT', '7.4', array(81), '7.3'),
+            array('IBASE_NOWAIT', '7.4', array(82), '7.3'),
+            array('IBASE_FETCH_BLOBS', '7.4', array(83), '7.3'),
+            array('IBASE_FETCH_ARRAYS', '7.4', array(84), '7.3'),
+            array('IBASE_UNIXTIME', '7.4', array(85), '7.3'),
+            array('IBASE_BKP_IGNORE_CHECKSUMS', '7.4', array(86), '7.3'),
+            array('IBASE_BKP_IGNORE_LIMBO', '7.4', array(87), '7.3'),
+            array('IBASE_BKP_METADATA_ONLY', '7.4', array(88), '7.3'),
+            array('IBASE_BKP_NO_GARBAGE_COLLECT', '7.4', array(89), '7.3'),
+            array('IBASE_BKP_OLD_DESCRIPTIONS', '7.4', array(90), '7.3'),
+            array('IBASE_BKP_NON_TRANSPORTABLE', '7.4', array(91), '7.3'),
+            array('IBASE_BKP_CONVERT', '7.4', array(92), '7.3'),
+            array('IBASE_RES_DEACTIVATE_IDX', '7.4', array(93), '7.3'),
+            array('IBASE_RES_NO_SHADOW', '7.4', array(94), '7.3'),
+            array('IBASE_RES_NO_VALIDITY', '7.4', array(95), '7.3'),
+            array('IBASE_RES_ONE_AT_A_TIME', '7.4', array(96), '7.3'),
+            array('IBASE_RES_REPLACE', '7.4', array(97), '7.3'),
+            array('IBASE_RES_CREATE', '7.4', array(98), '7.3'),
+            array('IBASE_RES_USE_ALL_SPACE', '7.4', array(99), '7.3'),
+            array('IBASE_PRP_PAGE_BUFFERS', '7.4', array(100), '7.3'),
+            array('IBASE_PRP_SWEEP_INTERVAL', '7.4', array(101), '7.3'),
+            array('IBASE_PRP_SHUTDOWN_DB', '7.4', array(102), '7.3'),
+            array('IBASE_PRP_DENY_NEW_TRANSACTIONS', '7.4', array(103), '7.3'),
+            array('IBASE_PRP_DENY_NEW_ATTACHMENTS', '7.4', array(104), '7.3'),
+            array('IBASE_PRP_RESERVE_SPACE', '7.4', array(105), '7.3'),
+            array('IBASE_PRP_RES_USE_FULL', '7.4', array(106), '7.3'),
+            array('IBASE_PRP_RES', '7.4', array(107), '7.3'),
+            array('IBASE_PRP_WRITE_MODE', '7.4', array(108), '7.3'),
+            array('IBASE_PRP_WM_ASYNC', '7.4', array(109), '7.3'),
+            array('IBASE_PRP_WM_SYNC', '7.4', array(110), '7.3'),
+            array('IBASE_PRP_ACCESS_MODE', '7.4', array(111), '7.3'),
+            array('IBASE_PRP_AM_READONLY', '7.4', array(112), '7.3'),
+            array('IBASE_PRP_AM_READWRITE', '7.4', array(113), '7.3'),
+            array('IBASE_PRP_SET_SQL_DIALECT', '7.4', array(114), '7.3'),
+            array('IBASE_PRP_ACTIVATE', '7.4', array(115), '7.3'),
+            array('IBASE_PRP_DB_ONLINE', '7.4', array(116), '7.3'),
+            array('IBASE_RPR_CHECK_DB', '7.4', array(117), '7.3'),
+            array('IBASE_RPR_IGNORE_CHECKSUM', '7.4', array(118), '7.3'),
+            array('IBASE_RPR_KILL_SHADOWS', '7.4', array(119), '7.3'),
+            array('IBASE_RPR_MEND_DB', '7.4', array(120), '7.3'),
+            array('IBASE_RPR_VALIDATE_DB', '7.4', array(121), '7.3'),
+            array('IBASE_RPR_FULL', '7.4', array(122), '7.3'),
+            array('IBASE_RPR_SWEEP_DB', '7.4', array(123), '7.3'),
+            array('IBASE_STS_DATA_PAGES', '7.4', array(124), '7.3'),
+            array('IBASE_STS_DB_LOG', '7.4', array(125), '7.3'),
+            array('IBASE_STS_HDR_PAGES', '7.4', array(126), '7.3'),
+            array('IBASE_STS_IDX_PAGES', '7.4', array(127), '7.3'),
+            array('IBASE_STS_SYS_RELATIONS', '7.4', array(128), '7.3'),
+            array('IBASE_SVC_SERVER_VERSION', '7.4', array(129), '7.3'),
+            array('IBASE_SVC_IMPLEMENTATION', '7.4', array(130), '7.3'),
+            array('IBASE_SVC_GET_ENV', '7.4', array(131), '7.3'),
+            array('IBASE_SVC_GET_ENV_LOCK', '7.4', array(132), '7.3'),
+            array('IBASE_SVC_GET_ENV_MSG', '7.4', array(133), '7.3'),
+            array('IBASE_SVC_USER_DBPATH', '7.4', array(134), '7.3'),
+            array('IBASE_SVC_SVR_DB_INFO', '7.4', array(135), '7.3'),
+            array('IBASE_SVC_GET_USERS', '7.4', array(136), '7.3'),
         );
     }
 
@@ -231,9 +343,9 @@ class RemovedConstantsUnitTest extends BaseSniffTest
 
 
     /**
-     * Test functions that shouldn't be flagged by this sniff.
+     * Test constants that shouldn't be flagged by this sniff.
      *
-     * These are either userland methods or namespaced functions.
+     * These are either userland constants or namespaced constants.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -257,6 +369,7 @@ class RemovedConstantsUnitTest extends BaseSniffTest
     public function dataNoFalsePositives()
     {
         return array(
+            array(3),
             array(4),
             array(5),
         );

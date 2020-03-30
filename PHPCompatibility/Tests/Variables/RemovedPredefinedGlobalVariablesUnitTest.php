@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed predefined global variables sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Variables;
@@ -10,16 +13,16 @@ namespace PHPCompatibility\Tests\Variables;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Removed predefined global variables sniff tests
+ * Test the RemovedPredefinedGlobalVariables sniff.
  *
  * @group removedPredefinedGlobalVariables
  * @group variables
  *
  * @covers \PHPCompatibility\Sniffs\Variables\RemovedPredefinedGlobalVariablesSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim@cu.be>
+ * @since 5.5   Introduced as LongArraysSniffTest.
+ * @since 7.0   RemovedVariablesSniffTest.
+ * @since 7.1.3 Merged to one sniff & test.
  */
 class RemovedPredefinedGlobalVariablesUnitTest extends BaseSniffTest
 {

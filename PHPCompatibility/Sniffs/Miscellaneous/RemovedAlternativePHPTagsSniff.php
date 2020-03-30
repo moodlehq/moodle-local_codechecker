@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Miscellaneous\RemovedAlternativePHPTags.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Miscellaneous;
@@ -15,18 +14,17 @@ use PHPCompatibility\Sniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Miscellaneous\RemovedAlternativePHPTags.
+ * Check for use of alternative PHP tags, support for which was removed in PHP 7.0.
  *
- * Check for usage of alternative PHP tags - removed in PHP 7.0.
+ * {@internal Based on `Generic.PHP.DisallowAlternativePHPTags` by Juliette Reinders Folmer
+ * (with permission) which was merged into PHPCS 2.7.0.}
  *
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://wiki.php.net/rfc/remove_alternative_php_tags
+ * @link https://www.php.net/manual/en/language.basic-syntax.phptags.php
  *
- * Based on `Generic_Sniffs_PHP_DisallowAlternativePHPTags` by Juliette Reinders Folmer
- * which was merged into PHPCS 2.7.0.
+ * @since 7.0.4
  */
 class RemovedAlternativePHPTagsSniff extends Sniff
 {
@@ -34,12 +32,16 @@ class RemovedAlternativePHPTagsSniff extends Sniff
     /**
      * Whether ASP tags are enabled or not.
      *
+     * @since 7.0.4
+     *
      * @var bool
      */
     private $aspTags = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.4
      *
      * @return array
      */
@@ -60,6 +62,8 @@ class RemovedAlternativePHPTagsSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.4
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token
@@ -123,7 +127,7 @@ class RemovedAlternativePHPTagsSniff extends Sniff
             return;
         }
 
-        // If we're still here, we can't be sure if what we find was really intended as ASP open tags.
+        // If we're still here, we can't be sure if what we found was really intended as ASP open tags.
         if ($openTag['code'] === \T_INLINE_HTML && $this->aspTags === false) {
             if (strpos($content, '<%') !== false) {
                 $error   = 'Possible use of ASP style opening tags detected. ASP style opening tags have been removed in PHP 7.0. Found: %s';
@@ -139,6 +143,8 @@ class RemovedAlternativePHPTagsSniff extends Sniff
     /**
      * Get a snippet from a HTML token.
      *
+     * @since 7.0.4
+     *
      * @param string $content The content of the HTML token.
      * @param string $startAt Partial string to use as a starting point for the snippet.
      * @param int    $length  The target length of the snippet to get. Defaults to 25.
@@ -152,12 +158,12 @@ class RemovedAlternativePHPTagsSniff extends Sniff
         if ($startAt !== '') {
             $startPos = strpos($content, $startAt);
             if ($startPos !== false) {
-                $startPos += strlen($startAt);
+                $startPos += \strlen($startAt);
             }
         }
 
         $snippet = substr($content, $startPos, $length);
-        if ((strlen($content) - $startPos) > $length) {
+        if ((\strlen($content) - $startPos) > $length) {
             $snippet .= '...';
         }
 

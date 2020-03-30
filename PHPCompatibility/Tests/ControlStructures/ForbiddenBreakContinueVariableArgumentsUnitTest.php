@@ -1,8 +1,11 @@
 <?php
 /**
- * Forbidden break and continue variable arguments sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ControlStructures;
@@ -10,25 +13,30 @@ namespace PHPCompatibility\Tests\ControlStructures;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Forbidden break and continue variable arguments sniff test
- *
- * Checks for using break and continue with a variable afterwards
- *     break $varname
- *     continue $varname
+ * Test the ForbiddenBreakContinueVariableArguments sniff.
  *
  * @group forbiddenBreakContinueVariableArguments
  * @group controlStructures
  *
  * @covers \PHPCompatibility\Sniffs\ControlStructures\ForbiddenBreakContinueVariableArgumentsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class ForbiddenBreakContinueVariableArgumentsUnitTest extends BaseSniffTest
 {
 
+    /**
+     * Error message snippet for the variable argument error.
+     *
+     * @var string
+     */
     const ERROR_TYPE_VARIABLE = 'a variable argument';
+
+    /**
+     * Error message snippet for the zero argument error.
+     *
+     * @var string
+     */
     const ERROR_TYPE_ZERO = '0 as an argument';
 
     /**

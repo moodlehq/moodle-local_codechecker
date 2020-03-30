@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Lists\NewListReferenceAssignmentSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.3
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Lists;
@@ -19,14 +18,18 @@ use PHP_CodeSniffer_File as File;
  *
  * PHP version 7.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration73.new-features.php#migration73.new-features.core.destruct-reference
+ * @link https://wiki.php.net/rfc/list_reference_assignment
+ * @link https://www.php.net/manual/en/function.list.php
+ *
+ * @since 9.0.0
  */
 class NewListReferenceAssignmentSniff extends NewKeyedListSniff
 {
     /**
      * The token(s) within the list construct which is being targeted.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -36,6 +39,8 @@ class NewListReferenceAssignmentSniff extends NewKeyedListSniff
 
     /**
      * Do a version check to determine if this sniff needs to run at all.
+     *
+     * @since 9.0.0
      *
      * @return bool
      */
@@ -47,6 +52,8 @@ class NewListReferenceAssignmentSniff extends NewKeyedListSniff
     /**
      * Examine the contents of a list construct to determine whether an error needs to be thrown.
      *
+     * @since 9.0.0
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $opener    The position of the list open token.
      * @param int                   $closer    The position of the list close token.
@@ -55,7 +62,7 @@ class NewListReferenceAssignmentSniff extends NewKeyedListSniff
      */
     protected function examineList(File $phpcsFile, $opener, $closer)
     {
-        $start   = $opener;
+        $start = $opener;
         while (($start = $this->hasTargetInList($phpcsFile, $start, $closer)) !== false) {
             $phpcsFile->addError(
                 'Reference assignments within list constructs are not supported in PHP 7.2 or earlier.',

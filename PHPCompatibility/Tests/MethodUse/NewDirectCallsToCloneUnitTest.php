@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2018 PHPCompatibility Contributors
+ * @copyright 2012-2019 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -13,7 +13,7 @@ namespace PHPCompatibility\Tests\MethodUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New direct calls to __clone() sniff tests.
+ * Test the NewDirectCallsToClone sniff.
  *
  * @group newDirectCallsToClone
  * @group methodUse
@@ -50,11 +50,8 @@ class NewDirectCallsToCloneUnitTest extends BaseSniffTest
     public function dataDirectCallToClone()
     {
         return array(
-            array(23),
-            array(24),
-            array(25),
-            array(29),
-            array(30),
+            array(33),
+            array(34),
         );
     }
 
@@ -83,15 +80,13 @@ class NewDirectCallsToCloneUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(6),
-            array(7),
-            array(8),
-            array(9),
-            array(10),
-            array(11),
-            array(14),
-        );
+        $cases = array();
+        // No errors expected on the first 29 lines.
+        for ($line = 1; $line <= 29; $line++) {
+            $cases[] = array($line);
+        }
+
+        return $cases;
     }
 
 

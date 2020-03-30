@@ -1,8 +1,11 @@
 <?php
 /**
- * PHP4 style constructors sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * PHP4 style constructors sniff test
+ * Test the RemovedPHP4StyleConstructors sniff.
  *
  * @group removedPHP4StyleConstructors
  * @group functionNameRestrictions
@@ -18,9 +21,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedPHP4StyleConstructorsSniff
  * @covers \PHPCompatibility\Sniff::determineNamespace
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Koen Eelen <koen.eelen@cu.be>
+ * @since 7.0.0
  */
 class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
 {
@@ -53,7 +54,6 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
             array(3),
             array(18),
             array(33),
-            array(37),
             array(66),
         );
     }
@@ -87,6 +87,7 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
             array(9),
             array(12),
             array(26),
+            array(37),
             array(41),
             array(42),
             array(47),

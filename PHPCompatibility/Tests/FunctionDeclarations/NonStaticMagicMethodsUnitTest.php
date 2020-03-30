@@ -1,8 +1,11 @@
 <?php
 /**
- * Non Static Magic Methods Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
@@ -11,7 +14,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
 use PHPCompatibility\PHPCSHelper;
 
 /**
- * Non Static Magic Methods Sniff tests
+ * Test the NonStaticMagicMethods sniff.
  *
  * @group nonStaticMagicMethods
  * @group functionDeclarations
@@ -19,9 +22,7 @@ use PHPCompatibility\PHPCSHelper;
  *
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\NonStaticMagicMethodsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class NonStaticMagicMethodsUnitTest extends BaseSniffTest
 {
@@ -61,7 +62,7 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
      * openers/closers when run on PHP 5.3 or lower.
      * In a 'normal' situation you won't often find classes, interfaces and traits all
      * mixed in one file anyway, so this issue for which this is a work-around,
-     * should not cause real world issues anyway.}}
+     * should not cause real world issues anyway.}
      *
      * @param bool   $isTrait     Whether to load the class/interface test file or the trait test file.
      * @param string $testVersion Value of 'testVersion' to set on PHPCS object.
@@ -87,7 +88,7 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
      * @param string $desiredVisibility The visibility the method should have.
      * @param string $testVisibility    The visibility the method actually has in the test.
      * @param int    $line              The line number.
-     * @param bool   $isTrait           Whether the test relates to method in a trait.
+     * @param bool   $isTrait           Whether the test relates to a method in a trait.
      *
      * @return void
      */
@@ -113,7 +114,7 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
     {
         return array(
             /*
-             * nonstatic_magic_methods.php
+             * File: NonStaticMagicMethodsUnitTest.1.inc.
              */
             // Class.
             array('__get', 'public', 'private', 32),
@@ -150,19 +151,30 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
             array('__sleep', 'public', 'private', 155),
             array('__toString', 'public', 'protected', 156),
 
+            // PHP 7.4: __(un)serialize()
+            array('__serialize', 'public', 'protected', 179),
+            array('__unserialize', 'public', 'private', 180),
+
+            // More magic methods.
+            array('__destruct', 'public', 'private', 201),
+            array('__debugInfo', 'public', 'protected', 202),
+            array('__invoke', 'public', 'private', 203),
+            array('__set_state', 'public', 'protected', 204),
+
             /*
-             * nonstatic_magic_methods_traits.php
+             * File: NonStaticMagicMethodsUnitTest.2.inc.
              */
             // Trait.
-            array('__get', 'public', 'private', 32, true),
-            array('__set', 'public', 'protected', 33, true),
-            array('__isset', 'public', 'private', 34, true),
-            array('__unset', 'public', 'protected', 35, true),
-            array('__call', 'public', 'private', 36, true),
-            array('__callStatic', 'public', 'protected', 37, true),
-            array('__sleep', 'public', 'private', 38, true),
-            array('__toString', 'public', 'protected', 39, true),
-
+            array('__get', 'public', 'private', 36, true),
+            array('__set', 'public', 'protected', 37, true),
+            array('__isset', 'public', 'private', 38, true),
+            array('__unset', 'public', 'protected', 39, true),
+            array('__call', 'public', 'private', 40, true),
+            array('__callStatic', 'public', 'protected', 41, true),
+            array('__sleep', 'public', 'private', 42, true),
+            array('__toString', 'public', 'protected', 43, true),
+            array('__serialize', 'public', 'private', 44, true),
+            array('__unserialize', 'public', 'protected', 45, true),
         );
     }
 
@@ -200,7 +212,7 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
     {
         return array(
             /*
-             * nonstatic_magic_methods.php
+             * File: NonStaticMagicMethodsUnitTest.1.inc.
              */
             // Class.
             array('__get', 44),
@@ -229,16 +241,27 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
             array('__unset', 164),
             array('__call', 165),
 
+            // PHP 7.4: __(un)serialize()
+            array('__serialize', 185),
+            array('__unserialize', 186),
+
+            // More magic methods.
+            array('__construct', 209),
+            array('__destruct', 210),
+            array('__clone', 211),
+            array('__debugInfo', 212),
+            array('__invoke', 213),
             /*
-             * nonstatic_magic_methods_traits.php
+             * File: NonStaticMagicMethodsUnitTest.2.inc.
              */
             // Trait.
-            array('__get', 44, true),
-            array('__set', 45, true),
-            array('__isset', 46, true),
-            array('__unset', 47, true),
-            array('__call', 48, true),
-
+            array('__get', 50, true),
+            array('__set', 51, true),
+            array('__isset', 52, true),
+            array('__unset', 53, true),
+            array('__call', 54, true),
+            array('__serialize', 57, true),
+            array('__unserialize', 58, true),
         );
     }
 
@@ -276,7 +299,7 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
     {
         return array(
             /*
-             * nonstatic_magic_methods.php
+             * File: NonStaticMagicMethodsUnitTest.1.inc.
              */
             // Class.
             array('__callStatic', 49),
@@ -291,11 +314,11 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
             array('__set_state', 167),
 
             /*
-             * nonstatic_magic_methods_traits.php
+             * File: NonStaticMagicMethodsUnitTest.2.inc.
              */
             // Trait.
-            array('__callStatic', 49, true),
-            array('__set_state', 50, true),
+            array('__callStatic', 55, true),
+            array('__set_state', 56, true),
 
         );
     }
@@ -333,7 +356,7 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
     {
         return array(
             /*
-             * nonstatic_magic_methods.php
+             * File: NonStaticMagicMethodsUnitTest.1.inc.
              */
             // Plain class.
             array(5),
@@ -404,8 +427,19 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
             array(143),
             array(144),
 
+            // PHP 7.4: __(un)serialize()
+            array(173),
+            array(174),
+
+            // More magic methods.
+            array(192),
+            array(193),
+            array(194),
+            array(195),
+            array(196),
+
             /*
-             * nonstatic_magic_methods_traits.php
+             * File: NonStaticMagicMethodsUnitTest.2.inc.
              */
             // Plain trait.
             array(5, true),
@@ -417,9 +451,9 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
             array(11, true),
             array(12, true),
             array(13, true),
+            array(14, true),
+            array(15, true),
             // Normal trait.
-            array(18, true),
-            array(19, true),
             array(20, true),
             array(21, true),
             array(22, true),
@@ -428,7 +462,10 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
             array(25, true),
             array(26, true),
             array(27, true),
-
+            array(28, true),
+            array(29, true),
+            array(30, true),
+            array(31, true),
         );
     }
 
@@ -440,11 +477,11 @@ class NonStaticMagicMethodsUnitTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        // File: nonstatic_magic_methods.php.
+        // File: NonStaticMagicMethodsUnitTest.1.inc.
         $file = $this->getTestFile(false, '5.2');
         $this->assertNoViolation($file);
 
-        // File: nonstatic_magic_methods_traits.php.
+        // File: NonStaticMagicMethodsUnitTest.2.inc.
         $file = $this->getTestFile(true, '5.2');
         $this->assertNoViolation($file);
     }

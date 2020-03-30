@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionUse\NewFunctionsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionUse;
@@ -13,11 +14,14 @@ use PHPCompatibility\AbstractNewFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionUse\newFunctionsSniff.
+ * Detect calls to new native PHP functions.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * PHP version All
+ *
+ * @since 5.5
+ * @since 5.6   Now extends the base `Sniff` class instead of the upstream
+ *              `Generic.PHP.ForbiddenFunctions` sniff.
+ * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
  */
 class NewFunctionsSniff extends AbstractNewFeatureSniff
 {
@@ -27,7 +31,14 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
      * The array lists : version number with false (not present) or true (present).
      * If's sufficient to list the first version where the function appears.
      *
-     * @var array(string => array(string => int|string|null))
+     * @since 5.5
+     * @since 5.6   Visibility changed from `protected` to `public`.
+     * @since 7.0.2 Visibility changed back from `public` to `protected`.
+     *              The earlier change was made to be in line with the upstream sniff,
+     *              but that sniff is no longer being extended.
+     * @since 7.0.8 Renamed from `$forbiddenFunctions` to the more descriptive `$newFunctions`.
+     *
+     * @var array(string => array(string => bool))
      */
     protected $newFunctions = array(
         'iterator_count' => array(
@@ -849,10 +860,6 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
             '5.4' => false,
             '5.5' => true,
         ),
-        'datefmt_get_calendar_object' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
         'intlcal_create_instance' => array(
             '5.4' => false,
             '5.5' => true,
@@ -1116,6 +1123,31 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
         'intlz_get_error_message' => array(
             '5.4' => false,
             '5.5' => true,
+        ),
+        'opcache_compile_file' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache_get_configuration' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache_get_status' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache_invalidate' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache_reset' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+
+        'opcache_is_script_cached' => array(
+            '5.5.10' => false,
+            '5.5.11' => true,
         ),
 
         'gmp_root' => array(
@@ -1746,6 +1778,16 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
             '7.1' => false,
             '7.2' => true,
         ),
+        // Introduced in 7.2.14 and 7.3.1 simultanously.
+        'oci_set_call_timeout' => array(
+            '7.2.13' => false,
+            '7.2.14' => true,
+        ),
+        // Introduced in 7.2.14 and 7.3.1 simultanously.
+        'oci_set_db_operation' => array(
+            '7.2.13' => false,
+            '7.2.14' => true,
+        ),
 
         'hrtime' => array(
             '7.2' => false,
@@ -1839,11 +1881,46 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
             '7.2' => false,
             '7.3' => true,
         ),
+
+        'get_mangled_object_vars' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'imagecreatefromtga' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'mb_str_split' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'openssl_x509_verify' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'password_algos' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'pcntl_unshare' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'sapi_windows_set_ctrl_handler' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'sapi_windows_generate_ctrl_event' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
     );
 
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 5.6
      *
      * @return array
      */
@@ -1857,6 +1934,8 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -1903,6 +1982,8 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -1915,6 +1996,8 @@ class NewFunctionsSniff extends AbstractNewFeatureSniff
 
     /**
      * Get the error message template for this sniff.
+     *
+     * @since 7.1.0
      *
      * @return string
      */

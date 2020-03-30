@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ControlStructures\NewMultiCatch.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.1
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ControlStructures;
@@ -15,20 +14,22 @@ use PHPCompatibility\Sniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ControlStructures\NewMultiCatch.
- *
  * Catching multiple exception types in one statement is available since PHP 7.1.
  *
  * PHP version 7.1
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration71.new-features.php#migration71.new-features.mulit-catch-exception-handling
+ * @link https://wiki.php.net/rfc/multiple-catch
+ * @link https://www.php.net/manual/en/language.exceptions.php#language.exceptions.catch
+ *
+ * @since 7.0.7
  */
 class NewMultiCatchSniff extends Sniff
 {
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.7
      *
      * @return array
      */
@@ -39,6 +40,8 @@ class NewMultiCatchSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.7
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token

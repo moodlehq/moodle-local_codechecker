@@ -1,8 +1,11 @@
 <?php
 /**
- * Deprecated/Removed type casts sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\TypeCasts;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\TypeCasts;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Deprecated/Removed type casts sniff tests
+ * Test the RemovedTypeCasts sniff.
  *
  * @group removedTypeCasts
  * @group typeCasts
  *
  * @covers \PHPCompatibility\Sniffs\TypeCasts\RemovedTypeCastsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.0.1
  */
 class RemovedTypeCastsUnitTest extends BaseSniffTest
 {
@@ -31,7 +32,7 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
      *
      * @param string $castDescription   The type of type cast.
      * @param string $deprecatedIn      The PHP version in which the function was deprecated.
-     * @param string $alternative       An alternative function.
+     * @param string $alternative       An alternative type cast.
      * @param array  $lines             The line numbers in the test file which apply to this function.
      * @param string $okVersion         A PHP version in which the function was still valid.
      * @param string $deprecatedVersion Optional PHP version to test deprecation message with -
@@ -65,6 +66,7 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
     {
         return array(
             array('The unset cast', '7.2', 'unset()', array(8, 11, 12), '7.1'),
+            array('The real cast', '7.4', '(float)', array(15, 16), '7.3'),
         );
     }
 
@@ -96,6 +98,7 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
         return array(
             array(4),
             array(5),
+            array(17),
         );
     }
 

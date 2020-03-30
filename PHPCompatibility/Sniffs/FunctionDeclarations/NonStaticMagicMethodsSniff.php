@@ -1,13 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionDeclarations\NonStaticMagicMethodsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.4
- *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2012 Cu.be Solutions bvba
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
@@ -16,14 +14,17 @@ use PHPCompatibility\Sniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionDeclarations\NonStaticMagicMethodsSniff.
- *
  * Verifies the use of the correct visibility and static properties of magic methods.
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2012 Cu.be Solutions bvba
+ * The requirements have always existed, but as of PHP 5.3, a warning will be thrown
+ * when magic methods have the wrong modifiers.
+ *
+ * PHP version 5.3
+ *
+ * @link https://www.php.net/manual/en/language.oop5.magic.php
+ *
+ * @since 5.5
+ * @since 5.6 Now extends the base `Sniff` class.
  */
 class NonStaticMagicMethodsSniff extends Sniff
 {
@@ -37,9 +38,23 @@ class NonStaticMagicMethodsSniff extends Sniff
      * When a method does not have a specific requirement for either visibility or static,
      * do *not* add the key.
      *
+     * @since 5.5
+     * @since 5.6 The array format has changed to allow the sniff to also verify the
+     *            use of the correct visibility for a magic method.
+     *
      * @var array(string)
      */
     protected $magicMethods = array(
+        '__construct' => array(
+            'static' => false,
+        ),
+        '__destruct' => array(
+            'visibility' => 'public',
+            'static'     => false,
+        ),
+        '__clone' => array(
+            'static'     => false,
+        ),
         '__get' => array(
             'visibility' => 'public',
             'static'     => false,
@@ -71,13 +86,34 @@ class NonStaticMagicMethodsSniff extends Sniff
             'visibility' => 'public',
         ),
         '__set_state' => array(
+            'visibility' => 'public',
             'static'     => true,
+        ),
+        '__debuginfo' => array(
+            'visibility' => 'public',
+            'static'     => false,
+        ),
+        '__invoke' => array(
+            'visibility' => 'public',
+            'static'     => false,
+        ),
+        '__serialize' => array(
+            'visibility' => 'public',
+            'static'     => false,
+        ),
+        '__unserialize' => array(
+            'visibility' => 'public',
+            'static'     => false,
         ),
     );
 
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 5.5
+     * @since 5.6   Now also checks traits.
+     * @since 7.1.4 Now also checks anonymous classes.
      *
      * @return array
      */
@@ -89,7 +125,7 @@ class NonStaticMagicMethodsSniff extends Sniff
             \T_TRAIT,
         );
 
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $targets[] = \T_ANON_CLASS;
         }
 
@@ -99,6 +135,8 @@ class NonStaticMagicMethodsSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

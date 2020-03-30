@@ -1,8 +1,11 @@
 <?php
 /**
- * New Functions Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionUse;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\FunctionUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New Functions Sniff tests
+ * Test the NewFunctions sniff.
  *
  * @group newFunctions
  * @group functionUse
  *
  * @covers \PHPCompatibility\Sniffs\FunctionUse\NewFunctionsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class NewFunctionsUnitTest extends BaseSniffTest
 {
@@ -329,6 +330,13 @@ class NewFunctionsUnitTest extends BaseSniffTest
             array('intlz_to_date_time_zone', '5.4', array(275), '5.5'),
             array('intlz_get_error_code', '5.4', array(276), '5.5'),
             array('intlz_get_error_message', '5.4', array(277), '5.5'),
+            array('opcache_compile_file', '5.4', array(489), '5.5'),
+            array('opcache_get_configuration', '5.4', array(490), '5.5'),
+            array('opcache_get_status', '5.4', array(491), '5.5'),
+            array('opcache_invalidate', '5.4', array(492), '5.5'),
+            array('opcache_reset', '5.4', array(493), '5.5'),
+
+            array('opcache_is_script_cached', '5.5.10', array(494), '5.6', '5.5'),
 
             array('gmp_root', '5.5', array(279), '5.6'),
             array('gmp_rootrem', '5.5', array(280), '5.6'),
@@ -526,6 +534,18 @@ class NewFunctionsUnitTest extends BaseSniffTest
             array('ldap_mod_replace_ext', '7.2', array(473), '7.3'),
             array('ldap_mod_del_ext', '7.2', array(474), '7.3'),
             array('ldap_rename_ext', '7.2', array(475), '7.3'),
+
+            array('oci_set_call_timeout', '7.2.13', array(477), '7.3', '7.2'),
+            array('oci_set_db_operation', '7.2.13', array(478), '7.3', '7.2'),
+
+            array('mb_str_split', '7.3', array(480), '7.4'),
+            array('get_mangled_object_vars', '7.3', array(481), '7.4'),
+            array('openssl_x509_verify', '7.3', array(482), '7.4'),
+            array('pcntl_unshare', '7.3', array(483), '7.4'),
+            array('sapi_windows_set_ctrl_handler', '7.3', array(484), '7.4'),
+            array('sapi_windows_generate_ctrl_event', '7.3', array(485), '7.4'),
+            array('password_algos', '7.3', array(486), '7.4'),
+            array('imagecreatefromtga', '7.3', array(487), '7.4'),
         );
     }
 

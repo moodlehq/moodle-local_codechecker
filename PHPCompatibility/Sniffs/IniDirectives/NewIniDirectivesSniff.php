@@ -1,11 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\IniDirectives\NewIniDirectivesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2013 Cu.be Solutions bvba
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\IniDirectives;
@@ -14,14 +14,17 @@ use PHPCompatibility\AbstractNewFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\IniDirectives\NewIniDirectivesSniff.
+ * Detect the use of new INI directives through `ini_set()` or `ini_get()`.
  *
- * Discourages the use of new INI directives through ini_set() or ini_get().
+ * PHP version All
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2013 Cu.be Solutions bvba
+ * @link https://www.php.net/manual/en/ini.list.php
+ * @link https://www.php.net/manual/en/ini.core.php
+ *
+ * @since 5.5
+ * @since 7.0.7 When a new directive is used with `ini_set()`, the sniff will now throw an error
+ *              instead of a warning.
+ * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
  */
 class NewIniDirectivesSniff extends AbstractNewFeatureSniff
 {
@@ -30,6 +33,9 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
      *
      * The array lists : version number with false (not present) or true (present).
      * If's sufficient to list the first version where the ini directive appears.
+     *
+     * @since 5.5
+     * @since 7.0.3 Support for 'alternative' has been added.
      *
      * @var array(string)
      */
@@ -427,6 +433,130 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
             '5.4' => false,
             '5.5' => true,
         ),
+        'opcache.enable' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.enable_cli' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.memory_consumption' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.interned_strings_buffer' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.max_accelerated_files' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.max_wasted_percentage' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.use_cwd' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.validate_timestamps' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.revalidate_freq' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.revalidate_path' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.save_comments' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.load_comments' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.fast_shutdown' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.enable_file_override' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.optimization_level' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.inherited_hack' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.dups_fix' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.blacklist_filename' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.max_file_size' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.consistency_checks' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.force_restart_timeout' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.error_log' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.log_verbosity_level' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.preferred_memory_model' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.protect_memory' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.mmap_base' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.restrict_api' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.file_update_protection' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.huge_code_pages' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.lockfile_path' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
+        'opcache.opt_debug_level' => array(
+            '5.4' => false,
+            '5.5' => true,
+        ),
 
         'session.use_strict_mode' => array(
             '5.5.1' => false,
@@ -453,6 +583,31 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
         'zend.assertions' => array(
             '5.6' => false,
             '7.0' => true,
+        ),
+        'opcache.file_cache' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ),
+        'opcache.file_cache_only' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ),
+        'opcache.file_cache_consistency_checks' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ),
+        'opcache.file_cache_fallback' => array(
+            '5.6' => false,
+            '7.0' => true,
+        ), // Windows only.
+
+        'opcache.validate_permission' => array(
+            '7.0.13' => false,
+            '7.0.14' => true,
+        ),
+        'opcache.validate_root' => array(
+            '7.0.13' => false,
+            '7.0.14' => true,
         ),
 
         'hard_timeout' => array(
@@ -502,10 +657,33 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
             '7.2' => false,
             '7.3' => true,
         ),
+
+        'ffi.enable' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'ffi.preload' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'opcache.cache_id' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'opcache.preload' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        'zend.exception_ignore_args' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
     );
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 5.5
      *
      * @return array
      */
@@ -516,6 +694,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -566,6 +746,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -579,6 +761,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
     /**
      * Get an array of the non-PHP-version array keys used in a sub-array.
      *
+     * @since 7.1.0
+     *
      * @return array
      */
     protected function getNonVersionArrayKeys()
@@ -589,6 +773,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
 
     /**
      * Retrieve the relevant detail (version) information for use in an error message.
+     *
+     * @since 7.1.0
      *
      * @param array $itemArray Version and other information about the item.
      * @param array $itemInfo  Base information about the item.
@@ -616,6 +802,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
     /**
      * Get the error message template for this sniff.
      *
+     * @since 7.1.0
+     *
      * @return string
      */
     protected function getErrorMsgTemplate()
@@ -626,6 +814,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
 
     /**
      * Allow for concrete child classes to filter the error message before it's passed to PHPCS.
+     *
+     * @since 7.1.0
      *
      * @param string $error     The error message which was created.
      * @param array  $itemInfo  Base information about the item this error message applies to.
@@ -645,6 +835,8 @@ class NewIniDirectivesSniff extends AbstractNewFeatureSniff
 
     /**
      * Allow for concrete child classes to filter the error data before it's passed to PHPCS.
+     *
+     * @since 7.1.0
      *
      * @param array $data      The error data array which was created.
      * @param array $itemInfo  Base information about the item this error message applies to.

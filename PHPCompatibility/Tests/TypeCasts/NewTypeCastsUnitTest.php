@@ -1,8 +1,11 @@
 <?php
 /**
- * New type casts sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\TypeCasts;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\TypeCasts;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New type casts sniff tests
+ * Test the NewTypeCasts sniff.
  *
  * @group newTypeCasts
  * @group typeCasts
  *
  * @covers \PHPCompatibility\Sniffs\TypeCasts\NewTypeCastsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.0.1
  */
 class NewTypeCastsUnitTest extends BaseSniffTest
 {

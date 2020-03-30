@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed ini directives sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\IniDirectives;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\IniDirectives;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Removed ini directives sniff tests
+ * Test the RemovedIniDirectives sniff.
  *
  * @group removedIniDirectives
  * @group iniDirectives
  *
  * @covers \PHPCompatibility\Sniffs\IniDirectives\RemovedIniDirectivesSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class RemovedIniDirectivesUnitTest extends BaseSniffTest
 {
@@ -152,6 +153,8 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
             array('track_errors', '7.2', array(172, 173), '7.1'),
 
             array('pdo_odbc.db2_instance_name', '7.3', array(184, 185), '7.2'),
+
+            array('allow_url_include', '7.4', array(238, 239), '7.3'),
         );
     }
 
@@ -256,6 +259,7 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
 
             array('asp_tags', '7.0', array(83, 84), '5.6'),
             array('xsl.security_prefs', '7.0', array(86, 87), '5.6'),
+            array('opcache.load_comments', '7.0', array(241, 242), '5.6'),
 
             array('session.entropy_file', '7.1', array(141, 142), '7.0'),
             array('session.entropy_length', '7.1', array(144, 145), '7.0'),
@@ -266,6 +270,25 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
             array('opcache.fast_shutdown', '7.2', array(175, 176), '7.1'),
 
             array('birdstep.max_links', '7.3', array(178, 179), '7.2'),
+
+            array('ibase.allow_persistent', '7.4', array(187, 188), '7.3'),
+            array('ibase.max_persistent', '7.4', array(190, 191), '7.3'),
+            array('ibase.max_links', '7.4', array(193, 194), '7.3'),
+            array('ibase.default_db', '7.4', array(196, 197), '7.3'),
+            array('ibase.default_user', '7.4', array(199, 200), '7.3'),
+            array('ibase.default_password', '7.4', array(202, 203), '7.3'),
+            array('ibase.default_charset', '7.4', array(205, 206), '7.3'),
+            array('ibase.timestampformat', '7.4', array(208, 209), '7.3'),
+            array('ibase.dateformat', '7.4', array(211, 212), '7.3'),
+            array('ibase.timeformat', '7.4', array(214, 215), '7.3'),
+
+            array('pfpro.defaulthost', '5.1', array(217, 218), '5.0'),
+            array('pfpro.defaultport', '5.1', array(220, 221), '5.0'),
+            array('pfpro.defaulttimeout', '5.1', array(223, 224), '5.0'),
+            array('pfpro.proxyaddress', '5.1', array(226, 227), '5.0'),
+            array('pfpro.proxyport', '5.1', array(229, 230), '5.0'),
+            array('pfpro.proxylogon', '5.1', array(232, 233), '5.0'),
+            array('pfpro.proxypassword', '5.1', array(235, 236), '5.0'),
         );
     }
 

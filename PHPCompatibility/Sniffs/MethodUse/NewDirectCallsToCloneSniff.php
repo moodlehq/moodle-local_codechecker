@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2018 PHPCompatibility Contributors
+ * @copyright 2012-2019 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -15,20 +15,34 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * Detect direct calls to the __clone() magic method which is allowed since PHP 7.0.
+ * Detect direct calls to the `__clone()` magic method, which is allowed since PHP 7.0.
  *
- * "Doing calls like $obj->__clone() is now allowed. This was the only magic method
+ * "Doing calls like `$obj->__clone()` is now allowed. This was the only magic method
  *  that had a compile-time check preventing some calls to it, which doesn't make sense.
  *  If we allow all other magic methods to be called, there's no reason to forbid this one."
  *
  * PHP version 7.0
  *
  * @link https://wiki.php.net/rfc/abstract_syntax_tree#directly_calling_clone_is_allowed
+ * @link https://www.php.net/manual/en/language.oop5.cloning.php
  *
  * @since 9.1.0
  */
 class NewDirectCallsToCloneSniff extends Sniff
 {
+
+    /**
+     * Tokens which indicate class internal use.
+     *
+     * @since 9.3.2
+     *
+     * @var array
+     */
+    protected $classInternal = array(
+        \T_PARENT => true,
+        \T_SELF   => true,
+        \T_STATIC => true,
+    );
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -85,6 +99,12 @@ class NewDirectCallsToCloneSniff extends Sniff
         $nextNextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true);
         if ($nextNextNonEmpty === false || $tokens[$nextNextNonEmpty]['code'] !== \T_OPEN_PARENTHESIS) {
             // Not a method call.
+            return;
+        }
+
+        $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        if ($prevNonEmpty === false || isset($this->classInternal[$tokens[$prevNonEmpty]['code']])) {
+            // Class internal call to __clone().
             return;
         }
 

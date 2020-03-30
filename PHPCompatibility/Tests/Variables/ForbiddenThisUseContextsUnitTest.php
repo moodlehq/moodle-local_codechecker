@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2018 PHPCompatibility Contributors
+ * @copyright 2012-2019 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -13,7 +13,7 @@ namespace PHPCompatibility\Tests\Variables;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New $this usage limitations sniff tests.
+ * Test the ForbiddenThisUseContexts sniff.
  *
  * @group forbiddenThisUseContexts
  * @group variables

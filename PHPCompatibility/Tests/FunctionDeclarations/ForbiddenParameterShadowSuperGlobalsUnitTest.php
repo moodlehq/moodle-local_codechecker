@@ -1,8 +1,11 @@
 <?php
 /**
- * ForbiddenParameterShadowSuperGlobalsSniffTest
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\FunctionDeclarations;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * ForbiddenParameterShadowSuperGlobalsSniffTest
+ * Test the ForbiddenParameterShadowSuperGlobals sniff.
  *
  * @group forbiddenParameterShadowSuperGlobals
  * @group functionDeclarations
@@ -18,9 +21,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\ForbiddenParameterShadowSuperGlobalsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.3
  */
 class ForbiddenParameterShadowSuperGlobalsUnitTest extends BaseSniffTest
 {

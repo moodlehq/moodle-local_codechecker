@@ -1,8 +1,11 @@
 <?php
 /**
- * New Interfaces Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Interfaces;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\Interfaces;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New Interfaces Sniff tests
+ * Test the NewInterfaces sniff.
  *
  * @group newInterfaces
  * @group interfaces
@@ -20,9 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniff::getReturnTypeHintToken
  * @covers \PHPCompatibility\Sniff::getTypeHintsFromFunctionDeclaration
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.3
  */
 class NewInterfacesUnitTest extends BaseSniffTest
 {
@@ -97,7 +98,7 @@ class NewInterfacesUnitTest extends BaseSniffTest
     public function testUnsupportedMethods($line, $methodName)
     {
         $file = $this->sniffFile(__FILE__, '5.1'); // Version in which the Serializable interface was introduced.
-        $this->assertError($file, $line, "Classes that implement interface Serializable do not support the method {$methodName}(). See http://php.net/serializable");
+        $this->assertError($file, $line, "Classes that implement interface Serializable do not support the method {$methodName}(). See https://www.php.net/serializable");
     }
 
     /**

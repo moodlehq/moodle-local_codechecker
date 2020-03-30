@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Lists\AssignmentOrderSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Lists;
@@ -16,22 +15,26 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * List assignment order.
+ * Detect code affected by the changed list assignment order in PHP 7.0+.
  *
- * The list() construct no longer assigns variables in reverse order.
+ * The `list()` construct no longer assigns variables in reverse order.
  * This affects all list constructs where non-unique variables are used.
  *
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration70.incompatible.php#migration70.incompatible.variable-handling.list.order
+ * @link https://wiki.php.net/rfc/abstract_syntax_tree#changes_to_list
+ * @link https://www.php.net/manual/en/function.list.php
+ *
+ * @since 9.0.0
  */
 class AssignmentOrderSniff extends Sniff
 {
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 9.0.0
      *
      * @return array
      */
@@ -46,6 +49,8 @@ class AssignmentOrderSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -170,7 +175,7 @@ class AssignmentOrderSniff extends Sniff
         }
 
         // Verify that all variables used in the list() construct are unique.
-        if (count($listVars) !== count(array_unique($listVars))) {
+        if (\count($listVars) !== \count(array_unique($listVars))) {
             $phpcsFile->addError(
                 'list() will assign variable from left-to-right since PHP 7.0. Ensure all variables in list() are unique to prevent unexpected results.',
                 $stackPtr,

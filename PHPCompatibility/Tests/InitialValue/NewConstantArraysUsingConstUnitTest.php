@@ -1,8 +1,11 @@
 <?php
 /**
- * Constant arrays using the const keyword in PHP 5.6 sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\InitialValue;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\InitialValue;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Constant arrays using the const keyword in PHP 5.6 sniff test file
+ * Test the NewConstantArraysUsingConst sniff.
  *
  * @group newConstantArraysUsingConst
  * @group initialValue
  *
  * @covers \PHPCompatibility\Sniffs\InitialValue\NewConstantArraysUsingConstSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.1.4
  */
 class NewConstantArraysUsingConstUnitTest extends BaseSniffTest
 {

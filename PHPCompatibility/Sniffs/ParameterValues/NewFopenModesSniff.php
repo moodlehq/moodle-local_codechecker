@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\NewFopenModesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -13,19 +14,21 @@ use PHPCompatibility\AbstractFunctionCallParameterSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\NewFopenModesSniff.
+ * Check for valid values for the `fopen()` `$mode` parameter.
  *
- * Detect: Changes in allowed values for the fopen() $mode parameter.
+ * PHP version 5.2+
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/function.fopen.php#refsect1-function.fopen-changelog
+ *
+ * @since 9.0.0
  */
 class NewFopenModesSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
      * Functions to check for.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -36,6 +39,8 @@ class NewFopenModesSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * Do a version check to determine if this sniff needs to run at all.
+     *
+     * @since 9.0.0
      *
      * @return bool
      */
@@ -49,6 +54,8 @@ class NewFopenModesSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * Process the parameters of a matched function.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
      * @param int                   $stackPtr     The position of the current token in the stack.

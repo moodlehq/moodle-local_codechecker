@@ -1,8 +1,11 @@
 <?php
 /**
- * Negative string offsets as parameters sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ParameterValues;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\ParameterValues;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Negative string offsets as parameters sniff tests.
+ * Test the NewNegativeStringOffset sniff.
  *
  * @group newNegativeStringOffset
  * @group parameterValues
  *
  * @covers \PHPCompatibility\Sniffs\ParameterValues\NewNegativeStringOffsetSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class NewNegativeStringOffsetUnitTest extends BaseSniffTest
 {
@@ -57,7 +58,7 @@ class NewNegativeStringOffsetUnitTest extends BaseSniffTest
     {
         return array(
             array(28, 'position', 'mb_ereg_search_setpos'),
-            array(34, 'position', 'mb_ereg_search_setpos'),
+            array(34, 'position', 'MB_ereg_search_setpos'),
             array(36, 'offset', 'file_get_contents'),
             array(37, 'start', 'grapheme_extract'),
             array(38, 'offset', 'grapheme_stripos'),
@@ -71,7 +72,7 @@ class NewNegativeStringOffsetUnitTest extends BaseSniffTest
             array(45, 'offset', 'strpos'),
             array(46, 'offset', 'substr_count'),
             array(46, 'length', 'substr_count'),
-            array(47, 'offset', 'substr_count'),
+            array(47, 'offset', 'Substr_Count'),
             array(48, 'length', 'substr_count'),
         );
     }

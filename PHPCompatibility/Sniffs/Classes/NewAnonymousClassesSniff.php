@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Classes\NewAnonymousClasses.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Classes;
@@ -16,15 +15,14 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Classes\NewAnonymousClasses.
- *
- * Anonymous classes are supported in PHP 7.0
+ * Anonymous classes are supported since PHP 7.0.
  *
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * @link https://www.php.net/manual/en/language.oop5.anonymous.php
+ * @link https://wiki.php.net/rfc/anonymous_classes
+ *
+ * @since 7.0.0
  */
 class NewAnonymousClassesSniff extends Sniff
 {
@@ -35,6 +33,8 @@ class NewAnonymousClassesSniff extends Sniff
      * The dedicated anonymous class token is added from the `register()`
      * method if the token is available.
      *
+     * @since 7.1.2
+     *
      * @var array
      */
     private $indicators = array(
@@ -44,11 +44,13 @@ class NewAnonymousClassesSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 7.0.0
+     *
      * @return array
      */
     public function register()
     {
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $this->indicators[\T_ANON_CLASS] = \T_ANON_CLASS;
         }
 
@@ -58,6 +60,8 @@ class NewAnonymousClassesSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

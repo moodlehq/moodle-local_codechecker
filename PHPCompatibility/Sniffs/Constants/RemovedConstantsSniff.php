@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Constants\RemovedConstantsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Constants;
@@ -13,11 +14,11 @@ use PHPCompatibility\AbstractRemovedFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Constants\RemovedConstantsSniff.
+ * Detect use of deprecated and/or removed PHP native global constants.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * PHP version All
+ *
+ * @since 8.1.0
  */
 class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
 {
@@ -28,9 +29,14 @@ class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
      * The array lists : version number with false (deprecated) or true (removed).
      * If's sufficient to list the first version where the constant was deprecated/removed.
      *
+     * Optional, the array can contain an `alternative` key listing an alternative constant
+     * to be used instead.
+     *
      * Note: PHP Constants are case-sensitive!
      *
-     * @var array(string => array(string => bool|string|null))
+     * @since 8.1.0
+     *
+     * @var array(string => array(string => bool|string))
      */
     protected $removedConstants = array(
         // Disabled since PHP 5.3.0 due to thread safety issues.
@@ -58,6 +64,12 @@ class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
         ),
 
         'PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT' => array(
+            '7.0' => true,
+        ),
+        'T_CHARACTER' => array(
+            '7.0' => true,
+        ),
+        'T_BAD_CHARACTER' => array(
             '7.0' => true,
         ),
 
@@ -292,11 +304,207 @@ class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
         'FILTER_FLAG_HOST_REQUIRED' => array(
             '7.3' => false,
         ),
+
+        'CURLPIPE_HTTP1' => array(
+            '7.4' => false,
+        ),
+        'FILTER_SANITIZE_MAGIC_QUOTES' => array(
+            '7.4'         => false,
+            'alternative' => 'FILTER_SANITIZE_ADD_SLASHES',
+        ),
+        'IBASE_BKP_CONVERT' => array(
+            '7.4' => true,
+        ),
+        'IBASE_BKP_IGNORE_CHECKSUMS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_BKP_IGNORE_LIMBO' => array(
+            '7.4' => true,
+        ),
+        'IBASE_BKP_METADATA_ONLY' => array(
+            '7.4' => true,
+        ),
+        'IBASE_BKP_NO_GARBAGE_COLLECT' => array(
+            '7.4' => true,
+        ),
+        'IBASE_BKP_NON_TRANSPORTABLE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_BKP_OLD_DESCRIPTIONS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_COMMITTED' => array(
+            '7.4' => true,
+        ),
+        'IBASE_CONCURRENCY' => array(
+            '7.4' => true,
+        ),
+        'IBASE_CONSISTENCY' => array(
+            '7.4' => true,
+        ),
+        'IBASE_DEFAULT' => array(
+            '7.4' => true,
+        ),
+        'IBASE_FETCH_ARRAYS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_FETCH_BLOBS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_NOWAIT' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_ACCESS_MODE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_ACTIVATE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_AM_READONLY' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_AM_READWRITE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_DENY_NEW_ATTACHMENTS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_DENY_NEW_TRANSACTIONS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_DB_ONLINE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_PAGE_BUFFERS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_RES' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_RES_USE_FULL' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_RESERVE_SPACE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_SET_SQL_DIALECT' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_SHUTDOWN_DB' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_SWEEP_INTERVAL' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_WM_ASYNC' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_WM_SYNC' => array(
+            '7.4' => true,
+        ),
+        'IBASE_PRP_WRITE_MODE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_READ' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_CREATE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_DEACTIVATE_IDX' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_NO_SHADOW' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_NO_VALIDITY' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_ONE_AT_A_TIME' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_REPLACE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RES_USE_ALL_SPACE' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_CHECK_DB' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_FULL' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_IGNORE_CHECKSUM' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_KILL_SHADOWS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_MEND_DB' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_SWEEP_DB' => array(
+            '7.4' => true,
+        ),
+        'IBASE_RPR_VALIDATE_DB' => array(
+            '7.4' => true,
+        ),
+        'IBASE_STS_DATA_PAGES' => array(
+            '7.4' => true,
+        ),
+        'IBASE_STS_DB_LOG' => array(
+            '7.4' => true,
+        ),
+        'IBASE_STS_HDR_PAGES' => array(
+            '7.4' => true,
+        ),
+        'IBASE_STS_IDX_PAGES' => array(
+            '7.4' => true,
+        ),
+        'IBASE_STS_SYS_RELATIONS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_GET_ENV' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_GET_ENV_LOCK' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_GET_ENV_MSG' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_GET_USERS' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_IMPLEMENTATION' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_SERVER_VERSION' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_SVR_DB_INFO' => array(
+            '7.4' => true,
+        ),
+        'IBASE_SVC_USER_DBPATH' => array(
+            '7.4' => true,
+        ),
+        'IBASE_UNIXTIME' => array(
+            '7.4' => true,
+        ),
+        'IBASE_WAIT' => array(
+            '7.4' => true,
+        ),
+        'IBASE_WRITE' => array(
+            '7.4' => true,
+        ),
     );
 
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 8.1.0
      *
      * @return array
      */
@@ -308,6 +516,8 @@ class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 8.1.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -338,6 +548,8 @@ class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 8.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -350,6 +562,8 @@ class RemovedConstantsSniff extends AbstractRemovedFeatureSniff
 
     /**
      * Get the error message template for this sniff.
+     *
+     * @since 8.1.0
      *
      * @return string
      */

@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Classes\NewLateStaticBindingSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.3
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Classes;
@@ -16,18 +15,26 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Classes\NewLateStaticBindingSniff.
+ * Detect use of late static binding as introduced in PHP 5.3.
+ *
+ * Checks for:
+ * - Late static binding as introduced in PHP 5.3.
+ * - Late static binding being used outside of class scope (unsupported).
  *
  * PHP version 5.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/language.oop5.late-static-bindings.php
+ * @link https://wiki.php.net/rfc/lsb_parentself_forwarding
+ *
+ * @since 7.0.3
+ * @since 9.0.0 Renamed from `LateStaticBindingSniff` to `NewLateStaticBindingSniff`.
  */
 class NewLateStaticBindingSniff extends Sniff
 {
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.3
      *
      * @return array
      */
@@ -39,6 +46,8 @@ class NewLateStaticBindingSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.3
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

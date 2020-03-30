@@ -1,8 +1,11 @@
 <?php
 /**
- * NewFlexibleHeredocNowdocSniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Syntax;
@@ -11,19 +14,23 @@ use PHPCompatibility\Tests\BaseSniffTest;
 use PHPCompatibility\PHPCSHelper;
 
 /**
- * Use of flexible heredoc/nowdoc syntax and identifiers in heredoc/nowdoc body tests.
+ * Test the NewFlexibleHeredocNowdoc sniff.
  *
  * @group newFlexibleHeredocNowdoc
  * @group syntax
  *
  * @covers \PHPCompatibility\Sniffs\Syntax\NewFlexibleHeredocNowdocSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
 {
+
+    /**
+     * Sprintf template for the names of the numbered test case files.
+     *
+     * @var string
+     */
     const TEST_FILE = 'NewFlexibleHeredocNowdocUnitTest.%d.inc';
 
     /**
@@ -45,9 +52,9 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      * Set up skip condition based on used PHP version.
      *
      * {@internal The data providers are run before the setUpClass method is run, so
-     * we can't use that method for this skip condition.}}
+     * we can't use that method for this skip condition.}
      *
-     * @return void
+     * @return bool True if PHPCS is running on PHP 7.3 or higher. False otherwise.
      */
     public static function getSetSkipCondition()
     {

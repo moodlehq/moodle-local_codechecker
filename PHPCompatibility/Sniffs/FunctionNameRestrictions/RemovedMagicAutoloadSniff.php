@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedMagicAutoloadSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.2
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
@@ -15,16 +14,25 @@ use PHPCompatibility\Sniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedMagicAutoloadSniff.
+ * Detect declaration of the magic `__autoload()` method.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * This method has been deprecated in PHP 7.2 in favour of `spl_autoload_register()`.
+ *
+ * PHP version 7.2
+ *
+ * @link https://www.php.net/manual/en/migration72.deprecated.php#migration72.deprecated.__autoload-method
+ * @link https://wiki.php.net/rfc/deprecations_php_7_2#autoload
+ * @link https://www.php.net/manual/en/function.autoload.php
+ *
+ * @since 8.1.0
+ * @since 9.0.0 Renamed from `DeprecatedMagicAutoloadSniff` to `RemovedMagicAutoloadSniff`.
  */
 class RemovedMagicAutoloadSniff extends Sniff
 {
     /**
-     * Scopes to look for when testing using validDirectScope
+     * Scopes to look for when testing using validDirectScope.
+     *
+     * @since 8.1.0
      *
      * @var array
      */
@@ -39,6 +47,8 @@ class RemovedMagicAutoloadSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 8.1.0
+     *
      * @return array
      */
     public function register()
@@ -48,6 +58,8 @@ class RemovedMagicAutoloadSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 8.1.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

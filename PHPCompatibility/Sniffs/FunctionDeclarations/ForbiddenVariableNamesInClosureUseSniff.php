@@ -1,12 +1,11 @@
 <?php
 /**
- * PHP 7.1 Forbidden variable names in closure use statements.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.1
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
@@ -17,22 +16,25 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * PHP 7.1 Forbidden variable names in closure use statements.
+ * Detect variable names forbidden to be used in closure `use` statements.
  *
- * Variables bound to a closure via the use construct cannot use the same name
- * as any superglobals, $this, or any parameter since PHP 7.1.
+ * Variables bound to a closure via the `use` construct cannot use the same name
+ * as any superglobals, `$this`, or any parameter since PHP 7.1.
  *
  * PHP version 7.1
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration71.incompatible.php#migration71.incompatible.lexical-names
+ * @link https://www.php.net/manual/en/functions.anonymous.php
+ *
+ * @since 7.1.4
  */
 class ForbiddenVariableNamesInClosureUseSniff extends Sniff
 {
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.1.4
      *
      * @return array
      */
@@ -43,6 +45,8 @@ class ForbiddenVariableNamesInClosureUseSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.1.4
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token

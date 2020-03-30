@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\InitialValue\NewHeredocSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.3
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\InitialValue;
@@ -16,7 +15,7 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\InitialValue\NewHeredocSniff.
+ * Detect a heredoc being used to set an initial value.
  *
  * As of PHP 5.3.0, it's possible to initialize static variables, class properties
  * and constants declared using the `const` keyword, using the Heredoc syntax.
@@ -28,9 +27,12 @@ use PHP_CodeSniffer_Tokens as Tokens;
  *
  * PHP version 5.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration53.new-features.php
+ * @link https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc
+ *
+ * @since 7.1.4
+ * @since 8.2.0 Now extends the NewConstantScalarExpressionsSniff instead of the base Sniff class.
+ * @since 9.0.0 Renamed from `NewHeredocInitializeSniff` to `NewHeredocSniff`.
  */
 class NewHeredocSniff extends NewConstantScalarExpressionsSniff
 {
@@ -38,12 +40,16 @@ class NewHeredocSniff extends NewConstantScalarExpressionsSniff
     /**
      * Error message.
      *
+     * @since 8.2.0
+     *
      * @var string
      */
     const ERROR_PHRASE = 'Initializing %s using the Heredoc syntax was not supported in PHP 5.2 or earlier';
 
     /**
      * Partial error phrases to be used in combination with the error message constant.
+     *
+     * @since 8.2.0
      *
      * @var array
      */
@@ -58,6 +64,8 @@ class NewHeredocSniff extends NewConstantScalarExpressionsSniff
     /**
      * Do a version check to determine if this sniff needs to run at all.
      *
+     * @since 8.2.0
+     *
      * @return bool
      */
     protected function bowOutEarly()
@@ -68,6 +76,8 @@ class NewHeredocSniff extends NewConstantScalarExpressionsSniff
 
     /**
      * Is a value declared and does the declared value not contain an heredoc ?
+     *
+     * @since 8.2.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
