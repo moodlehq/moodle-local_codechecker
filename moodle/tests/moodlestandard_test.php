@@ -135,6 +135,30 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_files_linelength() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.LineLength');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_linelength.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            21 => 'maximum limit of 180 characters; contains 181 characters',
+            22 => 'maximum limit of 180 characters; contains 181 characters'));
+        $this->set_warnings(array(
+            13 => 'exceeds 132 characters; contains 133 characters',
+            14 => 'exceeds 132 characters; contains 133 characters',
+            17 => 'exceeds 132 characters; contains 180 characters',
+            18 => 'exceeds 132 characters; contains 180 characters'));
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     public function test_generic_whitespace_disalowtabindent() {
 
         // Define the standard, sniff and fixture to use.
