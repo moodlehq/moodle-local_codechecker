@@ -1,8 +1,11 @@
 <?php
 /**
- * Functions can not have multiple parameters with the same name since PHP 7.0 test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\FunctionDeclarations;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Functions can not have multiple parameters with the same name since PHP 7.0 sniff test
+ * Test the ForbiddenParametersWithSameName sniff.
  *
  * @group forbiddenParametersWithSameName
  * @group functionDeclarations
  *
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\ForbiddenParametersWithSameNameSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim@cu.be>
+ * @since 7.0.0
  */
 class ForbiddenParametersWithSameNameUnitTest extends BaseSniffTest
 {
@@ -81,6 +82,7 @@ class ForbiddenParametersWithSameNameUnitTest extends BaseSniffTest
     {
         return array(
             array(5),
+            array(9),
             array(10),
         );
     }

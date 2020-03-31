@@ -1,14 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Syntax\ForbiddenCallTimePassByReference.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.4
- *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Gary Rogers <gmrwebde@gmail.com>
- * @author    Florian Grandel <jerico.dev@gmail.com>
- * @copyright 2009 Florian Grandel
+ * @copyright 2009-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Syntax;
@@ -18,17 +15,18 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Syntax\ForbiddenCallTimePassByReference.
+ * Detect the use of call time pass by reference.
  *
- * Discourages the use of call time pass by references
+ * This behaviour has been deprecated in PHP 5.3 and removed in PHP 5.4.
  *
  * PHP version 5.4
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Gary Rogers <gmrwebde@gmail.com>
- * @author    Florian Grandel <jerico.dev@gmail.com>
- * @copyright 2009 Florian Grandel
+ * @link https://wiki.php.net/rfc/calltimebyref
+ * @link https://www.php.net/manual/en/language.references.pass.php
+ *
+ * @since 5.5
+ * @since 7.0.8 This sniff now throws a warning (deprecated) or an error (removed) depending
+ *              on the `testVersion` set. Previously it would always throw an error.
  */
 class ForbiddenCallTimePassByReferenceSniff extends Sniff
 {
@@ -38,6 +36,8 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
      *
      * Near duplicate of Tokens::$assignmentTokens + Tokens::$equalityTokens.
      * Copied in for PHPCS cross-version compatibility.
+     *
+     * @since 8.1.0
      *
      * @var array
      */
@@ -72,6 +72,8 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 5.5
+     *
      * @return array
      */
     public function register()
@@ -84,6 +86,8 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token
@@ -113,7 +117,7 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
             true
         );
 
-        if ($prevNonEmpty !== false && in_array($tokens[$prevNonEmpty]['type'], array('T_FUNCTION', 'T_CLASS', 'T_INTERFACE', 'T_TRAIT'), true)) {
+        if ($prevNonEmpty !== false && \in_array($tokens[$prevNonEmpty]['type'], array('T_FUNCTION', 'T_CLASS', 'T_INTERFACE', 'T_TRAIT'), true)) {
             return;
         }
 
@@ -129,14 +133,14 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
 
         // Get the function call parameters.
         $parameters = $this->getFunctionCallParameters($phpcsFile, $stackPtr);
-        if (count($parameters) === 0) {
+        if (\count($parameters) === 0) {
             return;
         }
 
         // Which nesting level is the one we are interested in ?
         $nestedParenthesisCount = 1;
         if (isset($tokens[$openBracket]['nested_parenthesis'])) {
-            $nestedParenthesisCount = count($tokens[$openBracket]['nested_parenthesis']) + 1;
+            $nestedParenthesisCount = \count($tokens[$openBracket]['nested_parenthesis']) + 1;
         }
 
         foreach ($parameters as $parameter) {
@@ -160,6 +164,8 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
 
     /**
      * Determine whether a parameter is passed by reference.
+     *
+     * @since 7.0.6 Split off from the `process()` method.
      *
      * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
      * @param array                 $parameter    Information on the current parameter
@@ -206,7 +212,7 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
             // Make sure the variable belongs directly to this function call
             // and is not inside a nested function call or array.
             if (isset($tokens[$nextVariable]['nested_parenthesis']) === false
-                || (count($tokens[$nextVariable]['nested_parenthesis']) !== $nestingLevel)
+                || (\count($tokens[$nextVariable]['nested_parenthesis']) !== $nestingLevel)
             ) {
                 continue;
             }

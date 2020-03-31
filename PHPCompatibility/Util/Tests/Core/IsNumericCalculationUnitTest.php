@@ -1,8 +1,11 @@
 <?php
 /**
- * Will a certain token combination be recognized as a numeric calculation by PHP ?
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Util\Tests\Core;
@@ -10,14 +13,12 @@ namespace PHPCompatibility\Util\Tests\Core;
 use PHPCompatibility\Util\Tests\CoreMethodTestFrame;
 
 /**
- * isNumericCalculation() function tests
+ * Tests for the `isNumericCalculation()` utility function.
  *
  * @group utilityIsNumericCalculation
  * @group utilityFunctions
  *
- * @uses    \PHPCompatibility\Util\Tests\CoreMethodTestFrame
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class IsNumericCalculationUnitTest extends CoreMethodTestFrame
 {

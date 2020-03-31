@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Syntax\NewFlexibleHeredocNowdocSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.3
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Syntax;
@@ -16,25 +15,28 @@ use PHPCompatibility\PHPCSHelper;
 use PHP_CodeSniffer_File as File;
 
 /**
- * New Flexible Heredoc Nowdoc.
+ * Detect usage of flexible heredoc/nowdoc and related cross-version incompatibilities.
  *
  * As of PHP 7.3:
- * - The body and the closing marker of a Heredoc/nowdoc can be indented;
+ * - The body and the closing marker of a heredoc/nowdoc can be indented;
  * - The closing marker no longer needs to be on a line by itself;
  * - The heredoc/nowdoc body may no longer contain the closing marker at the
  *   start of any of its lines.
  *
  * PHP version 7.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration73.new-features.php#migration73.new-features.core.heredoc
+ * @link https://wiki.php.net/rfc/flexible_heredoc_nowdoc_syntaxes
+ *
+ * @since 9.0.0
  */
 class NewFlexibleHeredocNowdocSniff extends Sniff
 {
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 9.0.0
      *
      * @return array
      */
@@ -56,6 +58,8 @@ class NewFlexibleHeredocNowdocSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -83,6 +87,8 @@ class NewFlexibleHeredocNowdocSniff extends Sniff
 
     /**
      * Detect indented and/or non-stand alone closing markers.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -152,7 +158,7 @@ class NewFlexibleHeredocNowdocSniff extends Sniff
                  * Check for tokens after the closing marker.
                  */
                 // Remove the identifier.
-                $afterMarker = substr($trimmed, strlen($identifier));
+                $afterMarker = substr($trimmed, \strlen($identifier));
                 // Remove a potential semi-colon at the beginning of what's left of the string.
                 $afterMarker = ltrim($afterMarker, ';');
                 // Remove new line characters at the end of the string.
@@ -170,6 +176,8 @@ class NewFlexibleHeredocNowdocSniff extends Sniff
 
     /**
      * Detect heredoc/nowdoc identifiers at the start of lines in the heredoc/nowdoc body.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

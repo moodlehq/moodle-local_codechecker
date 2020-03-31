@@ -1,8 +1,11 @@
 <?php
 /**
- * Forbidden names as declared name for class, interface, trait or namespace sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Keywords;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\Keywords;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Forbidden names as declared name for class, interface, trait or namespace.
+ * Test the ForbiddenNamesAsDeclared sniff.
  *
  * @group forbiddenNamesAsDeclared
  * @group keywords
@@ -18,9 +21,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsDeclaredSniff
  * @covers \PHPCompatibility\Sniff::getDeclaredNamespaceName
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.8
  */
 class ForbiddenNamesAsDeclaredUnitTest extends BaseSniffTest
 {

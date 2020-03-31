@@ -1,8 +1,11 @@
 <?php
 /**
- * Generic sniff functions test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Util\Tests\Core;
@@ -12,14 +15,12 @@ use PHPCompatibility\PHPCSHelper;
 use PHPCompatibility\Util\Tests\TestHelperPHPCompatibility;
 
 /**
- * Generic sniff functions sniff tests
+ * Tests for various stand-alone utility functions.
  *
  * @group utilityMiscFunctions
  * @group utilityFunctions
  *
- * @uses    \PHPUnit_Framework_TestCase
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.6
  */
 class FunctionsUnitTest extends PHPUnit_TestCase
 {
@@ -508,7 +509,7 @@ class FunctionsUnitTest extends PHPUnit_TestCase
      */
     private function invokeMethod(&$object, $methodName, array $parameters = array())
     {
-        $reflection = new \ReflectionClass(get_class($object));
+        $reflection = new \ReflectionClass(\get_class($object));
         $method     = $reflection->getMethod($methodName);
         $method->setAccessible(true);
 

@@ -1,13 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionDeclarations\ForbiddenParameterShadowSuperGlobalsSniff
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.4
- *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Declan Kelly <declankelly90@gmail.com>
- * @copyright 2015 Declan Kelly
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
@@ -17,24 +15,24 @@ use PHPCompatibility\PHPCSHelper;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionDeclarations\ForbiddenParameterShadowSuperGlobalsSniff
+ * Detect the use of superglobals as parameters for functions, support for which was removed in PHP 5.4.
  *
- * Discourages use of superglobals as parameters for functions.
- *
- * {@internal List of superglobals is maintained in the parent class.}}
+ * {@internal List of superglobals is maintained in the parent class.}
  *
  * PHP version 5.4
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Declan Kelly <declankelly90@gmail.com>
- * @copyright 2015 Declan Kelly
+ * @link https://www.php.net/manual/en/migration54.incompatible.php
+ *
+ * @since 7.0.0
  */
 class ForbiddenParameterShadowSuperGlobalsSniff extends Sniff
 {
 
     /**
      * Register the tokens to listen for.
+     *
+     * @since 7.0.0
+     * @since 7.1.3 Allows for closures.
      *
      * @return array
      */
@@ -49,6 +47,8 @@ class ForbiddenParameterShadowSuperGlobalsSniff extends Sniff
     /**
      * Processes the test.
      *
+     * @since 7.0.0
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token.
      *
@@ -62,7 +62,7 @@ class ForbiddenParameterShadowSuperGlobalsSniff extends Sniff
 
         // Get all parameters from function signature.
         $parameters = PHPCSHelper::getMethodParameters($phpcsFile, $stackPtr);
-        if (empty($parameters) || is_array($parameters) === false) {
+        if (empty($parameters) || \is_array($parameters) === false) {
             return;
         }
 

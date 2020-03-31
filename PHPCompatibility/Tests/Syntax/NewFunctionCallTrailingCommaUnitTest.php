@@ -1,8 +1,11 @@
 <?php
 /**
- * New function call trailing comma sniff tests
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Syntax;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Syntax;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New function call trailing comma sniff tests
+ * Test the NewFunctionCallTrailingComma sniff.
  *
  * @group newFunctionCallTrailingComma
  * @group syntax
  *
  * @covers \PHPCompatibility\Sniffs\Syntax\NewFunctionCallTrailingCommaSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.2.0
  */
 class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
 {

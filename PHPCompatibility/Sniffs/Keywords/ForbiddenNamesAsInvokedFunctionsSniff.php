@@ -1,11 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsInvokedFunctionsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Jansen Price <jansen.price@gmail.com>
- * @copyright 2012 Cu.be Solutions bvba
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Keywords;
@@ -15,20 +15,21 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsInvokedFunctionsSniff.
- *
  * Prohibits the use of reserved keywords invoked as functions.
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Jansen Price <jansen.price@gmail.com>
- * @copyright 2012 Cu.be Solutions bvba
+ * PHP version All
+ *
+ * @link https://www.php.net/manual/en/reserved.keywords.php
+ *
+ * @since 5.5
  */
 class ForbiddenNamesAsInvokedFunctionsSniff extends Sniff
 {
 
     /**
      * List of tokens to register.
+     *
+     * @since 5.5
      *
      * @var array
      */
@@ -59,6 +60,8 @@ class ForbiddenNamesAsInvokedFunctionsSniff extends Sniff
      * as its own token and for PHPCS versions which change the token to
      * T_STRING when used in a method call.
      *
+     * @since 5.5
+     *
      * @var array
      */
     protected $targetedStringTokens = array(
@@ -83,6 +86,8 @@ class ForbiddenNamesAsInvokedFunctionsSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 5.5
+     *
      * @return array
      */
     public function register()
@@ -95,6 +100,8 @@ class ForbiddenNamesAsInvokedFunctionsSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the

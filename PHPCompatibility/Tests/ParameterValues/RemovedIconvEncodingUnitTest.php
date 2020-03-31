@@ -1,8 +1,11 @@
 <?php
 /**
- * Deprecated/Removed Iconv encoding types sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ParameterValues;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\ParameterValues;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Deprecated/Removed Iconv encoding types sniff tests.
+ * Test the RemovedIconvEncoding sniff.
  *
  * @group removedIconvEncoding
  * @group parameterValues
  *
  * @covers \PHPCompatibility\Sniffs\ParameterValues\RemovedIconvEncodingSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class RemovedIconvEncodingUnitTest extends BaseSniffTest
 {

@@ -166,3 +166,49 @@ $wrongStatic = new class
     function __callStatic($name, $arguments) {}
     function __set_state($properties) {}
 }
+
+// PHP 7.4: new __serialize(), unserialize().
+$normal = new class
+{
+    public function __serialize() {}
+    public function __unserialize($data) {}
+}
+
+class PHP74WrongVisibility
+{
+    protected function __serialize() {}
+    private function __unserialize($data) {}
+}
+
+interface PHP74WrongStatic
+{
+    public static function __serialize();
+    static public function __unserialize($data);
+}
+
+// More magic methods.
+class MoreNormal
+{
+    public function __construct() {}
+    public function __destruct() {}
+    public function __clone() {}
+    public function __debugInfo() {}
+    public function __invoke() {}
+}
+
+class MoreWrongVisibility
+{
+    private function __destruct() {}
+    protected function __debugInfo() {}
+    private function __invoke() {}
+    protected static function __set_state() {}
+}
+
+class MoreWrongStatic
+{
+    static function __construct() {}
+    static function __destruct() {}
+    static function __clone() {}
+    static function __debugInfo() {}
+    static function __invoke() {}
+}

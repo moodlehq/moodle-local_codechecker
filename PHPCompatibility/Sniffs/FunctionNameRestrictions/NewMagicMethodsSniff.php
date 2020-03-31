@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionNameRestrictions\NewMagicMethodsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
@@ -13,13 +14,16 @@ use PHPCompatibility\AbstractNewFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionNameRestrictions\NewMagicMethodsSniff.
- *
  * Warns for non-magic behaviour of magic methods prior to becoming magic.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * PHP version 5.0+
+ *
+ * @link https://www.php.net/manual/en/language.oop5.magic.php
+ * @link https://wiki.php.net/rfc/closures#additional_goodyinvoke
+ * @link https://wiki.php.net/rfc/debug-info
+ *
+ * @since 7.0.4
+ * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class.
  */
 class NewMagicMethodsSniff extends AbstractNewFeatureSniff
 {
@@ -31,9 +35,19 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
      * The array lists : version number with false (not magic) or true (magic).
      * If's sufficient to list the first version where the method became magic.
      *
-     * @var array(string => array(string => int|string|null))
+     * @since 7.0.4
+     *
+     * @var array(string => array(string => bool|string))
      */
     protected $newMagicMethods = array(
+        '__construct' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
+        '__destruct' => array(
+            '4.4' => false,
+            '5.0' => true,
+        ),
         '__get' => array(
             '4.4' => false,
             '5.0' => true,
@@ -73,11 +87,22 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
             '5.2'     => true,
             'message' => 'The method %s() was not truly magical in PHP version %s and earlier. The associated magic functionality will only be called when directly combined with echo or print.',
         ),
+
+        '__serialize' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
+        '__unserialize' => array(
+            '7.3' => false,
+            '7.4' => true,
+        ),
     );
 
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.4
      *
      * @return array
      */
@@ -89,6 +114,8 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.4
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -120,6 +147,8 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -133,6 +162,8 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
     /**
      * Get an array of the non-PHP-version array keys used in a sub-array.
      *
+     * @since 7.1.0
+     *
      * @return array
      */
     protected function getNonVersionArrayKeys()
@@ -143,6 +174,8 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
 
     /**
      * Retrieve the relevant detail (version) information for use in an error message.
+     *
+     * @since 7.1.0
      *
      * @param array $itemArray Version and other information about the item.
      * @param array $itemInfo  Base information about the item.
@@ -166,6 +199,8 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
     /**
      * Get the error message template for this sniff.
      *
+     * @since 7.1.0
+     *
      * @return string
      */
     protected function getErrorMsgTemplate()
@@ -176,6 +211,8 @@ class NewMagicMethodsSniff extends AbstractNewFeatureSniff
 
     /**
      * Allow for concrete child classes to filter the error message before it's passed to PHPCS.
+     *
+     * @since 7.1.0
      *
      * @param string $error     The error message which was created.
      * @param array  $itemInfo  Base information about the item this error message applies to.

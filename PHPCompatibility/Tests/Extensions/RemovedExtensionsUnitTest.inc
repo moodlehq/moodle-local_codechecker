@@ -43,7 +43,7 @@ oracle();
 
 ovrimos();
 
-pfpro();
+pfpro_init();
 
 sqlite();
 
@@ -74,6 +74,10 @@ mcrypt_encrypt();
 ereg_convert();
 ereg_translate_to_preg();
 ereg_replace(); // Non-whitelisted.
+
+ibase_trans();
+wddx_deserialize();
+recode();
 
 // Don't throw errors during live code review.
 ereg($a, $b

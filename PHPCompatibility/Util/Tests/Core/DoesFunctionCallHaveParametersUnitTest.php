@@ -1,8 +1,11 @@
 <?php
 /**
- * Function parameters test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Util\Tests\Core;
@@ -10,14 +13,12 @@ namespace PHPCompatibility\Util\Tests\Core;
 use PHPCompatibility\Util\Tests\CoreMethodTestFrame;
 
 /**
- * Function parameters function tests
+ * Tests for the `doesFunctionCallHaveParameters()` utility function.
  *
  * @group utilityDoesFunctionCallHaveParameters
  * @group utilityFunctions
  *
- * @uses    \PHPCompatibility\Util\Tests\CoreMethodTestFrame
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.3
  */
 class DoesFunctionCallHaveParametersUnitTest extends CoreMethodTestFrame
 {

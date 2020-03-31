@@ -1,11 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Operators\NewOperatorsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2013 Cu.be Solutions bvba
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Operators;
@@ -14,12 +14,17 @@ use PHPCompatibility\AbstractNewFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Operators\NewOperatorsSniff.
+ * Detect use of new PHP operators.
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2013 Cu.be Solutions bvba
+ * PHP version All
+ *
+ * @link https://wiki.php.net/rfc/pow-operator
+ * @link https://wiki.php.net/rfc/combined-comparison-operator
+ * @link https://wiki.php.net/rfc/isset_ternary
+ * @link https://wiki.php.net/rfc/null_coalesce_equal_operator
+ *
+ * @since 9.0.0 Detection of new operators was originally included in the
+ *              `NewLanguageConstruct` sniff (since 5.6).
  */
 class NewOperatorsSniff extends AbstractNewFeatureSniff
 {
@@ -28,9 +33,11 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
      * A list of new operators, not present in older versions.
      *
      * The array lists : version number with false (not present) or true (present).
-     * If's sufficient to list the first version where the keyword appears.
+     * If's sufficient to list the first version where the operator appears.
      *
-     * @var array(string => array(string => int|string|null))
+     * @since 5.6
+     *
+     * @var array(string => array(string => bool|string))
      */
     protected $newOperators = array(
         'T_POW' => array(
@@ -53,10 +60,6 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
             '7.0' => true,
             'description' => 'null coalescing operator (??)',
         ), // Identified in PHP < 7.0 icw PHPCS < 2.6.2 as T_INLINE_THEN + T_INLINE_THEN.
-        /*
-         * Was slated for 7.2, but still not implemented. PHPCS however does already tokenize it.
-         * @link https://wiki.php.net/rfc/null_coalesce_equal_operator
-         */
         'T_COALESCE_EQUAL' => array(
             '7.3' => false,
             '7.4' => true,
@@ -69,6 +72,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
      * A list of new operators which are not recognized in older PHPCS versions.
      *
      * The array lists an alternative token to listen for.
+     *
+     * @since 7.0.3
      *
      * @var array(string => int)
      */
@@ -93,7 +98,9 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
      * PHP and PHPCS versions.
      *
      * {@internal 'before' was chosen rather than 'after' as that allowed for a 1-on-1
-     * translation list with the current tokens.}}
+     * translation list with the current tokens.}
+     *
+     * @since 7.0.3
      *
      * @var array(string => array(string => string))
      */
@@ -123,13 +130,15 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 5.6
+     *
      * @return array
      */
     public function register()
     {
         $tokens = array();
         foreach ($this->newOperators as $token => $versions) {
-            if (defined($token)) {
+            if (\defined($token)) {
                 $tokens[] = constant($token);
             } elseif (isset($this->newOperatorsPHPCSCompat[$token])) {
                 $tokens[] = $this->newOperatorsPHPCSCompat[$token];
@@ -141,6 +150,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.6
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -159,7 +170,7 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
                 && ((isset($this->PHPCSCompatTranslate[$tokenType]['before'], $tokens[$stackPtr - 1]) === true
                     && $tokens[$stackPtr - 1]['type'] === $this->PHPCSCompatTranslate[$tokenType]['before'])
                 || (isset($this->PHPCSCompatTranslate[$tokenType]['callback']) === true
-                    && call_user_func(array($this, $this->PHPCSCompatTranslate[$tokenType]['callback']), $tokens, $stackPtr) === true))
+                    && \call_user_func(array($this, $this->PHPCSCompatTranslate[$tokenType]['callback']), $tokens, $stackPtr) === true))
             ) {
                 $tokenType = $this->PHPCSCompatTranslate[$tokenType]['real_token'];
             }
@@ -186,6 +197,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -199,6 +212,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     /**
      * Get an array of the non-PHP-version array keys used in a sub-array.
      *
+     * @since 7.1.0
+     *
      * @return array
      */
     protected function getNonVersionArrayKeys()
@@ -209,6 +224,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
 
     /**
      * Retrieve the relevant detail (version) information for use in an error message.
+     *
+     * @since 7.1.0
      *
      * @param array $itemArray Version and other information about the item.
      * @param array $itemInfo  Base information about the item.
@@ -225,7 +242,9 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
 
 
     /**
-     * Allow for concrete child classes to filter the error data before it's passed to PHPCS.
+     * Filter the error data before it's passed to PHPCS.
+     *
+     * @since 7.1.0
      *
      * @param array $data      The error data array which was created.
      * @param array $itemInfo  Base information about the item this error message applies to.
@@ -243,6 +262,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     /**
      * Callback function to determine whether a T_EQUAL token is really a T_COALESCE_EQUAL token.
      *
+     * @since 7.1.2
+     *
      * @param array $tokens   The token stack.
      * @param int   $stackPtr The current position in the token stack.
      *
@@ -251,7 +272,7 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     private function isTCoalesceEqual($tokens, $stackPtr)
     {
         if ($tokens[$stackPtr]['code'] !== \T_EQUAL || isset($tokens[($stackPtr - 1)]) === false) {
-            // Function called for wrong token or token has no predecesor.
+            // Function called for wrong token or token has no predecessor.
             return false;
         }
 
@@ -270,6 +291,8 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     /**
      * Callback function to determine whether a T_INLINE_THEN token is really a T_COALESCE token.
      *
+     * @since 7.1.2
+     *
      * @param array $tokens   The token stack.
      * @param int   $stackPtr The current position in the token stack.
      *
@@ -278,7 +301,7 @@ class NewOperatorsSniff extends AbstractNewFeatureSniff
     private function isTCoalesce($tokens, $stackPtr)
     {
         if ($tokens[$stackPtr]['code'] !== \T_INLINE_THEN || isset($tokens[($stackPtr - 1)]) === false) {
-            // Function called for wrong token or token has no predecesor.
+            // Function called for wrong token or token has no predecessor.
             return false;
         }
 

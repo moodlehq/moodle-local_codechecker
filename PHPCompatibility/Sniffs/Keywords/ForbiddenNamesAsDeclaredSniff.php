@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsDeclaredClassSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0+
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Keywords;
@@ -16,24 +15,26 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsDeclaredClassSniff.
+ * Detects the use of some reserved keywords to name a class, interface, trait or namespace.
  *
- * Prohibits the use of some reserved keywords to name a class, interface, trait or namespace.
  * Emits errors for reserved words and warnings for soft-reserved words.
- *
- * @see http://php.net/manual/en/reserved.other-reserved-words.php
  *
  * PHP version 7.0+
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/reserved.other-reserved-words.php
+ * @link https://wiki.php.net/rfc/reserve_more_types_in_php_7
+ *
+ * @since 7.0.8
+ * @since 7.1.4 This sniff now throws a warning (soft reserved) or an error (reserved) depending
+ *              on the `testVersion` set. Previously it would always throw an error.
  */
 class ForbiddenNamesAsDeclaredSniff extends Sniff
 {
 
     /**
      * List of tokens which can not be used as class, interface, trait names or as part of a namespace.
+     *
+     * @since 7.0.8
      *
      * @var array
      */
@@ -45,6 +46,8 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
 
     /**
      * T_STRING keywords to recognize as forbidden names.
+     *
+     * @since 7.0.8
      *
      * @var array
      */
@@ -67,6 +70,8 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
      * Using any of these keywords to name a class, interface, trait or namespace
      * is highly discouraged since they may be used in future versions of PHP.
      *
+     * @since 7.0.8
+     *
      * @var array
      */
     protected $softReservedNames = array(
@@ -83,6 +88,8 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
      * word.
      * Set from the `register()` method.
      *
+     * @since 7.0.8
+     *
      * @var array
      */
     private $allForbiddenNames = array();
@@ -90,6 +97,8 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.8
      *
      * @return array
      */
@@ -112,6 +121,8 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.8
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -137,7 +148,7 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
             return;
         }
 
-        if (in_array($tokenType, array('T_CLASS', 'T_INTERFACE', 'T_TRAIT'), true)) {
+        if (\in_array($tokenType, array('T_CLASS', 'T_INTERFACE', 'T_TRAIT'), true)) {
             // Check for the declared name being a name which is not tokenized as T_STRING.
             $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
             if ($nextNonEmpty !== false && isset($this->forbiddenTokens[$tokens[$nextNonEmpty]['code']]) === true) {
@@ -148,7 +159,7 @@ class ForbiddenNamesAsDeclaredSniff extends Sniff
             }
             unset($nextNonEmpty);
 
-            if (isset($name) === false || is_string($name) === false || $name === '') {
+            if (isset($name) === false || \is_string($name) === false || $name === '') {
                 return;
             }
 

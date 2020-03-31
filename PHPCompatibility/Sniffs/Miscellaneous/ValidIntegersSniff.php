@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Miscellaneous\ValidIntegersSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Miscellaneous;
@@ -13,11 +14,24 @@ use PHPCompatibility\Sniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Miscellaneous\ValidIntegersSniff.
+ * Check for valid integer types and values.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * Checks:
+ * - PHP 5.4 introduced binary integers.
+ * - PHP 7.0 removed tolerance for invalid octals. These were truncated prior to PHP 7
+ *   and give a parse error since PHP 7.
+ * - PHP 7.0 removed support for recognizing hexadecimal numeric strings as numeric.
+ *   Type juggling and recognition was inconsistent prior to PHP 7. As of PHP 7, they
+ *   are no longer treated as numeric.
+ *
+ * PHP version 5.4+
+ *
+ * @link https://wiki.php.net/rfc/binnotation4ints
+ * @link https://wiki.php.net/rfc/remove_hex_support_in_numeric_strings
+ * @link https://www.php.net/manual/en/language.types.integer.php
+ *
+ * @since 7.0.3
+ * @since 7.0.8 This sniff now throws a warning instead of an error for invalid binary integers.
  */
 class ValidIntegersSniff extends Sniff
 {
@@ -25,12 +39,16 @@ class ValidIntegersSniff extends Sniff
     /**
      * Whether PHPCS is run on a PHP < 5.4.
      *
+     * @since 7.0.3
+     *
      * @var bool
      */
     protected $isLowPHPVersion = false;
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.3
      *
      * @return array
      */
@@ -47,6 +65,8 @@ class ValidIntegersSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.3
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -108,7 +128,9 @@ class ValidIntegersSniff extends Sniff
 
 
     /**
-     * Could the current token an potentially be a binary integer ?
+     * Could the current token potentially be a binary integer ?
+     *
+     * @since 7.0.3
      *
      * @param array $tokens   Token stack.
      * @param int   $stackPtr The current position in the token stack.
@@ -124,17 +146,19 @@ class ValidIntegersSniff extends Sniff
         }
 
         if ($this->isLowPHPVersion === false) {
-            return (preg_match('`^0b[0-1]+$`D', $token['content']) === 1);
+            return (preg_match('`^0b[0-1]+$`iD', $token['content']) === 1);
         }
         // Pre-5.4, binary strings are tokenized as T_LNUMBER (0) + T_STRING ("b01010101").
         // At this point, we don't yet care whether it's a valid binary int, that's a separate check.
         else {
-            return($token['content'] === '0' && $tokens[$stackPtr + 1]['code'] === \T_STRING && preg_match('`^b[0-9]+$`D', $tokens[$stackPtr + 1]['content']) === 1);
+            return($token['content'] === '0' && $tokens[$stackPtr + 1]['code'] === \T_STRING && preg_match('`^b[0-9]+$`iD', $tokens[$stackPtr + 1]['content']) === 1);
         }
     }
 
     /**
      * Is the current token an invalid binary integer ?
+     *
+     * @since 7.0.3
      *
      * @param array $tokens   Token stack.
      * @param int   $stackPtr The current position in the token stack.
@@ -151,12 +175,14 @@ class ValidIntegersSniff extends Sniff
             // If it's an invalid binary int, the token will be split into two T_LNUMBER tokens.
             return ($tokens[$stackPtr + 1]['code'] === \T_LNUMBER);
         } else {
-            return (preg_match('`^b[0-1]+$`D', $tokens[$stackPtr + 1]['content']) === 0);
+            return (preg_match('`^b[0-1]+$`iD', $tokens[$stackPtr + 1]['content']) === 0);
         }
     }
 
     /**
      * Retrieve the content of the tokens which together look like a binary integer.
+     *
+     * @since 7.0.3
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param array                 $tokens    Token stack.
@@ -183,6 +209,8 @@ class ValidIntegersSniff extends Sniff
     /**
      * Is the current token an invalid octal integer ?
      *
+     * @since 7.0.3
+     *
      * @param array $tokens   Token stack.
      * @param int   $stackPtr The current position in the token stack.
      *
@@ -201,6 +229,8 @@ class ValidIntegersSniff extends Sniff
 
     /**
      * Is the current token a hexidecimal numeric string ?
+     *
+     * @since 7.0.3
      *
      * @param array $tokens   Token stack.
      * @param int   $stackPtr The current position in the token stack.

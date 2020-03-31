@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Lists\NewShortListSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.1
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Lists;
@@ -15,23 +14,26 @@ use PHPCompatibility\Sniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Lists\NewShortListSniff.
+ * Detect short list syntax for symmetric array destructuring.
  *
- * "The shorthand array syntax ([]) may now be used to destructure arrays for
- * assignments (including within foreach), as an alternative to the existing
- * list() syntax, which is still supported."
+ * "The shorthand array syntax (`[]`) may now be used to destructure arrays for
+ * assignments (including within `foreach`), as an alternative to the existing
+ * `list()` syntax, which is still supported."
  *
  * PHP version 7.1
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration71.new-features.php#migration71.new-features.symmetric-array-destructuring
+ * @link https://wiki.php.net/rfc/short_list_syntax
+ *
+ * @since 9.0.0
  */
 class NewShortListSniff extends Sniff
 {
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 9.0.0
      *
      * @return array
      */
@@ -43,11 +45,14 @@ class NewShortListSniff extends Sniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
+     * @since 9.0.0
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
      *                                         stack passed in $tokens.
      *
-     * @return void
+     * @return int|void Integer stack pointer to skip forward or void to continue
+     *                  normal file processing.
      */
     public function process(File $phpcsFile, $stackPtr)
     {

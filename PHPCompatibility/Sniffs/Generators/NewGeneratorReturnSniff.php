@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Generators\NewGeneratorReturnSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Generators;
@@ -16,20 +15,22 @@ use PHPCompatibility\PHPCSHelper;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Generators\NewGeneratorReturnSniff.
- *
- * As of PHP 7.0, a return statement can be used within a generator for a final expression to be returned.
+ * As of PHP 7.0, a `return` statement can be used within a generator for a final expression to be returned.
  *
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration70.new-features.php#migration70.new-features.generator-return-expressions
+ * @link https://wiki.php.net/rfc/generator-return-expressions
+ * @link https://www.php.net/manual/en/language.generators.syntax.php
+ *
+ * @since 8.2.0
  */
 class NewGeneratorReturnSniff extends Sniff
 {
     /**
      * Scope conditions within which a yield can exist.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -41,6 +42,8 @@ class NewGeneratorReturnSniff extends Sniff
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 8.2.0
      *
      * @return array
      */
@@ -69,7 +72,7 @@ class NewGeneratorReturnSniff extends Sniff
             $targets[] = \T_STRING;
         }
 
-        if (defined('T_YIELD_FROM')) {
+        if (\defined('T_YIELD_FROM')) {
             $targets[] = \T_YIELD_FROM;
         }
 
@@ -78,6 +81,8 @@ class NewGeneratorReturnSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 8.2.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -123,7 +128,7 @@ class NewGeneratorReturnSniff extends Sniff
         }
 
         $targets = array(\T_RETURN, \T_CLOSURE, \T_FUNCTION, \T_CLASS);
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $targets[] = \T_ANON_CLASS;
         }
 

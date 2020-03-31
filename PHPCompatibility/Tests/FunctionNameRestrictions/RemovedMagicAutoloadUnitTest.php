@@ -1,8 +1,11 @@
 <?php
 /**
- * __autoload deprecation for PHP 7.2 sniff test
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
@@ -11,7 +14,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
 use PHPCompatibility\PHPCSHelper;
 
 /**
- * __autoload deprecation for PHP 7.2 sniff test
+ * Test the RemovedMagicAutoload sniff.
  *
  * @group removedMagicAutoload
  * @group functionNameRestrictions
@@ -19,13 +22,24 @@ use PHPCompatibility\PHPCSHelper;
  * @covers \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedMagicAutoloadSniff
  * @covers \PHPCompatibility\Sniff::determineNamespace
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim.godden@cu.be>
+ * @since 8.1.0
  */
 class RemovedMagicAutoloadUnitTest extends BaseSniffTest
 {
-    const TEST_FILE            = 'RemovedMagicAutoloadUnitTest.1.inc';
+
+    /**
+     * The name of the main test case file.
+     *
+     * @var string
+     */
+    const TEST_FILE = 'RemovedMagicAutoloadUnitTest.1.inc';
+
+    /**
+     * The name of a secondary test case file to test against false positives
+     * for namespaced function declarations.
+     *
+     * @var string
+     */
     const TEST_FILE_NAMESPACED = 'RemovedMagicAutoloadUnitTest.2.inc';
 
     /**
@@ -94,7 +108,7 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
      *
      * @dataProvider dataIsNotAffected
      *
-     * @param string $testFile The file to test
+     * @param string $testFile The file to test.
      * @param int    $line     The line number where the error should occur.
      * @param bool   $isTrait  Whether the test relates to a method in a trait.
      *
@@ -112,9 +126,9 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
     }
 
     /**
-     * dataIsDeprecated
+     * dataIsNotAffected
      *
-     * @see testIsDeprecated()
+     * @see testIsNotAffected()
      *
      * @return array
      */

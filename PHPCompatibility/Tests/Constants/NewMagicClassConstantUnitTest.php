@@ -1,8 +1,11 @@
 <?php
 /**
- * New magic ::class constant sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Constants;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Constants;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New magic ::class constant sniff test file.
+ * Test the NewMagicClassConstant sniff.
  *
  * @group newMagicClassConstant
  * @group constants
  *
  * @covers \PHPCompatibility\Sniffs\Constants\NewMagicClassConstantSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.1.4
  */
 class NewMagicClassConstantUnitTest extends BaseSniffTest
 {

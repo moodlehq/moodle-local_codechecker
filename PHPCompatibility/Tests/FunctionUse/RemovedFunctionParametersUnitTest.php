@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed Functions Parameter Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionUse;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\FunctionUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Removed Functions Parameter Sniff test file
+ * Test the RemovedFunctionParameters sniff.
  *
  * @group removedFunctionParameters
  * @group functionUse
  *
  * @covers \PHPCompatibility\Sniffs\FunctionUse\RemovedFunctionParametersSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim@cu.be>
+ * @since 7.0.0
  */
 class RemovedFunctionParametersUnitTest extends BaseSniffTest
 {
@@ -157,9 +158,17 @@ class RemovedFunctionParametersUnitTest extends BaseSniffTest
      */
     public function dataDeprecatedParameter()
     {
-        return array(
+        $data = array(
             array('define', 'case_insensitive', '7.3', array(15), '7.2'),
+            array('curl_version', 'age', '7.4', array(20), '7.3'),
+            array('curl_version', 'age', '7.4', array(21), '7.3'),
         );
+
+        if (\CURLVERSION_NOW !== 4) {
+            $data[] = array('curl_version', 'age', '7.4', array(19), '7.3');
+        }
+
+        return $data;
     }
 
 
@@ -187,11 +196,19 @@ class RemovedFunctionParametersUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
+        $data = array(
             array(4),
             array(5),
             array(14),
+            array(17),
+            array(18),
         );
+
+        if (\CURLVERSION_NOW === 4) {
+            $data[] = array(19);
+        }
+
+        return $data;
     }
 
 

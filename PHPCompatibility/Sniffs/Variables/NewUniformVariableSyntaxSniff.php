@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Variables\NewUniformVariableSyntax.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Variables;
@@ -16,20 +15,22 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Variables\NewUniformVariableSyntax.
- *
  * The interpretation of variable variables has changed in PHP 7.0.
  *
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration70.incompatible.php#migration70.incompatible.variable-handling.indirect
+ * @link https://wiki.php.net/rfc/uniform_variable_syntax
+ *
+ * @since 7.1.2
+ * @since 9.0.0 Renamed from `VariableVariablesSniff` to `NewUniformVariableSyntaxSniff`.
  */
 class NewUniformVariableSyntaxSniff extends Sniff
 {
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.1.2
      *
      * @return array
      */
@@ -40,6 +41,8 @@ class NewUniformVariableSyntaxSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.1.2
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token
@@ -64,7 +67,7 @@ class NewUniformVariableSyntaxSniff extends Sniff
 
         // The previous non-empty token has to be a $, -> or ::.
         $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
-        if ($prevToken === false || in_array($tokens[$prevToken]['code'], array(\T_DOLLAR, \T_OBJECT_OPERATOR, \T_DOUBLE_COLON), true) === false) {
+        if ($prevToken === false || \in_array($tokens[$prevToken]['code'], array(\T_DOLLAR, \T_OBJECT_OPERATOR, \T_DOUBLE_COLON), true) === false) {
             return;
         }
 

@@ -1,13 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedSetlocaleStringSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 4.2
- * PHP version 7.0
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -16,23 +14,26 @@ use PHPCompatibility\AbstractFunctionCallParameterSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedSetlocaleStringSniff.
+ * Detect passing a string literal as `$category` to `setlocale()`.
  *
- * Detect: Support for the category parameter passed as a string has been removed.
- * Only LC_* constants can be used as of this version [7.0.0].
+ * Support for the category parameter passed as a string has been removed.
+ * Only `LC_*` constants can be used as of PHP 7.0.0.
  *
  * PHP version 4.2
  * PHP version 7.0
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://wiki.php.net/rfc/remove_deprecated_functionality_in_php7
+ * @link https://www.php.net/manual/en/function.setlocale.php#refsect1-function.setlocale-changelog
+ *
+ * @since 9.0.0
  */
 class RemovedSetlocaleStringSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
      * Functions to check for.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -44,6 +45,8 @@ class RemovedSetlocaleStringSniff extends AbstractFunctionCallParameterSniff
     /**
      * Do a version check to determine if this sniff needs to run at all.
      *
+     * @since 9.0.0
+     *
      * @return bool
      */
     protected function bowOutEarly()
@@ -54,6 +57,8 @@ class RemovedSetlocaleStringSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * Process the parameters of a matched function.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
      * @param int                   $stackPtr     The position of the current token in the stack.

@@ -1,8 +1,11 @@
 <?php
 /**
- * New operators sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Operators;
@@ -10,16 +13,15 @@ namespace PHPCompatibility\Tests\Operators;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New operators sniff tests
+ * Test the NewOperators sniff.
  *
  * @group newOperators
  * @group operators
  *
  * @covers \PHPCompatibility\Sniffs\Operators\NewOperatorsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 9.0.0 Detection of new operators was originally included in the
+ *              NewLanguageConstructSniff (since 5.6).
  */
 class NewOperatorsUnitTest extends BaseSniffTest
 {

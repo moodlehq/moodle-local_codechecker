@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedNonCryptoHashSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.2
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -15,22 +14,24 @@ use PHPCompatibility\AbstractFunctionCallParameterSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedNonCryptoHashSniff.
+ * Detect usage of non-cryptographic hashes.
  *
- * Detect: "The hash_hmac(), hash_hmac_file(), hash_pbkdf2(), and hash_init()
- * (with HASH_HMAC) functions no longer accept non-cryptographic hashes."
+ * "The `hash_hmac()`, `hash_hmac_file()`, `hash_pbkdf2()`, and `hash_init()`
+ * (with `HASH_HMAC`) functions no longer accept non-cryptographic hashes."
  *
  * PHP version 7.2
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration72.incompatible.php#migration72.incompatible.hash-functions
+ *
+ * @since 9.0.0
  */
 class RemovedNonCryptoHashSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
      * Functions to check for.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -43,6 +44,8 @@ class RemovedNonCryptoHashSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * List of the non-cryptographic hashes.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -61,6 +64,8 @@ class RemovedNonCryptoHashSniff extends AbstractFunctionCallParameterSniff
     /**
      * Do a version check to determine if this sniff needs to run at all.
      *
+     * @since 9.0.0
+     *
      * @return bool
      */
     protected function bowOutEarly()
@@ -71,6 +76,8 @@ class RemovedNonCryptoHashSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * Process the parameters of a matched function.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
      * @param int                   $stackPtr     The position of the current token in the stack.

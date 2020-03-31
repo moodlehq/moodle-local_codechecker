@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\FunctionDeclarations\NewNullableTypes.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 7.1
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
@@ -17,15 +16,15 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\FunctionDeclarations\NewNullableTypes.
- *
- * Nullable type hints and return types are available since PHP 7.1.
+ * Nullable parameter type declarations and return types are available since PHP 7.1.
  *
  * PHP version 7.1
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration71.new-features.php#migration71.new-features.nullable-types
+ * @link https://wiki.php.net/rfc/nullable_types
+ * @link https://www.php.net/manual/en/functions.arguments.php#example-146
+ *
+ * @since 7.0.7
  */
 class NewNullableTypesSniff extends Sniff
 {
@@ -34,7 +33,9 @@ class NewNullableTypesSniff extends Sniff
      *
      * {@internal Not sniffing for T_NULLABLE which was introduced in PHPCS 2.7.2
      * as in that case we can't distinguish between parameter type hints and
-     * return type hints for the error message.}}
+     * return type hints for the error message.}
+     *
+     * @since 7.0.7
      *
      * @return array
      */
@@ -45,7 +46,7 @@ class NewNullableTypesSniff extends Sniff
             \T_CLOSURE,
         );
 
-        if (defined('T_RETURN_TYPE')) {
+        if (\defined('T_RETURN_TYPE')) {
             $tokens[] = \T_RETURN_TYPE;
         }
 
@@ -55,6 +56,8 @@ class NewNullableTypesSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.7
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token
@@ -89,6 +92,8 @@ class NewNullableTypesSniff extends Sniff
     /**
      * Process this test for function tokens.
      *
+     * @since 7.0.7
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token
      *                                         in the stack passed in $tokens.
@@ -99,7 +104,7 @@ class NewNullableTypesSniff extends Sniff
     {
         $params = PHPCSHelper::getMethodParameters($phpcsFile, $stackPtr);
 
-        if (empty($params) === false && is_array($params)) {
+        if (empty($params) === false && \is_array($params)) {
             foreach ($params as $param) {
                 if ($param['nullable_type'] === true) {
                     $phpcsFile->addError(
@@ -116,6 +121,8 @@ class NewNullableTypesSniff extends Sniff
 
     /**
      * Process this test for return type tokens.
+     *
+     * @since 7.0.7
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token
@@ -149,8 +156,8 @@ class NewNullableTypesSniff extends Sniff
         }
 
         // T_NULLABLE token was introduced in PHPCS 2.7.2. Before that it identified as T_INLINE_THEN.
-        if ((defined('T_NULLABLE') === true && $tokens[$previous]['type'] === 'T_NULLABLE')
-            || (defined('T_NULLABLE') === false && $tokens[$previous]['code'] === \T_INLINE_THEN)
+        if ((\defined('T_NULLABLE') === true && $tokens[$previous]['type'] === 'T_NULLABLE')
+            || (\defined('T_NULLABLE') === false && $tokens[$previous]['code'] === \T_INLINE_THEN)
         ) {
             $phpcsFile->addError(
                 'Nullable return types are not supported in PHP 7.0 or earlier.',

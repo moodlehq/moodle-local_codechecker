@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Interfaces\NewInterfacesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Interfaces;
@@ -14,11 +15,14 @@ use PHPCompatibility\PHPCSHelper;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Interfaces\NewInterfacesSniff.
+ * Detect use of new PHP native interfaces and unsupported interface methods.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * PHP version 5.0+
+ *
+ * @since 7.0.3
+ * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
+ * @since 7.1.4 Now also detects new interfaces when used as parameter type declarations.
+ * @since 8.2.0 Now also detects new interfaces when used as return type declarations.
  */
 class NewInterfacesSniff extends AbstractNewFeatureSniff
 {
@@ -29,7 +33,9 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      * The array lists : version number with false (not present) or true (present).
      * If's sufficient to list the first version where the interface appears.
      *
-     * @var array(string => array(string => int|string|null))
+     * @since 7.0.3
+     *
+     * @var array(string => array(string => bool))
      */
     protected $newInterfaces = array(
         'Traversable' => array(
@@ -102,17 +108,21 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
     /**
      * A list of methods which cannot be used in combination with particular interfaces.
      *
+     * @since 7.0.3
+     *
      * @var array(string => array(string => string))
      */
     protected $unsupportedMethods = array(
         'Serializable' => array(
-            '__sleep'  => 'http://php.net/serializable',
-            '__wakeup' => 'http://php.net/serializable',
+            '__sleep'  => 'https://www.php.net/serializable',
+            '__wakeup' => 'https://www.php.net/serializable',
         ),
     );
 
     /**
      * Returns an array of tokens this test wants to listen for.
+     *
+     * @since 7.0.3
      *
      * @return array
      */
@@ -128,11 +138,11 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
             \T_CLOSURE,
         );
 
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $targets[] = \T_ANON_CLASS;
         }
 
-        if (defined('T_RETURN_TYPE')) {
+        if (\defined('T_RETURN_TYPE')) {
             $targets[] = \T_RETURN_TYPE;
         }
 
@@ -142,6 +152,8 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.3
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -188,6 +200,8 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      * - Detect classes implementing the new interfaces.
      * - Detect classes implementing the new interfaces with unsupported functions.
      *
+     * @since 7.1.4 Split off from the `process()` method.
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
      *                                         the stack passed in $tokens.
@@ -198,7 +212,7 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
     {
         $interfaces = PHPCSHelper::findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
-        if (is_array($interfaces) === false || $interfaces === array()) {
+        if (\is_array($interfaces) === false || $interfaces === array()) {
             return;
         }
 
@@ -253,6 +267,8 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      *
      * - Detect new interfaces when used as a type hint.
      *
+     * @since 7.1.4
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
      *                                         the stack passed in $tokens.
@@ -262,7 +278,7 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
     private function processFunctionToken(File $phpcsFile, $stackPtr)
     {
         $typeHints = $this->getTypeHintsFromFunctionDeclaration($phpcsFile, $stackPtr);
-        if (empty($typeHints) || is_array($typeHints) === false) {
+        if (empty($typeHints) || \is_array($typeHints) === false) {
             return;
         }
 
@@ -286,6 +302,8 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      *
      * - Detect new interfaces when used as a return type declaration.
      *
+     * @since 8.2.0
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
      *                                         the stack passed in $tokens.
@@ -294,7 +312,11 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      */
     private function processReturnTypeToken(File $phpcsFile, $stackPtr)
     {
-        $returnTypeHint   = $this->getReturnTypeHintName($phpcsFile, $stackPtr);
+        $returnTypeHint = $this->getReturnTypeHintName($phpcsFile, $stackPtr);
+        if (empty($returnTypeHint)) {
+            return;
+        }
+
         $returnTypeHint   = ltrim($returnTypeHint, '\\');
         $returnTypeHintLc = strtolower($returnTypeHint);
 
@@ -314,6 +336,8 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -326,6 +350,8 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
 
     /**
      * Get the error message template for this sniff.
+     *
+     * @since 7.1.0
      *
      * @return string
      */

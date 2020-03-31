@@ -1,8 +1,11 @@
 <?php
 /**
- * CaseSensitiveKeywordsSniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Keywords;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Keywords;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * self, parent and static were sometimes treated case sensitively prior to PHP 5.5.
+ * Test the CaseSensitiveKeywords sniff.
  *
  * @group caseSensitiveKeywords
  * @group keywords
  *
  * @covers \PHPCompatibility\Sniffs\Keywords\CaseSensitiveKeywordsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.1.4
  */
 class CaseSensitiveKeywordsUnitTest extends BaseSniffTest
 {

@@ -1,8 +1,11 @@
 <?php
 /**
- * Removal of namespaced free-standing assert() declarations for PHP 7.3 sniff test.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
@@ -11,7 +14,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
 use PHPCompatibility\PHPCSHelper;
 
 /**
- * Removal of namespaced free-standing assert() declarations for PHP 7.3 sniff test.
+ * Test the RemovedNamespacedAssert sniff.
  *
  * @group removedNamespacedAssert
  * @group functionNameRestrictions
@@ -19,13 +22,23 @@ use PHPCompatibility\PHPCSHelper;
  * @covers \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedNamespacedAssertSniff
  * @covers \PHPCompatibility\Sniff::determineNamespace
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class RemovedNamespacedAssertUnitTest extends BaseSniffTest
 {
-    const TEST_FILE            = 'RemovedNamespacedAssertUnitTest.1.inc';
+
+    /**
+     * The name of the primary test case file containing code in the global namespace.
+     *
+     * @var string
+     */
+    const TEST_FILE = 'RemovedNamespacedAssertUnitTest.1.inc';
+
+    /**
+     * The name of a secondary test case file containing code in a unscoped namespace.
+     *
+     * @var string
+     */
     const TEST_FILE_NAMESPACED = 'RemovedNamespacedAssertUnitTest.2.inc';
 
     /**
@@ -55,7 +68,7 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      *
      * @dataProvider dataIsDeprecated
      *
-     * @param string $testFile The file to test
+     * @param string $testFile The file to test.
      * @param int    $line     The line number where the error should occur.
      *
      * @return void
@@ -86,7 +99,7 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      *
      * @dataProvider dataNoFalsePositives
      *
-     * @param string $testFile  The file to test
+     * @param string $testFile  The file to test.
      * @param int    $line      The line number.
      * @param bool   $maybeSkip Whether this test needs to be skipped on old PHP/PHPCS combis.
      *

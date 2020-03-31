@@ -1,13 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedHashAlgorithmsSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.4
- *
- * @category  PHP
  * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2012 Cu.be Solutions bvba
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -16,16 +14,14 @@ use PHPCompatibility\AbstractRemovedFeatureSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedHashAlgorithmsSniff.
- *
- * Discourages the use of deprecated and removed hash algorithms.
+ * Detect the use of deprecated and removed hash algorithms.
  *
  * PHP version 5.4
  *
- * @category  PHP
- * @package   PHPCompatibility
- * @author    Wim Godden <wim.godden@cu.be>
- * @copyright 2012 Cu.be Solutions bvba
+ * @link https://www.php.net/manual/en/function.hash-algos.php#refsect1-function.hash-algos-changelog
+ *
+ * @since 5.5
+ * @since 7.1.0 Now extends the `AbstractRemovedFeatureSniff` instead of the base `Sniff` class.
  */
 class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
 {
@@ -35,6 +31,8 @@ class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
      *
      * The array lists : version number with false (deprecated) and true (removed).
      * If's sufficient to list the first version where the hash algorithm was deprecated/removed.
+     *
+     * @since 7.0.7
      *
      * @var array(string => array(string => bool))
      */
@@ -50,6 +48,8 @@ class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 5.5
+     *
      * @return array
      */
     public function register()
@@ -61,6 +61,8 @@ class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
+     * @since 5.5
+     *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
      *                                         stack passed in $tokens.
@@ -70,7 +72,7 @@ class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $algo = $this->getHashAlgorithmParameter($phpcsFile, $stackPtr);
-        if (empty($algo) || is_string($algo) === false) {
+        if (empty($algo) || \is_string($algo) === false) {
             return;
         }
 
@@ -89,6 +91,8 @@ class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -101,6 +105,8 @@ class RemovedHashAlgorithmsSniff extends AbstractRemovedFeatureSniff
 
     /**
      * Get the error message template for this sniff.
+     *
+     * @since 7.1.0
      *
      * @return string
      */

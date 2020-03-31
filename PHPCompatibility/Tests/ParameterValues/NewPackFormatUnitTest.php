@@ -1,8 +1,11 @@
 <?php
 /**
- * Use of new pack() formats sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ParameterValues;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\ParameterValues;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Use of new pack() formats sniff tests.
+ * Test the NewPackFormat sniff.
  *
  * @group newPackFormat
  * @group parameterValues
  *
  * @covers \PHPCompatibility\Sniffs\ParameterValues\NewPackFormatSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class NewPackFormatUnitTest extends BaseSniffTest
 {

@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Interfaces\InternalInterfacesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Interfaces;
@@ -14,11 +15,15 @@ use PHPCompatibility\PHPCSHelper;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\Interfaces\InternalInterfacesSniff.
+ * Detect classes which implement PHP native interfaces intended only for PHP internal use.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * PHP version 5.0+
+ *
+ * @link https://www.php.net/manual/en/class.traversable.php
+ * @link https://www.php.net/manual/en/class.throwable.php
+ * @link https://www.php.net/manual/en/class.datetimeinterface.php
+ *
+ * @since 7.0.3
  */
 class InternalInterfacesSniff extends Sniff
 {
@@ -27,6 +32,8 @@ class InternalInterfacesSniff extends Sniff
      * A list of PHP internal interfaces, not intended to be implemented by userland classes.
      *
      * The array lists : the error message to use.
+     *
+     * @since 7.0.3
      *
      * @var array(string => string)
      */
@@ -40,6 +47,8 @@ class InternalInterfacesSniff extends Sniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 7.0.3
+     *
      * @return array
      */
     public function register()
@@ -49,7 +58,7 @@ class InternalInterfacesSniff extends Sniff
 
         $targets = array(\T_CLASS);
 
-        if (defined('T_ANON_CLASS')) {
+        if (\defined('T_ANON_CLASS')) {
             $targets[] = \T_ANON_CLASS;
         }
 
@@ -59,6 +68,8 @@ class InternalInterfacesSniff extends Sniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 7.0.3
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in
@@ -70,7 +81,7 @@ class InternalInterfacesSniff extends Sniff
     {
         $interfaces = PHPCSHelper::findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
-        if (is_array($interfaces) === false || $interfaces === array()) {
+        if (\is_array($interfaces) === false || $interfaces === array()) {
             return;
         }
 

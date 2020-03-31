@@ -1,12 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedIconvEncodingSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * PHP version 5.6
- *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -15,25 +14,28 @@ use PHPCompatibility\AbstractFunctionCallParameterSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\RemovedIconvEncodingSniff.
+ * Detect passing deprecated `$type` values to `iconv_get_encoding()`.
  *
- * Detect: "The iconv and mbstring configuration options related to encoding
- * have been deprecated in favour of default_charset."
+ * "The iconv and mbstring configuration options related to encoding have been
+ * deprecated in favour of default_charset."
  *
  * {@internal It is unclear which mbstring functions should be targetted, so for now,
- * only the iconv function is handled.}}
+ * only the iconv function is handled.}
  *
  * PHP version 5.6
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration56.deprecated.php#migration56.deprecated.iconv-mbstring-encoding
+ * @link https://wiki.php.net/rfc/default_encoding
+ *
+ * @since 9.0.0
  */
 class RemovedIconvEncodingSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
      * Functions to check for.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -45,6 +47,8 @@ class RemovedIconvEncodingSniff extends AbstractFunctionCallParameterSniff
     /**
      * Do a version check to determine if this sniff needs to run at all.
      *
+     * @since 9.0.0
+     *
      * @return bool
      */
     protected function bowOutEarly()
@@ -55,6 +59,8 @@ class RemovedIconvEncodingSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * Process the parameters of a matched function.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
      * @param int                   $stackPtr     The position of the current token in the stack.

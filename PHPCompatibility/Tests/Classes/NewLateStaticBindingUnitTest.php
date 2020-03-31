@@ -1,8 +1,11 @@
 <?php
 /**
- * Late static binding sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Classes;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Classes;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Late static binding sniff test file
+ * Test the NewLateStaticBinding sniff.
  *
  * @group newLateStaticBinding
  * @group classes
  *
  * @covers \PHPCompatibility\Sniffs\Classes\NewLateStaticBindingSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.3
  */
 class NewLateStaticBindingUnitTest extends BaseSniffTest
 {

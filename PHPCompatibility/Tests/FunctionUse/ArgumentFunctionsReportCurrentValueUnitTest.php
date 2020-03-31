@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2018 PHPCompatibility Contributors
+ * @copyright 2012-2019 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -13,7 +13,7 @@ namespace PHPCompatibility\Tests\FunctionUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Argument Functions Report Current Value sniff tests.
+ * Test the ArgumentFunctionsReportCurrentValue sniff.
  *
  * @group argumentFunctionsReportCurrentValue
  * @group functionUse
@@ -77,7 +77,7 @@ class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTest
      *
      * @dataProvider dataNeedsInspection
      *
-     * @param array  $line         The line number where a warning is expected.
+     * @param int    $line         The line number where a warning is expected.
      * @param string $functionName The name of the function to which the warning applies.
      * @param string $variableName The variable which was detected as having been used.
      *
@@ -131,7 +131,7 @@ class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTest
     public function dataNoFalsePositives()
     {
         $cases = array();
-        // No errors expected on the first 76 lines.
+        // No errors expected on the first 81 lines.
         for ($line = 1; $line <= 81; $line++) {
             $cases[] = array($line);
         }

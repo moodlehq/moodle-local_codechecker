@@ -1,8 +1,11 @@
 <?php
 /**
- * Base class to use when testing methods in the Sniff.php file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Util\Tests;
@@ -13,11 +16,13 @@ use PHPCompatibility\Util\Tests\TestHelperPHPCompatibility;
 use PHP_CodeSniffer_File as File;
 
 /**
+ * Base class to use when testing utility methods.
+ *
  * Set up and Tear down methods for testing methods in the Sniff.php file.
  *
- * @uses    \PHPUnit_Framework_TestCase
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.0.3
+ * @since 7.0.5 Renamed from `BaseAbstractClassMethodTest` to `CoreMethodTestFrame`.
+ * @since 7.1.2 No longer extends the `BaseSniffTest` class.
  */
 abstract class CoreMethodTestFrame extends PHPUnit_TestCase
 {
@@ -25,12 +30,16 @@ abstract class CoreMethodTestFrame extends PHPUnit_TestCase
     /**
      * The \PHP_CodeSniffer_File object containing parsed contents of this file.
      *
+     * @since 7.0.3
+     *
      * @var \PHP_CodeSniffer_File
      */
     protected $phpcsFile;
 
     /**
      * A wrapper for the abstract PHPCompatibility sniff.
+     *
+     * @since 7.0.3
      *
      * @var \PHPCompatibility\Sniff
      */
@@ -40,6 +49,8 @@ abstract class CoreMethodTestFrame extends PHPUnit_TestCase
     /**
      * Sets up this unit test.
      *
+     * @since 7.0.3
+     *
      * @return void
      */
     protected function setUp()
@@ -48,7 +59,7 @@ abstract class CoreMethodTestFrame extends PHPUnit_TestCase
 
         $this->helperClass = new TestHelperPHPCompatibility();
 
-        $FQClassName = get_class($this);
+        $FQClassName = \get_class($this);
         $parts       = explode('\\', $FQClassName);
         $className   = array_pop($parts);
         $subDir      = array_pop($parts);
@@ -82,6 +93,8 @@ abstract class CoreMethodTestFrame extends PHPUnit_TestCase
     /**
      * Clean up after finished test.
      *
+     * @since 7.0.3
+     *
      * @return void
      */
     public function tearDown()
@@ -92,6 +105,9 @@ abstract class CoreMethodTestFrame extends PHPUnit_TestCase
 
     /**
      * Get the token pointer for a target token based on a specific comment found on the line before.
+     *
+     * @since 7.1.3
+     * @since 8.1.0 New `$tokenContent` parameter.
      *
      * @param string    $commentString The comment to look for.
      * @param int|array $tokenType     The type of token(s) to look for.

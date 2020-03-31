@@ -1,8 +1,11 @@
 <?php
 /**
- * New return types test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\FunctionDeclarations;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New return types test file
+ * Test the NewReturnTypeDeclarations sniff.
  *
  * @group newReturnTypeDeclarations
  * @group functionDeclarations
@@ -19,9 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\NewReturnTypeDeclarationsSniff
  * @covers \PHPCompatibility\Sniff::getReturnTypeHintToken
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Wim Godden <wim@cu.be>
+ * @since 7.0.0
  */
 class NewReturnTypeDeclarationsUnitTest extends BaseSniffTest
 {

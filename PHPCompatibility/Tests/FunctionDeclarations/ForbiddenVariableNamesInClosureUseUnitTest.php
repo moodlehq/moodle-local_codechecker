@@ -1,8 +1,11 @@
 <?php
 /**
- * PHP 7.1 Forbidden variable names in closure use statements tests.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
@@ -11,7 +14,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
 use PHPCompatibility\PHPCSHelper;
 
 /**
- * PHP 7.1 Forbidden variable names in closure use statements tests.
+ * Test the ForbiddenVariableNamesInClosureUse sniff.
  *
  * @group forbiddenVariableNamesInClosureUse
  * @group closures
@@ -19,14 +22,23 @@ use PHPCompatibility\PHPCSHelper;
  *
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\ForbiddenVariableNamesInClosureUseSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.1.4
  */
 class ForbiddenVariableNamesInClosureUseUnitTest extends BaseSniffTest
 {
+
+    /**
+     * The name of the main test case file.
+     *
+     * @var string
+     */
     const TEST_FILE = 'ForbiddenVariableNamesInClosureUseUnitTest.1.inc';
 
+    /**
+     * The name of a secondary test case file which similates live coding.
+     *
+     * @var string
+     */
     const TEST_FILE_LIVE_CODING = 'ForbiddenVariableNamesInClosureUseUnitTest.2.inc';
 
     /**

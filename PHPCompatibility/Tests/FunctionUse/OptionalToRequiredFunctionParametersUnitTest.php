@@ -1,8 +1,11 @@
 <?php
 /**
- * Optional Required Functions Parameter Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionUse;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\FunctionUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Optional Required Parameter Sniff test file
+ * Test the OptionalToRequiredFunctionParameters sniff.
  *
  * @group optionalToRequiredFunctionParameters
  * @group functionUse
  *
  * @covers \PHPCompatibility\Sniffs\FunctionUse\OptionalToRequiredFunctionParametersSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.1.0
  */
 class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
 {

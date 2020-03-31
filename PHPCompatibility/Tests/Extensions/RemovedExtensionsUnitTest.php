@@ -1,8 +1,11 @@
 <?php
 /**
- * Removed extensions sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Extensions;
@@ -11,16 +14,14 @@ use PHPCompatibility\Tests\BaseSniffTest;
 use PHPCompatibility\PHPCSHelper;
 
 /**
- * Removed extensions sniff tests
+ * Test the RemovedExtensions sniff.
  *
  * @group removedExtensions
  * @group extensions
  *
  * @covers \PHPCompatibility\Sniffs\Extensions\RemovedExtensionsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class RemovedExtensionsUnitTest extends BaseSniffTest
 {
@@ -74,7 +75,7 @@ class RemovedExtensionsUnitTest extends BaseSniffTest
             array('msql', '5.3', array(36), '5.2'),
             array('mssql', '7.0', array(63), '5.6'),
             array('ovrimos', '5.1', array(44), '5.0'),
-            array('pfpro', '5.3', array(46), '5.2'),
+            array('pfpro_', '5.1', array(46), '5.0'),
             array('sqlite', '5.4', array(48), '5.3'),
             // array('sybase', '7.0', array(xx), '5.6'), sybase_ct ???
             array('yp', '5.1', array(54), '5.0'),
@@ -126,13 +127,16 @@ class RemovedExtensionsUnitTest extends BaseSniffTest
             array('dbx', '5.1', 'pecl/dbx', array(12), '5.0'),
             array('dio', '5.1', 'pecl/dio', array(14), '5.0'),
             array('fdf', '5.3', 'pecl/fdf', array(20), '5.2'),
+            array('ibase', '7.4', 'pecl/ibase', array(78), '7.3'),
             array('ingres', '5.1', 'pecl/ingres', array(26), '5.0'),
-            array('mcve', '5.1', 'pecl/mvce', array(30), '5.0'),
+            array('mcve', '5.1', 'pecl/mcve', array(30), '5.0'),
             array('ming', '5.3', 'pecl/ming', array(32), '5.2'),
             array('ncurses', '5.3', 'pecl/ncurses', array(40), '5.2'),
             array('oracle', '5.1', 'oci8 or pdo_oci', array(42), '5.0'),
+            array('recode', '7.4', 'iconv or mbstring', array(80), '7.3'),
             array('sybase', '5.3', 'sybase_ct', array(50), '5.2'),
             array('w32api', '5.1', 'pecl/ffi', array(52), '5.0'),
+            array('wddx', '7.4', 'pecl/wddx', array(79), '7.3'),
         );
     }
 
@@ -223,7 +227,7 @@ class RemovedExtensionsUnitTest extends BaseSniffTest
             array(58), // Function declaration.
             array(59), // Class instantiation.
             array(60), // Method call.
-            array(78), // Live coding.
+            array(82), // Live coding.
         );
 
         // Inline setting changes in combination with namespaced sniffs is only supported since PHPCS 2.6.0.

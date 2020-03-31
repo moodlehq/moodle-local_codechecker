@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\Variables\RemovedPredefinedGlobalVariablesSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Variables;
@@ -15,13 +16,20 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\Sniffs\Variables\RemovedPredefinedGlobalVariablesSniff.
+ * Detect the use of removed global variables. Suggests alternatives if available.
  *
- * Discourages the use of removed global variables. Suggests alternative extensions if available
+ * PHP version 5.3+
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Wim Godden <wim.godden@cu.be>
+ * @link https://wiki.php.net/rfc/deprecations_php_7_2#php_errormsg
+ *
+ * @since 5.5   Introduced `LongArrays` sniff.
+ * @since 7.0   Introduced `RemovedGlobalVariables` sniff.
+ * @since 7.0.7 The `LongArrays` sniff now throws a warning for deprecated and an error for removed.
+ *              Previously the `LongArrays` sniff would always throw a warning.
+ * @since 7.1.0 The `RemovedGlobalVariables` sniff now extends the `AbstractNewFeatureSniff`
+ *              instead of the base `Sniff` class.
+ * @since 7.1.3 Merged the `LongArrays` sniff into the `RemovedGlobalVariables` sniff.
+ * @since 9.0.0 Renamed from `RemovedGlobalVariablesSniff` to `RemovedPredefinedGlobalVariablesSniff`.
  */
 class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
 {
@@ -32,7 +40,10 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
      * The array lists : version number with false (deprecated) and true (removed).
      * If's sufficient to list the first version where the variable was deprecated/removed.
      *
-     * @var array(string|null)
+     * @since 5.5
+     * @since 7.0
+     *
+     * @var array(string => array(string => bool|string))
      */
     protected $removedGlobalVariables = array(
         'HTTP_POST_VARS' => array(
@@ -87,6 +98,9 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
     /**
      * Returns an array of tokens this test wants to listen for.
      *
+     * @since 5.5
+     * @since 7.0
+     *
      * @return array
      */
     public function register()
@@ -97,6 +111,9 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
 
     /**
      * Processes this test, when one of its tokens is encountered.
+     *
+     * @since 5.5
+     * @since 7.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -148,6 +165,8 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
     /**
      * Get the relevant sub-array for a specific item from a multi-dimensional array.
      *
+     * @since 7.1.0
+     *
      * @param array $itemInfo Base information about the item.
      *
      * @return array Version and other information about the item.
@@ -161,6 +180,8 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
     /**
      * Get the error message template for this sniff.
      *
+     * @since 7.1.0
+     *
      * @return string
      */
     protected function getErrorMsgTemplate()
@@ -171,6 +192,8 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
 
     /**
      * Filter the error message before it's passed to PHPCS.
+     *
+     * @since 8.1.0
      *
      * @param string $error     The error message which was created.
      * @param array  $itemInfo  Base information about the item this error message applies to.
@@ -188,6 +211,8 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
 
     /**
      * Run some additional checks for the `$php_errormsg` variable.
+     *
+     * @since 8.1.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the current token in the
@@ -246,7 +271,7 @@ class RemovedPredefinedGlobalVariablesSniff extends AbstractRemovedFeatureSniff
         // Is this a function param shadowing the PHP native one ?
         if ($function !== false) {
             $parameters = PHPCSHelper::getMethodParameters($phpcsFile, $function);
-            if (is_array($parameters) === true && empty($parameters) === false) {
+            if (\is_array($parameters) === true && empty($parameters) === false) {
                 foreach ($parameters as $param) {
                     if ($param['name'] === '$php_errormsg') {
                         return false;

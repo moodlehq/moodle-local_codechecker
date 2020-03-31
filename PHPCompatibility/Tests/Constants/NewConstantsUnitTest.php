@@ -1,8 +1,11 @@
 <?php
 /**
- * New Constants Sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Constants;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Constants;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New Constants Sniff tests
+ * Test the NewConstants sniff.
  *
  * @group newConstants
  * @group constants
  *
  * @covers \PHPCompatibility\Sniffs\Constants\NewConstantsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.1.0
  */
 class NewConstantsUnitTest extends BaseSniffTest
 {
@@ -690,6 +691,10 @@ class NewConstantsUnitTest extends BaseSniffTest
             array('SODIUM_LIBRARY_VERSION', '7.1', array(627), '7.2'),
             array('SODIUM_LIBRARY_MAJOR_VERSION', '7.1', array(628), '7.2'),
             array('SODIUM_LIBRARY_MINOR_VERSION', '7.1', array(629), '7.2'),
+            array('SODIUM_BASE64_VARIANT_ORIGINAL', '7.1', array(866), '7.2'),
+            array('SODIUM_BASE64_VARIANT_ORIGINAL_NO_PADDING', '7.1', array(867), '7.2'),
+            array('SODIUM_BASE64_VARIANT_URLSAFE', '7.1', array(868), '7.2'),
+            array('SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING', '7.1', array(869), '7.2'),
             array('SODIUM_CRYPTO_AEAD_AES256GCM_KEYBYTES', '7.1', array(630), '7.2'),
             array('SODIUM_CRYPTO_AEAD_AES256GCM_NSECBYTES', '7.1', array(631), '7.2'),
             array('SODIUM_CRYPTO_AEAD_AES256GCM_NPUBBYTES', '7.1', array(632), '7.2'),
@@ -702,6 +707,10 @@ class NewConstantsUnitTest extends BaseSniffTest
             array('SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_NSECBYTES', '7.1', array(639), '7.2'),
             array('SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES', '7.1', array(640), '7.2'),
             array('SODIUM_CRYPTO_AEAD_CHACHA20POLY1305_IETF_ABYTES', '7.1', array(641), '7.2'),
+            array('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES', '7.1', array(870), '7.2'),
+            array('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NSECBYTES', '7.1', array(871), '7.2'),
+            array('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES', '7.1', array(872), '7.2'),
+            array('SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_ABYTES', '7.1', array(873), '7.2'),
             array('SODIUM_CRYPTO_AUTH_BYTES', '7.1', array(642), '7.2'),
             array('SODIUM_CRYPTO_AUTH_KEYBYTES', '7.1', array(643), '7.2'),
             array('SODIUM_CRYPTO_BOX_SEALBYTES', '7.1', array(644), '7.2'),
@@ -727,6 +736,7 @@ class NewConstantsUnitTest extends BaseSniffTest
             array('SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MIN', '7.1', array(664), '7.2'),
             array('SODIUM_CRYPTO_GENERICHASH_KEYBYTES_MAX', '7.1', array(665), '7.2'),
             array('SODIUM_CRYPTO_PWHASH_ALG_ARGON2I13', '7.1', array(666), '7.2'),
+            array('SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13', '7.1', array(865), '7.2'),
             array('SODIUM_CRYPTO_PWHASH_ALG_DEFAULT', '7.1', array(667), '7.2'),
             array('SODIUM_CRYPTO_PWHASH_SALTBYTES', '7.1', array(668), '7.2'),
             array('SODIUM_CRYPTO_PWHASH_STRPREFIX', '7.1', array(669), '7.2'),
@@ -744,6 +754,14 @@ class NewConstantsUnitTest extends BaseSniffTest
             array('SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_SENSITIVE', '7.1', array(681), '7.2'),
             array('SODIUM_CRYPTO_SCALARMULT_BYTES', '7.1', array(682), '7.2'),
             array('SODIUM_CRYPTO_SCALARMULT_SCALARBYTES', '7.1', array(683), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_ABYTES', '7.1', array(874), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES', '7.1', array(875), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_KEYBYTES', '7.1', array(876), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_MESSAGEBYTES_MAX', '7.1', array(877), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_MESSAGE', '7.1', array(878), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH', '7.1', array(879), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY', '7.1', array(880), '7.2'),
+            array('SODIUM_CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL', '7.1', array(881), '7.2'),
             array('SODIUM_CRYPTO_SHORTHASH_BYTES', '7.1', array(684), '7.2'),
             array('SODIUM_CRYPTO_SHORTHASH_KEYBYTES', '7.1', array(685), '7.2'),
             array('SODIUM_CRYPTO_SECRETBOX_KEYBYTES', '7.1', array(686), '7.2'),
@@ -880,6 +898,49 @@ class NewConstantsUnitTest extends BaseSniffTest
             array('LDAP_CONTROL_X_EXTENDED_DN', '7.2', array(819), '7.3'),
             array('LDAP_CONTROL_VLVREQUEST', '7.2', array(820), '7.3'),
             array('LDAP_CONTROL_VLVRESPONSE', '7.2', array(821), '7.3'),
+
+            array('CURL_VERSION_ALTSVC', '7.3.5', array(860), '7.4', '7.3'),
+            array('CURL_VERSION_CURLDEBUG', '7.3.5', array(861), '7.4', '7.3'),
+
+            array('IMG_FILTER_SCATTER', '7.3', array(863), '7.4'),
+            array('MB_ONIGURUMA_VERSION', '7.3', array(824), '7.4'),
+            array('SO_LABEL', '7.3', array(825), '7.4'),
+            array('SO_PEERLABEL', '7.3', array(826), '7.4'),
+            array('SO_LISTENQLIMIT', '7.3', array(827), '7.4'),
+            array('SO_LISTENQLEN', '7.3', array(828), '7.4'),
+            array('SO_USER_COOKIE', '7.3', array(829), '7.4'),
+            array('PASSWORD_ARGON2_PROVIDER', '7.3', array(864), '7.4'),
+            array('PHP_WINDOWS_EVENT_CTRL_C', '7.3', array(830), '7.4'),
+            array('PHP_WINDOWS_EVENT_CTRL_BREAK', '7.3', array(831), '7.4'),
+            array('T_BAD_CHARACTER', '7.3', array(862), '7.4'),
+            array('TIDY_TAG_ARTICLE', '7.3', array(832), '7.4'),
+            array('TIDY_TAG_ASIDE', '7.3', array(833), '7.4'),
+            array('TIDY_TAG_AUDIO', '7.3', array(834), '7.4'),
+            array('TIDY_TAG_BDI', '7.3', array(835), '7.4'),
+            array('TIDY_TAG_CANVAS', '7.3', array(836), '7.4'),
+            array('TIDY_TAG_COMMAND', '7.3', array(837), '7.4'),
+            array('TIDY_TAG_DATALIST', '7.3', array(838), '7.4'),
+            array('TIDY_TAG_DETAILS', '7.3', array(839), '7.4'),
+            array('TIDY_TAG_DIALOG', '7.3', array(840), '7.4'),
+            array('TIDY_TAG_FIGCAPTION', '7.3', array(841), '7.4'),
+            array('TIDY_TAG_FIGURE', '7.3', array(842), '7.4'),
+            array('TIDY_TAG_FOOTER', '7.3', array(843), '7.4'),
+            array('TIDY_TAG_HEADER', '7.3', array(844), '7.4'),
+            array('TIDY_TAG_HGROUP', '7.3', array(845), '7.4'),
+            array('TIDY_TAG_MAIN', '7.3', array(846), '7.4'),
+            array('TIDY_TAG_MARK', '7.3', array(847), '7.4'),
+            array('TIDY_TAG_MENUITEM', '7.3', array(848), '7.4'),
+            array('TIDY_TAG_METER', '7.3', array(849), '7.4'),
+            array('TIDY_TAG_NAV', '7.3', array(850), '7.4'),
+            array('TIDY_TAG_OUTPUT', '7.3', array(851), '7.4'),
+            array('TIDY_TAG_PROGRESS', '7.3', array(852), '7.4'),
+            array('TIDY_TAG_SECTION', '7.3', array(853), '7.4'),
+            array('TIDY_TAG_SOURCE', '7.3', array(854), '7.4'),
+            array('TIDY_TAG_SUMMARY', '7.3', array(855), '7.4'),
+            array('TIDY_TAG_TEMPLATE', '7.3', array(856), '7.4'),
+            array('TIDY_TAG_TIME', '7.3', array(857), '7.4'),
+            array('TIDY_TAG_TRACK', '7.3', array(858), '7.4'),
+            array('TIDY_TAG_VIDEO', '7.3', array(859), '7.4'),
         );
     }
 

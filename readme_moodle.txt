@@ -17,6 +17,11 @@ Local modifications (only allowed if there is a PR upstream backing it):
     we bump to to phpcs 3.3.0 this hack can be left out. Upstream ref:
     https://github.com/squizlabs/PHP_CodeSniffer/issues/2009
 
+  - 04810ac and 8ea64e0: php 7.4 basic compatibility. Will auto-fix once
+    we bump to to phpcs 3.5.0 or later. Upstream refs:
+    - https://github.com/squizlabs/PHP_CodeSniffer/issues/2558
+    - https://github.com/squizlabs/PHP_CodeSniffer/issues/2561
+
 ===== ===== ===== ===== ===== ===== =====
 
 Instructions to upgrade the PHPCompatibility bundled version:
@@ -28,7 +33,7 @@ Instructions to upgrade the PHPCompatibility bundled version:
 
 Current checkout:
 
-  9.1.1+ (4487042)
+  9.3.5+ (9fb3244)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

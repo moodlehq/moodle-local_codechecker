@@ -1,10 +1,11 @@
 <?php
 /**
- * PHPCS cross-version compatibility helper class.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility;
@@ -14,8 +15,6 @@ use PHP_CodeSniffer_File as File;
 use PHP_CodeSniffer_Tokens as Tokens;
 
 /**
- * \PHPCompatibility\PHPCSHelper
- *
  * PHPCS cross-version compatibility helper class.
  *
  * A number of PHPCS classes were split up into several classes in PHPCS 3.x
@@ -23,9 +22,15 @@ use PHP_CodeSniffer_Tokens as Tokens;
  * This class provides helper methods for functions which were contained in
  * one of these classes and which are used within the PHPCompatibility library.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * Additionally, this class contains some duplicates of PHPCS native methods.
+ * These methods have received bug fixes or improved functionality between the
+ * lowest supported PHPCS version and the latest PHPCS stable version and
+ * to provide the same results cross-version, PHPCompatibility needs to use
+ * the up-to-date versions of these methods.
+ *
+ * @since 8.0.0
+ * @since 8.2.0 The duplicate PHPCS methods have been moved from the `Sniff`
+ *              base class to this class.
  */
 class PHPCSHelper
 {
@@ -33,11 +38,13 @@ class PHPCSHelper
     /**
      * Get the PHPCS version number.
      *
+     * @since 8.0.0
+     *
      * @return string
      */
     public static function getVersion()
     {
-        if (defined('\PHP_CodeSniffer\Config::VERSION')) {
+        if (\defined('\PHP_CodeSniffer\Config::VERSION')) {
             // PHPCS 3.x.
             return \PHP_CodeSniffer\Config::VERSION;
         } else {
@@ -51,6 +58,8 @@ class PHPCSHelper
      * Pass config data to PHPCS.
      *
      * PHPCS cross-version compatibility helper.
+     *
+     * @since 8.0.0
      *
      * @param string      $key   The name of the config value.
      * @param string|null $value The value to set. If null, the config entry
@@ -75,6 +84,8 @@ class PHPCSHelper
     /**
      * Get the value of a single PHPCS config key.
      *
+     * @since 8.0.0
+     *
      * @param string $key The name of the config value.
      *
      * @return string|null
@@ -96,6 +107,8 @@ class PHPCSHelper
      *
      * This config key can be set in the `CodeSniffer.conf` file, on the
      * command-line or in a ruleset.
+     *
+     * @since 8.2.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param string                $key       The name of the config value.
@@ -132,7 +145,9 @@ class PHPCSHelper
      * that, this method can be removed and calls to it replaced with
      * `$phpcsFile->findStartOfStatement($start, $ignore)` calls.
      *
-     * Last synced with PHPCS version: PHPCS 3.3.2 at commit 6ad28354c04b364c3c71a34e4a18b629cc3b231e}}
+     * Last synced with PHPCS version: PHPCS 3.3.2 at commit 6ad28354c04b364c3c71a34e4a18b629cc3b231e}
+     *
+     * @since 9.1.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile Instance of phpcsFile.
      * @param int                   $start     The position to start searching from in the token stack.
@@ -211,7 +226,9 @@ class PHPCSHelper
      * that, this method can be removed and calls to it replaced with
      * `$phpcsFile->findEndOfStatement($start, $ignore)` calls.
      *
-     * Last synced with PHPCS version: PHPCS 3.3.0-alpha at commit f5d899dcb5c534a1c3cca34668624517856ba823}}
+     * Last synced with PHPCS version: PHPCS 3.3.0-alpha at commit f5d899dcb5c534a1c3cca34668624517856ba823}
+     *
+     * @since 8.2.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile Instance of phpcsFile.
      * @param int                   $start     The position to start searching from in the token stack.
@@ -310,7 +327,10 @@ class PHPCSHelper
      * that, this method can be removed and calls to it replaced with
      * `$phpcsFile->findExtendedClassName($stackPtr)` calls.
      *
-     * Last synced with PHPCS version: PHPCS 3.1.0-alpha at commit a9efcc9b0703f3f9f4a900623d4e97128a6aafc6}}
+     * Last synced with PHPCS version: PHPCS 3.1.0-alpha at commit a9efcc9b0703f3f9f4a900623d4e97128a6aafc6}
+     *
+     * @since 7.1.4
+     * @since 8.2.0 Moved from the `Sniff` class to this class.
      *
      * @param \PHP_CodeSniffer_File $phpcsFile Instance of phpcsFile.
      * @param int                   $stackPtr  The position of the class token in the stack.
@@ -375,7 +395,10 @@ class PHPCSHelper
      * in PHPCS 2.8.0, so only defer to upstream for higher versions.
      * Once the minimum supported PHPCS version for this sniff library goes beyond
      * that, this method can be removed and calls to it replaced with
-     * `$phpcsFile->findImplementedInterfaceNames($stackPtr)` calls.}}
+     * `$phpcsFile->findImplementedInterfaceNames($stackPtr)` calls.}
+     *
+     * @since 7.0.3
+     * @since 8.2.0 Moved from the `Sniff` class to this class.
      *
      * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
      * @param int                   $stackPtr  The position of the class token.
@@ -457,7 +480,10 @@ class PHPCSHelper
      * {@internal Duplicate of same method as contained in the `\PHP_CodeSniffer_File`
      * class.
      *
-     * Last synced with PHPCS version: PHPCS 3.3.0-alpha at commit 53a28408d345044c0360c2c1b4a2aaebf4a3b8c9}}
+     * Last synced with PHPCS version: PHPCS 3.3.0-alpha at commit 53a28408d345044c0360c2c1b4a2aaebf4a3b8c9}
+     *
+     * @since 7.0.3
+     * @since 8.2.0 Moved from the `Sniff` class to this class.
      *
      * @param \PHP_CodeSniffer_File $phpcsFile Instance of phpcsFile.
      * @param int                   $stackPtr  The position in the stack of the

@@ -1,8 +1,11 @@
 <?php
 /**
- * New use const function sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\UseDeclarations;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\UseDeclarations;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * New use const function in PHP 5.6 sniff test file
+ * Test the NewUseConstFunction sniff.
  *
  * @group newUseConstFunction
  * @group useDeclarations
  *
  * @covers \PHPCompatibility\Sniffs\UseDeclarations\NewUseConstFunctionSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 7.1.4
  */
 class NewUseConstFunctionUnitTest extends BaseSniffTest
 {

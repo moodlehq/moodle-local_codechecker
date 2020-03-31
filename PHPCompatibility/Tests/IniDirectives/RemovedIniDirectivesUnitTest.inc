@@ -156,8 +156,8 @@ myClass::ini_set('ANIMALS', 'dog');
 $object->ini_get('ANIMALS', 'dog');
 
 class myClass {
-	const ini_set = true;
-	function ini_get() {}
+    const ini_set = true;
+    function ini_get() {}
 }
 
 ini_setter('ANIMALS', 'dog');
@@ -183,3 +183,60 @@ $a = ini_get('opcache.inherited_hack');
 
 ini_set('pdo_odbc.db2_instance_name', 'string');
 $a = ini_get('pdo_odbc.db2_instance_name');
+
+ini_set('ibase.allow_persistent', true);
+$a = ini_get('ibase.allow_persistent');
+
+ini_set('ibase.max_persistent', '-1');
+$a = ini_get('ibase.max_persistent');
+
+ini_set('ibase.max_links', 10);
+$a = ini_get('ibase.max_links');
+
+ini_set('ibase.default_db', 'string');
+$a = ini_get('ibase.default_db');
+
+ini_set('ibase.default_user', 'string');
+$a = ini_get('ibase.default_user');
+
+ini_set('ibase.default_password', 'string');
+$a = ini_get('ibase.default_password');
+
+ini_set('ibase.default_charset', 'string');
+$a = ini_get('ibase.default_charset');
+
+ini_set('ibase.timestampformat', 'string');
+$a = ini_get('ibase.timestampformat');
+
+ini_set('ibase.dateformat', '%Y-%m-%d %H:%M:%S');
+$a = ini_get('ibase.dateformat');
+
+ini_set('ibase.timeformat', '%Y-%m-%d');
+$a = ini_get('ibase.timeformat');
+
+ini_set('pfpro.defaulthost', 'string');
+$a = ini_get('pfpro.defaulthost');
+
+ini_set('pfpro.defaultport', 'string');
+$a = ini_get('pfpro.defaultport');
+
+ini_set('pfpro.defaulttimeout', 'string');
+$a = ini_get('pfpro.defaulttimeout');
+
+ini_set('pfpro.proxyaddress', 'string');
+$a = ini_get('pfpro.proxyaddress');
+
+ini_set('pfpro.proxyport', 'string');
+$a = ini_get('pfpro.proxyport');
+
+ini_set('pfpro.proxylogon', 'string');
+$a = ini_get('pfpro.proxylogon');
+
+ini_set('pfpro.proxypassword', 'string');
+$a = ini_get('pfpro.proxypassword');
+
+ini_set('allow_url_include', 'On');
+$a = ini_get('allow_url_include');
+
+ini_set('opcache.load_comments', 'On');
+$a = ini_get('opcache.load_comments');

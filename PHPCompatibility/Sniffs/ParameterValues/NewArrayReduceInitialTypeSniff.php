@@ -1,10 +1,11 @@
 <?php
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\NewArrayReduceInitialTypeSniff.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
@@ -13,19 +14,22 @@ use PHPCompatibility\AbstractFunctionCallParameterSniff;
 use PHP_CodeSniffer_File as File;
 
 /**
- * \PHPCompatibility\Sniffs\ParameterValues\NewArrayReduceInitialTypeSniff.
+ * In PHP 5.2 and lower, the `$initial` parameter for `array_reduce()` had to be an integer.
  *
- * Detect: In PHP 5.2 and lower, the $initial parameter had to be an integer.
+ * PHP version 5.3
  *
- * @category PHP
- * @package  PHPCompatibility
- * @author   Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @link https://www.php.net/manual/en/migration53.other.php#migration53.other
+ * @link https://www.php.net/manual/en/function.array-reduce.php#refsect1-function.array-reduce-changelog
+ *
+ * @since 9.0.0
  */
 class NewArrayReduceInitialTypeSniff extends AbstractFunctionCallParameterSniff
 {
 
     /**
      * Functions to check for.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -36,6 +40,8 @@ class NewArrayReduceInitialTypeSniff extends AbstractFunctionCallParameterSniff
     /**
      * Tokens which, for the purposes of this sniff, indicate that there is
      * a variable element to the value passed.
+     *
+     * @since 9.0.0
      *
      * @var array
      */
@@ -52,6 +58,8 @@ class NewArrayReduceInitialTypeSniff extends AbstractFunctionCallParameterSniff
     /**
      * Do a version check to determine if this sniff needs to run at all.
      *
+     * @since 9.0.0
+     *
      * @return bool
      */
     protected function bowOutEarly()
@@ -62,6 +70,8 @@ class NewArrayReduceInitialTypeSniff extends AbstractFunctionCallParameterSniff
 
     /**
      * Process the parameters of a matched function.
+     *
+     * @since 9.0.0
      *
      * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
      * @param int                   $stackPtr     The position of the current token in the stack.

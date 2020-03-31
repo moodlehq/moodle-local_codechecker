@@ -1,8 +1,11 @@
 <?php
 /**
- * Use of non-cryptographic hashes sniff test file.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\ParameterValues;
@@ -10,7 +13,7 @@ namespace PHPCompatibility\Tests\ParameterValues;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Use of non-cryptographic hashes sniff tests.
+ * Test the RemovedNonCryptoHash sniff.
  *
  * @group removedNonCryptoHash
  * @group parameterValues
@@ -18,9 +21,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @covers \PHPCompatibility\Sniffs\ParameterValues\RemovedNonCryptoHashSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 9.0.0
  */
 class RemovedNonCryptoHashUnitTest extends BaseSniffTest
 {

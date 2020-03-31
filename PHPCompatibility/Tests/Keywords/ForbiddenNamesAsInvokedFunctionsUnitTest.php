@@ -1,8 +1,11 @@
 <?php
 /**
- * Forbidden names as function invocations sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Keywords;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Keywords;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Forbidden names as function invocations sniff test file
+ * Test the ForbiddenNamesAsInvokedFunctions sniff.
  *
  * @group forbiddenNamesAsInvokedFunctions
  * @group keywords
  *
  * @covers \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesAsInvokedFunctionsSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class ForbiddenNamesAsInvokedFunctionsUnitTest extends BaseSniffTest
 {

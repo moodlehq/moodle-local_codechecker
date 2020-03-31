@@ -1,8 +1,11 @@
 <?php
 /**
- * Check for the PHP 5.3 changes in allowed usage of the argument functions.
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\FunctionUse;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\FunctionUse;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Check for the PHP 5.3 changes in allowed usage of the argument functions.
+ * Test the ArgumentFunctionsUsage sniff.
  *
  * @group argumentFunctions
  * @group functionUse
  *
  * @covers \PHPCompatibility\Sniffs\FunctionUse\ArgumentFunctionsUsageSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Juliette Reinders Folmer <phpcompatibility_nospam@adviesenzo.nl>
+ * @since 8.2.0
  */
 class ArgumentFunctionsUsageUnitTest extends BaseSniffTest
 {

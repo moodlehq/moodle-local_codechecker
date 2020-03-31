@@ -1,8 +1,11 @@
 <?php
 /**
- * Forbidden call time pass by reference sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Syntax;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Syntax;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Forbidden call time pass by reference sniff test
+ * Test the ForbiddenCallTimePassByReference sniff.
  *
  * @group forbiddenCallTimePassByReference
  * @group syntax
  *
  * @covers \PHPCompatibility\Sniffs\Syntax\ForbiddenCallTimePassByReferenceSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class ForbiddenCallTimePassByReferenceUnitTest extends BaseSniffTest
 {

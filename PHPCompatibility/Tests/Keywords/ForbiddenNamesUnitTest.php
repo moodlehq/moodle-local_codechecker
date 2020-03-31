@@ -1,8 +1,11 @@
 <?php
 /**
- * Forbidden names sniff test file
+ * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
- * @package PHPCompatibility
+ * @package   PHPCompatibility
+ * @copyright 2012-2019 PHPCompatibility Contributors
+ * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
+ * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Tests\Keywords;
@@ -10,16 +13,14 @@ namespace PHPCompatibility\Tests\Keywords;
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Forbidden names sniff test
+ * Test the ForbiddenNames sniff.
  *
  * @group forbiddenNames
  * @group keywords
  *
  * @covers \PHPCompatibility\Sniffs\Keywords\ForbiddenNamesSniff
  *
- * @uses    \PHPCompatibility\Tests\BaseSniffTest
- * @package PHPCompatibility
- * @author  Jansen Price <jansen.price@gmail.com>
+ * @since 5.5
  */
 class ForbiddenNamesUnitTest extends BaseSniffTest
 {
@@ -47,7 +48,7 @@ class ForbiddenNamesUnitTest extends BaseSniffTest
 
         $this->assertNoViolation($file, 2);
 
-        $lineCount = count(file($filename));
+        $lineCount = \count(file($filename));
         // Each line of the use case files (starting at line 3) exhibits an
         // error.
         for ($i = 3; $i < $lineCount; $i++) {
