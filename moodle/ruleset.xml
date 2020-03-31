@@ -2,6 +2,8 @@
 <ruleset name="moodle">
     <description>The Moodle coding style</description>
 
+    <arg name="extensions" value="php" />
+
     <rule ref="Generic.Classes.DuplicateClassName"/>
 
     <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>

@@ -83,6 +83,12 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    /**
+     * Note that, while this test continues passing, because
+     * we load the .js file manually, now the moodle standard
+     * by default enforces --extensions=php, so no .js file
+     * will be inspected by default ever.
+     */
     public function test_moodle_commenting_inlinecomment_js() {
 
         // Define the standard, sniff and fixture to use.
