@@ -32,6 +32,9 @@ Current checkout:
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
-  - none right now
+  - Added PHPCSAliases.php to base dir to provide phpcs 2/3 compatibility. Needed
+    because still there are a number of old class names within the standard. This
+    doesn't have any upstream PR, because the file is there, just we had not needed
+    it before the jump to phpcs 3.
 
 ===== ===== ===== ===== ===== ===== =====
