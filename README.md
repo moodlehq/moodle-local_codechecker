@@ -23,7 +23,7 @@ To install it using git, type this command in the root of your Moodle install:
 
 Then add /local/codechecker to your git ignore.
 
-Additionally, remember to only use the version of PHPCS located in ``pear/PHP/scripts/phpcs`` rather than installing PHPCS directly. Add the location of the PHPCS executable to your system path, tell PHPCS about the Moodle coding standard with ``phpcs --config-set installed_paths /path/to/moodle-local_codechecker``  and set the default coding standard to Moodle with ``phpcs --config-set default_standard moodle``.  You can now test a file (or folder) with: ``phpcs /path/to/file.php``.
+Additionally, remember to only use the version of PHPCS located in ``phpcs/bin/phpcs`` rather than installing PHPCS directly. Add the location of the PHPCS executable to your system path, tell PHPCS about the Moodle coding standard with ``phpcs --config-set installed_paths /path/to/moodle-local_codechecker``  and set the default coding standard to Moodle with ``phpcs --config-set default_standard moodle``.  You can now test a file (or folder) with: ``phpcs /path/to/file.php``.
 
 Alternatively, download the zip from
 <https://github.com/moodlehq/moodle-local_codechecker/zipball/master>,
