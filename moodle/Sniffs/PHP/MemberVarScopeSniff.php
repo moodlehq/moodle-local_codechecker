@@ -27,27 +27,29 @@
  * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
  */
 
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
 
-if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === false) {
-    throw new PHP_CodeSniffer_Exception(
-            'Class PHP_CodeSniffer_Standards_AbstractVariableSniff not found');
-}
+// phpcs:disable moodle.NamingConventions
 
-class moodle_Sniffs_PHP_MemberVarScopeSniff
-        extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+
+class MemberVarScopeSniff
+        extends AbstractVariableSniff {
 
     /**
      * Processes the function tokens within the class.
      *
-     * @param PHP_CodeSniffer_File $file The file where this token was found.
-     * @param int                  $stackptr  The position where the token was found.
+     * @param File $file The file where this token was found.
+     * @param int $stackptr The position where the token was found.
      *
      * @return void
      */
-    protected function processMemberVar(PHP_CodeSniffer_File $file, $stackptr) {
+    protected function processMemberVar(File $file, $stackptr) {
         $tokens = $file->getTokens();
 
-        $modifier = $file->findPrevious(PHP_CodeSniffer_Tokens::$scopeModifiers, $stackptr);
+        $modifier = $file->findPrevious(Tokens::$scopeModifiers, $stackptr);
         $semicolon = $file->findPrevious(T_SEMICOLON, $stackptr);
 
         if ($modifier === false || $modifier < $semicolon) {
@@ -60,24 +62,24 @@ class moodle_Sniffs_PHP_MemberVarScopeSniff
     /**
      * Processes normal variables.
      *
-     * @param PHP_CodeSniffer_File $file The file where this token was found.
-     * @param int                  $stackptr  The position where the token was found.
+     * @param File $file The file where this token was found.
+     * @param int $stackptr The position where the token was found.
      *
      * @return void
      */
-    protected function processVariable(PHP_CodeSniffer_File $file, $stackptr) {
+    protected function processVariable(File $file, $stackptr) {
         return;
     }
 
     /**
      * Processes variables in double quoted strings.
      *
-     * @param PHP_CodeSniffer_File $file The file where this token was found.
-     * @param int                  $stackptr  The position where the token was found.
+     * @param File $file The file where this token was found.
+     * @param int $stackptr The position where the token was found.
      *
      * @return void
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $file, $stackptr) {
+    protected function processVariableInString(File $file, $stackptr) {
         return;
     }
 }

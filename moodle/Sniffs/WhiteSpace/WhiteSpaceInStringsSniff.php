@@ -22,7 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_WhiteSpace_WhiteSpaceInStringsSniff implements PHP_CodeSniffer_Sniff   {
+namespace MoodleCodeSniffer\moodle\Sniffs\WhiteSpace;
+
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
+class WhiteSpaceInStringsSniff implements Sniff {
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -41,28 +46,27 @@ class moodle_Sniffs_WhiteSpace_WhiteSpaceInStringsSniff implements PHP_CodeSniff
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsfile The file being scanned.
-     * @param int                  $stackptr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param File $phpcsfile The file being scanned.
+     * @param int $stackptr  The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
+    public function process(File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
         // Look for final whitespace endings but not in whitespace tokens
         // (not sure which cases are covered by this, because it seems to
         // conflict/dupe {@link SuperfluousWhitespaceSniff} but, it's kept
         // working for any registered token but T_WHITESPACE, that is handled
-        // by other regexps
+        // by other regexps.
         if ($tokens[$stackptr]['type'] != 'T_WHITESPACE') {
             preg_match('~\s[\r\n]~', $tokens[$stackptr]['content'], $matches);
             if (!empty($matches)) {
                 $error = 'Whitespace found at end of line within string';
                 $phpcsfile->addError($error, $stackptr, 'EndLine');
             }
-        // Other tests within T_WHITESPACE tokens
         } else {
-            // Look for tabs only in whitespace tokens
+            // Other tests within T_WHITESPACE tokens
+            // Look for tabs only in whitespace tokens.
             if (strpos($tokens[$stackptr]['content'], "\t") !== false) {
                 $error = 'Tab found within whitespace';
                 $phpcsfile->addError($error, $stackptr, 'TabWhitespace');

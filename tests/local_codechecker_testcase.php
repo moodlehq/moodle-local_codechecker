@@ -21,33 +21,58 @@
  *     vendor/bin/phpunit local/codechecker/moodle/tests/moodlestandard_test.php
  *
  * @package    local_codechecker
- * @subpackage phpunit
- * @category   phpunit
+ * @category   test
  * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die(); // Remove this to use me out from Moodle.
 
-// Add the phpcs machinery.
-if (is_file(__DIR__ . '/../pear/PHP/CodeSniffer.php') === true) {
-    require_once(__DIR__ .'/../pear/PHP/CodeSniffer.php');
+if (is_file(__DIR__.'/../phpcs/autoload.php') === true) {
+    include_once(__DIR__.'/../phpcs/autoload.php');
 } else {
-    require_once('PHP/CodeSniffer.php');
+    include_once('PHP/CodeSniffer/autoload.php');
 }
+
+$tokens = new \PHP_CodeSniffer\Util\Tokens();
+
+if (defined('PHP_CODESNIFFER_IN_TESTS') === false) {
+    define('PHP_CODESNIFFER_IN_TESTS', true);
+}
+
+if (defined('PHP_CODESNIFFER_CBF') === false) {
+    define('PHP_CODESNIFFER_CBF', false);
+}
+
+if (defined('PHP_CODESNIFFER_VERBOSITY') === false) {
+    define('PHP_CODESNIFFER_VERBOSITY', false);
+}
+
+// TODO: we may stop needing this with PHPCompatibility 10 and/or
+// when we integrate these tests to use the official PHPCS machinery.
+// This is like the <autoload> new option in rulesets (like the one
+// PHPCompatibility has), but for phpunit we need to register
+// the autoloader earlier(see https://github.com/squizlabs/PHP_CodeSniffer/issues/1469).
+require_once(dirname(__DIR__) . '/PHPCSAliases.php');
 
 // Interim classes providing conditional extension, so I can run
 // these plugin tests against different Moodle branches that are
 // using different phpunit (namespaced or no) classes.
-// @codingStandardsIgnoreStart
+// phpcs:disable
 if (class_exists('PHPUnit_Framework_TestCase')) {
+    /**
+     * Conditional class to keep compatibility between php versions. phpunit <7 alternative.
+     */
     abstract class conditional_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase {
     }
 } else {
+    /**
+     * Conditional class to keep compatibility between php versions. phpunit >=7 alternative.
+     */
     abstract class conditional_PHPUnit_Framework_TestCase extends PHPUnit\Framework\TestCase {
     }
 }
-// @codingStandardsIgnoreEnd
+// phpcs:enable
 
 /**
  * Specialized test case for easy testing of "moodle" CS Sniffs.
@@ -58,7 +83,7 @@ if (class_exists('PHPUnit_Framework_TestCase')) {
  * no tests for this plugin are run as part of a full Moodle PHPunit run.
  * (This may be a bug?)
  *
- * This class mimics {@link AbstractSniffUnitTest} way to test Sniffs
+ * This class mimics {@see AbstractSniffUnitTest} way to test Sniffs
  * allowing easy process of examples and assertion of result expectations.
  *
  * Should work for any Sniff part of a given standard (custom or core).
@@ -68,18 +93,13 @@ if (class_exists('PHPUnit_Framework_TestCase')) {
 abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_TestCase {
 
     /**
-     * @var PHP_CodeSniffer The unique CS instance shared by all test cases.
-     */
-    protected static $phpcs = null;
-
-    /**
      * @var string name of the standard to be tested.
      */
     protected $standard = null;
 
     /**
      * @var string code of the sniff to be tested. Must be part of the standard definition.
-     *             See {@link ::set_sniff()} for more information.
+     *             See {@see ::set_sniff()} for more information.
      */
     protected $sniff = null;
 
@@ -110,17 +130,17 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
         // dirs containing standards can be added using CodeSniffer.conf or the
         // PHP_CODESNIFFER_CONFIG_DATA global (installed_paths setting).
         // We are using the global way here to avoid changes in the phpcs import.
-        // @codingStandardsIgnoreStart
+        // phpcs:disable
         if (!isset($GLOBALS['PHP_CODESNIFFER_CONFIG_DATA']['installed_paths'])) {
             $localcodecheckerpath = realpath(__DIR__ . '/../');
             $GLOBALS['PHP_CODESNIFFER_CONFIG_DATA'] = ['installed_paths' => $localcodecheckerpath];
         }
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable
 
         // Basic search of standards in the allowed directories.
         $stdsearch = array(
-            __DIR__ . '/../pear/PHP/CodeSniffer/Standards', // PHPCS standards dir.
-            __DIR__ . '/..',                                // local_codechecker dir, allowed above via global.
+            __DIR__ . '/../phpcs/src/Standards', // PHPCS standards dir.
+            __DIR__ . '/..',                     // Plugin local_codechecker dir, allowed above via global.
         );
 
         foreach ($stdsearch as $stdpath) {
@@ -205,27 +225,13 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
      * In charge of initializing the CS and reset all the internal
      * properties.
      */
-    protected function setUp() {
-        if (self::$phpcs === null) {
-            // Note that the plugin workarounds this by using
-            // {@link local_codechecker_codesniffer_cli} with overridden method, but I want
-            // to keep this testcase independent of Moodle.
-            //
-            // Nasty hack, used by CS tests themselves (see AllTests.php), to
-            // avoid the underlying PHP_CodeSniffer_CLI to fail when it is called
-            // from any parametrized script (phpStorm, phpunit...)
-            // (more info {@link https://pear.php.net/bugs/bug.php?id=18247}).
-            if (defined('PHP_CODESNIFFER_IN_TESTS') === false) {
-                define('PHP_CODESNIFFER_IN_TESTS', true);
-            }
-
-            // Instantiate the CS safely now.
-            self::$phpcs = new PHP_CodeSniffer();
-        }
+    protected function setUp(): void {
         $this->standard = null;
         $this->sniff = null;
         $this->errors = null;
         $this->warnings = null;
+
+        parent::setUp();
     }
 
     /**
@@ -238,15 +244,12 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
      */
     protected function verify_cs_results() {
 
-        self::$phpcs->initStandard($this->standard, array($this->sniff));
-        self::$phpcs->processRuleset($this->standard . '/ruleset.xml');
-        self::$phpcs->populateTokenListeners();
-        self::$phpcs->setIgnorePatterns(array());
-
-        // The passed sniff is incorrect.
-        if (self::$phpcs->getSniffs() === array()) {
-            $this->fail('Sniff "' . $this->sniff . '" not found.');
-        }
+        $config = new \PHP_CodeSniffer\Config();
+        $config->cache     = false;
+        $config->standards = array($this->standard);
+        $config->sniffs    = array($this->sniff);
+        $config->ignored   = array();
+        $ruleset = new \PHP_CodeSniffer\Ruleset($config);
 
         // We don't accept undefined errors and warnings.
         if (is_null($this->errors) and is_null($this->warnings)) {
@@ -255,7 +258,8 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
 
         // Let's process the fixture.
         try {
-            $phpcsfile = self::$phpcs->processFile($this->fixture);
+            $phpcsfile = new \PHP_CodeSniffer\Files\LocalFile($this->fixture, $ruleset, $config);
+            $phpcsfile->process();
         } catch (Exception $e) {
             $this->fail('An unexpected exception has been caught: '. $e->getMessage());
         }
@@ -320,8 +324,14 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
             // Now verify every expectation requiring matching.
             foreach ($expectation as $key => $expectedcontent) {
                 if (is_string($expectedcontent)) {
-                    $this->assertContains($expectedcontent, $results[$line][$key],
+                    // PHPUnit 6 compatibility hack. TODO: Remove once Moodle 3.5 goes out of support.
+                    if (method_exists($this, 'assertStringContainsString')) {
+                        $this->assertStringContainsString($expectedcontent, $results[$line][$key],
                             'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
+                    } else {
+                        $this->assertContains($expectedcontent, $results[$line][$key],
+                            'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
+                    }
                 }
             }
             // Delete this line from results.

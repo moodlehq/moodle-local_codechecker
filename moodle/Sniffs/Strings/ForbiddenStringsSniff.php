@@ -22,7 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sniff {
+namespace MoodleCodeSniffer\moodle\Sniffs\Strings;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
+class ForbiddenStringsSniff implements Sniff {
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -37,13 +44,12 @@ class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    public function process(File $phpcsFile, $stackPtr) {
         // Delegate the processing to specialised methods.
         $this->process_sql_as_keyword($phpcsFile, $stackPtr);
         $this->process_regexp_separator_e($phpcsFile, $stackPtr);
@@ -53,13 +59,12 @@ class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
     /**
      * Detect strings using the AS keyword to aliase tables.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    protected function process_sql_as_keyword(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function process_sql_as_keyword(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], "'\"");
@@ -72,13 +77,12 @@ class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
     /**
      * Detect strings being regexp and using the "e" modifier.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    protected function process_regexp_separator_e(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function process_regexp_separator_e(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], " '\"\t\n");
@@ -104,17 +108,16 @@ class moodle_Sniffs_Strings_ForbiddenStringsSniff implements PHP_CodeSniffer_Sni
     /**
      * Detect strings using backticks.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    protected function process_string_with_backticks(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function process_string_with_backticks(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], "'\"");
-        if (strpos($text, '`') !== false) {
+        if (strpos($text, '`') !== false) { //phpcs:ignore moodle.Strings.ForbiddenStrings.Found
 
             // Exception. lang strings ending with _desc or _help can
             // contain backticks as they are correct Markdown formatting.
