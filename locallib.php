@@ -63,7 +63,7 @@ class local_codechecker_form extends moodleform {
 // These classes are not following the moodle standard but phpcs one,
 // so we intruct the checker to ignore them
 // TODO: Move these classes to own php files.
-// @codingStandardsIgnoreStart
+// phpcs:disable
 /**
  * Code sniffer insists on having an PHP_CodeSniffer_CLI, even though we don't
  * really want one. This is a dummy class to make it work.
@@ -163,7 +163,7 @@ class PHP_CodeSniffer_Reports_local_codechecker extends PHP_CodeSniffer_Reports_
 }
 
 // End of phpcs classes, we end ignoring now.
-// @codingStandardsIgnoreEnd
+// phpcs:enable
 
 /**
  * Convert a full path name to a relative one, for output.

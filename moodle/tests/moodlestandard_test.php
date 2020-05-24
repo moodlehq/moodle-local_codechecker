@@ -18,8 +18,7 @@
  * This file contains the test cases covering the "moodle" standard.
  *
  * @package    local_codechecker
- * @subpackage phpunit
- * @category   phpunit
+ * @category   test
  * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -248,7 +247,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             9 => 1,
             10 => 1,
             13 => 'function extract() is forbidden',
-            14 => 0, // These are eval, goto and got labels handled by {@link moodle_Sniffs_PHP_ForbiddenTokensSniff}.
+            14 => 0, // These are eval, goto and got labels handled by {@see moodle_Sniffs_PHP_ForbiddenTokensSniff}.
             15 => 0,
             16 => 0,
             17 => 0,
@@ -338,42 +337,6 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
-    public function test_moodle_php_forbiddennamesasinvokedfunctions() {
-
-        // Define the standard, sniff and fixture to use.
-        $this->set_standard('moodle');
-        $this->set_sniff('moodle.PHP.ForbiddenNamesAsInvokedFunctions');
-        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddennamesasinvokedfunctions.php');
-
-        // Define expected results (errors and warnings). Format, array of:
-        // - line => number of problems,  or
-        // - line => array of contents for message / source problem matching.
-        // - line => string of contents for message / source problem matching (only 1).
-        $this->set_errors(array(
-            5 => 0, // These are allowed as invoked functions in Moodle for now.
-            6 => 0,
-            7 => 0,
-            8 => 0,
-            9 => 0,
-            12 => 0,
-            13 => 0,
-            14 => 0,
-            15 => 0,
-            16 => 0,
-            19 => 1, // These are not allowed as invoked functions.
-            20 => 'T_CALLABLE',
-            21 => 'is a reserved keyword introduced in PHP version 5.0',
-            22 => 'T_FINAL',
-            23 => 1,
-            24 => 1,
-            25 => 0,
-            26 => 1));
-        $this->set_warnings(array());
-
-        // Let's do all the hard work!
-        $this->verify_cs_results();
-    }
-
     public function test_moodle_php_forbiddentokens() {
 
         // Define the standard, sniff and fixture to use.
@@ -414,7 +377,8 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             11 => 'The use of the AS keyword to alias tables is bad for cross-db',
             12 => 0,
             // Only if the engine supported /e. Completely removed in PHP 7.3.
-            15 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 'The use of the /e modifier in regular expressions is forbidden' : 0),
+            15 => (version_compare(PHP_VERSION, '7.3.0', '<') ?
+                'The use of the /e modifier in regular expressions is forbidden' : 0),
             16 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 1 : 0),
             23 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 2 : 1),
             26 => 0,
@@ -666,7 +630,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
         $this->set_warnings(array(
-            5 => 'This comment is 63% valid code; is this commented out code',
+            5 => 'This comment is 72% valid code; is this commented out code',
             9 => '@Source: Squiz.PHP.CommentedOutCode.Found'
         ));
 
@@ -803,7 +767,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         $this->set_errors(array());
         $this->set_warnings(array(
-            25 => 'check (require_login, require_course_login, require_admin, admin_externalpage_setup) following config inclusion. None found'
+            25 => ', require_course_login, require_admin, admin_externalpage_setup) following config inclusion. None found'
         ));
 
         $this->verify_cs_results();

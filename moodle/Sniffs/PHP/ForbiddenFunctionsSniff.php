@@ -22,13 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (class_exists('Generic_Sniffs_PHP_ForbiddenFunctionsSniff', true) === false) {
-    throw new PHP_CodeSniffer_Exception(
-            'Class Generic_Sniffs_PHP_ForbiddenFunctionsSniff not found');
-}
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
 
-class moodle_Sniffs_PHP_ForbiddenFunctionsSniff
-        extends Generic_Sniffs_PHP_ForbiddenFunctionsSniff {
+use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff as GenericForbiddenFunctionsSniff;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
+class ForbiddenFunctionsSniff extends GenericForbiddenFunctionsSniff {
+
     /** Constructor. */
     public function __construct() {
         $this->forbiddenFunctions = array(
@@ -40,12 +41,6 @@ class moodle_Sniffs_PHP_ForbiddenFunctionsSniff
             'print_object' => null,
             // Dangerous functions. From coding style.
             'extract'      => null,
-            // Note that some of these are handled as specific tokens by the Tokenizer
-            // and detected by {@link moodle_Sniffs_PHP_ForbiddenTokensSniff} instead.
-            // With phpcs 2.x these are detected both as tokens and functions, so getting
-            // rid of them as functions to avoid the same error twice.
-            //'eval'         => null, // T_EVAL token.
-            //'goto'         => null, // T_GOTO token.
         );
     }
 }
