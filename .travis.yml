@@ -1,5 +1,8 @@
 language: php
 
+os: linux
+dist: xenial
+
 addons:
   firefox: "47.0.1"
 
@@ -11,109 +14,64 @@ cache:
   directories:
     - $HOME/.composer/cache
     - $HOME/.npm
+    - $HOME/.nvm
 
-php:
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
-  - 7.3
-  - 7.4
+jobs:
+  include:
+    - php: 7.4
+      env: MOODLE_BRANCH=master           DB=pgsql
+    - php: 7.4
+      env: MOODLE_BRANCH=master           DB=mysqli
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql
 
-env:
-  - MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-  - MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql NODE=8
 
-matrix:
-  exclude:
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=master           DB=pgsql
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=master           DB=mysqli
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql NODE=8
+
     - php: 7.1
-      env: MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql
     - php: 7.1
-      env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli NODE=8
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql NODE=8.9
+
     - php: 7.0
-      env: MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql NODE=8
     - php: 7.0
-      env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql NODE=8
+
     - php: 5.6
-      env: MOODLE_BRANCH=master           DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli NODE=8
     - php: 5.6
-      env: MOODLE_BRANCH=master           DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql  IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs BEHAT=yes
+      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql NODE=8.9
 
 before_install:
-  # Get rid of the || return 0 once we switch to 7.4 with xdebug installed.
-  - phpenv config-rm xdebug.ini || return 0
-  - nvm install 8.9
-  - nvm use 8.9
+  - phpenv config-rm xdebug.ini
+  - if [ -z $NODE ]; then
+      export NODE=14;
+    fi
+  - nvm install $NODE
+  - nvm use $NODE
   - cd ../..
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+  - export IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
+  - export BEHAT=yes
 
 install:
   - moodle-plugin-ci install
