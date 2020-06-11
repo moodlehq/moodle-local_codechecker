@@ -1,3 +1,8 @@
+Changes in version 2.9.6 (20200611) - June's Roentgenium
+--------------------------------------------------------
+- [PR#63](https://github.com/moodlehq/moodle-local_codechecker/pull/63): Make MOODLE_INTERNAL check declare() aware (Peter Burnett).
+- [PR#72](https://github.com/moodlehq/moodle-local_codechecker/pull/72): Minor php74 fixes and travis refactor.
+
 Changes in version 2.9.5 (20200401) - Poisson d'avril
 -----------------------------------------------------
 - CONTRIB-8024: Process all files as UTF-8 encoded (defined @ standard level).
