@@ -715,6 +715,17 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_files_moodleinternal_declare_ok() {
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/declare_ok.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+    }
+
     public function test_moodle_files_moodleinternal_namespace_ok() {
         $this->set_standard('moodle');
         $this->set_sniff('moodle.Files.MoodleInternal');
