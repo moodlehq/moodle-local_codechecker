@@ -56,6 +56,7 @@ $standard = $CFG->dirroot . str_replace('/', DIRECTORY_SEPARATOR, '/local/codech
 
 $cli = new local_codechecker_codesniffer_cli();
 $phpcs = new PHP_CodeSniffer(1, 0, 'utf-8', $interactive);
+$phpcs->setAllowedFileExtensions(['php']); // We are only going to process php files ever.
 $phpcs->setCli($cli);
 $phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
 $phpcs->process(local_codechecker_clean_path(
