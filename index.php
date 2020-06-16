@@ -66,6 +66,7 @@ if ($path) {
     if ($fullpath) {
         $reportfile = make_temp_directory('phpcs') . '/phpcs_' . random_string(10) . '.xml';
         $phpcs = new PHP_CodeSniffer();
+        $phpcs->setAllowedFileExtensions(['php']); // We are only going to process php files ever.
         $cli = new local_codechecker_codesniffer_cli();
         $cli->setReport('local_codechecker'); // Using own custom xml format for easier handling later.
         $cli->setReportFile($reportfile); // Send the report to dataroot temp.
