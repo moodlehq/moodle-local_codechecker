@@ -52,14 +52,14 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
 
         if (preg_match('/[A-Z]+/', $membername)) {
             $error = "Member variable \"$membername\" must be all lower-case";
-            $phpcsfile->addError($error, $stackptr);
+            $phpcsfile->addError($error, $stackptr, 'MemberNameLowerCase');
         }
 
         // Find underscores in variable names (accepting $_foo for private vars).
         $pos = strpos($membername, '_');
         if ($pos > 1) {
             $error = "Member variable \"$membername\" must not contain underscores.";
-            $phpcsfile->addError($error, $stackptr);
+            $phpcsfile->addError($error, $stackptr, 'MemberNameUnderscore');
         }
 
         // Must not be preceded by 'var' keyword.
@@ -68,7 +68,7 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
         if ($tokens[$keyword]['line'] == $tokens[$stackptr]['line']) {
             $error = "The 'var' keyword is not permitted." .
                      'Visibility must be explicitly declared with public, private or protected';
-            $phpcsfile->addError($error, $stackptr);
+            $phpcsfile->addError($error, $stackptr, 'MemberNameVisibility');
         }
     }
 
@@ -118,12 +118,12 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     private function validate_moodle_variable_name($varname, PHP_CodeSniffer_File $phpcsfile, $stackptr) {
         if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must be all lower-case";
-            $phpcsfile->addError($error, $stackptr);
+            $phpcsfile->addError($error, $stackptr, 'VariableNameLowerCase');
         }
 
         if (strpos($varname, '_') !== false && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must not contain underscores.";
-            $phpcsfile->addError($error, $stackptr);
+            $phpcsfile->addError($error, $stackptr, 'VariableNameUnderscore');
         }
     }
 }
