@@ -75,12 +75,14 @@ class moodle_Sniffs_Files_MoodleInternalSniff implements PHP_CodeSniffer_Sniff {
 
         // Got here because, so something is not right.
         if ($this->code_changes_global_state($file, $pointer, ($file->numTokens - 1))) {
-            $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.', $pointer);
+            $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.',
+                $pointer, 'MoodleInternalGlobalState');
         } else {
             // Only if there are more than one artifact (class, interface, trait), we show the warning.
             // (files with only one, are allowed to be MOODLE_INTERNAL free - MDLSITE-5967).
             if ($this->count_artifacts($file) > 1) {
-                $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.', $pointer);
+                $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.',
+                    $pointer, 'MoodleInternalMultipleArtifacts');
             }
         }
     }
