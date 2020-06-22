@@ -59,7 +59,8 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
 
         if (!$this->is_login_function_present($file, $pointer)) {
             $loginfunctionsstr = implode(', ', $this->loginfunctions);
-            $file->addWarning("Expected login check ($loginfunctionsstr) following config inclusion. None found.", $pointer);
+            $file->addWarning("Expected login check ($loginfunctionsstr) following config inclusion. None found.",
+                $pointer, 'Missing');
         }
     }
 
