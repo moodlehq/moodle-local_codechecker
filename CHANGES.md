@@ -1,3 +1,5 @@
+2test
+
 Changes in version 2.9.6 (20200611) - June's Roentgenium
 --------------------------------------------------------
 - [PR#63](https://github.com/moodlehq/moodle-local_codechecker/pull/63): Make MOODLE_INTERNAL check declare() aware (Peter Burnett).
