@@ -3,12 +3,10 @@ language: php
 os: linux
 dist: xenial
 
-addons:
-  firefox: "47.0.1"
-
 services:
   - mysql
   - postgresql
+  - docker
 
 cache:
   directories:
@@ -23,55 +21,48 @@ jobs:
     - php: 7.4
       env: MOODLE_BRANCH=master           DB=mysqli
     - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_39_STABLE DB=mysqli
+    - php: 7.4
       env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql
 
     - php: 7.3
       env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
     - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql NODE=8
+      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
 
     - php: 7.2
       env: MOODLE_BRANCH=master           DB=pgsql
     - php: 7.2
       env: MOODLE_BRANCH=master           DB=mysqli
     - php: 7.2
+      env: MOODLE_BRANCH=MOODLE_39_STABLE DB=mysqli
+    - php: 7.2
       env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql NODE=8
+      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql
 
     - php: 7.1
       env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql
     - php: 7.1
       env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli NODE=8
+      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql NODE=8.9
+      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql NODE_VERSION=8.9
 
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql NODE=8
+      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
     - php: 7.0
       env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql NODE=8
-
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli NODE=8
-    - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql NODE=8.9
+      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - if [ -z $NODE ]; then
-      export NODE=14;
-    fi
-  - nvm install $NODE
-  - nvm use $NODE
   - cd ../..
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
   - export IGNORE_PATHS=moodle/tests/fixtures,moodle/Sniffs
-  - export BEHAT=yes
 
 install:
   - moodle-plugin-ci install
@@ -86,6 +77,4 @@ script:
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit
-  - if [ $BEHAT == 'yes' ]; then
-        moodle-plugin-ci behat || travis_terminate 1;
-    fi
+  - moodle-plugin-ci behat
