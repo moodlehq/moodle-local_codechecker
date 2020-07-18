@@ -1,3 +1,8 @@
+Changes in version 2.9.7 (20200718) - Bye bye, JS
+-------------------------------------------------
+- [PR75](https://github.com/moodlehq/moodle-local_codechecker/pull/75) and [PR#77](https://github.com/moodlehq/moodle-local_codechecker/pull/77): Small tweaks for better transition to phpcs3.
+- CONTRIB-8122: Stop processing non-php files (runner and UI).
+
 Changes in version 2.9.6 (20200611) - June's Roentgenium
 --------------------------------------------------------
 - [PR#63](https://github.com/moodlehq/moodle-local_codechecker/pull/63): Make MOODLE_INTERNAL check declare() aware (Peter Burnett).
