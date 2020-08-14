@@ -26,7 +26,6 @@ if (!defined('MOODLE_INTERNAL')) {
 }
 
 require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->libdir.'/coursecatlib.php');
 
 /**
  * A form for a user to request a course.
