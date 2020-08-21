@@ -17,45 +17,53 @@ cache:
 jobs:
   include:
     - php: 7.4
-      env: MOODLE_BRANCH=master           DB=pgsql
+      env: MOODLE_BRANCH=master            DB=pgsql
     - php: 7.4
-      env: MOODLE_BRANCH=master           DB=mysqli
+      env: MOODLE_BRANCH=master            DB=mysqli
     - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_39_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_310_STABLE DB=pgsql
     - php: 7.4
-      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql
+      env: MOODLE_BRANCH=MOODLE_310_STABLE DB=mysqli
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_39_STABLE  DB=mysqli
+    - php: 7.4
+      env: MOODLE_BRANCH=MOODLE_38_STABLE  DB=pgsql
 
     - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_37_STABLE  DB=mysqli
     - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
+      env: MOODLE_BRANCH=MOODLE_36_STABLE  DB=pgsql
 
     - php: 7.2
-      env: MOODLE_BRANCH=master           DB=pgsql
+      env: MOODLE_BRANCH=master            DB=pgsql
     - php: 7.2
-      env: MOODLE_BRANCH=master           DB=mysqli
+      env: MOODLE_BRANCH=master            DB=mysqli
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_39_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_310_STABLE DB=pgsql
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_310_STABLE DB=mysqli
     - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql
+      env: MOODLE_BRANCH=MOODLE_39_STABLE  DB=mysqli
+    - php: 7.2
+      env: MOODLE_BRANCH=MOODLE_35_STABLE  DB=mysqli
+    - php: 7.2
+      env: MOODLE_BRANCH=MOODLE_34_STABLE  DB=pgsql
 
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_38_STABLE DB=pgsql
+      env: MOODLE_BRANCH=MOODLE_38_STABLE  DB=pgsql
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_37_STABLE  DB=mysqli
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_33_STABLE  DB=mysqli
     - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql NODE_VERSION=8.9
+      env: MOODLE_BRANCH=MOODLE_32_STABLE  DB=pgsql NODE_VERSION=8.9
 
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
+      env: MOODLE_BRANCH=MOODLE_36_STABLE  DB=pgsql
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_35_STABLE  DB=mysqli
     - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql
+      env: MOODLE_BRANCH=MOODLE_34_STABLE  DB=pgsql
 
 before_install:
   - phpenv config-rm xdebug.ini
