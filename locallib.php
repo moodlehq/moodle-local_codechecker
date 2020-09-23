@@ -45,8 +45,8 @@ class local_codechecker_form extends moodleform {
         $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
         $mform->addElement('static', '', '', get_string('info', 'local_codechecker', $a));
 
-        $mform->addElement('text', 'path', get_string('path', 'local_codechecker'), array('size' => '48'));
-        $mform->setType('path', PARAM_PATH);
+        $mform->addElement('textarea', 'path', get_string('path', 'local_codechecker'), ['rows' => '4', 'cols' => 48]);
+        $mform->setType('path', PARAM_RAW);
         $mform->addRule('path', null, 'required', null, 'client');
 
         $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size' => '48'));
