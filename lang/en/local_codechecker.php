@@ -45,13 +45,14 @@ $string['filesfound'] = 'Files found: {$a}';
 $string['filesummary'] = '{$a->path} - {$a->count}';
 $string['info'] = '<p>Checks code against some aspects of the {$a->link}.</p>
 <p>Enter a path relative to the Moodle code root, for example: {$a->path}.</p>
-<p>You can enter either a specific PHP file, or to a folder to check all the files it contains.</p>
+<p>You can enter either a specific PHP file, or to a folder to check all the files it contains.
+Multiple entries are supported (files or folders), one per line.</p>
 <p>To exclude files, a comma separated list of substr matching paths can be used, for example: {$a->excludeexample}. Asterisks are allowed as wildchars at any place.</p>';
 $string['includewarnings'] = 'Include warnings';
 $string['invalidpath'] = 'Invalid path {$a}';
 $string['moodlecodingguidelines'] = 'Moodle coding guidelines';
 $string['numerrorswarnings'] = '{$a->errors} error(s) and {$a->warnings} warning(s)';
-$string['path'] = 'Path to check';
+$string['path'] = 'Path(s) to check';
 $string['privacy:metadata'] = 'The Code checker plugin does not store any personal data.';
 $string['pluginname'] = 'Code checker';
 $string['recheckfile'] = 'Re-check just this file';

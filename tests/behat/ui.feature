@@ -7,7 +7,7 @@ Feature: Codechecker UI works as expected
   Scenario Outline: Verify that specified paths are checked
     Given I log in as "admin"
     And I navigate to "Development > Code checker" in site administration
-    And I set the field "Path to check" to "<path>"
+    And I set the field "Path(s) to check" to "<path>"
     And I set the field "Exclude" to "*/tests/fixtures/*"
     When I press "Check code"
     Then I should see "<seen>"
@@ -31,7 +31,7 @@ Feature: Codechecker UI works as expected
   Scenario Outline: Verify that specified exclusions are performed
     Given I log in as "admin"
     And I navigate to "Development > Code checker" in site administration
-    And I set the field "Path to check" to "<path>"
+    And I set the field "Path(s) to check" to "<path>"
     And I set the field "Exclude" to "<exclude>"
     When I press "Check code"
     Then I should see "<seen>"
@@ -50,10 +50,10 @@ Feature: Codechecker UI works as expected
 
   # We use the @javascript tag here because of MDL-53083, causing non-javascript to fail unchecking checkboxes
   @javascript
-  Scenario: Verify that the warnings toogle has effect
+  Scenario: Verify that the warnings toggle has effect
     Given I log in as "admin"
     And I navigate to "Development > Code checker" in site administration
-    And I set the field "Path to check" to "local/codechecker/moodle/tests/fixtures/squiz_php_commentedoutcode.php"
+    And I set the field "Path(s) to check" to "local/codechecker/moodle/tests/fixtures/squiz_php_commentedoutcode.php"
     And I set the field "Exclude" to "dont_exclude_anything"
     # Warnings enabled
     And I set the field "Include warnings" to "1"
@@ -68,3 +68,11 @@ Feature: Codechecker UI works as expected
     And I should not see "Inline comments must start"
     And I should not see "is this commented out code"
     And I log out
+
+  Scenario: Verify that multiple paths work
+    Given I log in as "admin"
+    And I navigate to "Development > Code checker" in site administration
+    And I set the field "Path(s) to check" to "local/codechecker/version.php\nlocal/codechecker/index.php"
+    When I press "Check code"
+    Then I should see "index.php"
+    And I should see "version.php"
