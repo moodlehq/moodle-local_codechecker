@@ -28,7 +28,12 @@
     <rule ref="Generic.PHP.DisallowShortOpenTag"/>
     <rule ref="Generic.PHP.LowerCaseConstant"/>
 
-    <rule ref="Generic.WhiteSpace.ScopeIndent"/>
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="ignoreIndentationTokens" type="array"
+                value="T_CLOSE_TAG"/>
+        </properties>
+    </rule>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
 
     <rule ref="Squiz.Classes.DuplicateProperty"/>
@@ -63,7 +68,9 @@
         </properties>
     </rule>
     <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
-        <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
     </rule>
     <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
     <rule ref="Squiz.WhiteSpace.ScopeClosingBrace"/>
