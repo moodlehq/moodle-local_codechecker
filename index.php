@@ -61,7 +61,10 @@ if ($pathlist) {
     $failed = false;
     $fullpaths = [];
     foreach ($paths as $path) {
-        $path = clean_param($path, PARAM_PATH);
+        $path = trim(clean_param($path, PARAM_PATH));
+        if (empty($path)) { // No blanks, we don't want to check the whole dirroot.
+            continue;
+        }
         $fullpath = $CFG->dirroot . '/' . trim($path, '/');
         if (!is_file($fullpath) && !is_dir($fullpath)) {
             echo $output->invald_path_message($path);
