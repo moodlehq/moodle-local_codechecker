@@ -15,7 +15,7 @@ Current checkout:
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
-  - none right now
+  - PHP 7.4 fix: https://github.com/squizlabs/PHP_CodeSniffer/pull/3130
 
 ===== ===== ===== ===== ===== ===== =====
 
