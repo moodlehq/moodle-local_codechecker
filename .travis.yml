@@ -58,12 +58,9 @@ jobs:
     - php: 7.1
       env: MOODLE_BRANCH=MOODLE_32_STABLE  DB=pgsql NODE_VERSION=8.9
 
-    - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_36_STABLE  DB=pgsql
-    - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_35_STABLE  DB=mysqli
-    - php: 7.0
-      env: MOODLE_BRANCH=MOODLE_34_STABLE  DB=pgsql
+    # Cannot test with PHP 7.1 any more because we are now using the :void return type-
+    # Note that, still, it will works, it's just the phpunit tests which cannot
+    # be executed with that PHP versions.
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -84,5 +81,6 @@ script:
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
+  - moodle-plugin-ci phpdoc
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
