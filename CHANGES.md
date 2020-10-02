@@ -1,3 +1,12 @@
+Changes in version 2.9.8 (20201002) - Bye and thank you, phpcs 2.x
+------------------------------------------------------------------
+- [PR#83](https://github.com/moodlehq/moodle-local_codechecker/pull/83) and [PR#84](https://github.com/moodlehq/moodle-local_codechecker/pull/84): Allow a list of files to be checked (Sam Marshall).
+- [PR#80](https://github.com/moodlehq/moodle-local_codechecker/pull/80): Remove require of now-deleted coursecatlib.php (Jun Pataleta).
+- Several travis changes:
+    - [PR#79](https://github.com/moodlehq/moodle-local_codechecker/pull/79): Bump to use moodlehq/moodle-plugin-ci v3.
+    - [PR#81](https://github.com/moodlehq/moodle-local_codechecker/pull/81): Add support for 310 branch.
+- Small README changes: information section improved and travis status badge update to show travis.com build status. 
+
 Changes in version 2.9.7 (20200718) - Bye bye, JS
 -------------------------------------------------
 - [PR#75](https://github.com/moodlehq/moodle-local_codechecker/pull/75) and [PR#77](https://github.com/moodlehq/moodle-local_codechecker/pull/77): Small tweaks for better transition to phpcs3.
