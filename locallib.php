@@ -26,6 +26,16 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
 
+// Default errors severity level
+if (defined('PHPCS_DEFAULT_ERROR_SEV') === false) {
+    define('PHPCS_DEFAULT_ERROR_SEV', 5);
+}
+
+// Default warnings severity level
+if (defined('PHPCS_DEFAULT_WARN_SEV') === false) {
+    define('PHPCS_DEFAULT_WARN_SEV', 5);
+}
+
 /**
  * Settings form for the code checker.
  *
