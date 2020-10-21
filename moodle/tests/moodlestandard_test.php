@@ -863,4 +863,34 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         $this->verify_cs_results();
     }
+
+    /**
+     * Assert that www.gnu.org can be referred to via http URL in the boilerplate.
+     */
+    public function test_moodle_files_boilerplate_gnu_http() {
+
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.BoilerplateComment');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_boilerplate/gnu_http.php');
+
+        $this->set_errors([]);
+        $this->set_warnings([]);
+
+        $this->verify_cs_results();
+    }
+
+    /**
+     * Assert that www.gnu.org can be referred to via https URL in the boilerplate.
+     */
+    public function test_moodle_files_boilerplate_gnu_https() {
+
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.BoilerplateComment');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_boilerplate/gnu_https.php');
+
+        $this->set_errors([]);
+        $this->set_warnings([]);
+
+        $this->verify_cs_results();
+    }
 }
