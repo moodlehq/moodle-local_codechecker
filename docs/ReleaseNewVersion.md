@@ -5,13 +5,11 @@ This guide is to release a new version of the Code-checker plugin. Remember that
 
 Check the existing PRs and approve those that are applicable to this release.
 
-Create a standard PR with the version bump. Ensure the following have been updated:
-
-* The `CHANGE.md`, adding the PRs that have been approved and other existing changes.
-* The `version.php` file, at least the *version* and *release* values.
-
 Create a standard PR to get the version bump reviewed and incorporated upstream. Please **avoid merge commit** for the new
- release merge (use "Rebase and merge" option).
+ release merge (use "Rebase and merge" option). Ensure the following have been updated:
+
+* The `CHANGES.md`, adding the PRs that have been approved and other existing changes.
+* The `version.php` file, at least the *version* and *release* values.
 
 Once the version bump PR has been reviewed and incorporated upstream, then you need to tag the release, that will trigger a
  Travis CI build to run the integration testing.
@@ -30,10 +28,9 @@ Once the new release is ready, you should add the latest release to the `Moodle 
 1. Login to the plugins' directory site and go to [plugin page](https://moodle.org/plugins/local_codechecker).
 2. To add a new version, you have to be a plugin maintainer. **Only lead maintainers can add other maintainers**.
 3. In the main action bar, follow the *</>Developer zone* option.
-4. Zip the code in a codechecker folder and name it "local_codechecker_moodle39_2020100200.zip" (being "2020100200" the plugin
- version). Don't forget to remove the .git folder.
+4. Donwload a zip file for the given version of the plugin from GitHub (https://github.com/moodlehq/moodle-local_codechecker/archive/v2.9.8.zip).
 5. Click `Add a new version`.
-6. Upload the previously created zip file and keep the default options. Add the supported Moodle versions and click `Continue`.
-7. On the next page, fill in the required information and click `Save changes`.
+6. Upload the zip file and keep the default options. Add the supported Moodle versions and click `Continue`.
+7. On the next page, fill in the required information. In the *Release notes* field we put the concatenation of the CHANGES.md last version section and the README.md, keeping the travis badge. Click `Save changes`.
 
 That's pretty much it. The new version is publicly available.
