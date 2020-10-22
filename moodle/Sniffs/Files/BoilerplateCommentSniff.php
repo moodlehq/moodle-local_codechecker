@@ -86,7 +86,12 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
                 return;
             }
 
-            $regex = str_replace('Moodle', '.*', '/^' . preg_quote($line, '/') . '/');
+            $regex = str_replace(
+                ['Moodle', 'http\\:'],
+                ['.*', 'https?\\:'],
+                '/^' . preg_quote($line, '/') . '/'
+            );
+
             if ($tokens[$tokenptr]['code'] != T_COMMENT ||
                     !preg_match($regex, $tokens[$tokenptr]['content'])) {
 
