@@ -28,9 +28,8 @@ Once the new release is ready, you should add the latest release to the `Moodle 
 1. Login to the plugins' directory site and go to [plugin page](https://moodle.org/plugins/local_codechecker).
 2. To add a new version, you have to be a plugin maintainer. **Only lead maintainers can add other maintainers**.
 3. In the main action bar, follow the *</>Developer zone* option.
-4. Donwload a zip file for the given version of the plugin from GitHub (https://github.com/moodlehq/moodle-local_codechecker/archive/v2.9.8.zip).
-5. Click `Add a new version`.
-6. Upload the zip file and keep the default options. Add the supported Moodle versions and click `Continue`.
-7. On the next page, fill in the required information. In the *Release notes* field we put the concatenation of the CHANGES.md last version section and the README.md, keeping the travis badge. Click `Save changes`.
+4. Click `Add a new version`.
+5. Select the appropriate GitHub release from the drop-down and keep the default options. Add the supported Moodle versions and click `Continue`.
+6. On the next page, fill in the required information. In the *Release notes* field we put the concatenation of the CHANGES.md last version section and the README.md, keeping the travis badge. Click `Save changes`.
 
 That's pretty much it. The new version is publicly available.
