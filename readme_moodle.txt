@@ -12,6 +12,10 @@ Instructions to upgrade the phpcs bundled version:
 Current checkout:
 
   3.5.8 (9d583721a)
+  
+Local modifications (only allowed if there is a PR upstream backing it):
+
+  - None, right now.
 
 ===== ===== ===== ===== ===== ===== =====
 
