@@ -1981,6 +1981,7 @@ class File
                 $owner = $this->tokens[$this->tokens[$lastBracket]['parenthesis_owner']];
                 if ($owner['code'] === T_FUNCTION
                     || $owner['code'] === T_CLOSURE
+                    || $owner['code'] === T_FN
                 ) {
                     $params = $this->getMethodParameters($this->tokens[$lastBracket]['parenthesis_owner']);
                     foreach ($params as $param) {
@@ -2094,12 +2095,12 @@ class File
      * @param int|string|array $types   The type(s) of tokens to search for.
      * @param int              $start   The position to start searching from in the
      *                                  token stack.
-     * @param int              $end     The end position to fail if no token is found.
+     * @param int|null         $end     The end position to fail if no token is found.
      *                                  if not specified or null, end will default to
      *                                  the start of the token stack.
      * @param bool             $exclude If true, find the previous token that is NOT of
      *                                  the types specified in $types.
-     * @param string           $value   The value that the token(s) must be equal to.
+     * @param string|null      $value   The value that the token(s) must be equal to.
      *                                  If value is omitted, tokens with any value will
      *                                  be returned.
      * @param bool             $local   If true, tokens outside the current statement
@@ -2175,12 +2176,12 @@ class File
      * @param int|string|array $types   The type(s) of tokens to search for.
      * @param int              $start   The position to start searching from in the
      *                                  token stack.
-     * @param int              $end     The end position to fail if no token is found.
+     * @param int|null         $end     The end position to fail if no token is found.
      *                                  if not specified or null, end will default to
      *                                  the end of the token stack.
      * @param bool             $exclude If true, find the next token that is NOT of
      *                                  a type specified in $types.
-     * @param string           $value   The value that the token(s) must be equal to.
+     * @param string|null      $value   The value that the token(s) must be equal to.
      *                                  If value is omitted, tokens with any value will
      *                                  be returned.
      * @param bool             $local   If true, tokens outside the current statement
@@ -2487,7 +2488,7 @@ class File
      * @param int        $stackPtr The position of the token we are checking.
      * @param int|string $type     The type of token to search for.
      * @param bool       $first    If TRUE, will return the matched condition
-     *                             furtherest away from the passed token.
+     *                             furthest away from the passed token.
      *                             If FALSE, will return the matched condition
      *                             closest to the passed token.
      *

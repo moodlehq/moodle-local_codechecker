@@ -11,11 +11,7 @@ Instructions to upgrade the phpcs bundled version:
 
 Current checkout:
 
-  3.5.6+ (7c1df7d2c)
-
-Local modifications (only allowed if there is a PR upstream backing it):
-
-  - PHP 7.4 fix: https://github.com/squizlabs/PHP_CodeSniffer/pull/3130
+  3.5.8 (9d583721a)
 
 ===== ===== ===== ===== ===== ===== =====
 
