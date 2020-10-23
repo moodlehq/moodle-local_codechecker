@@ -72,7 +72,7 @@ class runner extends \PHP_CodeSniffer\Runner {
     }
 
     /**
-     * Set the files the runned is going to process.
+     * Set the files the runner is going to process.
      *
      * @param string[] $files array of full paths to files or directories.
      */
@@ -87,6 +87,24 @@ class runner extends \PHP_CodeSniffer\Runner {
      */
     public function set_ignorepatterns($ignorepatterns) {
         $this->config->ignored = $ignorepatterns;
+    }
+
+    /**
+     * Set the verbosity for the output.
+     *
+     * @param int $verbosity How verbose the output should be. Check expected values in {@see PHP_CodeSniffer\Config}.
+     */
+    public function set_verbosity(int $verbosity): void {
+        $this->config->verbosity = $verbosity;
+    }
+
+    /**
+     * Set if the interactive checking mode should be enabled or not.
+     *
+     * @param bool $interactive If true, will stop after each file with errors and wait for user input.
+     */
+    public function set_interactive(bool $interactive): void {
+        $this->config->interactive = $interactive;
     }
 
     /**
@@ -113,7 +131,7 @@ class runner extends \PHP_CodeSniffer\Runner {
         $this->init();
 
         // Create the reporter to manage all the reports from the run.
-        $reporter = new \PHP_CodeSniffer\Reporter($this->config);
+        $this->reporter = new \PHP_CodeSniffer\Reporter($this->config);
 
         // And build the file list to iterate over.
         $todo = new \PHP_CodeSniffer\Files\FileList($this->config, $this->ruleset);
@@ -121,18 +139,19 @@ class runner extends \PHP_CodeSniffer\Runner {
         foreach ($todo as $file) {
             if ($file->ignored === false) {
                 try {
-                    $file->process();
+                    $this->processFile($file);
+                } catch (\PHP_CodeSniffer\Exceptions\DeepExitException $e) {
+                    echo $e->getMessage();
+                    return $e->getCode();
                 } catch (\Exception $e) {
                     $error = 'Problem during processing; checking has been aborted. The error message was: '.$e->getMessage();
                     $file->addErrorOnLine($error, 1, 'Internal.Exception');
                 }
-                // Add results to the reporter and free memory.
-                $reporter->cacheFileReport($file, $this->config);
                 $file->cleanUp();
             }
         }
 
         // Have finished, generate the final reports.
-        $reporter->printReports();
+        $this->reporter->printReports();
     }
 }
