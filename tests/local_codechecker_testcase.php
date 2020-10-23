@@ -205,7 +205,7 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
      * In charge of initializing the CS and reset all the internal
      * properties.
      */
-    protected function setUp() {
+    protected function setUp(): void {
         if (self::$phpcs === null) {
             // Note that the plugin workarounds this by using
             // {@link local_codechecker_codesniffer_cli} with overridden method, but I want
@@ -320,8 +320,14 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
             // Now verify every expectation requiring matching.
             foreach ($expectation as $key => $expectedcontent) {
                 if (is_string($expectedcontent)) {
-                    $this->assertContains($expectedcontent, $results[$line][$key],
+                    // PHPUnit 6 compatibility hack. TODO: Remove once Moodle 3.5 goes out of support.
+                    if (method_exists($this, 'assertStringContainsString')) {
+                        $this->assertStringContainsString($expectedcontent, $results[$line][$key],
                             'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
+                    } else {
+                        $this->assertContains($expectedcontent, $results[$line][$key],
+                            'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
+                    }
                 }
             }
             // Delete this line from results.
