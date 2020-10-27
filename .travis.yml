@@ -58,8 +58,8 @@ jobs:
     - php: 7.1
       env: MOODLE_BRANCH=MOODLE_32_STABLE  DB=pgsql NODE_VERSION=8.9
 
-    # Cannot test with PHP 7.1 any more because we are now using the :void return type-
-    # Note that, still, it will works, it's just the phpunit tests which cannot
+    # Cannot test with PHP 7.0 any more because we are now using the :void return type.
+    # Note that, still, the plugin will work ok, it's just the phpunit tests which cannot
     # be executed with that PHP versions.
 
 before_install:
