@@ -67,6 +67,9 @@ $output = $PAGE->get_renderer('local_codechecker');
 echo $OUTPUT->header();
 
 if ($pathlist) {
+    // Unlock the session before processing the files.
+    \core\session\manager::write_close();
+
     $paths = preg_split('~[\r\n]+~', $pathlist);
 
     $failed = false;
