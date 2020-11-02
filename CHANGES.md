@@ -1,3 +1,15 @@
+Changes in version 3.0.0 (20201102) - Welcome phpcs 3
+-----------------------------------------------------
+- Upgrade to PHP_CodeSniffer 3.5.8 (stronk7):
+    - PHP_CodeSniffer move to phpcs directory (see readme_moodle.txt for complete instructions).
+    - Move Moodle sniffs to PHP_CodeSniffer 3.
+    - Create own runner/report.
+    - Move as much as possible from locallib.php to classes.
+    - Add PHPUnit 8 compatibility, keeping PHPUnit 6 working.
+    - Min Moodle version required increases from 3.2 to 3.4.
+- [PR#90](https://github.com/moodlehq/moodle-local_codechecker/pull/90): Adapt custom PHP_CodeSniffer runner (classes/runner.php) to use PHP_CodeSniffer 3 API (Sara Arjona).
+- [PR#95](https://github.com/moodlehq/moodle-local_codechecker/pull/95): Unlock session before processing files.
+
 Changes in version 2.9.8 (20201002) - Bye and thank you, phpcs 2.x
 ------------------------------------------------------------------
 - [PR#83](https://github.com/moodlehq/moodle-local_codechecker/pull/83) and [PR#84](https://github.com/moodlehq/moodle-local_codechecker/pull/84): Allow a list of files to be checked (Sam Marshall).
