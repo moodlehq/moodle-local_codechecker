@@ -8,7 +8,7 @@ Changes in version 3.0.0 (20201102) - Welcome phpcs 3
     - Add PHPUnit 8 compatibility, keeping PHPUnit 6 working.
     - Min Moodle version required increases from 3.2 to 3.4.
 - [PR#90](https://github.com/moodlehq/moodle-local_codechecker/pull/90): Adapt custom PHP_CodeSniffer runner (classes/runner.php) to use PHP_CodeSniffer 3 API (Sara Arjona).
-- [PR#95](https://github.com/moodlehq/moodle-local_codechecker/pull/95): Unlock session before processing files.
+- [PR#95](https://github.com/moodlehq/moodle-local_codechecker/pull/95): Unlock session before processing files (Víctor Déniz).
 
 Changes in version 2.9.8 (20201002) - Bye and thank you, phpcs 2.x
 ------------------------------------------------------------------
