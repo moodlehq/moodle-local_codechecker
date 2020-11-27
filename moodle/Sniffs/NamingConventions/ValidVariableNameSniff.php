@@ -22,13 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (class_exists('PHP_CodeSniffer_Standards_AbstractVariableSniff', true) === false) {
-    $error = 'Class PHP_CodeSniffer_Standards_AbstractVariableSniff not found';
-    throw new PHP_CodeSniffer_Exception($error);
-}
+namespace MoodleCodeSniffer\moodle\Sniffs\NamingConventions;
 
-class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
-        extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Files\File;
+
+class ValidVariableNameSniff extends AbstractVariableSniff {
 
     static public $allowedglobals = array('ADMIN', 'CFG', 'COURSE', 'DB', 'FULLME',
             'OUTPUT', 'PAGE', 'PERF', 'SESSION', 'SITE', 'THEME', 'USER',
@@ -40,13 +41,12 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     /**
      * Processes class member variables.
      *
-     * @param PHP_CodeSniffer_File $phpcsfile The file being scanned.
-     * @param int                  $stackptr  The position of the current token
-     *                                        in the stack passed in $tokens.
+     * @param File $phpcsfile The file being scanned.
+     * @param int $stackptr The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    protected function processMemberVar(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
+    protected function processMemberVar(File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
         $membername = ltrim($tokens[$stackptr]['content'], '$');
 
@@ -75,12 +75,12 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     /**
      * Processes normal variables.
      *
-     * @param PHP_CodeSniffer_File $phpcsfile The file where this token was found.
-     * @param int                  $stackptr  The position where the token was found.
+     * @param File $phpcsfile The file where this token was found.
+     * @param int $stackptr The position where the token was found.
      *
      * @return void
      */
-    protected function processVariable(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
+    protected function processVariable(File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
         $membername     = ltrim($tokens[$stackptr]['content'], '$');
         $this->validate_moodle_variable_name($membername, $phpcsfile, $stackptr);
@@ -89,12 +89,12 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
     /**
      * Processes variables in double quoted strings.
      *
-     * @param PHP_CodeSniffer_File $phpcsfile The file where this token was found.
-     * @param int                  $stackptr  The position where the token was found.
+     * @param File $phpcsfile The file where this token was found.
+     * @param int $stackptr The position where the token was found.
      *
      * @return void
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $phpcsfile, $stackptr) {
+    protected function processVariableInString(File $phpcsfile, $stackptr) {
         $tokens = $phpcsfile->getTokens();
 
         if (preg_match('/\$([A-Za-z0-9_]+)(\-\>([A-Za-z0-9_]+))?/i',
@@ -109,13 +109,13 @@ class moodle_Sniffs_NamingConventions_ValidVariableNameSniff
      * Processes normal moodle variables against Moodle coding guidelines. Note this
      * can't be used for member variables as we allow slightly different rules there.
      *
-     * @param string               $varname   The name of the variable.
-     * @param PHP_CodeSniffer_File $phpcsfile The file where this token was found.
-     * @param int                  $stackptr  The position where the token was found.
+     * @param string $varname The name of the variable.
+     * @param File $phpcsfile The file where this token was found.
+     * @param int $stackptr The position where the token was found.
      *
      * @return void
      */
-    private function validate_moodle_variable_name($varname, PHP_CodeSniffer_File $phpcsfile, $stackptr) {
+    private function validate_moodle_variable_name($varname, File $phpcsfile, $stackptr) {
         if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must be all lower-case";
             $phpcsfile->addError($error, $stackptr, 'VariableNameLowerCase');

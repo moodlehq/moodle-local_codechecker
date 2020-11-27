@@ -22,7 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
+namespace MoodleCodeSniffer\moodle\Sniffs\Files;
+
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
+class RequireLoginSniff implements Sniff {
     public $loginfunctions = ['require_login', 'require_course_login', 'require_admin', 'admin_externalpage_setup'];
     public $ignorewhendefined = ['NO_MOODLE_COOKIES', 'CLI_SCRIPT', 'ABORT_AFTER_CONFIG'];
     /**
@@ -35,10 +40,10 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
     /**
      * Processes php files and for required login checks if includeing config.php
      *
-     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      */
-    public function process(PHP_CodeSniffer_File $file, $pointer) {
+    public function process(File $file, $pointer) {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $pointer - 1);
         if ($prevopentag !== false) {
@@ -67,11 +72,11 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
     /**
      * Returns the position of a config.php require statement in the stack.
      *
-     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      * @return int|false the position in the file or false if no require statement found.
      */
-    protected function get_config_inclusion_position(PHP_CodeSniffer_File $file, $pointer) {
+    protected function get_config_inclusion_position(File $file, $pointer) {
         for ($i = $pointer; $i < $file->numTokens; $i++) {
             $i = $file->findNext([T_REQUIRE, T_REQUIRE_ONCE], $i);
             if ($i === false) {
@@ -90,11 +95,11 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
     /**
      * Is the current position a config.php inclusion?
      *
-     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      * @return bool true if it is a config inclusion
      */
-    protected function is_a_config_php_incluson(PHP_CodeSniffer_File $file, $pointer) {
+    protected function is_a_config_php_incluson(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         // It's a require() or require_once() statement. Is it require(config.php)?
@@ -110,11 +115,11 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
      * Should we skip the login checks? We look back up the stack to see if there are any
      * define statements which cause us to skip the checks (e.g. CLI_SCRIPT)
      *
-     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      * @return bool true if the checks should be skipped
      */
-    protected function should_skip_login_checks(PHP_CodeSniffer_File $file, $pointer) {
+    protected function should_skip_login_checks(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         for ($i = $pointer; $i > 0; $i--) {
@@ -145,11 +150,11 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
     /**
      * Is the current position a login function?
      *
-     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      * @return bool true if the current point in stack is a login function.
      */
-    protected function is_a_login_function(PHP_CodeSniffer_File $file, $pointer) {
+    protected function is_a_login_function(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         if (in_array($tokens[$pointer]['content'], $this->loginfunctions)) {
@@ -162,11 +167,11 @@ class moodle_Sniffs_Files_RequireLoginSniff implements PHP_CodeSniffer_Sniff {
     /**
      * Is there a login function present in the following code?
      *
-     * @param PHP_CodeSniffer_File $file The file being scanned.
+     * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      * @return true if login function is present.
      */
-    protected function is_login_function_present(PHP_CodeSniffer_File $file, $pointer) {
+    protected function is_login_function_present(File $file, $pointer) {
         for ($i = $pointer; $i < $file->numTokens; $i++) {
             $i = $file->findNext(T_STRING, $i);
             if ($i === false) {

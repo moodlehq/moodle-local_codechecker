@@ -27,12 +27,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_PHP_IncludingFileSniff implements PHP_CodeSniffer_Sniff {
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+
+class IncludingFileSniff implements Sniff {
     public function register() {
         return array(T_INCLUDE_ONCE, T_REQUIRE_ONCE, T_REQUIRE, T_INCLUDE);
     }
 
-    public function process(PHP_CodeSniffer_File $file, $stackptr) {
+    public function process(File $file, $stackptr) {
         $tokens = $file->getTokens();
 
         if ($tokens[$stackptr + 1]['code'] !== T_OPEN_PARENTHESIS) {
@@ -57,9 +65,9 @@ class moodle_Sniffs_PHP_IncludingFileSniff implements PHP_CodeSniffer_Sniff {
         // Check to see if they are assigning the return value of this
         // including call. If they are then they are probably checking it, so
         // it's conditional.
-        $previous = $file->findPrevious(PHP_CodeSniffer_Tokens::$emptyTokens,
+        $previous = $file->findPrevious(Tokens::$emptyTokens,
                 ($stackptr - 1), null, true);
-        if (in_array($tokens[$previous]['code'], PHP_CodeSniffer_Tokens::$assignmentTokens)) {
+        if (in_array($tokens[$previous]['code'], Tokens::$assignmentTokens)) {
             // The have assigned the return value to it, so its conditional.
             $incondition = true;
         }

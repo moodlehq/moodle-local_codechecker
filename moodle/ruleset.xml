@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
-<ruleset name="moodle">
-    <description>The Moodle coding style</description>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd"
+    name="moodle"
+    namespace="MoodleCodeSniffer\moodle">
+
+    <description>The Moodle PHP CodeSniffer coding style standard</description>
 
     <arg name="extensions" value="php" />
     <arg name="encoding" value="utf-8" />
@@ -24,7 +28,12 @@
     <rule ref="Generic.PHP.DisallowShortOpenTag"/>
     <rule ref="Generic.PHP.LowerCaseConstant"/>
 
-    <rule ref="Generic.WhiteSpace.ScopeIndent"/>
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="ignoreIndentationTokens" type="array"
+                value="T_CLOSE_TAG"/>
+        </properties>
+    </rule>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
 
     <rule ref="Squiz.Classes.DuplicateProperty"/>
@@ -59,7 +68,9 @@
         </properties>
     </rule>
     <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
-        <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
     </rule>
     <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
     <rule ref="Squiz.WhiteSpace.ScopeClosingBrace"/>
@@ -74,15 +85,7 @@
         <severity>0</severity>
     </rule>
 
-    <!-- Add the PHPCompatibility external standard
-         from git://github.com/wimg/PHPCompatibility.git
-         Note it only works by specifying paths. Any
-         attempt to include external rulesets with own
-         rules or excludes fail -->
-    <rule ref="../PHPCompatibility">
-        <!-- We use our own subclassed moodle_Sniffs_PHP_ForbiddenNamesAsInvokedFunctionsSniff
-        because there are some tokens we allow to be used as functions, like clone() -->
-        <exclude name="PHPCompatibility.Keywords.ForbiddenNamesAsInvokedFunctions"/>
-    </rule>
+    <!-- Let's add the complete PHPCompatibility standard -->
+    <rule ref="PHPCompatibility" />
 
 </ruleset>

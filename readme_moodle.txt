@@ -1,26 +1,21 @@
 Instructions to upgrade the phpcs bundled version:
 
 - Drop a checkout of git://github.com/squizlabs/PHP_CodeSniffer.git
-  within the "pear/PHP" directory of the plugin. Always removing
-  all the previous contents.
-- Delete not needed stuff, like:
-  - Tests.
-  - travis, composer, npm... files.
+  within the "phpcs" directory of the plugin. Always removing
+  all the previous contents before copying.
+- Also, remove not needed stuff, like:
+  - All dot (.*) files and directories (git, travis...).
+  - Any composer.* and vendor files.
+  - All .ini, .xsd, .neon and .dist files.
+  - The scripts, tests and vendor directories.
 
 Current checkout:
 
-  2.9.2 (4665f64)
-
+  3.5.8 (9d583721a)
+  
 Local modifications (only allowed if there is a PR upstream backing it):
 
-  - b98fcbc : MDLSITE-2825 followup: backport #2009 to phpcs 2.7.x. Once
-    we bump to to phpcs 3.3.0 this hack can be left out. Upstream ref:
-    https://github.com/squizlabs/PHP_CodeSniffer/issues/2009
-
-  - 04810ac and 8ea64e0: php 7.4 basic compatibility. Will auto-fix once
-    we bump to to phpcs 3.5.0 or later. Upstream refs:
-    - https://github.com/squizlabs/PHP_CodeSniffer/issues/2558
-    - https://github.com/squizlabs/PHP_CodeSniffer/issues/2561
+  - None, right now.
 
 ===== ===== ===== ===== ===== ===== =====
 
@@ -37,6 +32,9 @@ Current checkout:
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
-  - none right now
+  - Added PHPCSAliases.php to base dir to provide phpcs 2/3 compatibility. Needed
+    because still there are a number of old class names within the standard. This
+    doesn't have any upstream PR, because the file is there, just we had not needed
+    it before the jump to phpcs 3.
 
 ===== ===== ===== ===== ===== ===== =====

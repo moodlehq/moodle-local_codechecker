@@ -1,3 +1,4 @@
+phpcs:set Generic.WhiteSpace.ScopeIndent ignoreIndentationTokens[] T_CLOSE_TAG
 <?php
 defined('MOODLE_INTERNAL') || die(); // Make this always the 1st line in all CS fixtures.
 
@@ -46,7 +47,7 @@ if ($condition) {
             echo "this is OK too";
         }
     }
-    // The close tag must be aligned, hence next one fails.
+    // There is freedom for closing tags, it's not clear the policy to follow when mixing multiple sections.
       ?>
 // Adding some known content that caused problems. See CONTRIB-6146.
 // Source: https://github.com/roelmann/moodle-theme_flexibase/blob/d99ca95f0b77c4cd2f877cf8b1d0715acb392cf4/layout/secure.php

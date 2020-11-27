@@ -24,6 +24,17 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
+
+// PHP_Codesniffer autoloading.
+if (is_file(__DIR__ . '/phpcs/autoload.php') === true) {
+    include_once(__DIR__ . '/phpcs/autoload.php');
+} else {
+    include_once('PHP/CodeSniffer/autoload.php');
+}
+// PHPCompatibility autoloading.
+require_once('PHPCSAliases.php');
+
+// Own stuff (TODO: Some day all these will be moved to classes).
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 $pathlist = optional_param('path', '', PARAM_RAW);
@@ -56,6 +67,9 @@ $output = $PAGE->get_renderer('local_codechecker');
 echo $OUTPUT->header();
 
 if ($pathlist) {
+    // Unlock the session before processing the files.
+    \core\session\manager::write_close();
+
     $paths = preg_split('~[\r\n]+~', $pathlist);
 
     $failed = false;
@@ -75,19 +89,21 @@ if ($pathlist) {
     }
 
     if ($fullpaths && !$failed) {
+        // Let's use our own Runner, all we need is to pass some
+        // configuration settings (reportfile, show warnings) and
+        // override the init() method to set all our config options.
+        // Finally, use own run() method, much simplified from
+        // the runPHPCS() upstream one.
+        $runner = new \local_codechecker\runner();
+
         $reportfile = make_temp_directory('phpcs') . '/phpcs_' . random_string(10) . '.xml';
-        $phpcs = new PHP_CodeSniffer();
-        $phpcs->setAllowedFileExtensions(['php']); // We are only going to process php files ever.
-        $cli = new local_codechecker_codesniffer_cli();
-        $cli->setReport('local_codechecker'); // Using own custom xml format for easier handling later.
-        $cli->setReportFile($reportfile); // Send the report to dataroot temp.
-        $cli->setIncludeWarnings($includewarnings); // Decide if we want to show warnings (defaults yes).
-        $phpcs->setCli($cli);
-        $phpcs->setIgnorePatterns(local_codesniffer_get_ignores($exclude));
-        $phpcs->process($fullpaths,
-                local_codechecker_clean_path($CFG->dirroot . '/local/codechecker/moodle'));
-        // Save the xml report file to dataroot/temp.
-        $phpcs->reporting->printReport('local_codechecker', false, $cli->getCommandLineValues(), $reportfile);
+        $runner->set_reportfile($reportfile);
+        $runner->set_includewarnings($includewarnings);
+        $runner->set_ignorepatterns(local_codesniffer_get_ignores($exclude));
+        $runner->set_files($fullpaths);
+
+        $runner->run();
+
         // Load the XML file to proceed with the rest of checks.
         $xml = simplexml_load_file($reportfile);
 

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
-        <location>pear</location>
+        <location>phpcs</location>
         <name>PHP_CodeSniffer</name>
-        <version>2.9.2 (4665f64)</version>
+        <version>3.5.6+ (7c1df7d2c)</version>
         <license>BSD 3-Clause</license>
     </library>
     <library>

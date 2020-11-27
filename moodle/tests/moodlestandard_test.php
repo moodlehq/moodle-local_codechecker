@@ -18,8 +18,7 @@
  * This file contains the test cases covering the "moodle" standard.
  *
  * @package    local_codechecker
- * @subpackage phpunit
- * @category   phpunit
+ * @category   test
  * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -220,10 +219,10 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-            6 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
-            18 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
-            43 => 'expected at least 8 spaces',
-            50 => 'IncorrectExact'));
+            7 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
+            19 => 'indented incorrectly; expected at least 4 spaces, found 2 @Source: Generic.WhiteSpace.ScopeIndent.Incorrect',
+            44 => 'expected at least 8 spaces',
+        ));
         $this->set_warnings(array());
 
         // Let's do all the hard work!
@@ -248,7 +247,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             9 => 1,
             10 => 1,
             13 => 'function extract() is forbidden',
-            14 => 0, // These are eval, goto and got labels handled by {@link moodle_Sniffs_PHP_ForbiddenTokensSniff}.
+            14 => 0, // These are eval, goto and got labels handled by {@see moodle_Sniffs_PHP_ForbiddenTokensSniff}.
             15 => 0,
             16 => 0,
             17 => 0,
@@ -338,42 +337,6 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
-    public function test_moodle_php_forbiddennamesasinvokedfunctions() {
-
-        // Define the standard, sniff and fixture to use.
-        $this->set_standard('moodle');
-        $this->set_sniff('moodle.PHP.ForbiddenNamesAsInvokedFunctions');
-        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_forbiddennamesasinvokedfunctions.php');
-
-        // Define expected results (errors and warnings). Format, array of:
-        // - line => number of problems,  or
-        // - line => array of contents for message / source problem matching.
-        // - line => string of contents for message / source problem matching (only 1).
-        $this->set_errors(array(
-            5 => 0, // These are allowed as invoked functions in Moodle for now.
-            6 => 0,
-            7 => 0,
-            8 => 0,
-            9 => 0,
-            12 => 0,
-            13 => 0,
-            14 => 0,
-            15 => 0,
-            16 => 0,
-            19 => 1, // These are not allowed as invoked functions.
-            20 => 'T_CALLABLE',
-            21 => 'is a reserved keyword introduced in PHP version 5.0',
-            22 => 'T_FINAL',
-            23 => 1,
-            24 => 1,
-            25 => 0,
-            26 => 1));
-        $this->set_warnings(array());
-
-        // Let's do all the hard work!
-        $this->verify_cs_results();
-    }
-
     public function test_moodle_php_forbiddentokens() {
 
         // Define the standard, sniff and fixture to use.
@@ -414,7 +377,8 @@ class moodlestandard_testcase extends local_codechecker_testcase {
             11 => 'The use of the AS keyword to alias tables is bad for cross-db',
             12 => 0,
             // Only if the engine supported /e. Completely removed in PHP 7.3.
-            15 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 'The use of the /e modifier in regular expressions is forbidden' : 0),
+            15 => (version_compare(PHP_VERSION, '7.3.0', '<') ?
+                'The use of the /e modifier in regular expressions is forbidden' : 0),
             16 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 1 : 0),
             23 => (version_compare(PHP_VERSION, '7.3.0', '<') ? 2 : 1),
             26 => 0,
@@ -528,50 +492,49 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array(
-                               5 => 0,
-                               6 => 'Expected 1 space before',
-                               7 => 'Expected 1 space after',
-                               8 => array('Expected 1 space before', 'Expected 1 space after'),
-                               9 => 0,
-                               10 => 'Expected 1 space after "=>"; 3 found',
-                               11 => 0,
+                               6 => 0,
+                               7 => 'Expected 1 space before',
+                               8 => 'Expected 1 space after',
+                               9 => array('Expected 1 space before', 'Expected 1 space after'),
+                               10 => 0,
+                               11 => 'Expected 1 space after "=>"; 3 found',
                                12 => 0,
-                               13 => 'Expected 1 space before',
-                               14 => 'Expected 1 space after',
-                               15 => array('Expected 1 space before', 'Expected 1 space after'),
-                               16 => 0,
-                               17 => 'Expected 1 space after "="; 2 found',
-                               18 => 0,
+                               13 => 0,
+                               14 => 'Expected 1 space before',
+                               15 => 'Expected 1 space after',
+                               16 => array('Expected 1 space before', 'Expected 1 space after'),
+                               17 => 0,
+                               18 => 'Expected 1 space after "="; 2 found',
                                19 => 0,
                                20 => 0,
-                               21 => 'Expected 1 space before',
-                               22 => 'Expected 1 space after',
-                               23 => array('Expected 1 space before', 'Expected 1 space after'),
-                               24 => 0,
-                               25 => 'Expected 1 space after "+"; 2 found',
-                               26 => 'Expected 1 space before "+"; 2 found',
-                               27 => 0,
-                               28 => 'Expected 1 space before',
-                               29 => 'Expected 1 space after',
-                               30 => array('Expected 1 space before', 'Expected 1 space after'),
-                               31 => 0,
-                               32 => 'Expected 1 space after "-"; 2 found',
-                               33 => 'Expected 1 space before "-"; 2 found',
-                               34 => 0,
-                               35 => 'Expected 1 space before',
-                               36 => 'Expected 1 space after',
-                               37 => array('Expected 1 space before', 'Expected 1 space after'),
-                               38 => 0,
-                               39 => 'Expected 1 space after "*"; 2 found',
-                               40 => 'Expected 1 space before "*"; 2 found',
-                               41 => 0,
-                               42 => 'Expected 1 space before',
-                               43 => 'Expected 1 space after',
-                               44 => array('Expected 1 space before', 'Expected 1 space after'),
-                               45 => 0,
-                               46 => 'Expected 1 space after "/"; 2 found',
-                               47 => 'Expected 1 space before "/"; 2 found',
-                               48 => 0,
+                               21 => 0,
+                               22 => 'Expected 1 space before',
+                               23 => 'Expected 1 space after',
+                               24 => array('Expected 1 space before', 'Expected 1 space after'),
+                               25 => 0,
+                               26 => 'Expected 1 space after "+"; 2 found',
+                               27 => 'Expected 1 space before "+"; 2 found',
+                               28 => 0,
+                               29 => 'Expected 1 space before',
+                               30 => 'Expected 1 space after',
+                               31 => array('Expected 1 space before', 'Expected 1 space after'),
+                               32 => 0,
+                               33 => 'Expected 1 space after "-"; 2 found',
+                               34 => 'Expected 1 space before "-"; 2 found',
+                               35 => 0,
+                               36 => 'Expected 1 space before',
+                               37 => 'Expected 1 space after',
+                               38 => array('Expected 1 space before', 'Expected 1 space after'),
+                               39 => 0,
+                               40 => 'Expected 1 space after "*"; 2 found',
+                               41 => 'Expected 1 space before "*"; 2 found',
+                               42 => 0,
+                               43 => 'Expected 1 space before',
+                               44 => 'Expected 1 space after',
+                               45 => array('Expected 1 space before', 'Expected 1 space after'),
+                               46 => 0,
+                               47 => 'Expected 1 space after "/"; 2 found',
+                               48 => 'Expected 1 space before "/"; 2 found',
                                49 => 0,
                                50 => 0,
                                51 => 0,
@@ -585,7 +548,8 @@ class moodlestandard_testcase extends local_codechecker_testcase {
                                59 => 0,
                                60 => 0,
                                61 => 0,
-                               62 => 0
+                               62 => 0,
+                               63 => 0
                           ));
         $this->set_warnings(array());
 
@@ -666,7 +630,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         // - line => string of contents for message / source problem matching (only 1).
         $this->set_errors(array());
         $this->set_warnings(array(
-            5 => 'This comment is 63% valid code; is this commented out code',
+            5 => 'This comment is 72% valid code; is this commented out code',
             9 => '@Source: Squiz.PHP.CommentedOutCode.Found'
         ));
 
@@ -803,7 +767,7 @@ class moodlestandard_testcase extends local_codechecker_testcase {
 
         $this->set_errors(array());
         $this->set_warnings(array(
-            25 => 'check (require_login, require_course_login, require_admin, admin_externalpage_setup) following config inclusion. None found'
+            25 => ', require_course_login, require_admin, admin_externalpage_setup) following config inclusion. None found'
         ));
 
         $this->verify_cs_results();

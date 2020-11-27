@@ -22,7 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_PHP_ForbiddenGlobalUseSniff extends PHP_CodeSniffer_Standards_AbstractVariableSniff {
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
+use PHP_CodeSniffer\Files\File;
+
+class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
 
     /**
      * @var array list of problems to detect. Each element is an array with three keys:
@@ -49,14 +56,14 @@ class moodle_Sniffs_PHP_ForbiddenGlobalUseSniff extends PHP_CodeSniffer_Standard
     /**
      * @inheritDoc
      */
-    protected function processMemberVar(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function processMemberVar(File $phpcsFile, $stackPtr) {
         // Won't be a global.
     }
 
     /**
      * @inheritDoc
      */
-    protected function processVariable(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function processVariable(File $phpcsFile, $stackPtr) {
         $tokens  = $phpcsFile->getTokens();
         $varName = ltrim($tokens[$stackPtr]['content'], '$');
 
@@ -66,7 +73,7 @@ class moodle_Sniffs_PHP_ForbiddenGlobalUseSniff extends PHP_CodeSniffer_Standard
     /**
      * @inheritDoc
      */
-    protected function processVariableInString(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function processVariableInString(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 
         if (preg_match_all('|[^\\\]\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|', $tokens[$stackPtr]['content'], $matches) !== 0) {
@@ -80,10 +87,10 @@ class moodle_Sniffs_PHP_ForbiddenGlobalUseSniff extends PHP_CodeSniffer_Standard
      * Check a particular reference to a variable against all the forbidden things.
      *
      * @param string $varname the name of the variable that was found.
-     * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where this token was found.
-     * @param int $stackPtr  The position where the token was found.
+     * @param File $phpcsFile The PHP_CodeSniffer file where this token was found.
+     * @param int $stackPtr The position where the token was found.
      */
-    protected function check_variable_usage($varname, PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    protected function check_variable_usage($varname, File $phpcsFile, $stackPtr) {
         foreach ($this->forbiddencombinations as $forbiddencombination) {
             $this->check_one_combination($varname, $forbiddencombination, $phpcsFile, $stackPtr);
         }
@@ -96,11 +103,11 @@ class moodle_Sniffs_PHP_ForbiddenGlobalUseSniff extends PHP_CodeSniffer_Standard
      *
      * @param string $varname the name of the variable that was found.
      * @param array $forbiddencombination the particular forbidden combination to check.
-     * @param PHP_CodeSniffer_File $phpcsFile The PHP_CodeSniffer file where this token was found.
+     * @param File $phpcsFile The PHP_CodeSniffer file where this token was found.
      * @param int $stackPtr  The position where the token was found.
      */
     protected function check_one_combination($varname, $forbiddencombination,
-            PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+            File $phpcsFile, $stackPtr) {
         $tokens  = $phpcsFile->getTokens();
 
         if (!in_array($varname, $forbiddencombination['variables'])) {
