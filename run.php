@@ -26,8 +26,18 @@ define('CLI_SCRIPT', true);
 
 require(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/clilib.php');
-require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
+// PHP_Codesniffer autoloading.
+if (is_file(__DIR__ . '/phpcs/autoload.php') === true) {
+    include_once(__DIR__ . '/phpcs/autoload.php');
+} else {
+    include_once('PHP/CodeSniffer/autoload.php');
+}
+// PHPCompatibility autoloading.
+require_once('PHPCSAliases.php');
+
+// Own stuff (TODO: Some day all these will be moved to classes).
+require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 // Get the command-line options.
 list($options, $unrecognized) = cli_get_params(
@@ -52,14 +62,13 @@ if ($options['interactive']) {
 
 raise_memory_limit(MEMORY_HUGE);
 
-$standard = $CFG->dirroot . str_replace('/', DIRECTORY_SEPARATOR, '/local/codechecker/moodle');
+// Initialize and run the CS.
+$runner = new \local_codechecker\runner();
+$runner->set_verbosity(1);
+$runner->set_interactive($interactive);
+$runner->set_ignorepatterns(local_codesniffer_get_ignores());
 
-$cli = new local_codechecker_codesniffer_cli();
-$phpcs = new PHP_CodeSniffer(1, 0, 'utf-8', $interactive);
-$phpcs->setAllowedFileExtensions(['php']); // We are only going to process php files ever.
-$phpcs->setCli($cli);
-$phpcs->setIgnorePatterns(local_codesniffer_get_ignores());
-$phpcs->process(local_codechecker_clean_path(
-        $CFG->dirroot . '/' . trim($path, '/')),
-        local_codechecker_clean_path($standard));
-$phpcs->reporting->printReport('full', false, $cli->getCommandLineValues(), null);
+$fullpath = local_codechecker_clean_path($CFG->dirroot . '/' . trim($path, '/'));
+$runner->set_files([$fullpath]);
+
+$runner->run();

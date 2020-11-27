@@ -17,24 +17,41 @@
 /**
  * Verifies that inline comments conform to their coding standards.
  *
- * Based on {@link Squiz_Sniffs_Commenting_InlineCommentSniff}.
+ * Based on {@see PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\InlineCommentSniff}
+ * with some customizations to suit our very personal rules.
  *
  * @package    local_codechecker
  * @copyright  2012 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sniff {
+/**
+ * Checks that there is adequate spacing between comments.
+ *
+ * @author    Greg Sherwood <gsherwood@squiz.net>
+ * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @license   https://github.com/squizlabs/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
+ */
+
+namespace MoodleCodeSniffer\moodle\Sniffs\Commenting;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Util\Tokens;
+
+class InlineCommentSniff implements Sniff {
 
     /**
      * A list of tokenizers this sniff supports.
      *
      * @var array
      */
-    public $supportedTokenizers = array(
-                                   'PHP',
-                                   'JS',
-                                  );
+    public $supportedTokenizers = [
+        'PHP',
+        'JS',
+    ];
 
 
     /**
@@ -42,12 +59,11 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
      *
      * @return array
      */
-    public function register()
-    {
-        return array(
-                T_COMMENT,
-                T_DOC_COMMENT_OPEN_TAG,
-               );
+    public function register() {
+        return [
+            T_COMMENT,
+            T_DOC_COMMENT_OPEN_TAG,
+        ];
 
     }//end register()
 
@@ -55,14 +71,13 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in the
-     *                                        stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
-    {
+    public function process(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 
         // If this is a function/class/interface doc block comment, skip it.
@@ -70,31 +85,33 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
         // not allowed.
         if ($tokens[$stackPtr]['code'] === T_DOC_COMMENT_OPEN_TAG) {
             $nextToken = $phpcsFile->findNext(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($stackPtr + 1),
                 null,
                 true
             );
 
-            $ignore = array(
-                       T_CLASS,
-                       T_INTERFACE,
-                       T_TRAIT,
-                       T_FUNCTION,
-                       T_CLOSURE,
-                       T_PUBLIC,
-                       T_PRIVATE,
-                       T_PROTECTED,
-                       T_FINAL,
-                       T_STATIC,
-                       T_ABSTRACT,
-                       T_CONST,
-                       T_PROPERTY,
-                       T_OBJECT,
-                      );
+            $ignore = [
+                T_CLASS,
+                T_INTERFACE,
+                T_TRAIT,
+                T_FUNCTION,
+                T_CLOSURE,
+                T_PUBLIC,
+                T_PRIVATE,
+                T_PROTECTED,
+                T_FINAL,
+                T_STATIC,
+                T_ABSTRACT,
+                T_CONST,
+                T_PROPERTY,
+                T_INCLUDE,
+                T_INCLUDE_ONCE,
+                T_REQUIRE,
+                T_REQUIRE_ONCE,
+            ];
 
-            // We allow phpdoc before all those tokens.
-            if (in_array($tokens[$nextToken]['code'], $ignore) === true) {
+            if (in_array($tokens[$nextToken]['code'], $ignore, true) === true) {
                 return;
             }
 
@@ -106,7 +123,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             if ($phpcsFile->tokenizerType === 'JS') {
                 // We allow block comments if a function or object
                 // is being assigned to a variable.
-                $ignore    = PHP_CodeSniffer_Tokens::$emptyTokens;
+                $ignore    = Tokens::$emptyTokens;
                 $ignore[]  = T_EQUAL;
                 $ignore[]  = T_STRING;
                 $ignore[]  = T_OBJECT_OPERATOR;
@@ -120,13 +137,13 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 }
             }
 
-            // Allow php docs after php open tag (file phpdoc).
             $prevToken = $phpcsFile->findPrevious(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($stackPtr - 1),
                 null,
                 true
             );
+
             if ($tokens[$prevToken]['code'] === T_OPEN_TAG) {
                 return;
             }
@@ -152,11 +169,11 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                     if (preg_match('/\$[^ ]+ *$/', $tokens[$nextToken]['content'], $matches)) {
                         $foundvar = trim($matches[0]);
                         // Does the found variable match any next line beginning with any of:
-                        //   - a list() statement containing the variable.
-                        //   - a foreach() statement containing the variable 'as'.
-                        //   - the variable.
+                        // - a list() statement containing the variable.
+                        // - a foreach() statement containing the variable 'as'.
+                        // - the variable.
                         $nextToken = $phpcsFile->findNext(
-                            PHP_CodeSniffer_Tokens::$emptyTokens,
+                            Tokens::$emptyTokens,
                             ($nextToken + 1),
                             null,
                             true
@@ -214,7 +231,6 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 }
             }
 
-
             if ($tokens[$stackPtr]['content'] === '/**') {
                 $error = 'Inline doc block comments are not allowed; use "// Comment." instead';
                 $phpcsFile->addError($error, $stackPtr, 'DocBlock');
@@ -230,8 +246,8 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
         }
 
-        // We don't want end of block comments. If the last comment is a closing
-        // curly brace.
+        // We don't want end of block comments. Check if the last token before the
+        // comment is a closing curly brace.
         $previousContent = $phpcsFile->findPrevious(T_WHITESPACE, ($stackPtr - 1), null, true);
         if ($tokens[$previousContent]['line'] === $tokens[$stackPtr]['line']) {
             if ($tokens[$previousContent]['code'] === T_CLOSE_CURLY_BRACKET) {
@@ -249,12 +265,12 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
         }
 
-        $comment = rtrim($tokens[$stackPtr]['content']);
-
         // Only want inline comments.
-        if (substr($comment, 0, 2) !== '//') {
+        if (substr($tokens[$stackPtr]['content'], 0, 2) !== '//') {
             return;
         }
+
+        $comment = rtrim($tokens[$stackPtr]['content']);
 
         // Allow pure comment separators only (look for comments having at least 10 hyphens).
         if (preg_match('!^// (.*?)(-{10})(.*)$!', $comment, $matches)) {
@@ -263,12 +279,12 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $wrongcharsfound = trim(str_replace('-', '', $matches[1] . $matches[3]));
             if ($wrongcharsfound !== '') {
                 $error = 'Comment separators are not allowed to contain other chars buy hyphens (-). Found: (%s)';
-                // Basic clean dupes for notification
+                // Basic clean dupes for notification.
                 $wrongcharsfound = implode(array_keys(array_flip(preg_split('//', $wrongcharsfound, -1, PREG_SPLIT_NO_EMPTY))));
                 $data = array($wrongcharsfound);
                 $phpcsFile->addWarning($error, $stackPtr, 'IncorrectCommentSeparator', $data);
             }
-            // Verify length between 20 and 120
+            // Verify length between 20 and 120.
             $hyphencount = strlen($matches[1] . $matches[2] . $matches[3]);
             if ($hyphencount < 20 or $hyphencount > 120) {
                 $error = 'Comment separators length must contain 20-120 chars, %s found';
@@ -276,7 +292,7 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             }
             // Verify it's the first token in the line.
             $prevToken = $phpcsFile->findPrevious(
-                PHP_CodeSniffer_Tokens::$emptyTokens,
+                Tokens::$emptyTokens,
                 ($stackPtr - 1),
                 null,
                 true
@@ -289,17 +305,49 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             return;
         }
 
-        // Count slashes.
-        $slashCount = strlen(preg_replace('!^(/*).*!', '\\1', trim($comment)));
+        $commentTokens = [$stackPtr];
 
-        // Three or more slashes not allowed.
-        if ($slashCount > 2) {
-            $error = '%s slashes comments are not allowed; use "// Comment." instead';
-            $data = array($slashCount);
-            $phpcsFile->addError($error, $stackPtr, 'WrongStyle', $data);
-        }
+        $nextComment = $stackPtr;
+        $lastComment = $stackPtr;
+        while (($nextComment = $phpcsFile->findNext(T_COMMENT, ($nextComment + 1), null, false)) !== false) {
+            if ($tokens[$nextComment]['line'] !== ($tokens[$lastComment]['line'] + 1)) {
+                break;
+            }
 
-        if (trim(substr($comment, $slashCount)) !== '') {
+            // Only want inline comments.
+            if (substr($tokens[$nextComment]['content'], 0, 2) !== '//') {
+                break;
+            }
+
+            // There is a comment on the very next line. If there is
+            // no code between the comments, they are part of the same
+            // comment block.
+            $prevNonWhitespace = $phpcsFile->findPrevious(T_WHITESPACE, ($nextComment - 1), $lastComment, true);
+            if ($prevNonWhitespace !== $lastComment) {
+                break;
+            }
+
+            $commentTokens[] = $nextComment;
+            $lastComment     = $nextComment;
+        }//end while
+
+        $commentText = '';
+        foreach ($commentTokens as $lastCommentToken) {
+            $comment = rtrim($tokens[$lastCommentToken]['content']);
+
+            // Count slashes.
+            $slashCount = strlen(preg_replace('!^(/*).*!', '\\1', trim($comment)));
+
+            if ($slashCount > 2) {
+                $error = '%s slashes comments are not allowed; use "// Comment." instead';
+                $data = array($slashCount);
+                $phpcsFile->addError($error, $lastCommentToken, 'WrongStyle', $data);
+            }
+
+            if (trim(substr($comment, $slashCount)) === '') {
+                continue;
+            }
+
             $spaceCount = 0;
             $tabFound   = false;
 
@@ -320,72 +368,35 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
             $fix = false;
             if ($tabFound === true) {
                 $error = 'Tab found before comment text; expected "// %s" but found "%s"';
-                $data  = array(
-                          ltrim(substr($comment, $slashCount)),
-                          $comment,
-                         );
-                $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'TabBefore', $data);
+                $data  = [
+                    ltrim(substr($comment, $slashCount)),
+                    $comment,
+                ];
+                $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'TabBefore', $data);
             } else if ($spaceCount === 0) {
                 $error = 'No space found before comment text; expected "// %s" but found "%s"';
-                $data  = array(
-                          substr($comment, $slashCount),
-                          $comment,
-                         );
-                $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'NoSpaceBefore', $data);
+                $data  = [
+                    substr($comment, $slashCount),
+                    $comment,
+                ];
+                $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'NoSpaceBefore', $data);
             } else if ($spaceCount > 1) {
                 $error = 'Expected 1 space before comment text but found %s; use block comment if you need indentation';
-                $data  = array(
-                          $spaceCount,
-                          substr($comment, ($slashCount + $spaceCount)),
-                          $comment,
-                         );
-                $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingBefore', $data);
+                $data  = [
+                    $spaceCount,
+                    substr($comment, ($slashCount + $spaceCount)),
+                    $comment,
+                ];
+                $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'SpacingBefore', $data);
             }//end if
 
             if ($fix === true) {
-                $newComment = '// '.ltrim($tokens[$stackPtr]['content'], "/\t ");
-                $phpcsFile->fixer->replaceToken($stackPtr, $newComment);
-            }
-        }//end if
-
-        // The below section determines if a comment block is correctly capitalised,
-        // and ends in a full-stop. It will find the last comment in a block, and
-        // work its way up.
-        $nextComment = $phpcsFile->findNext(array(T_COMMENT), ($stackPtr + 1), null, false);
-        if (($nextComment !== false)
-            && (($tokens[$nextComment]['line']) === ($tokens[$stackPtr]['line'] + 1))
-        ) {
-            return;
-        }
-
-        $topComment  = $stackPtr;
-        $lastComment = $stackPtr;
-        while (($topComment = $phpcsFile->findPrevious(array(T_COMMENT), ($lastComment - 1), null, false)) !== false) {
-            if ($tokens[$topComment]['line'] !== ($tokens[$lastComment]['line'] - 1)) {
-                break;
+                $newComment = '// '.ltrim($tokens[$lastCommentToken]['content'], "/\t ");
+                $phpcsFile->fixer->replaceToken($lastCommentToken, $newComment);
             }
 
-            $lastComment = $topComment;
-        }
-
-        $topComment  = $lastComment;
-        $commentText = '';
-
-        for ($i = $topComment; $i <= $stackPtr; $i++) {
-            if ($tokens[$i]['code'] === T_COMMENT) {
-                $otherSlashCount = strlen(preg_replace('!^(/*).*!', '\\1', trim($tokens[$i]['content'])));
-                $commentText .= trim(substr($tokens[$i]['content'], $otherSlashCount));
-            }
-        }
-
-        // Now rtrim parenthesis and quotes, English can have the full-stop
-        // within them if they are full sentences.
-        $commentText = rtrim($commentText, "'\")");
-
-        // Respect eslint configuration comments in JS files.
-        if ($phpcsFile->tokenizerType === 'JS' && preg_match('!^eslint(-|\s)!', $commentText)) {
-            return;
-        }
+            $commentText .= trim(substr($tokens[$lastCommentToken]['content'], $slashCount));
+        }//end foreach
 
         if ($commentText === '') {
             $error = 'Blank comments are not allowed';
@@ -394,55 +405,101 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 $phpcsFile->fixer->replaceToken($stackPtr, '');
             }
 
+            return ($lastCommentToken + 1);
+        }
+
+        // Respect eslint configuration comments in JS files.
+        if ($phpcsFile->tokenizerType === 'JS' && preg_match('!^eslint(-|\s)!', $commentText)) {
             return;
         }
 
-        // Start with upper case, digit or 3-dots sequence.
         if (preg_match('!^([A-Z0-9]|\.{3})!', $commentText) === 0) {
             $error = 'Inline comments must start with a capital letter, digit or 3-dots sequence';
-            $phpcsFile->addWarning($error, $topComment, 'NotCapital');
+            $phpcsFile->addWarning($error, $stackPtr, 'NotCapital');
         }
 
-        // End with .!?
-        $commentCloser   = $commentText[(strlen($commentText) - 1)];
-        $acceptedClosers = array(
-                            'full-stops'        => '.',
-                            'exclamation marks' => '!',
-                            'or question marks' => '?',
-                           );
+        // Only check the end of comment character if the start of the comment
+        // is a letter, indicating that the comment is just standard text.
+        if (preg_match('/^\p{L}/u', $commentText) === 1) {
+            $commentCloser   = $commentText[(strlen($commentText) - 1)];
+            $acceptedClosers = [
+                'full-stops'        => '.',
+                'exclamation marks' => '!',
+                'or question marks' => '?',
+            ];
 
-        if (in_array($commentCloser, $acceptedClosers) === false) {
-            $error = 'Inline comments must end in %s';
-            $ender = '';
-            foreach ($acceptedClosers as $closerName => $symbol) {
-                $ender .= ' '.$closerName.',';
+            if (in_array($commentCloser, $acceptedClosers, true) === false) {
+                $error = 'Inline comments must end in %s';
+                $ender = '';
+                foreach ($acceptedClosers as $closerName => $symbol) {
+                    $ender .= ' '.$closerName.',';
+                }
+
+                $ender = trim($ender, ' ,');
+                $data  = [$ender];
+                $phpcsFile->addWarning($error, $lastCommentToken, 'InvalidEndChar', $data);
             }
-
-            $ender = trim($ender, ' ,');
-            $data  = array($ender);
-            $phpcsFile->addWarning($error, $stackPtr, 'InvalidEndChar', $data);
         }
+
+        return ($lastCommentToken + 1);
+
+        // IMPORTANT NOTE FOLLOWS !!!!
+        //
+        // This code is unreachable. It detects if there are blank lines after comments.
+        // As far as there was no consensus, it's not checked.
+        // Note that this used to be excluded from ruleset.xml using:
+        // <rule ref="moddle.Commenting.InlineComment.SpacingAfter">
+        // <severity>0</severity>
+        // </rule>
+        // But it doesn't work anymore with PHPCS3.x (neither with "moodle" or "MoodleCodeSniffer"),
+        // it seems tha there is a problem if the 2 names don't match.
+        // Hence, unreachable. Ugly but ok, so far. Don't add any custom code below.
 
         // Finally, the line below the last comment cannot be empty if this inline
         // comment is on a line by itself.
         if ($tokens[$previousContent]['line'] < $tokens[$stackPtr]['line']) {
-            $start = false;
-            for ($i = ($stackPtr + 1); $i < $phpcsFile->numTokens; $i++) {
-                if ($tokens[$i]['line'] === ($tokens[$stackPtr]['line'] + 1)) {
+            $next = $phpcsFile->findNext(T_WHITESPACE, ($lastCommentToken + 1), null, true);
+            if ($next === false) {
+                // Ignore if the comment is the last non-whitespace token in a file.
+                return ($lastCommentToken + 1);
+            }
+
+            if ($tokens[$next]['code'] === T_DOC_COMMENT_OPEN_TAG) {
+                // If this inline comment is followed by a docblock,
+                // ignore spacing as docblock/function etc spacing rules
+                // are likely to conflict with our rules.
+                return ($lastCommentToken + 1);
+            }
+
+            $errorCode = 'SpacingAfter';
+
+            if (isset($tokens[$stackPtr]['conditions']) === true) {
+                $conditions   = $tokens[$stackPtr]['conditions'];
+                $type         = end($conditions);
+                $conditionPtr = key($conditions);
+
+                if (($type === T_FUNCTION || $type === T_CLOSURE)
+                    && $tokens[$conditionPtr]['scope_closer'] === $next
+                ) {
+                    $errorCode = 'SpacingAfterAtFunctionEnd';
+                }
+            }
+
+            for ($i = ($lastCommentToken + 1); $i < $phpcsFile->numTokens; $i++) {
+                if ($tokens[$i]['line'] === ($tokens[$lastCommentToken]['line'] + 1)) {
                     if ($tokens[$i]['code'] !== T_WHITESPACE) {
-                        return;
+                        return ($lastCommentToken + 1);
                     }
-                } else if ($tokens[$i]['line'] > ($tokens[$stackPtr]['line'] + 1)) {
+                } else if ($tokens[$i]['line'] > ($tokens[$lastCommentToken]['line'] + 1)) {
                     break;
                 }
             }
 
             $error = 'There must be no blank line following an inline comment';
-            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'SpacingAfter');
+            $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, $errorCode);
             if ($fix === true) {
-                $next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
                 $phpcsFile->fixer->beginChangeset();
-                for ($i = ($stackPtr + 1); $i < $next; $i++) {
+                for ($i = ($lastCommentToken + 1); $i < $next; $i++) {
                     if ($tokens[$i]['line'] === $tokens[$next]['line']) {
                         break;
                     }
@@ -453,6 +510,8 @@ class moodle_Sniffs_Commenting_InlineCommentSniff implements PHP_CodeSniffer_Sni
                 $phpcsFile->fixer->endChangeset();
             }
         }//end if
+
+        return ($lastCommentToken + 1);
 
     }//end process()
 

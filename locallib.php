@@ -25,8 +25,16 @@
 defined('MOODLE_INTERNAL') || die;
 
 require_once($CFG->libdir . '/formslib.php');
-require_once($CFG->dirroot . '/local/codechecker/pear/PHP/CodeSniffer.php');
 
+// Default errors severity level
+if (defined('PHPCS_DEFAULT_ERROR_SEV') === false) {
+    define('PHPCS_DEFAULT_ERROR_SEV', 5);
+}
+
+// Default warnings severity level
+if (defined('PHPCS_DEFAULT_WARN_SEV') === false) {
+    define('PHPCS_DEFAULT_WARN_SEV', 5);
+}
 
 /**
  * Settings form for the code checker.
@@ -35,6 +43,9 @@ require_once($CFG->dirroot . '/local/codechecker/pear/PHP/CodeSniffer.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_codechecker_form extends moodleform {
+    /**
+     * Define all the elements of the form.
+     */
     protected function definition() {
         $mform = $this->_form;
 
@@ -59,111 +70,6 @@ class local_codechecker_form extends moodleform {
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
 }
-
-// These classes are not following the moodle standard but phpcs one,
-// so we intruct the checker to ignore them
-// TODO: Move these classes to own php files.
-// @codingStandardsIgnoreStart
-/**
- * Code sniffer insists on having an PHP_CodeSniffer_CLI, even though we don't
- * really want one. This is a dummy class to make it work.
- */
-class local_codechecker_codesniffer_cli extends PHP_CodeSniffer_CLI {
-
-    private $report = 'full';
-    private $reportfile = null;
-
-    /** Constructor */
-    public function __construct() {
-        // Horrible, cannot be set programatically.
-        $this->errorSeverity = 1;
-        $this->warningSeverity = 1;
-    }
-
-    /** Set the report to use */
-    public function setReport($report) {
-        $this->report = $report;
-    }
-
-    /** Set the reportfile to use */
-    public function setReportFile($reportfile) {
-        $this->reportfile = $reportfile;
-    }
-
-    /** Set the warnings flag to use */
-    public function setIncludeWarnings($includewarnings) {
-        $this->warningSeverity = (int)$includewarnings;
-    }
-
-    /* Overload method to inject our settings */
-    public function getCommandLineValues() {
-
-        // Inject our settings to defaults.
-        $defaults = array_merge(
-            $this->getDefaults(),
-            array(
-                'reports' => array($this->report => $this->reportfile),
-            )
-        );
-        return $defaults;
-    }
-}
-
-/**
- * Custom XML reporting returning files without violations.
- *
- * By default the CodeSniffer reporting does not return information
- * about files with 0 errors and 0 warnings anymore. But in the web
- * UI of local_codechecker we want to show, with a lovely green, all
- * the passed files.
- *
- * So this is extending {@link PHP_CodeSniffer_Reports_Xml} to modify
- * every bit needed to get those files reported. The extension will
- * try to rely in the original report as much as possible.
- *
- * This has been reported @ https://pear.php.net/bugs/bug.php?id=20202
- */
-class PHP_CodeSniffer_Reports_local_codechecker extends PHP_CodeSniffer_Reports_Xml {
-    /**
-     * Generate a partial report for a single processed file.
-     *
-     * For files with violations delegate processing to parent class. For files
-     * without violations, just return the plain <file> element, without any err/warn.
-     *
-     * @param array $report Prepared report data.
-     * @param PHP_CodeSniffer_File $phpcsFile The file being reported on.
-     * @param boolean $showSources Show sources?
-     * @param int $width Maximum allowed line width.
-     *
-     * @return boolean
-     */
-    public function generateFileReport($report, PHP_CodeSniffer_File $phpcsFile, $showSources = false, $width = 80) {
-
-        // Report has violations, delegate to parent standard processing.
-        if ($report['errors'] !== 0 || $report['warnings'] !== 0) {
-            return parent::generateFileReport($report, $phpcsFile, $showSources, $width);
-        }
-
-        // Here we are, with a file with 0 errors and warnings.
-        $out = new XMLWriter;
-        $out->openMemory();
-        $out->setIndent(true);
-
-        $out->startElement('file');
-        $out->writeAttribute('name', $report['filename']);
-        $out->writeAttribute('errors', $report['errors']);
-        $out->writeAttribute('warnings', $report['warnings']);
-
-        $out->endElement();
-        echo $out->flush();
-
-        return true;
-
-    }
-}
-
-// End of phpcs classes, we end ignoring now.
-// @codingStandardsIgnoreEnd
 
 /**
  * Convert a full path name to a relative one, for output.
@@ -233,9 +139,9 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
         }
     }
 
-    // Manually add our own pear stuff to be excluded.
+    // Manually add our own phpcs stuff to be excluded.
     $paths[] = preg_quote(local_codechecker_clean_path(
-            '/local/codechecker' . DIRECTORY_SEPARATOR . 'pear'));
+            '/local/codechecker' . DIRECTORY_SEPARATOR . 'phpcs'));
 
     // Changed in PHP_CodeSniffer 1.4.4 and upwards, so we apply the
     // same here: Paths go to keys and mark all them as 'absolute'.
@@ -263,7 +169,14 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
     return $finalpaths;
 }
 
-/** Get the source code for a given file and line */
+/**
+ * Get the source code for a given file and line.
+ *
+ * @param int $line line number.
+ * @param string $prettypath file to get the source code from
+ *
+ * @return string the contents of the requested line.
+ */
 function local_codechecker_get_line_of_code($line, $prettypath) {
     global $CFG;
 
@@ -284,11 +197,15 @@ function local_codechecker_get_line_of_code($line, $prettypath) {
 }
 
 /**
+ * Clean paths, normalising separators.
+ *
  * The code-checker code assumes that paths always use DIRECTORY_SEPARATOR,
  * whereas Moodle is more relaxed than that. This method cleans up file paths by
  * converting all / and \ to DIRECTORY_SEPARATOR. It should be used whenever a
  * path is passed to the CodeSniffer library.
+ *
  * @param string $path a file path
+ *
  * @return string The path with all directory separators changed to DIRECTORY_SEPARATOR.
  */
 function local_codechecker_clean_path($path) {
@@ -297,7 +214,8 @@ function local_codechecker_clean_path($path) {
 
 /**
  * Recursively finds all files within a folder that match particular extensions.
- * @param array &$arr Array to add file paths to
+ *
+ * @param array $arr Array to add file paths to
  * @param string $folder Path to search (or may be a single file)
  * @param array $extensions File extensions to include (not including .)
  */

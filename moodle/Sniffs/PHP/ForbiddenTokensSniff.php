@@ -25,7 +25,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_PHP_ForbiddenTokensSniff implements PHP_CodeSniffer_Sniff {
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
+class ForbiddenTokensSniff implements Sniff {
 
     /**
      * Returns an array of Tokenizer tokens and errors this Sniff will listen and process.
@@ -34,10 +41,11 @@ class moodle_Sniffs_PHP_ForbiddenTokensSniff implements PHP_CodeSniffer_Sniff {
      */
     protected function get_forbidden_tokens() {
         return array(
-                T_EVAL => 'The use of function eval() is forbidden',
-                T_GOTO => 'The use of operator goto is forbidden',
-                T_GOTO_LABEL => 'The use of goto labels is forbidden',
-                T_BACKTICK => 'The use of backticks for shell execution is forbidden',);
+            T_EVAL => 'The use of function eval() is forbidden',
+            T_GOTO => 'The use of operator goto is forbidden',
+            T_GOTO_LABEL => 'The use of goto labels is forbidden',
+            T_BACKTICK => 'The use of backticks for shell execution is forbidden',
+        );
     }
 
     /**
@@ -52,13 +60,12 @@ class moodle_Sniffs_PHP_ForbiddenTokensSniff implements PHP_CodeSniffer_Sniff {
     /**
      * Processes this test, when one of its tokens is encountered.
      *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                  $stackPtr  The position of the current token in
-     *                                        the stack passed in $tokens.
+     * @param File $phpcsFile The file being scanned.
+     * @param int $stackPtr  The position of the current token in the stack passed in $tokens.
      *
      * @return void
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr) {
+    public function process(File $phpcsFile, $stackPtr) {
 
         $tokens = $phpcsFile->getTokens();
         $forbidden = $this->get_forbidden_tokens();

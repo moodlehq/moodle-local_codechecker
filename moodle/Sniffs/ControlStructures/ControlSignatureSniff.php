@@ -24,13 +24,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-if (class_exists('PHP_CodeSniffer_Standards_AbstractPatternSniff', true) === false) {
-    $error = 'Class PHP_CodeSniffer_Standards_AbstractPatternSniff not found';
-    throw new PHP_CodeSniffer_Exception($error);
-}
+namespace MoodleCodeSniffer\moodle\Sniffs\ControlStructures;
 
-class moodle_Sniffs_ControlStructures_ControlSignatureSniff
-        extends PHP_CodeSniffer_Standards_AbstractPatternSniff {
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Sniffs\AbstractPatternSniff;
+use PHP_CodeSniffer\Files\File;
+
+class ControlSignatureSniff extends AbstractPatternSniff {
 
     public function __construct() {
         parent::__construct(true);

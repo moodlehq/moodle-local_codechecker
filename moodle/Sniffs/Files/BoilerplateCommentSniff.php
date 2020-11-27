@@ -22,7 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sniff {
+namespace MoodleCodeSniffer\moodle\Sniffs\Files;
+
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
+class BoilerplateCommentSniff implements Sniff {
     protected static $comment = array(
         "// This file is part of",
         "//",
@@ -43,7 +48,7 @@ class moodle_Sniffs_Files_BoilerplateCommentSniff implements PHP_CodeSniffer_Sni
         return array(T_OPEN_TAG);
     }
 
-    public function process(PHP_CodeSniffer_File $file, $stackptr) {
+    public function process(File $file, $stackptr) {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $stackptr - 1);
         if ($prevopentag !== false) {
