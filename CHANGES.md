@@ -1,4 +1,8 @@
-Changes in version 3.0.0 (20201102) - Welcome phpcs 3
+Changes in version 3.0.0 (20201127) - Being braves!
+-----------------------------------------------------
+- Set maturity plugin from beta to stable.
+
+Changes in version 3.0.0beta (20201102) - Welcome phpcs 3
 -----------------------------------------------------
 - Upgrade to PHP_CodeSniffer 3.5.8 (stronk7):
     - PHP_CodeSniffer move to phpcs directory (see readme_moodle.txt for complete instructions).
