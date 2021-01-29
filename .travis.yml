@@ -50,8 +50,6 @@ jobs:
       env: MOODLE_BRANCH=MOODLE_39_STABLE  DB=mysqli
     - php: 7.2
       env: MOODLE_BRANCH=MOODLE_35_STABLE  DB=pgsql
-    - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_34_STABLE  DB=mysqli
 
     - php: 7.1
       env: MOODLE_BRANCH=MOODLE_38_STABLE  DB=pgsql
@@ -80,7 +78,7 @@ script:
   - moodle-plugin-ci phplint
   - moodle-plugin-ci phpcpd
   - moodle-plugin-ci phpmd
-    # - moodle-plugin-ci codechecker # Heh, cannot check codechecker 3 with codechecker 2!
+  - moodle-plugin-ci codechecker
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache
