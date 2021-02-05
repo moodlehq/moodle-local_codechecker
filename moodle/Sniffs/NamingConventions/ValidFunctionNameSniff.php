@@ -65,6 +65,7 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
         'offsetSet',
         'offsetUnset', // Defined by the PHP ArrayAccess interface.
         'tearDownAfterClass',
+        'jsonSerialize',
     );
 
     /**
