@@ -62,12 +62,11 @@ IDE Integration
 
 Find documentation [here](https://docs.moodle.org/dev/Setting_up_Sublime2#Sublime_PHP_CS).
 
-After step 3 in the Sublime PHP CS section:
-
-1. Go in your Sublime Text to Preferences -> Package Control -> Package Control: Install Package
-2. Write 'phpcs' in the search field, if you see Phpcs and SublimeLinter-phpcs, click on them to install them.
-3. If not, check if they are already installed Preferences -> Package Control -> Package Control: Remove Package.
-4. To set your codecheck to moodle standards go to Preferences -> Package Settings -> PHP Code Sniffer -> Settings-User and write:
+1. Install PHP CS following steps described in [this moodle docs page](https://docs.moodle.org/dev/CodeSniffer#Installing_PHP_CS).
+2. Go in your Sublime Text to Preferences -> Package Control -> Package Control: Install Package
+3. Write 'phpcs' in the search field, if you see Phpcs and SublimeLinter-phpcs, click on them to install them.
+4. If not, check if they are already installed Preferences -> Package Control -> Package Control: Remove Package.
+5. To set your codecheck to moodle standards go to Preferences -> Package Settings -> PHP Code Sniffer -> Settings-User and write:
 
         { "phpcs_additional_args": {
                 "--standard": "moodle",
@@ -75,10 +74,20 @@ After step 3 in the Sublime PHP CS section:
             },
         }
 
-5. If you don’t have the auto-save plugin turned on, YOU’RE DONE!
-6. If you have the auto-save plugin turned on, because the codecheck gets triggered on save, the quick panel will keep popping making it impossible to type.
+6. If you don’t have the auto-save plugin turned on, YOU’RE DONE!
+7. If you have the auto-save plugin turned on, because the codecheck gets triggered on save, the quick panel will keep popping making it impossible to type.
    To stop quick panel from showing go to Settings-User file and add:
 
         "phpcs_show_quick_panel": false,
 
    The line with the error will still get marked and if you’ll click on it you’ll see the error text in the status bar.
+
+### VSCode
+
+Find documentation [here](https://docs.moodle.org/dev/Setting_up_VSCode#PHP_CS).
+
+1. Install PHP CS following steps described in [this moodle docs page](https://docs.moodle.org/dev/CodeSniffer#Installing_PHP_CS).
+3. Install [PHPSniffer](https://marketplace.visualstudio.com/items?itemName=wongjn.php-sniffer).
+2. Open VSCode settings.json and add the following setting to define standard PHP CS (if you haven't set it as default in your system):
+
+        "phpSniffer.standard": "moodle",
