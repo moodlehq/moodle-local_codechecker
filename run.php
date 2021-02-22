@@ -41,8 +41,8 @@ require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 // Get the command-line options.
 list($options, $unrecognized) = cli_get_params(
-    array('help' => false, 'interactive' => false),
-    array('h' => 'help', 'i' => 'interactive'));
+    array('help' => false, 'interactive' => false, 'exclude' => ''),
+    array('h' => 'help', 'i' => 'interactive', 'e' => 'exclude'));
 
 if (count($unrecognized) != 1) {
     $options['help'] = true;
@@ -66,7 +66,7 @@ raise_memory_limit(MEMORY_HUGE);
 $runner = new \local_codechecker\runner();
 $runner->set_verbosity(1);
 $runner->set_interactive($interactive);
-$runner->set_ignorepatterns(local_codesniffer_get_ignores());
+$runner->set_ignorepatterns(local_codesniffer_get_ignores($options['exclude']));
 
 $fullpath = local_codechecker_clean_path($CFG->dirroot . '/' . trim($path, '/'));
 $runner->set_files([$fullpath]);
