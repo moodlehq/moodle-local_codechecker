@@ -29,6 +29,8 @@ $string['clihelp'] = 'Check some PHP code against the Moodle coding guidelines.
 Options:
   --interactive, -i Stops after every file allowing to continue with the next
                     file or to repeat the check against the same one.
+  --exclude, -e     Exclude files with a comma separated list of substr matching paths,
+                    Asterisks are allowed as wildchars at any place.
   --help, -h        Shows this information
 Example:
   php run.php local/codechecker';
