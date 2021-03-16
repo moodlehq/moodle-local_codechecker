@@ -51,6 +51,7 @@
     <rule ref="Squiz.ControlStructures.LowercaseDeclaration"/>
 
     <rule ref="Squiz.Functions.LowercaseFunctionKeywords"/>
+    <rule ref="PSR2.Methods.MethodDeclaration"/>
 
     <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
     <rule ref="Squiz.PHP.CommentedOutCode">

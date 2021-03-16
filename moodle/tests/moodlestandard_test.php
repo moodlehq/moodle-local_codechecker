@@ -39,6 +39,37 @@ require_once(__DIR__ . '/../../tests/local_codechecker_testcase.php');
  */
 class moodlestandard_testcase extends local_codechecker_testcase {
 
+    public function test_psr2_methods_methoddeclaration() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('PSR2.Methods.MethodDeclaration');
+        $this->set_fixture(__DIR__ . '/fixtures/psr2_methods_methoddeclaration.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array(
+            33 => 'The static declaration must come after the visibility',
+            34 => 1,
+            35 => 1,
+            37 => 'The final declaration must precede the visibility',
+            38 => 1,
+            39 => 1,
+            41 => array('FinalAfterVisibility', 'StaticBeforeVisibility'),
+            42 => 2,
+            43 => 2,
+            45 => 'The abstract declaration must precede the visibility',
+            46 => 1,
+            48 => array('AbstractAfterVisibility', 'StaticBeforeVisibility'),
+            49 => 2));
+        $this->set_warnings(array());
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     public function test_moodle_commenting_inlinecomment() {
 
         // Define the standard, sniff and fixture to use.
