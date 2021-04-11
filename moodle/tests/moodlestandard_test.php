@@ -260,6 +260,28 @@ class moodlestandard_testcase extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_php_deprecatedfunctions() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.PHP.DeprecatedFunctions');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_php_deprecatedfunctions.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors(array());
+        $warnings = array(7 => 'print_error() has been deprecated; use throw new moodle_exception()');
+        if (PHP_VERSION_ID >= 70300 && PHP_VERSION_ID < 80000) {
+            $warnings[10] = 'mbsplit() has been deprecated';
+        }
+        $this->set_warnings($warnings);
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     public function test_moodle_php_forbiddenfunctions() {
 
         // Define the standard, sniff and fixture to use.
