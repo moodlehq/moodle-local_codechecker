@@ -191,7 +191,7 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
         // Let's normalize numeric, empty and string errors.
         foreach ($this->errors as $line => $errordef) {
             if (is_int($errordef) and $errordef > 0) {
-                $this->errors[$line] = array_fill(0, $errordef, null);
+                $this->errors[$line] = array_fill(0, $errordef, $errordef);
             } else if (empty($errordef)) {
                 $this->errors[$line] = array();
             } else if (is_string($errordef)) {
@@ -210,7 +210,7 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
         // Let's normalize numeric, empty and string warnings.
         foreach ($this->warnings as $line => $warningdef) {
             if (is_int($warningdef) and $warningdef > 0) {
-                $this->warnings[$line] = array_fill(0, $warningdef, null);
+                $this->warnings[$line] = array_fill(0, $warningdef, $warningdef);
             } else if (empty($warningdef)) {
                 $this->warnings[$line] = array();
             } else if (is_string($warningdef)) {
