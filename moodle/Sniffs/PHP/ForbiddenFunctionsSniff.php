@@ -17,6 +17,23 @@
 /**
  * Sniff for debugging and other functions that we don't want used in finished code.
  *
+ * Note that strictly speaking we don't need to extend the Generic Sniff,
+ * just configure it in the ruleset.xml like this, for example:
+ *
+ * <rule ref="Generic.PHP.ForbiddenFunctions">
+ *   <properties>
+ *     <property name="forbiddenFunctions" type="array">
+ *       <element key="xxx" value="yyy"/>
+ *     </property>
+ *   </properties>
+ * </rule>
+ *
+ * But we have decided to, instead, extend and keep the functions
+ * together with the Sniff. Also, this enables to test the Sniff
+ * without having to perform any configuration in the fixture files.
+ * (because unit tests DO NOT parse the ruleset.xml details, like
+ * properties, excludes... and other info).
+ *
  * @package    local_codechecker
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,17 +47,22 @@ use PHP_CodeSniffer\Files\File;
 
 class ForbiddenFunctionsSniff extends GenericForbiddenFunctionsSniff {
 
-    /** Constructor. */
-    public function __construct() {
-        $this->forbiddenFunctions = array(
-            // Usual development debugging functions.
-            'sizeof'       => 'count',
-            'delete'       => 'unset',
-            'error_log'    => null,
-            'print_r'      => null,
-            'print_object' => null,
-            // Dangerous functions. From coding style.
-            'extract'      => null,
-        );
-    }
+    /**
+     * A list of forbidden functions with their alternatives.
+     *
+     * The value is NULL if no alternative exists. IE, the
+     * function should just not be used.
+     *
+     * @var array<string, string|null>
+     */
+    public $forbiddenFunctions = [
+        // Usual development debugging functions.
+        'sizeof'       => 'count',
+        'delete'       => 'unset',
+        'error_log'    => null,
+        'print_r'      => null,
+        'print_object' => null,
+        // Dangerous functions. From coding style.
+        'extract'      => null,
+    ];
 }
