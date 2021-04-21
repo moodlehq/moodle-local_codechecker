@@ -153,7 +153,7 @@ jobs:
 
       - name: PHPUnit tests
         if: ${{ always() }}
-        run: moodle-plugin-ci phpunit
+        run: moodle-plugin-ci phpunit --coverage-text
 
       - name: Behat features
         if: ${{ always() }}
