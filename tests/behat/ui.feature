@@ -21,7 +21,7 @@ Feature: Codechecker UI works as expected
       | local/codechecker/version.php           | Well done!                     | Invalid path   |
       | local/codechecker/moodle/tests/fixtures | Files found: 0                 | Invalid path   |
       | local/codechecker/tests/                | local_codechecker_testcase.php | Invalid path   |
-      | local/codechecker/tests/                | Files found: 1                 | Invalid path   |
+      | local/codechecker/tests/                | Files found: 2                 | Invalid path   |
       | local/codechecker/tests/                | Well done!                     | Invalid path   |
       | admin/index.php                         | Files found: 1                 | Invalid path   |
       | admin/index.php                         | Total:                         | Well done!     |
