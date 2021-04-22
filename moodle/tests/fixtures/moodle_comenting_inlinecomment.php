@@ -113,3 +113,19 @@ foreach ($cms as $cm) {
 foreach ($cms as $something) {
     echo 'This is a test';
 }
+
+// Allow phpdoc before "return new class extends" expressions.
+/** This is a phpdoc block */
+return new class extends xxxx {}
+
+// But don't allow it before other expressions.
+/** This is a phpdoc block */
+return new stdClass();
+/** This is a phpdoc block */
+return new class {}
+/** This is a phpdoc block */
+return class extends xxxx {}
+/** This is a phpdoc block */
+new class testphpdoc {}
+/** This is a phpdoc block */
+return new class implements something {}

@@ -92,7 +92,13 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            91 => '\'$variable\' does not match next code line \'lets_execute_it...\'',
            94 => 1,
           102 => '\'$cm\' does not match next list() variables @Source: moodle.Commenting.InlineComment.TypeHintingList',
-          112 => '\'$cm\' does not match next foreach() as variable @Source: moodle.Commenting.InlineComment.TypeHintingFor'));
+          112 => '\'$cm\' does not match next foreach() as variable @Source: moodle.Commenting.InlineComment.TypeHintingFor',
+          118 => 0,
+          122 => 1,
+          124 => 1,
+          126 => 1,
+          128 => 1,
+          130 => 1));
         $this->set_warnings(array(
             4 => 0,
             6 => array(null, 'Commenting.InlineComment.InvalidEndChar'),
@@ -107,7 +113,9 @@ class moodlestandard_testcase extends local_codechecker_testcase {
            71 => 3,
            75 => 2,
            77 => 1,
-           79 => 1));
+           79 => 1,
+          118 => 0,
+          122 => 0));
 
         // Let's do all the hard work!
         $this->verify_cs_results();

@@ -115,6 +115,12 @@ class InlineCommentSniff implements Sniff {
                 return;
             }
 
+            // Allow phpdoc block before "return new class extends" expressions,
+            // we use those anon classes in places like coverage.php files.
+            if ($this->is_return_new_class_extends($phpcsFile, $stackPtr)) {
+                return;
+            }
+
             // Allow phpdoc before define() token (see CONTRIB-4150).
             if ($tokens[$nextToken]['code'] == T_STRING and $tokens[$nextToken]['content'] == 'define') {
                 return;
@@ -515,5 +521,45 @@ class InlineCommentSniff implements Sniff {
 
     }//end process()
 
+    /**
+     * This looks if there is a valid "return new class extends" expression allowed to have phpdoc block.
+     *
+     * @param File $file The file being scanned.
+     * @param int $pointer The position in the stack.
+     * @return bool true if is an allowed to have phpdoc block return new class code.
+     */
+    protected function is_return_new_class_extends(File $file, $pointer) {
+
+        $ignoredtokens = Tokens::$emptyTokens;
+
+        $tokens = $file->getTokens();
+
+        // Detect 'return'.
+        $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
+        if ($tokens[$pointer]['code'] !== T_RETURN) {
+            return false;
+        }
+
+        // Detect 'new'.
+        $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
+        if ($tokens[$pointer]['code'] !== T_NEW) {
+            return false;
+        }
+
+        // Detect 'class'.
+        $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
+        if ($tokens[$pointer]['code'] !== T_ANON_CLASS) {
+            return false;
+        }
+
+        // Detect 'extends'.
+        $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
+        if ($tokens[$pointer]['code'] !== T_EXTENDS) {
+            return false;
+        }
+
+        // Found a valid "return new class extends" expression, phpdoc block allowed.
+        return true;
+    }// end is_return_new_class_extends()
 
 }//end class
