@@ -1,3 +1,16 @@
+Changes in versions 3.0.1 (20210423) - April's cool
+---------------------------------------------------
+- Various internal changes and improvements:
+    - Travis and GHA support updated.
+    - Support docker login to workaround anonymous pull limits.
+    - Added instructions to work with VSCode.
+    - Apply for own `coverage.php` to better define coverage reporting.
+- [PR#132](https://github.com/moodlehq/moodle-local_codechecker/pull/132): jsonSerialize() is now a valid function name (Tobias Goltz).
+- [PR#136](https://github.com/moodlehq/moodle-local_codechecker/pull/136): Added support for --exclude option in the CLI runner (Adrian Perez).
+- [PR#139](https://github.com/moodlehq/moodle-local_codechecker/pull/139): Added check for `abstract/final/static` positioning in function declarations (stronk7).
+- [PR#141](https://github.com/moodlehq/moodle-local_codechecker/pull/141): Deprecated `print_error()` (stronk7).
+- [PR#143](https://github.com/moodlehq/moodle-local_codechecker/pull/143): Added support for `return new class extends` PHPDoc blocks (stronk7).
+
 Changes in version 3.0.0 (20201127) - Welcome phpcs 3
 -----------------------------------------------------
 - Upgrade to PHP_CodeSniffer 3.5.8 (stronk7):
