@@ -51,11 +51,6 @@ jobs:
     - php: 7.2
       env: MOODLE_BRANCH=MOODLE_35_STABLE  DB=pgsql
 
-    - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_38_STABLE  DB=pgsql
-    - php: 7.1
-      env: MOODLE_BRANCH=MOODLE_37_STABLE  DB=mysqli
-
     # Cannot test with Moodle 3.2 and 3.3 any more because the new composer 2
     # does require all components to be named properly (case-sensitively) and
     # those branches have phpunit/Dbunit, failing. See MDL-64725.
@@ -91,5 +86,5 @@ script:
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpdoc
-  - moodle-plugin-ci phpunit --coverage-text
+  - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
