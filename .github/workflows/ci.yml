@@ -28,18 +28,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: 7.4
+          - php: 8.0
             moodle-branch: master
             database: pgsql
-          - php: 7.4
+            # The following line is only needed if you're going to run php8 jobs and your
+            # plugin needs xmlrpc services.
+            extensions: xmlrpc-beta
+          - php: 8.0
             moodle-branch: master
             database: mariadb
-          - php: 7.4
+            # The following line is only needed if you're going to run php8 jobs and your
+            # plugin needs xmlrpc services.
+            extensions: xmlrpc-beta
+          - php: 8.0
             moodle-branch: MOODLE_311_STABLE
             database: pgsql
-          - php: 7.4
+            # The following line is only needed if you're going to run php8 jobs and your
+            # plugin needs xmlrpc services.
+            extensions: xmlrpc-beta
+          - php: 8.0
             moodle-branch: MOODLE_311_STABLE
             database: mariadb
+            # The following line is only needed if you're going to run php8 jobs and your
+            # plugin needs xmlrpc services.
+            extensions: xmlrpc-beta
+
           - php: 7.4
             moodle-branch: MOODLE_310_STABLE
             database: pgsql
@@ -88,6 +101,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: ${{ matrix.extensions }}
+          ini-values: max_input_vars=5000
           coverage: none
 
       - name: Initialise moodle-plugin-ci
