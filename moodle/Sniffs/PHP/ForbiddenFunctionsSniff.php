@@ -59,7 +59,7 @@ class ForbiddenFunctionsSniff extends GenericForbiddenFunctionsSniff {
         // Usual development debugging functions.
         'sizeof'       => 'count',
         'delete'       => 'unset',
-        'error_log'    => null,
+        'error_log'    => 'debugging',
         'print_r'      => null,
         'print_object' => null,
         // Dangerous functions. From coding style.
