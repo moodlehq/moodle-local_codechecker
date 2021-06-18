@@ -42,7 +42,7 @@ Feature: Codechecker UI works as expected
       | path                            | exclude            | seen                          | notseen      |
       | local/codechecker/moodle/tests  | */tests/fixtures/* | Files found: 1                | Invalid path |
       | local/codechecker/moodle/tests  | */tests/fixtures/* | moodlestandard_test.php       | Invalid path |
-      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Files found: 9                | Invalid path |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Files found: 11               | Invalid path |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Line 1 of the opening comment | moodle_php   |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
