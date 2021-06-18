@@ -79,9 +79,7 @@ before_install:
     fi
 
 install:
-  # Let's keep phpunit and behat jobs not inited and disabled below until MDL-71622 is sorted out.
-  # (note that, in the mean time GHA will still be running them, so we are covered)
-  - moodle-plugin-ci install --no-init
+  - moodle-plugin-ci install
 
 script:
   - moodle-plugin-ci phplint
@@ -93,5 +91,5 @@ script:
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache
   - moodle-plugin-ci grunt
-  # - moodle-plugin-ci phpunit
-  # - moodle-plugin-ci behat
+  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci behat
