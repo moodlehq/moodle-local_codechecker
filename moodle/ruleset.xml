@@ -17,6 +17,7 @@
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
 
     <rule ref="Generic.Files.LineEndings"/>
+    <rule ref="Generic.Files.EndFileNewline"/>
 
     <rule ref="Generic.Functions.CallTimePassByReference"/>
     <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
