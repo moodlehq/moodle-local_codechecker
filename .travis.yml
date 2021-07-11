@@ -3,6 +3,9 @@ language: php
 os: linux
 dist: xenial
 
+addons:
+  postgresql: "10"
+
 services:
   - mysql
   - postgresql
