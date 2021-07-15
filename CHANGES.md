@@ -1,5 +1,16 @@
-Changes in versions 3.0.1 (20210423) - April's cool
----------------------------------------------------
+Changes in version 3.0.2 (20210716) - Summer break
+--------------------------------------------------
+- Various internal changes and improvements:
+    - Removed some legacy code (33_STABLE) and out of support 7.1 tests.
+    - Disable coverage reporting in Travis own builds.
+    - Added PHP 8.0 support in own tests.
+    - Fulfill Moodle 4.0 requirements.
+    - Make mariadb own tests sticky to 10.5 until [MDL-72131](https://tracker.moodle.org/browse/MDL-72131) is fixed.
+- [PR#146](https://github.com/moodlehq/moodle-local_codechecker/pull/146): Suggest debugging() as alternative to error_log() (Ruslan Kabalin).
+- [PR#148](https://github.com/moodlehq/moodle-local_codechecker/pull/148): Verify that there is one and only one EOL @ EOF (stronk7).
+
+Changes in version 3.0.1 (20210423) - April's cool
+--------------------------------------------------
 - Various internal changes and improvements:
     - Travis and GHA support updated.
     - Support docker login to workaround anonymous pull limits.
