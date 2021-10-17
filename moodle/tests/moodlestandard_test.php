@@ -14,30 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * This file contains the test cases covering the "moodle" standard.
- *
- * @package    local_codechecker
- * @category   test
- * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace local_codechecker;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../tests/local_codechecker_testcase.php');
 
+// phpcs:disable moodle.NamingConventions
+
 /**
- * PHP CS moodle standard test cases.
+ * Test various "moodle" phpcs standard sniffs.
  *
  * Each case covers one sniff. Self-explanatory
  *
  * To run these tests, you need to use:
  *     vendor/bin/phpunit local/codechecker/moodle/tests/moodlestandard_test.php
  *
+ * @package    local_codechecker
+ * @category   test
+ * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  * @todo Complete coverage of all Sniffs.
  */
-class moodlestandard_testcase extends local_codechecker_testcase {
+class moodlestandard_test extends local_codechecker_testcase {
 
     public function test_psr2_methods_methoddeclaration() {
 
