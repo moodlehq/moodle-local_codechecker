@@ -17,14 +17,13 @@
 /**
  * This file contains helper testcase for testing "moodle" CS Sniffs.
  *
- * To run the tests for the Moodle sniffs, you need to use:
- *     vendor/bin/phpunit local/codechecker/moodle/tests/moodlestandard_test.php
- *
  * @package    local_codechecker
  * @category   test
  * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_codechecker;
 
 defined('MOODLE_INTERNAL') || die(); // Remove this to use me out from Moodle.
 
@@ -63,19 +62,19 @@ if (class_exists('PHPUnit_Framework_TestCase')) {
     /**
      * Conditional class to keep compatibility between php versions. phpunit <7 alternative.
      */
-    abstract class conditional_PHPUnit_Framework_TestCase extends PHPUnit_Framework_TestCase {
+    abstract class conditional_PHPUnit_Framework_TestCase extends \PHPUnit_Framework_TestCase {
     }
 } else {
     /**
      * Conditional class to keep compatibility between php versions. phpunit >=7 alternative.
      */
-    abstract class conditional_PHPUnit_Framework_TestCase extends PHPUnit\Framework\TestCase {
+    abstract class conditional_PHPUnit_Framework_TestCase extends \PHPUnit\Framework\TestCase {
     }
 }
 // phpcs:enable
 
 /**
- * Specialized test case for easy testing of "moodle" CS Sniffs.
+ * Specialized test case for easy testing of "moodle" standard sniffs.
  *
  * If you want to run the tests for the Moodle sniffs, you need to
  * use the specific command-line:
@@ -89,6 +88,11 @@ if (class_exists('PHPUnit_Framework_TestCase')) {
  * Should work for any Sniff part of a given standard (custom or core).
  *
  * Note extension & overriding was impossible because of some "final" stuff.
+ *
+ * @package    local_codechecker
+ * @category   test
+ * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_TestCase {
 
