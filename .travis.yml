@@ -45,15 +45,15 @@ jobs:
       env: MOODLE_BRANCH=MOODLE_311_STABLE DB=mysqli
     - php: 7.3
       env: MOODLE_BRANCH=MOODLE_37_STABLE  DB=pgsql
-    - php: 7.3
-      env: MOODLE_BRANCH=MOODLE_36_STABLE  DB=mysqli
 
     - php: 7.2
       env: MOODLE_BRANCH=MOODLE_310_STABLE DB=pgsql
     - php: 7.2
       env: MOODLE_BRANCH=MOODLE_39_STABLE  DB=mysqli
-    - php: 7.2
-      env: MOODLE_BRANCH=MOODLE_35_STABLE  DB=pgsql
+
+    # Removing Moodle < 3.7 testing because they use old PHPUnit 6 and
+    # are completely out of support. So we can remove various
+    # conditional bits currently in code.
 
     # Cannot test with Moodle 3.2 and 3.3 any more because the new composer 2
     # does require all components to be named properly (case-sensitively) and
