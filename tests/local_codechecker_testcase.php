@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die(); // Remove this to use me out from Moodle.
 
 if (is_file(__DIR__.'/../phpcs/autoload.php') === true) {
     include_once(__DIR__.'/../phpcs/autoload.php');
-} else {
-    include_once('PHP/CodeSniffer/autoload.php');
 }
 
 $tokens = new \PHP_CodeSniffer\Util\Tokens();
@@ -54,25 +52,6 @@ if (defined('PHP_CODESNIFFER_VERBOSITY') === false) {
 // the autoloader earlier(see https://github.com/squizlabs/PHP_CodeSniffer/issues/1469).
 require_once(dirname(__DIR__) . '/PHPCSAliases.php');
 
-// Interim classes providing conditional extension, so I can run
-// these plugin tests against different Moodle branches that are
-// using different phpunit (namespaced or no) classes.
-// phpcs:disable
-if (class_exists('PHPUnit_Framework_TestCase')) {
-    /**
-     * Conditional class to keep compatibility between php versions. phpunit <7 alternative.
-     */
-    abstract class conditional_PHPUnit_Framework_TestCase extends \PHPUnit_Framework_TestCase {
-    }
-} else {
-    /**
-     * Conditional class to keep compatibility between php versions. phpunit >=7 alternative.
-     */
-    abstract class conditional_PHPUnit_Framework_TestCase extends \PHPUnit\Framework\TestCase {
-    }
-}
-// phpcs:enable
-
 /**
  * Specialized test case for easy testing of "moodle" standard sniffs.
  *
@@ -94,7 +73,7 @@ if (class_exists('PHPUnit_Framework_TestCase')) {
  * @copyright  2013 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_TestCase {
+abstract class local_codechecker_testcase extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var string name of the standard to be tested.
@@ -328,14 +307,8 @@ abstract class local_codechecker_testcase extends conditional_PHPUnit_Framework_
             // Now verify every expectation requiring matching.
             foreach ($expectation as $key => $expectedcontent) {
                 if (is_string($expectedcontent)) {
-                    // PHPUnit 6 compatibility hack. TODO: Remove once Moodle 3.5 goes out of support.
-                    if (method_exists($this, 'assertStringContainsString')) {
-                        $this->assertStringContainsString($expectedcontent, $results[$line][$key],
-                            'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
-                    } else {
-                        $this->assertContains($expectedcontent, $results[$line][$key],
-                            'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
-                    }
+                    $this->assertStringContainsString($expectedcontent, $results[$line][$key],
+                        'Failed contents matching of ' . $type . ' for element ' . ($key + 1) . ' of line ' . $line . '.');
                 }
             }
             // Delete this line from results.
