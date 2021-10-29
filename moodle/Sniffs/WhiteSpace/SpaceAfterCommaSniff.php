@@ -45,7 +45,12 @@ class SpaceAfterCommaSniff implements Sniff {
 
         if ($tokens[$stackptr + 1]['code'] !== T_WHITESPACE) {
             $error = 'Commas (,) must be followed by white space.';
-            $file->addError($error, $stackptr, 'NoSpace');
+            $fix = $file->addFixableError($error, $stackptr, 'NoSpace');
+            if ($fix === true) {
+                $file->fixer->beginChangeset();
+                $file->fixer->addContent($stackptr, ' ');
+                $file->fixer->endChangeset();
+            }
         }
     }
 }

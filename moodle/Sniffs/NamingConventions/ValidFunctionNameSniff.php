@@ -118,7 +118,14 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
                         '" must be in lower-case letters only';
             }
 
-            $phpcsfile->adderror($error, $stackptr, 'LowercaseMethod');
+            $fix = $phpcsfile->addFixableError($error, $stackptr + 2, 'LowercaseMethod');
+            if ($fix === true) {
+                $phpcsfile->fixer->beginChangeset();
+                $tokens = $phpcsfile->getTokens();
+                $phpcsfile->fixer->replaceToken($stackptr + 2, strtolower($tokens[$stackptr + 2]['content']));
+                $phpcsfile->fixer->endChangeset();
+            }
+
             return;
         }
     }
@@ -151,7 +158,14 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
         if (preg_match('/[A-Z]+/', $functionname)) {
             $error = "function name \"$functionname\" must be lower-case letters only";
 
-            $phpcsfile->addError($error, $stackptr, 'LowercaseFunction');
+            $fix = $phpcsfile->addFixableError($error, $stackptr, 'LowercaseFunction');
+            if ($fix === true) {
+                $phpcsfile->fixer->beginChangeset();
+                $tokens = $phpcsfile->getTokens();
+                $phpcsfile->fixer->replaceToken($stackptr + 2, strtolower($tokens[$stackptr + 2]['content']));
+                $phpcsfile->fixer->endChangeset();
+            }
+
             return;
         }
     }
