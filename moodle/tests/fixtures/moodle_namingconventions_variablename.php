@@ -17,7 +17,7 @@ class foo {
     var $badvarusage = null;
 }
 
-$result = "String: $badPlaceholder1";
+$result = "String: $badPlaceholder1 is a badPlaceholder1";
 $result = "String: $bad_placeholder2";
 $result = "String: $REALLY_badplaceholder3";
 $result = "String: $goodplaceholder1";

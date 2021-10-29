@@ -52,14 +52,24 @@ class ValidVariableNameSniff extends AbstractVariableSniff {
 
         if (preg_match('/[A-Z]+/', $membername)) {
             $error = "Member variable \"$membername\" must be all lower-case";
-            $phpcsfile->addError($error, $stackptr, 'MemberNameLowerCase');
+            $fix = $phpcsfile->addFixableError($error, $stackptr, 'MemberNameUnderscore');
+            if ($fix === true) {
+                $phpcsfile->fixer->beginChangeset();
+                $phpcsfile->fixer->replaceToken($stackptr, strtolower($tokens[$stackptr]['content']));
+                $phpcsfile->fixer->endChangeset();
+            }
         }
 
         // Find underscores in variable names (accepting $_foo for private vars).
         $pos = strpos($membername, '_');
         if ($pos > 1) {
             $error = "Member variable \"$membername\" must not contain underscores.";
-            $phpcsfile->addError($error, $stackptr, 'MemberNameUnderscore');
+            $fix = $phpcsfile->addFixableError($error, $stackptr, 'MemberNameUnderscore');
+            if ($fix === true) {
+                $phpcsfile->fixer->beginChangeset();
+                $phpcsfile->fixer->replaceToken($stackptr, str_replace('_', '', $tokens[$stackptr]['content']));
+                $phpcsfile->fixer->endChangeset();
+            }
         }
 
         // Must not be preceded by 'var' keyword.
@@ -118,12 +128,25 @@ class ValidVariableNameSniff extends AbstractVariableSniff {
     private function validate_moodle_variable_name($varname, File $phpcsfile, $stackptr) {
         if (preg_match('/[A-Z]+/', $varname) && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must be all lower-case";
-            $phpcsfile->addError($error, $stackptr, 'VariableNameLowerCase');
+            $fix = $phpcsfile->addFixableError($error, $stackptr, 'VariableNameLowerCase');
+            if ($fix === true) {
+                $phpcsfile->fixer->beginChangeset();
+                $tokens = $phpcsfile->getTokens();
+                $phpcsfile->fixer->replaceToken(
+                    $stackptr, str_replace('$' . $varname, '$' . strtolower($varname), $tokens[$stackptr]['content']));
+                $phpcsfile->fixer->endChangeset();
+            }
         }
 
         if (strpos($varname, '_') !== false && !in_array($varname, self::$allowedglobals)) {
             $error = "Variable \"$varname\" must not contain underscores.";
-            $phpcsfile->addError($error, $stackptr, 'VariableNameUnderscore');
+            $fix = $phpcsfile->addFixableError($error, $stackptr, 'VariableNameUnderscore');
+            if ($fix === true) {
+                $phpcsfile->fixer->beginChangeset();
+                $tokens = $phpcsfile->getTokens();
+                $phpcsfile->fixer->replaceToken($stackptr, str_replace('_', '', $tokens[$stackptr]['content']));
+                $phpcsfile->fixer->endChangeset();
+            }
         }
     }
 }
