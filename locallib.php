@@ -134,7 +134,7 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
             if (file_exists(dirname($CFG->dirroot . DIRECTORY_SEPARATOR . $location))) {
                 $paths[] = preg_quote(local_codechecker_clean_path($location));
             } else {
-                debugging("Processing $file for exclussions, incorrect $location path found. Please fix it");
+                debugging("Processing $file for exclusions, incorrect $location path found. Please fix it");
             }
         }
     }
