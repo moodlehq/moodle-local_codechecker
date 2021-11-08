@@ -30,6 +30,7 @@ namespace MoodleCodeSniffer\moodle\Sniffs\Files;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use MoodleCodeSniffer\moodle\Util\MoodleUtil;
 
 class MoodleInternalSniff implements Sniff {
     /**
@@ -47,14 +48,28 @@ class MoodleInternalSniff implements Sniff {
      * @param int $pointer The position in the stack.
      */
     public function process(File $file, $pointer) {
-        // Special dispensation for behat files.
-        if (basename(dirname($file->getFilename())) === 'behat') {
-            return;
-        }
-
-        // Special dispensation for lang files.
-        if (basename(dirname(dirname($file->getFilename()))) === 'lang') {
-            return;
+        // Guess moodle root, so we can do better dispensations below.
+        $moodleRoot = MoodleUtil::getMoodleRoot($file);
+        if ($moodleRoot) {
+            $relPath = str_replace('\\', '/', substr($file->path, strlen($moodleRoot)));
+            // Special dispensation for /tests/behat/ and /lib/behat/ dirs at any level.
+            if (strpos($relPath, '/tests/behat/') !== false || strpos($relPath, '/lib/behat/') !== false) {
+                return;
+            }
+            // Special dispensation for lang dirs at any level.
+            if (strpos($relPath, '/lang/') !== false) {
+                return;
+            }
+        } else {
+            // Falback to simpler dispensations, only looking 1 level.
+            // Special dispensation for behat files.
+            if (basename(dirname($file->getFilename())) === 'behat') {
+                return;
+            }
+            // Special dispensation for lang files.
+            if (basename(dirname(dirname($file->getFilename()))) === 'lang') {
+                return;
+            }
         }
 
         // We only want to do this once per file.
