@@ -814,10 +814,20 @@ class moodlestandard_test extends local_codechecker_testcase {
     }
 
     public function test_moodle_files_moodleinternal_behat_skipped() {
-        // Files in behat dirs are ignored.
+        // Files in /tests/behat/ dirs are ignored.
         $this->set_standard('moodle');
         $this->set_sniff('moodle.Files.MoodleInternal');
-        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/behat/behat_mod_workshop.php');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/tests/behat/behat_mod_workshop.php');
+
+        $this->set_errors(array());
+        $this->set_warnings(array());
+
+        $this->verify_cs_results();
+
+        // Files in /lib/behat/ dirs are ignored.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/moodle_files_moodleinternal/lib/behat/behat_mod_workshop.php');
 
         $this->set_errors(array());
         $this->set_warnings(array());
