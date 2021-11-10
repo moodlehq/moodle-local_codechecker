@@ -255,6 +255,33 @@ abstract class local_codechecker_testcase extends \PHPUnit\Framework\TestCase {
         // Let's compare expected errors with returned ones.
         $this->verify_errors($phpcsfile->getErrors());
         $this->verify_warnings($phpcsfile->getWarnings());
+
+        $fixerrors = [];
+        // Let's see if the file has fixable problems and if they become really fixed.
+        if ($phpcsfile->getFixableCount() > 0) {
+            $phpcsfile->fixer->fixFile();
+            // If there are remaining fixable cases, this is a fix problem.
+            $tofix = $phpcsfile->getFixableCount();
+            if ($tofix > 0) {
+                $fixerrors[] = "Failed to fix $tofix fixable problems in $this->fixture";
+            }
+        }
+
+        // Now, if there is a file, with the same name than the
+        // fixture + .fix, use it to verify that the fixed does its job too.
+        if (is_readable($this->fixture . '.fixed')) {
+            $diff = $phpcsfile->fixer->generateDiff($this->fixture . '.fixed');
+            if (trim($diff) !== '') {
+                $filename = basename($this->fixture);
+                $fixedfilename = basename($this->fixture . '.fixed');
+                $fixerrors[] = "Fixed version of $filename does not match expected version in $fixedfilename; the diff is\n$diff";
+            }
+        }
+
+        // Any fix problem detected, report it.
+        if (empty($fixerrors) === false) {
+            $this->fail(implode(PHP_EOL, $fixerrors));
+        }
     }
 
     /**
