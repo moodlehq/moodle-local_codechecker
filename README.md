@@ -1,7 +1,7 @@
 Moodle Code Checker
 ===================
 
-[![Build Status](https://travis-ci.com/moodlehq/moodle-local_codechecker.svg?branch=master)](https://travis-ci.com/moodlehq/moodle-local_codechecker)
+[![Codechecker CI](https://github.com/moodlehq/moodle-local_codechecker/actions/workflows/ci.yml/badge.svg)](https://github.com/moodlehq/moodle-local_codechecker/actions/workflows/ci.yml)
 
 Information
 -----------
