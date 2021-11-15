@@ -93,6 +93,47 @@ abstract class MoodleUtil {
 
         // We haven't the components yet, let's calculate all them.
 
+        // First, try to get it from configuration/runtime option.
+        // This accepts the full path to a file like the one generated
+        // by moodle-local_ci/list_valid_components, which format is:
+        // [plugin|subsystem],component_name,component_full_path.
+        // Useful to load them when not all the code base is available
+        // like it happens with CiBoT runs, for example.
+        if ($componentsFile = Config::getConfigData('moodleComponentsListPath')) {
+            if (!is_readable($componentsFile)) {
+                throw new DeepExitException(
+                    "ERROR: Incorrect 'moodleComponentsListPath' config/runtime option. File not found: '$componentsFile'", 3);
+            }
+            // Go processing the file.
+            $handle = fopen($componentsFile, "r");
+            if ($handle) {
+                while (($line = fgets($handle)) !== false) {
+                    $aline = explode(',', trim($line));
+                    // Exclude any line not starting by plugin|sybsystem.
+                    if ($aline[0] !== 'plugin' && $aline[0] !== 'subsystem') {
+                        continue;
+                    }
+                    // Exclude any component not being valid one.
+                    if (!preg_match('/^[a-z][a-z0-9]*(_[a-z][a-z0-9_]*)?[a-z0-9]+$/', $aline[1])) {
+                        continue;
+                    }
+                    // Exclude any path not being under Mooddle dirroot.
+                    if (strpos($aline[2], $moodleRoot) !== 0) {
+                        continue;
+                    }
+                    // Arrived here, it's a valid line, annotate the component.
+                    self::$moodleComponents[$aline[1]] = $aline[2];
+                }
+                fclose($handle);
+            }
+            // Let's sort the array in ascending order, so more specific matches first.
+            arsort(self::$moodleComponents);
+
+            return self::$moodleComponents;
+        }
+
+        // Let's try to get the components from core.
+
         // Verify that core_component class is already available.
         // Make an exception for PHPUnit runs, to be able to test everything
         // because within tests it's always available and never invoked.

@@ -17,6 +17,7 @@
 namespace local_codechecker;
 
 use MoodleCodeSniffer\moodle\Util\MoodleUtil;
+use org\bovigo\vfs\vfsStream;
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Exceptions\DeepExitException;
 use PHP_CodeSniffer\Files\File;
@@ -40,6 +41,52 @@ require_once(__DIR__ . '/../Util/MoodleUtil.php');
  * @covers \MoodleCodeSniffer\moodle\Util\MoodleUtil
  */
 class moodleutil_test extends local_codechecker_testcase {
+
+    /**
+     * Unit test for calculateAllComponents.
+     *
+     * Not 100% orthodox because {@see calculateAllComponents()} is protected,
+     * and it's already indirectly tested by {@see test_getMoodleComponent()}
+     * but it has some feature that we need to test individually here.
+     */
+    public function test_calculateAllComponents() {
+        // Let's calculate moodleRoot.
+        $moodleRoot = MoodleUtil::getMoodleRoot();
+
+        // Let's prepare a components file, with some correct and incorrect entries.
+        $components =
+            "nonono,mod_forum,{$moodleRoot}/mod_forum\n" .                // Wrong type.
+            "plugin,mod__nono,{$moodleRoot}/mod_forum\n" .                // Wrong component.
+            "plugin,mod_forum,/no/no/no/no//mod_forum\n" .                // Wrong path.
+            "plugin,local_codechecker,{$moodleRoot}/local/codechecker\n" .// All ok.
+            "plugin,mod_forum,{$moodleRoot}/mod/forum\n";                 // All ok.
+
+        // Let's use virtual filesystem instead of real one.
+        $vfs = vfsStream::setup('root', null, ['components.txt' => $components]);
+
+        // Set codechecker config to point to it.
+        Config::setConfigData('moodleComponentsListPath', $vfs->url() . '/components.txt', true);
+
+        // Let's run calculateAllComponents() and evaluate results.
+        $method = new \ReflectionMethod(MoodleUtil::class, 'calculateAllComponents');
+        $method->setAccessible(true);
+        $method->invokeArgs(null, [$moodleRoot]);
+
+        // Let's inspect which components have been loaded.
+        $property = new \ReflectionProperty(MoodleUtil::class, 'moodleComponents');
+        $property->setAccessible(true);
+        $loadedComponents = $property->getValue();
+
+        $this->assertCount(2, $loadedComponents);
+        $this->assertSame(['mod_forum', 'local_codechecker'],
+            array_keys($loadedComponents)); // Verify they are ordered in ascending order.
+        $this->assertSame(["{$moodleRoot}/mod/forum", "{$moodleRoot}/local/codechecker"],
+            array_values($loadedComponents)); // Verify component paths are also the expected ones.
+
+        // Ensure cached information doesn't affect other tests.
+        $this->cleanMoodleUtilCaches();
+        Config::setConfigData('moodleComponentsListPath', null, true);
+    }
 
     /**
      * Provider for test_getMoodleComponent.
