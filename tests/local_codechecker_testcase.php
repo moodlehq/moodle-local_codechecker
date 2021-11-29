@@ -161,6 +161,9 @@ abstract class local_codechecker_testcase extends \PHPUnit\Framework\TestCase {
      * @param string $fixture full path to the file used as input (fixture).
      */
     protected function set_fixture($fixture) {
+        if (!is_readable($fixture)) {
+            $this->fail('Unreadable fixture passed: '. $fixture);
+        }
         $this->fixture = $fixture;
     }
 
