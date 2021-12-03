@@ -142,7 +142,7 @@ class moodleutil_test extends local_codechecker_testcase {
      *
      * @dataProvider getMoodleComponentProvider
      */
-    public function test_getMoodleComponent(array $config, array $return, ?bool $reset = true, ?bool $selfPath = true) {
+    public function test_getMoodleComponent(array $config, array $return, bool $reset = true, bool $selfPath = true) {
         $file = null;
         // Set config options when passed.
         if ($config) {
@@ -240,7 +240,7 @@ class moodleutil_test extends local_codechecker_testcase {
      *
      * @dataProvider getMoodleBranchProvider
      */
-    public function test_getMoodleBranch(array $config, array $return, ?bool $reset = true, ?bool $selfPath = true) {
+    public function test_getMoodleBranch(array $config, array $return, bool $reset = true, bool $selfPath = true) {
         $file = null;
         // Set config options when passed.
         if ($config) {
@@ -342,7 +342,7 @@ class moodleutil_test extends local_codechecker_testcase {
      *
      * @dataProvider getMoodleRootProvider
      */
-    public function test_getMoodleRoot(array $config, array $return, ?bool $reset = true, ?bool $selfPath = true) {
+    public function test_getMoodleRoot(array $config, array $return, bool $reset = true, bool $selfPath = true) {
         $file = null;
         // Set config options when passed.
         if ($config) {
