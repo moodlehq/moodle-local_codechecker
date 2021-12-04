@@ -1,3 +1,7 @@
+Changes in version 3.0.4 (20211204) - Downgrading expectations
+--------------------------------------------------------------
+- [PR#162](https://github.com/moodlehq/moodle-local_codechecker/pull/162): Downgrade some recently code added to the "moodle" standard to make it PHP 7.0 compliant, needed to continue supporting old branches by various tools (stronk7).
+
 Changes in version 3.0.3 (20211130) - Cyber releasing
 -----------------------------------------------------
 - Various internal changes and improvements:
