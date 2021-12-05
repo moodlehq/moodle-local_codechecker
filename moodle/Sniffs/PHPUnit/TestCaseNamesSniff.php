@@ -161,8 +161,14 @@ class TestCaseNamesSniff implements Sniff {
         // Check if the file name and the class name match, warn if not.
         $baseName = pathinfo($fileName, PATHINFO_FILENAME);
         if ($baseName !== $class) {
-            $file->addWarning('PHPUnit testcase name "%s" does not match file name "%s"', $cStart,
+            $fix = $file->addFixableWarning('PHPUnit testcase name "%s" does not match file name "%s"', $cStart,
                 'NoMatch', [$class, $baseName]);
+
+            if ($fix === true) {
+                if ($cNameToken = $file->findNext(T_STRING, $cStart + 1, $tokens[$cStart]['scope_opener'])) {
+                    $file->fixer->replaceToken($cNameToken, $baseName);
+                }
+            }
         }
 
         // Check if the class has been already found (this is useful when running against a lot of files).
