@@ -205,7 +205,7 @@ class TestCaseNamesSniff implements Sniff {
         }
 
         if (!$namespace && $moodleComponent) {
-            $file->addWarning('PHUnit class "%s" does not have any namespace. It is recommended to add it to the "%s" ' .
+            $file->addWarning('PHPUnit class "%s" does not have any namespace. It is recommended to add it to the "%s" ' .
                 'namespace, using more levels if needed, in order to match the code being tested', $cStart,
                 'MissingNS', [$fdqnClass, $moodleComponent]);
 
