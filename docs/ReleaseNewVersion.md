@@ -11,17 +11,16 @@ Create a standard PR to get the version bump reviewed and incorporated upstream.
 * The `CHANGES.md`, adding the PRs that have been approved and other existing changes.
 * The `version.php` file, at least the *version* and *release* values.
 
-Once the version bump PR has been reviewed and incorporated upstream, then you need to tag the release, that will trigger a
- Travis CI build to run the integration testing.
+Once the version bump PR has been reviewed and incorporated upstream, then you need to tag the release, that will trigger a new CI build (right now [@ GHA](https://github.com/moodlehq/moodle-local_codechecker/actions)) to run the integration testing.
 
 Tag `master` branch `HEAD` and push using commands:
 
 ```bash
-$ git tag -a 2.9.8 -m "Release version 2.9.8"
-$ git push origin 2.9.8
+$ git tag -a vX.Y.Z -m "Code checker vX.Y.Z - <<release name, if any>>"
+$ git push origin vX.Y.Z
 ```
 
-It's also possible to use the GitHub interface to create a new release and tag.
+Then just go to [Github releases](https://github.com/moodlehq/moodle-local_codechecker/releases) and "Draft a new release" for the just created tag. Then "Publish release" without filling anything and that's all!
 
 # Moodle plugins directory
 Once the new release is ready, you should add the latest release to the `Moodle plugins directory`.
@@ -30,6 +29,6 @@ Once the new release is ready, you should add the latest release to the `Moodle 
 3. In the main action bar, follow the *</>Developer zone* option.
 4. Click `Add a new version`.
 5. Select the appropriate GitHub release from the drop-down and keep the default options. Add the supported Moodle versions and click `Continue`.
-6. On the next page, fill in the required information. In the *Release notes* field we put the concatenation of the CHANGES.md last version section and the README.md, keeping the travis badge. Click `Save changes`.
+6. On the next page, fill in the required information. In the *Release notes* field we put the contents of the README.md file, with the contents of the CHANGES.md last version section inserted after the GHA badge. Click `Save changes`.
 
 That's pretty much it. The new version is publicly available.
