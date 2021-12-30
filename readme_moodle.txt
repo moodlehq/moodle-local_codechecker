@@ -2,7 +2,8 @@ Instructions to upgrade the phpcs bundled version:
 
 - Drop a checkout of git://github.com/squizlabs/PHP_CodeSniffer.git
   within the "phpcs" directory of the plugin. Always removing
-  all the previous contents before copying.
+  all the previous contents before copying, but the CodeSniffer.conf
+  file that is needed to autodetect the PHPCompatibility standard.
 - Also, remove not needed stuff, like:
   - All dot (.*) files and directories (git, travis...).
   - Any composer.* and vendor files.
@@ -11,8 +12,8 @@ Instructions to upgrade the phpcs bundled version:
 
 Current checkout:
 
-  3.5.8 (9d583721a)
-  
+  3.6.2 (5e4e71592)
+
 Local modifications (only allowed if there is a PR upstream backing it):
 
   - None, right now.

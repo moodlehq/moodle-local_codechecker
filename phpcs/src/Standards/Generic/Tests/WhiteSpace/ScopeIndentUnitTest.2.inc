@@ -1462,6 +1462,100 @@ echo $string?->append('foo')
 			?->outputUsing();
 // phpcs:set Generic.WhiteSpace.ScopeIndent exact false
 
+if (true) {
+	?><?php echo addslashes(
+		''
+	)?><?php
+}
+
+class Foo
+{
+	public function __construct(
+		public int $intArg,
+	) {
+	}
+}
+
+$value = match ($value) {
+	'' => null,
+	false => false,
+	1, 2, 3 => true,
+	default => $value,
+};
+
+$value = match ($value) {
+	'' => null,
+false => false,
+  1, 2, 3 => true,
+	default => $value,
+};
+
+$value = match (
+  $value
+  ) {
+	'' => null,
+	false
+	  => false,
+	1,
+  2,
+	  3 => true,
+	default =>
+$value,
+};
+
+function toString(): string
+{
+	return sprintf(
+		'%s',
+		match ($type) {
+			'foo' => 'bar',
+		},
+	);
+}
+
+$list = [
+	'fn' => function ($a) {
+				if ($a === true) {
+					echo 'hi';
+				}
+	},
+		'fn' => function ($a) {
+			if ($a === true) {
+				echo 'hi';
+				$list2 = [
+						'fn' => function ($a) {
+									if ($a === true) {
+										echo 'hi';
+									}
+								}
+							];
+			}
+		}
+];
+
+$foo = match ($type) {
+	'a' => [
+		'aa' => 'DESC',
+		'ab' => 'DESC',
+	],
+	'b' => [
+		'ba' => 'DESC',
+		'bb' => 'DESC',
+	],
+	default => [
+		'da' => 'DESC',
+	],
+};
+
+$a = [
+	'a' => [
+		'a' => fn () => foo()
+	],
+	'a' => [
+		'a' => 'a',
+	]
+];
+
 /* ADD NEW TESTS ABOVE THIS LINE AND MAKE SURE THAT THE 1 (space-based) AND 2 (tab-based) FILES ARE IN SYNC! */
 ?>
 
