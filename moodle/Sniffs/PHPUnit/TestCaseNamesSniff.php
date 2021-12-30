@@ -200,6 +200,8 @@ class TestCaseNamesSniff implements Sniff {
             }
         }
 
+        // TODO: When all the namespace general rules Sniff is created, all these namespace checks
+        // should be moved there and reused here.
         // Validate 1st level namespace.
 
         if ($namespace && $moodleComponent) {
@@ -208,6 +210,27 @@ class TestCaseNamesSniff implements Sniff {
                 $file->addError('PHPUnit class namespace "%s" does not match expected file namespace "%s"', $nsStart,
                     'UnexpectedNS', [$namespace, $moodleComponent]);
             }
+
+            // Verify that level2 and down match the directory structure under tests. Soft warn if not (till we fix all).
+            $bspos = strpos(trim($namespace, ' \\'), '\\');
+            if ($bspos !== false) { // Only if there are level2 and down namespace.
+                $relns = str_replace('\\', '/', substr(trim($namespace, ' \\'), $bspos + 1));
+
+                // Calculate the relative path under tests directory.
+                $dirpos = strrpos(trim(dirname($file->getFilename()), ' /') . '/', '/tests/');
+                $reldir = str_replace('\\', '/', substr(trim(dirname($file->getFilename()), ' /'), $dirpos + 7));
+
+                // Warning if the relative namespace does not match the relative directory.
+                if ($reldir !== $relns) {
+                    $file->addWarning('PHPUnit class "%s", with namespace "%s", currently located at "tests/%s" directory, '.
+                        'does not match its expected location at "tests/%s"', $nsStart,
+                        'UnexpectedLevel2NS', [$fdqnClass, $namespace, $reldir, $relns]);
+                }
+
+                // TODO: When we have APIs (https://docs.moodle.org/dev/Core_APIs) somewhere at hand (in core)
+                // let's add here an error when incorrect ones are used. See MDL-71096 about it.
+            }
+
         }
 
         if (!$namespace && $moodleComponent) {

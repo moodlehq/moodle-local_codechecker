@@ -71,6 +71,22 @@ class phpunit_testcasenames_test extends local_codechecker_testcase {
                 ],
                 'warnings' => [],
             ],
+            'UnexpectedLevel2NS' => [
+                'fixture' => 'fixtures/phpunit/testcasenames_unexpected_level2ns.php',
+                'errors' => [
+                    8 => 1,
+                ],
+                'warnings' => [
+                    2 => 'does not match its expected location at "tests/level2/level3"'
+                ],
+            ],
+            'CorrectLevel2NS' => [
+                'fixture' => 'fixtures/phpunit/testcasenames_correct_level2ns.php',
+                'errors' => [
+                    8 => 1,
+                ],
+                'warnings' => [],
+            ],
             'MissingNS' => [
                 'fixture' => 'fixtures/phpunit/testcasenames_missing_ns.php',
                 'errors' => [
