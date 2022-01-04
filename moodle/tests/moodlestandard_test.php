@@ -286,6 +286,31 @@ class moodlestandard_test extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_generic_classes_openingclassbrace() {
+
+        // Define the standard, sniff and fixture to use.
+        $this->set_standard('moodle');
+        $this->set_sniff('Generic.Classes.OpeningBraceSameLine');
+        $this->set_fixture(__DIR__ . '/fixtures/generic_classes_openingclassbrace.php');
+
+        // Define expected results (errors and warnings). Format, array of:
+        // - line => number of problems,  or
+        // - line => array of contents for message / source problem matching.
+        // - line => string of contents for message / source problem matching (only 1).
+        $this->set_errors([
+            5 => 'Expected 1 space before opening brace; found 0',
+            8 => 'Expected 1 space before opening brace; found 0',
+            11 => 'Expected 1 space before opening brace; found 3',
+            14 => 'Expected 1 space before opening brace; found 3',
+            19 => 'Opening brace should be on the same line as the declaration for class test05',
+        ]);
+
+        $this->set_warnings([]);
+
+        // Let's do all the hard work!
+        $this->verify_cs_results();
+    }
+
     public function test_generic_whitespace_scopeindent() {
 
         // Define the standard, sniff and fixture to use.
