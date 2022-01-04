@@ -14,25 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Subplugin info class.
- *
- * @package   mod_workshop
- * @copyright 2013 Petr Skoda {@link http://skodak.org}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-namespace mod_workshop\plugininfo;
-
-use core\plugininfo\base;
-
 defined('MOODLE_INTERNAL') || die();
 
-
-class workshopallocation extends base {
-    public function is_uninstall_allowed() {
-        if ($this->is_standard()) {
-            return false;
-        }
-        return true;
-    }
-}
+/**
+ * Chart line class.
+ *
+ * @package    core
+ * @copyright  2016 Frédéric Massart - FMCorz.net
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+interface chart { }

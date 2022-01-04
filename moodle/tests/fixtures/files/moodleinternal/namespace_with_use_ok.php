@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,19 +15,21 @@ declare(strict_types=1);
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Chart line.
+ * Subplugin info class.
  *
- * @package    core
- * @copyright  2016 Frédéric Massart - FMCorz.net
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_workshop
+ * @copyright 2013 Petr Skoda {@link http://skodak.org}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-declare(strict_types=1);
+namespace mod_workshop\plugininfo;
 
-declare(ticks=1);
+use core\plugininfo\base;
 
-namespace core;
-use this\is\that;
-
-defined('MOODLE_INTERNAL') || die();
-
-class something { }
+class workshopallocation extends base {
+    public function is_uninstall_allowed() {
+        if ($this->is_standard()) {
+            return false;
+        }
+        return true;
+    }
+}
