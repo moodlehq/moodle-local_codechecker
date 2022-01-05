@@ -81,32 +81,57 @@ class MoodleInternalSniff implements Sniff {
         // Find where real code is and check from there.
         $pointer = $this->get_position_of_relevant_code($file, $pointer);
 
-        // OK, we've got to the first bit of relevant code.
-        if ($this->is_moodle_internal_or_die_check($file, $pointer)) {
-            // There is a MOODLE_INTERNAL check. This file is good, hurrah!
-            return;
-        }
         if ($this->is_config_php_incluson($file, $pointer)) {
             // We are requiring config.php. This file is good, hurrah!
             return;
         }
 
-        if ($this->is_if_not_moodle_internal_die_check($file, $pointer)) {
-            // It's an old-skool MOODLE_INTERNAL check. This file is good, hurrah!
+        $hasMoodleInternal = false;
+        $isOldMoodleInternal = false;
+        $sideEffectsPointer = $pointer;
+
+        // OK, we've got to the first bit of relevant code. It must be the MOODLE_INTERNAL check.
+        if ($this->is_moodle_internal_or_die_check($file, $pointer)) {
+            $hasMoodleInternal = true;
+            // Let's look for side effects after the check.
+            $sideEffectsPointer = $file->findNext(T_SEMICOLON, $pointer) + 1;
+
+        } else if ($this->is_if_not_moodle_internal_die_check($file, $pointer)) {
+            $hasMoodleInternal = true;
+            $isOldMoodleInternal = true;
+            // Let's look for side effects after the check.
+            $sideEffectsPointer = $file->getTokens()[$pointer]['scope_closer'] + 1;
+        }
+
+        $hasSideEffects = $this->code_changes_global_state($file, $sideEffectsPointer, ($file->numTokens - 1));
+        $hasMultipleArtifacts = ($this->count_artifacts($file) > 1);
+
+        // Missing MOODLE_INTERNAL and having side effects, error.
+        if (!$hasMoodleInternal && $hasSideEffects) {
+            $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.',
+                $pointer, 'MoodleInternalGlobalState');
             return;
         }
 
-        // Got here because, so something is not right.
-        if ($this->code_changes_global_state($file, $pointer, ($file->numTokens - 1))) {
-            $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.',
-                $pointer, 'MoodleInternalGlobalState');
-        } else {
-            // Only if there are more than one artifact (class, interface, trait), we show the warning.
-            // (files with only one, are allowed to be MOODLE_INTERNAL free - MDLSITE-5967).
-            if ($this->count_artifacts($file) > 1) {
-                $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.',
-                    $pointer, 'MoodleInternalMultipleArtifacts');
-            }
+        // Missing MOODLE_INTERNAL, not having side effects, but having multiple artifacts, warning.
+        if (!$hasMoodleInternal && !$hasSideEffects && $hasMultipleArtifacts) {
+            $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.',
+                $pointer, 'MoodleInternalMultipleArtifacts');
+            return;
+        }
+
+        // Having MOODLE_INTERNAL, not having side effects and not having multiple artifacts, error.
+        if ($hasMoodleInternal && !$hasSideEffects && !$hasMultipleArtifacts) {
+            $file->addError('Unexpected MOODLE_INTERNAL check. No side effects or multiple artifacts detected.',
+                $pointer, 'MoodleInternalNotNeeded');
+            return;
+        }
+
+        // Having old MOODLE_INTERNAL check, warn.
+        if ($hasMoodleInternal && $isOldMoodleInternal) {
+            $file->addWarning('Old MOODLE_INTERNAL check detected. Replace it by "defined(\'MOODLE_INTERNAL\') || die();"',
+                $pointer, 'MoodleInternalOld');
+            return;
         }
     }
 
