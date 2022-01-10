@@ -113,7 +113,9 @@ class TestCaseNamesSniff implements Sniff {
         // verify that it extends something and that has a test_ method.
         $class = '';
         $classFound = false;
+        $classPointers = []; // Save all class pointers to report later if no class is found.
         while ($cStart = $file->findNext(T_CLASS, $pointer)) {
+            $classPointers[] = $cStart;
             $pointer = $cStart + 1; // Move the pointer to the class start.
 
             // Only if the class is extending something.
@@ -146,7 +148,10 @@ class TestCaseNamesSniff implements Sniff {
 
         // No testcase class found, this is plain-wrong.
         if (!$classFound) {
-            $file->addError('PHPUnit test file missing any valid testcase class declaration', 0, 'Missing');
+            $classPointers = $classPointers ?: [0];
+            foreach ($classPointers as $classPointer) {
+                $file->addError('PHPUnit test file missing any valid testcase class declaration', $classPointer, 'Missing');
+            }
             return; // If arrived here we don't have a valid class, we are finished.
         }
 

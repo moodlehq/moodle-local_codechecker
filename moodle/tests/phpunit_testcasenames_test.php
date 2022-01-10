@@ -45,7 +45,8 @@ class phpunit_testcasenames_test extends local_codechecker_testcase {
             'Missing' => [
                 'fixture' => 'fixtures/phpunit/testcasenames_missing.php',
                 'errors' => [
-                    1 => '@Message: PHPUnit test file missing any valid testcase class',
+                    7 => '@Message: PHPUnit test file missing any valid testcase class',
+                    14 => 'Missing',
                 ],
                 'warnings' => [],
             ],
