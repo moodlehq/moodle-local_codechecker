@@ -1,3 +1,13 @@
+Changes in version 3.0.5 (20220111) - January's crunch
+------------------------------------------------------
+- PHP_CodeSniffer upgraded to 3.6.2 release (stronk7).
+- [PR#164](https://github.com/moodlehq/moodle-local_codechecker/pull/164): Make testcase class names to be fixable by `phpcbf` (stronk7).
+- [PR#167](https://github.com/moodlehq/moodle-local_codechecker/pull/167): Verify that tescase location matches sub-namespace definition (stronk7).
+- [PR#168](https://github.com/moodlehq/moodle-local_codechecker/pull/168): Check class opening curly brackets correctness (kabalin).
+- [PR#169](https://github.com/moodlehq/moodle-local_codechecker/pull/169): Report unexpected MOODLE_INTERNAL uses (stronk7).
+- [PR#172](https://github.com/moodlehq/moodle-local_codechecker/pull/172): Allow phpcs:xxx annotations in the first line of files (stronk7).
+- Small doc changes and typo fixes here and there.
+
 Changes in version 3.0.4 (20211204) - Downgrading expectations
 --------------------------------------------------------------
 - [PR#162](https://github.com/moodlehq/moodle-local_codechecker/pull/162): Downgrade some recently code added to the "moodle" standard to make it PHP 7.0 compliant, needed to continue supporting old branches by various tools (stronk7).
