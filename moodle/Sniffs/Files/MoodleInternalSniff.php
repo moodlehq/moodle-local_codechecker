@@ -122,7 +122,7 @@ class MoodleInternalSniff implements Sniff {
 
         // Having MOODLE_INTERNAL, not having side effects and not having multiple artifacts, error.
         if ($hasMoodleInternal && !$hasSideEffects && !$hasMultipleArtifacts) {
-            $file->addError('Unexpected MOODLE_INTERNAL check. No side effects or multiple artifacts detected.',
+            $file->addWarning('Unexpected MOODLE_INTERNAL check. No side effects or multiple artifacts detected.',
                 $pointer, 'MoodleInternalNotNeeded');
             return;
         }

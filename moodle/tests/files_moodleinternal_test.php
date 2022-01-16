@@ -174,10 +174,10 @@ class files_moodleinternal_test extends local_codechecker_testcase {
         $this->set_sniff('moodle.Files.MoodleInternal');
         $this->set_fixture(__DIR__ . '/fixtures/files/moodleinternal/unexpected.php');
 
-        $this->set_errors([
+        $this->set_errors([]);
+        $this->set_warnings([
             17 => 'MoodleInternalNotNeeded'
         ]);
-        $this->set_warnings([]);
 
         $this->verify_cs_results();
     }
