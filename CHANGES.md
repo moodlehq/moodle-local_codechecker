@@ -1,4 +1,4 @@
-Changes in version 3.0.5 (20220117) - January's crunch (take 2)
+Changes in version 3.0.6 (20220117) - January's crunch (take 2)
 ---------------------------------------------------------------
 - [PR#174](https://github.com/moodlehq/moodle-local_codechecker/pull/174): Lower the unexpected MOODLE_INTERNAL check to be a warning, instead of error, as originally planned (stronk7).
 
