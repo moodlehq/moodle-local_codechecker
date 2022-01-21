@@ -154,7 +154,7 @@ class MoodleInternalSniff implements Sniff {
             $pointer = $file->findNext($ignoredtokens, $pointer, null, true);
             if ($tokens[$pointer]['code'] === T_NAMESPACE || $tokens[$pointer]['code'] === T_USE) {
                 // Namespace definitions are allowed before anything else, jump to end of namspace statement.
-                $pointer = $file->findEndOfStatement($pointer + 1);
+                $pointer = $file->findEndOfStatement($pointer + 1, T_COMMA);
             } else if ($tokens[$pointer]['code'] === T_STRING && $tokens[$pointer]['content'] == 'define') {
                 // Some things like AJAX_SCRIPT NO_MOODLE_COOKIES need to be defined before config inclusion.
                 // Jump to end of define().
@@ -320,6 +320,7 @@ class MoodleInternalSniff implements Sniff {
             if (isset(Tokens::$emptyTokens[$tokens[$i]['code']]) === true) {
                 continue;
             }
+
 
             // Ignore function/class prefixes.
             if (isset(Tokens::$methodPrefixes[$tokens[$i]['code']]) === true) {

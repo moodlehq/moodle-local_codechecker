@@ -24,6 +24,9 @@
 namespace mod_workshop\plugininfo;
 
 use core\plugininfo\base;
+use core\plugininfo\this,
+    core\plugininfo\that;
+use core\plugininfo\one, core\plugininfo\two,core\plugininfo\three;
 
 class workshopallocation extends base {
     public function is_uninstall_allowed() {
