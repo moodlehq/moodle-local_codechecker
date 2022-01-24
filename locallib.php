@@ -67,6 +67,10 @@ class local_codechecker_form extends moodleform {
         $mform->addElement('advcheckbox', 'includewarnings', get_string('includewarnings', 'local_codechecker'));
         $mform->setType('includewarnings', PARAM_BOOL);
 
+        $mform->addElement('advcheckbox', 'showstandard', get_string('showstandard', 'local_codechecker'));
+        $mform->setType('showstandard', PARAM_BOOL);
+        $mform->setDefault('showstandard', false);
+
         $mform->addElement('submit', 'submitbutton', get_string('check', 'local_codechecker'));
     }
 }
