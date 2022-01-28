@@ -55,7 +55,7 @@ class BoilerplateCommentSniff implements Sniff {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $stackptr - 1);
         if ($prevopentag !== false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         if ($stackptr > 0) {

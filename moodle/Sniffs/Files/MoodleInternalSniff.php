@@ -75,7 +75,7 @@ class MoodleInternalSniff implements Sniff {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $pointer - 1);
         if ($prevopentag !== false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         // Find where real code is and check from there.
@@ -320,7 +320,6 @@ class MoodleInternalSniff implements Sniff {
             if (isset(Tokens::$emptyTokens[$tokens[$i]['code']]) === true) {
                 continue;
             }
-
 
             // Ignore function/class prefixes.
             if (isset(Tokens::$methodPrefixes[$tokens[$i]['code']]) === true) {

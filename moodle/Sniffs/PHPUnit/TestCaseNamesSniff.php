@@ -68,6 +68,9 @@ class TestCaseNamesSniff implements Sniff {
         // Guess moodle component (from $file being processed).
         $moodleComponent = MoodleUtil::getMoodleComponent($file);
 
+        // Detect if we are running PHPUnit.
+        $runningPHPUnit = defined('PHPUNIT_TEST') && PHPUNIT_TEST;
+
         // We have all we need from core, let's start processing the file.
 
         // Get the file tokens, for ease of use.
@@ -76,27 +79,25 @@ class TestCaseNamesSniff implements Sniff {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $pointer - 1);
         if ($prevopentag !== false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         // If the file isn't under tests directory, nothing to check.
         if (strpos($file->getFilename(), '/tests/') === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         // If the file isn't called, _test.php, nothing to check.
+        // Make an exception for codechecker own phpunit fixtures here, allowing any name for them.
         $fileName = basename($file->getFilename());
-        if (substr($fileName, -9) !== '_test.php') {
-            // Make an exception for codechecker own phpunit fixtures here, allowing any name for them.
-            if (!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) {
-                return;
-            }
+        if (substr($fileName, -9) !== '_test.php' && !$runningPHPUnit) {
+            return; // @codeCoverageIgnore
         }
 
         // In order to cover the duplicates detection, we need to set some
         // properties (caches) here. It's extremely hard to do
         // this via mocking / extending (at very least for this humble developer).
-        if (defined('PHPUNIT_TEST') && PHPUNIT_TEST) {
+        if ($runningPHPUnit) {
             $this->prepareCachesForPHPUnit();
         }
 
