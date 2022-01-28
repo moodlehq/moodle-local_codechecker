@@ -419,7 +419,9 @@ class InlineCommentSniff implements Sniff {
             return;
         }
 
-        if (preg_match('!^([A-Z0-9]|\.{3})!', $commentText) === 0) {
+        // Enforce capital letter, digit or 3-dots sequence. Also allow @codeCoverageIgnore
+        // for better handling unreachable/uncovered code for coverage purposes.
+        if (preg_match('!^([A-Z0-9]|\.{3}|@codeCoverageIgnore)!', $commentText) === 0) {
             $error = 'Inline comments must start with a capital letter, digit or 3-dots sequence';
             $phpcsFile->addWarning($error, $stackPtr, 'NotCapital');
         }

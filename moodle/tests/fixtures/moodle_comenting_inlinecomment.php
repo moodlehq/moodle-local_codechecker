@@ -129,3 +129,9 @@ return class extends xxxx {}
 new class testphpdoc {}
 /** This is a phpdoc block */
 return new class implements something {}
+
+// Allow @codeCoverageIgnore inline comments.
+$something = 1; // @codeCoverageIgnore
+$something = 1;// @codeCoverageIgnoreStart
+$something = 1; // @codeCoverageIgnoreEnd
+$something = 1;  // @codeCoverageIgnoreAnythingInvented
