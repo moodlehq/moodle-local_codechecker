@@ -38,9 +38,9 @@ Feature: Codechecker UI works as expected
 
     Examples:
       | path                            | exclude            | seen                          | notseen      |
-      | local/codechecker/moodle/tests  | */tests/fixtures/* | Files found: 5                | Invalid path |
+      | local/codechecker/moodle/tests  | */tests/fixtures/* | Files found: 6                | Invalid path |
       | local/codechecker/moodle/tests  | */tests/fixtures/* | moodlestandard_test.php       | Invalid path |
-      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Files found: 52               | Invalid path |
+      | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Files found: 62               | Invalid path |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Line 1 of the opening comment | moodle_php   |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
       | local/codechecker/moodle/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
