@@ -8,25 +8,23 @@ Feature: Codechecker UI works as expected
     Given I log in as "admin"
     And I navigate to "Development > Code checker" in site administration
     And I set the field "Path(s) to check" to "<path>"
-    And I set the field "Exclude" to "*/tests/fixtures/*"
     When I press "Check code"
     Then I should see "<seen>"
     And I should not see "<notseen>"
     And I log out
 
     Examples:
-      | path                                    | seen                           | notseen        |
-      | index.php                               | Files found: 1                 | Invalid path   |
-      | index2.php                              | Invalid path index2.php        | Files found: 1 |
-      | local/codechecker/version.php           | Well done!                     | Invalid path   |
-      | local/codechecker/moodle/tests/fixtures | Files found: 0                 | Invalid path   |
-      | local/codechecker/tests/                | local_codechecker_testcase.php | Invalid path   |
-      | local/codechecker/tests/                | Files found: 2                 | Invalid path   |
-      | local/codechecker/tests/                | Well done!                     | Invalid path   |
-      | admin/index.php                         | Files found: 1                 | Invalid path   |
-      | admin/index.php                         | Total:                         | Well done!     |
-      | admin/index.php                         | Expected 1 space before        | Well done!     |
-      | admin/index.php                         | Inline comments must start     | Well done!     |
+      | path                                                                     | seen                               | notseen        |
+      | index.php                                                                | Files found: 1                     | Invalid path   |
+      | index2.php                                                               | Invalid path index2.php            | Files found: 1 |
+      | local/codechecker/version.php                                            | Well done!                         | Invalid path   |
+      | local/codechecker/tests/                                                 | local_codechecker_testcase.php     | Invalid path   |
+      | local/codechecker/tests/                                                 | Files found: 2                     | Invalid path   |
+      | local/codechecker/tests/                                                 | Well done!                         | Invalid path   |
+      | local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php | Files found: 1                     | Invalid path   |
+      | local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php | Total: 2 error(s) and 1 warning(s) | Well done!     |
+      | local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php | Inline comments must end           | Well done!     |
+      | local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php | Expected MOODLE_INTERNAL check     | Well done!     |
 
   Scenario Outline: Verify that specified exclusions are performed
     Given I log in as "admin"
@@ -76,3 +74,15 @@ Feature: Codechecker UI works as expected
     When I press "Check code"
     Then I should see "index.php"
     And I should see "version.php"
+
+  Scenario: Optionally output PHPCS standard
+    Given I log in as "admin"
+    And I navigate to "Development > Code checker" in site administration
+    And I set the field "Path(s) to check" to "local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php"
+    And I set the field "Display phpcs standard associated with a problem" to "1"
+    When I press "Check code"
+    Then I should see "moodle.Files.BoilerplateComment.WrongWhitespace"
+    And I set the field "Display phpcs standard associated with a problem" to "0"
+    And I press "Check code"
+    And I should not see "moodle.Files.BoilerplateComment.WrongWhitespace"
+    And I log out

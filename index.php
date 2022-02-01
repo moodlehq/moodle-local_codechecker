@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 $pathlist = optional_param('path', '', PARAM_RAW);
 $exclude = optional_param('exclude', '', PARAM_NOTAGS);
 $includewarnings = optional_param('includewarnings', true, PARAM_BOOL);
+$showstandard = optional_param('showstandard', false, PARAM_BOOL);
 
 $pageparams = array();
 if ($pathlist) {
@@ -49,6 +50,7 @@ if ($exclude) {
     $pageparams['exclude'] = $exclude;
 }
 $pageparams['includewarnings'] = $includewarnings;
+$pageparams['showstandard'] = $showstandard;
 
 admin_externalpage_setup('local_codechecker', '', $pageparams);
 
@@ -112,7 +114,7 @@ if ($pathlist) {
         list($numerrors, $numwarnings) = local_codechecker_count_problems($xml);
 
         // Output the results report.
-        echo $output->report($xml, $numerrors, $numwarnings);
+        echo $output->report($xml, $numerrors, $numwarnings, $showstandard);
 
         // And clean the report temp file.
         @unlink($reportfile);

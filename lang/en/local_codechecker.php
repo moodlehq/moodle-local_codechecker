@@ -58,6 +58,7 @@ $string['path'] = 'Path(s) to check';
 $string['privacy:metadata'] = 'The Code checker plugin does not store any personal data.';
 $string['pluginname'] = 'Code checker';
 $string['recheckfile'] = 'Re-check just this file';
+$string['showstandard'] = 'Display phpcs standard associated with a problem';
 $string['success'] = 'Well done!';
 $string['summary'] = 'Total: {$a}';
 $string['wholefile'] = 'File';
