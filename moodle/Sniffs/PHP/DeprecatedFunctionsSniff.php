@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DeprecatedFunctionsSniff as GenericDeprecatedFunctionsSniff;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
 /**
  * Sniff for various Moodle deprecated functions which uses should be replaced.
  *
@@ -38,13 +46,6 @@
  * @copyright  2021 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
-
-use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DeprecatedFunctionsSniff as GenericDeprecatedFunctionsSniff;
-use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Files\File;
-
 class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff {
 
     /**
@@ -83,8 +84,7 @@ class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff {
      * @todo: This method can be removed once/if this PR accepted:
      *        https://github.com/squizlabs/PHP_CodeSniffer/pull/3295
      */
-    protected function addError($phpcsFile, $stackPtr, $function, $pattern=null)
-    {
+    protected function addError($phpcsFile, $stackPtr, $function, $pattern=null) {
         $data  = [$function];
         $error = 'Function %s() has been deprecated';
         $type  = 'Deprecated';

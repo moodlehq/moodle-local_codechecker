@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
+
+// phpcs:disable moodle.NamingConventions
+
+use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff as GenericForbiddenFunctionsSniff;
+use PHP_CodeSniffer\Sniffs\Sniff;
+use PHP_CodeSniffer\Files\File;
+
 /**
  * Sniff for debugging and other functions that we don't want used in finished code.
  *
@@ -38,13 +46,6 @@
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace MoodleCodeSniffer\moodle\Sniffs\PHP;
-
-use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff as GenericForbiddenFunctionsSniff;
-use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Files\File;
-
 class ForbiddenFunctionsSniff extends GenericForbiddenFunctionsSniff {
 
     /**

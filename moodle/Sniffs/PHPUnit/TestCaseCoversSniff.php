@@ -52,6 +52,9 @@ class TestCaseCoversSniff implements Sniff {
         // Get the moodle branch being analysed.
         $moodleBranch = MoodleUtil::getMoodleBranch($file);
 
+        // Detect if we are running PHPUnit.
+        $runningPHPUnit = defined('PHPUNIT_TEST') && PHPUNIT_TEST;
+
         // We have all we need from core, let's start processing the file.
 
         // Get the file tokens, for ease of use.
@@ -64,29 +67,25 @@ class TestCaseCoversSniff implements Sniff {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $pointer - 1);
         if ($prevopentag !== false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         // If we aren't checking Moodle 4.0dev (400) and up, nothing to check.
-        if (isset($moodleBranch) && $moodleBranch < 400) {
-            // Make and exception for codechecker phpunit tests, so they are run always.
-            if (!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) {
-                return;
-            }
+        // Make and exception for codechecker phpunit tests, so they are run always.
+        if (isset($moodleBranch) && $moodleBranch < 400 && !$runningPHPUnit) {
+            return; // @codeCoverageIgnore
         }
 
         // If the file isn't under tests directory, nothing to check.
         if (strpos($file->getFilename(), '/tests/') === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         // If the file isn't called, _test.php, nothing to check.
+        // Make an exception for codechecker own phpunit fixtures here, allowing any name for them.
         $fileName = basename($file->getFilename());
-        if (substr($fileName, -9) !== '_test.php') {
-            // Make an exception for codechecker own phpunit fixtures here, allowing any name for them.
-            if (!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) {
-                return;
-            }
+        if (substr($fileName, -9) !== '_test.php' && !$runningPHPUnit) {
+            return; // @codeCoverageIgnore
         }
 
         // Iterate over all the classes (hopefully only one, but that's not this sniff problem).

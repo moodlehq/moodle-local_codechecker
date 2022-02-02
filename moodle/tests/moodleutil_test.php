@@ -83,6 +83,19 @@ class moodleutil_test extends local_codechecker_testcase {
         $this->assertSame(["{$moodleRoot}/mod/forum", "{$moodleRoot}/local/codechecker"],
             array_values($loadedComponents)); // Verify component paths are also the expected ones.
 
+        // Now be evil and try with an unreadable file, it must throw an exception.
+
+        $this->cleanMoodleUtilCaches(); // Need to clean previous cached values.
+        Config::setConfigData('moodleComponentsListPath', '/path/to/non/readable/file', true);
+
+        // We cannot use expectException() here, because we need to clean caches at the end.
+        try {
+            $method->invokeArgs(null, [$moodleRoot]);
+            $this->fail('\PHP_CodeSniffer\Exceptions\DeepExitException was expected, got none');
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(\PHP_CodeSniffer\Exceptions\DeepExitException::class, $e);
+        }
+
         // Ensure cached information doesn't affect other tests.
         $this->cleanMoodleUtilCaches();
         Config::setConfigData('moodleComponentsListPath', null, true);

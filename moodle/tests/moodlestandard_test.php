@@ -91,7 +91,7 @@ class moodlestandard_test extends local_codechecker_testcase {
         // - line => number of problems,  or
         // - line => array of contents for message / source problem matching.
         // - line => string of contents for message / source problem matching (only 1).
-        $this->set_errors(array(
+        $this->set_errors([
             4 => array('3 slashes comments are not allowed'),
             6 => 1,
             8 => 'No space found before comment text',
@@ -108,8 +108,13 @@ class moodlestandard_test extends local_codechecker_testcase {
           124 => 1,
           126 => 1,
           128 => 1,
-          130 => 1));
-        $this->set_warnings(array(
+          130 => 1,
+          134 => 0,
+          135 => 0,
+          136 => 0,
+          137 => 0,
+        ]);
+        $this->set_warnings([
             4 => 0,
             6 => array(null, 'Commenting.InlineComment.InvalidEndChar'),
            55 => array('19 found'),
@@ -125,7 +130,8 @@ class moodlestandard_test extends local_codechecker_testcase {
            77 => 1,
            79 => 1,
           118 => 0,
-          122 => 0));
+          122 => 0,
+        ]);
 
         // Let's do all the hard work!
         $this->verify_cs_results();

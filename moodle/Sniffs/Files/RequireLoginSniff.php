@@ -47,7 +47,7 @@ class RequireLoginSniff implements Sniff {
         // We only want to do this once per file.
         $prevopentag = $file->findPrevious(T_OPEN_TAG, $pointer - 1);
         if ($prevopentag !== false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $pointer = $this->get_config_inclusion_position($file, $pointer);
