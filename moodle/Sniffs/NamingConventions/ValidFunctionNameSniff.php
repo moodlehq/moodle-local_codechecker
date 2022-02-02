@@ -29,8 +29,9 @@ namespace MoodleCodeSniffer\moodle\Sniffs\NamingConventions;
 
 // phpcs:disable moodle.NamingConventions
 
-use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
+use PHP_CodeSniffer\Util\Tokens;
 
 class ValidFunctionNameSniff extends AbstractScopeSniff {
 
@@ -72,7 +73,7 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
      * Constructs a moodle_sniffs_namingconventions_validfunctionnamesniff.
      */
     public function __construct() {
-        parent::__construct(array(T_CLASS, T_INTERFACE), array(T_FUNCTION), true);
+        parent::__construct(Tokens::$ooScopeTokens, array(T_FUNCTION), true);
     }
 
     /**
