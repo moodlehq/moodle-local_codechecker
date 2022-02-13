@@ -91,6 +91,9 @@ if ($pathlist) {
     }
 
     if ($fullpaths && !$failed) {
+        // Calculate the ignores.
+        $ignores = local_codesniffer_get_ignores($exclude);
+
         // Let's use our own Runner, all we need is to pass some
         // configuration settings (reportfile, show warnings) and
         // override the init() method to set all our config options.
@@ -101,7 +104,7 @@ if ($pathlist) {
         $reportfile = make_temp_directory('phpcs') . '/phpcs_' . random_string(10) . '.xml';
         $runner->set_reportfile($reportfile);
         $runner->set_includewarnings($includewarnings);
-        $runner->set_ignorepatterns(local_codesniffer_get_ignores($exclude));
+        $runner->set_ignorepatterns($ignores);
         $runner->set_files($fullpaths);
 
         $runner->run();
@@ -109,8 +112,8 @@ if ($pathlist) {
         // Load the XML file to proceed with the rest of checks.
         $xml = simplexml_load_file($reportfile);
 
-        // Look for other problems, not handled by codesniffer.
-        local_codechecker_check_other_files(local_codechecker_clean_path($fullpath), $xml);
+        // Look for other problems, not handled by codesniffer. Use same list of ignored (originally in keys, now in values).
+        local_codechecker_check_other_files(local_codechecker_clean_path($fullpath), $xml, array_keys($ignores));
         list($numerrors, $numwarnings) = local_codechecker_count_problems($xml);
 
         // Output the results report.

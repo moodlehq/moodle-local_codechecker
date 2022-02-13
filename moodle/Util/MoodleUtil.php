@@ -56,6 +56,7 @@ abstract class MoodleUtil {
      * @return bool True if the file has been loaded, false if not.
      */
     protected static function loadCoreComponent(string $moodleRoot): bool {
+        global $CFG;
 
         // Safety check, in case core_component is missing.
         if (!file_exists($moodleRoot . '/lib/classes/component.php')) {
@@ -66,13 +67,27 @@ abstract class MoodleUtil {
         defined('IGNORE_COMPONENT_CACHE') ?: define('IGNORE_COMPONENT_CACHE', 1);
         defined('MOODLE_INTERNAL') ?: define('MOODLE_INTERNAL', 1);
 
-        unset($CFG);
-        global $CFG;
-        $CFG = new \stdClass();
-        $CFG->dirroot = $moodleRoot;
-        $CFG->libdir = $CFG->dirroot . '/lib';
-        $CFG->admin = 'admin';
-        require_once($CFG->dirroot . '/lib/classes/component.php');
+        // Save current CFG values.
+        $olddirroot = $CFG->dirroot ?? null;
+        $oldlibdir = $CFG->libdir ?? null;
+        $oldadmin = $CFG->admin ?? null;
+
+        if (!isset($CFG->dirroot)) { // No defined, let's start from scratch.
+            $CFG = new \stdClass();
+        }
+
+        if ($CFG->dirroot !== $moodleRoot) { // Different, set the minimum required.
+            $CFG->dirroot = $moodleRoot;
+            $CFG->libdir = $CFG->dirroot . '/lib';
+            $CFG->admin = 'admin';
+        }
+
+        require_once($CFG->dirroot . '/lib/classes/component.php'); // Load the class.
+
+        // Restore original CFG values.
+        $CFG->dirroot = $olddirroot ?? null;
+        $CFG->libdir = $oldlibdir ?? null;
+        $CFG->admin = $oldadmin ?? null;
 
         return true;
     }

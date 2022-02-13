@@ -19,7 +19,7 @@ Feature: Codechecker UI works as expected
       | index2.php                                                               | Invalid path index2.php            | Files found: 1 |
       | local/codechecker/version.php                                            | Well done!                         | Invalid path   |
       | local/codechecker/tests/                                                 | local_codechecker_testcase.php     | Invalid path   |
-      | local/codechecker/tests/                                                 | Files found: 2                     | Invalid path   |
+      | local/codechecker/tests/                                                 | Files found: 6                     | Invalid path   |
       | local/codechecker/tests/                                                 | Well done!                         | Invalid path   |
       | local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php | Files found: 1                     | Invalid path   |
       | local/codechecker/moodle/tests/fixtures/files/moodleinternal/problem.php | Total: 2 error(s) and 1 warning(s) | Well done!     |

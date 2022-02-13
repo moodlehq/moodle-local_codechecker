@@ -158,8 +158,11 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
     if ($extraignorelist) {
         $extraignorearr = explode(',', $extraignorelist);
         foreach ($extraignorearr as $extraignore) {
-            $extrapath = trim($extraignore);
-            $finalpaths[$extrapath] = 'absolute';
+            // Don't register empty ignores.
+            if (trim($extraignore)) {
+                $extrapath = trim($extraignore);
+                $finalpaths[$extrapath] = 'absolute';
+            }
         }
     }
 
@@ -221,30 +224,60 @@ function local_codechecker_clean_path($path) {
  *
  * @param array $arr Array to add file paths to
  * @param string $folder Path to search (or may be a single file)
+ * @param array $ignores list of paths (substring matching, asterisk as wild-char that must be ignored).
  * @param array $extensions File extensions to include (not including .)
  */
-function local_codechecker_find_other_files(&$arr, $folder,
-        $extensions = array('txt', 'html', 'csv')) {
-    $regex = '~\.(' . implode('|', $extensions) . ')$~';
+function local_codechecker_find_other_files(&$arr, $folder, $ignores, $extensions = ['txt', 'html', 'csv']) {
+
+    // To detect changes in the passed params.
+    static $stignores = [];
+    static $stextensions = [];
+
+    // To set the regex only once while the params don't change).
+    static $regex = '';
+    static $ignoresregex = '';
+
+    // If the ignores or the extensions have changed, recalculate regex expressions.
+    if ($stignores !== $ignores || $stextensions !== $extensions) {
+        // Save last params.
+        $stignores = $ignores;
+        $stextensions = $extensions;
+
+        // Finder regex.
+        $regex = '~\.(' . implode('|', $extensions) . ')$~';
+
+        // Ignores regex.
+        $ignoresarr = [];
+        $ignoresregex = '~THIS_IS_A_NON_MATCHER~';
+        foreach ($ignores as $ignore) {
+            $ignore = preg_quote($ignore);
+            $ignore = str_replace('\*', '.*', $ignore);
+            $ignoresarr[] = $ignore;
+        }
+        if ($ignoresarr) {
+            $ignoresregex = '~(' . implode('|', $ignoresarr) . ')~';
+        }
+    }
 
     // Handle if this is called directly with a file and not folder.
     if (is_file($folder)) {
-        if (preg_match($regex, $folder)) {
+        if (preg_match($regex, $folder) && !preg_match($ignoresregex, $folder)) {
             $arr[] = $folder;
         }
         return;
     }
-    if ($handle = opendir($folder)) {
+    if (is_dir($folder)) {
+        $handle = opendir($folder);
         while (($file = readdir($handle)) !== false) {
             $fullpath = $folder . '/' . $file;
             if ($file === '.' || $file === '..') {
                 continue;
             } else if (is_file($fullpath)) {
-                if (preg_match($regex, $fullpath)) {
+                if (preg_match($regex, $fullpath) && !preg_match($ignoresregex, $fullpath)) {
                     $arr[] = $fullpath;
                 }
             } else if (is_dir($fullpath)) {
-                local_codechecker_find_other_files($arr, $fullpath);
+                local_codechecker_find_other_files($arr, $fullpath, $ignores, $extensions);
             }
         }
         closedir($handle);
@@ -348,10 +381,11 @@ function local_codechecker_check_other_file($file, $xml) {
  * @param string $path Path to search (may be file or folder)
  * @param SimpleXMLElement $xml structure containin all violations.
  *   to which new problems will be added
+ * @param array $ignores list of paths (substring matching, asterisk as wild-char that must be ignored).
  */
-function local_codechecker_check_other_files($path, $xml) {
+function local_codechecker_check_other_files($path, $xml, $ignores) {
     $files = array();
-    local_codechecker_find_other_files($files, $path);
+    local_codechecker_find_other_files($files, $path, $ignores);
     foreach ($files as $file) {
         local_codechecker_check_other_file($file, $xml);
     }
