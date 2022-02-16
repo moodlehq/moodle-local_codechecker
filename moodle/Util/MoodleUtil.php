@@ -67,14 +67,18 @@ abstract class MoodleUtil {
         defined('IGNORE_COMPONENT_CACHE') ?: define('IGNORE_COMPONENT_CACHE', 1);
         defined('MOODLE_INTERNAL') ?: define('MOODLE_INTERNAL', 1);
 
+        if (!isset($CFG->dirroot)) { // No defined, let's start from scratch.
+            $CFG = (object) [
+                'dirroot' => $moodleRoot,
+                'libdir' => "${moodleRoot}/lib",
+                'admin' => 'admin',
+            ];
+        }
+
         // Save current CFG values.
         $olddirroot = $CFG->dirroot ?? null;
         $oldlibdir = $CFG->libdir ?? null;
         $oldadmin = $CFG->admin ?? null;
-
-        if (!isset($CFG->dirroot)) { // No defined, let's start from scratch.
-            $CFG = new \stdClass();
-        }
 
         if ($CFG->dirroot !== $moodleRoot) { // Different, set the minimum required.
             $CFG->dirroot = $moodleRoot;
