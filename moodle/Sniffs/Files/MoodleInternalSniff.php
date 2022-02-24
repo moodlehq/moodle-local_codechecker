@@ -80,6 +80,10 @@ class MoodleInternalSniff implements Sniff {
 
         // Find where real code is and check from there.
         $pointer = $this->get_position_of_relevant_code($file, $pointer);
+        if (!$pointer) {
+            // The file only contains non-relevant (and non side-effects) code. We are done.
+            return;
+        }
 
         if ($this->is_config_php_incluson($file, $pointer)) {
             // We are requiring config.php. This file is good, hurrah!
@@ -136,8 +140,8 @@ class MoodleInternalSniff implements Sniff {
     }
 
     /**
-     * Finds the position of the first bit of relevant code (ignoring namespaces
-     * and define statements).
+     * Finds the position of the first bit of relevant code (ignoring namespaces,
+     * uses, declares and define statements).
      *
      * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
