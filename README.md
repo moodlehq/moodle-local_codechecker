@@ -38,6 +38,23 @@ We hope you find this tool useful. Please feel free to enhance it.
 Report any idea or bug in [the Tracker](https://tracker.moodle.org/issues/?jql=project%20%3D%20CONTRIB%20AND%20component%20%3D%20%22Local%3A+Code+checker%22), thanks!
 
 
+## Composer installation
+
+1. Install via composer:
+```
+composer global require moodlehq/moodle-local_codechecker
+```
+
+This will install the correct version of phpcs, with the Moodle rules installed, and install the rules.
+
+You can set the Moodle standard as the system default:
+```
+phpcs --config-set default_standard moodle
+```
+
+This will inform most IDEs automatically.
+
+
 IDE Integration
 ---------------
 
