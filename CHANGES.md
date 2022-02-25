@@ -1,3 +1,16 @@
+Changes in version 3.1.0 (20220225) - Fondant chocolate
+-------------------------------------------------------
+- [PR#176](https://github.com/moodlehq/moodle-local_codechecker/pull/176): Avoid some `use` statements to make the `MOODLE_INTERNAL` check to be required (stronk7).
+- [PR#177](https://github.com/moodlehq/moodle-local_codechecker/pull/177): Make it possible to show the erroring standard/sniff/rule in the UI executions (Ruslan Kabalin).
+- [PR#178](https://github.com/moodlehq/moodle-local_codechecker/pull/178): Warn, for Moodle 4.0 and up, about [unit tests missing coverage information](https://docs.moodle.org/dev/Writing_PHPUnit_tests#Code_coverage) (stronk7).
+- [PR#180](https://github.com/moodlehq/moodle-local_codechecker/pull/180): Allow `@codeCoverageIgnore` annotations in inline comments (stronk7).
+- [PR#181](https://github.com/moodlehq/moodle-local_codechecker/pull/181): Apply the `ValidFunctionName` sniff to all scoped tokens (stronk7).
+- [PR#183](https://github.com/moodlehq/moodle-local_codechecker/pull/183): Ensure that the "other" checks do observe UI defined exclusions (stronk7).
+- [PR#186](https://github.com/moodlehq/moodle-local_codechecker/pull/186): Add support for installing via Composer (Andrew Lyons).
+- [PR#190](https://github.com/moodlehq/moodle-local_codechecker/pull/190): Control spacing around array indexes (stronk7).
+- [PR#191](https://github.com/moodlehq/moodle-local_codechecker/pull/191): Fix a problem about not detecting relevant code in files without any artifact (stronk7).
+- Various small fixes and tweaks.
+
 Changes in version 3.0.6 (20220117) - January's crunch (take 2)
 ---------------------------------------------------------------
 - [PR#174](https://github.com/moodlehq/moodle-local_codechecker/pull/174): Lower the unexpected MOODLE_INTERNAL check to be a warning, instead of error, as originally planned (stronk7).
