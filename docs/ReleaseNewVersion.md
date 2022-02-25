@@ -11,6 +11,14 @@ Create a standard PR to get the version bump reviewed and incorporated upstream.
 * The `CHANGES.md`, adding the PRs that have been approved and other existing changes.
 * The `version.php` file, at least the *version* and *release* values.
 
+Create a commit with message, and, optionally, anything worth commenting in the commit description:
+
+```
+Bump to YYYYMMDD (vX.Y.Z) - <<release name, if any>>
+```
+
+(and, optionally, anything worth commenting in the commit description)
+
 Once the version bump PR has been reviewed and incorporated upstream, then you need to tag the release, that will trigger a new CI build (right now [@ GHA](https://github.com/moodlehq/moodle-local_codechecker/actions)) to run the integration testing.
 
 Tag `master` branch `HEAD` and push using commands:
@@ -24,11 +32,17 @@ Then just go to [Github releases](https://github.com/moodlehq/moodle-local_codec
 
 # Moodle plugins directory
 Once the new release is ready, you should add the latest release to the `Moodle plugins directory`.
+
 1. Login to the plugins' directory site and go to [plugin page](https://moodle.org/plugins/local_codechecker).
 2. To add a new version, you have to be a plugin maintainer. **Only lead maintainers can add other maintainers**.
 3. In the main action bar, follow the *</>Developer zone* option.
 4. Click `Add a new version`.
-5. Select the appropriate GitHub release from the drop-down and keep the default options. Add the supported Moodle versions and click `Continue`.
-6. On the next page, fill in the required information. In the *Release notes* field we put the contents of the README.md file, with the contents of the CHANGES.md last version section inserted after the GHA badge. Click `Save changes`.
+5. Select the appropriate GitHub release from the drop-down and press the `Release` button, in the next page (showing the zip and the VCS tag) just press `Continue`.
+6. In the next page (it can take a while to be presented), fill in the required information:
+  1. In the `Version release name`, copy the hyphen and the release name from the `Release notes` header.
+  2. In the `Release notes` field we put the contents of the `README.md` file, with the contents of the `CHANGES.md` current release inserted after the GHA badge.
+  3. In the `Supported software` fill both the supported Moodle and PHP versions.
+  4. In the `Version control information` set the `VCS Branch` to `master`.
+  5.  Click `Add a new version` (it can take a while too).
 
 That's pretty much it. The new version is publicly available.
