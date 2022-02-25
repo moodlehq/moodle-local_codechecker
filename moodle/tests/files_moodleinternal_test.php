@@ -168,8 +168,20 @@ class files_moodleinternal_test extends local_codechecker_testcase {
         $this->verify_cs_results();
     }
 
+    public function test_moodle_files_moodleinternal_no_relevant_ok() {
+        // Files that only contain non-relevant (and no side-effects) code.
+        $this->set_standard('moodle');
+        $this->set_sniff('moodle.Files.MoodleInternal');
+        $this->set_fixture(__DIR__ . '/fixtures/files/moodleinternal/no_relevant_ok.php');
+
+        $this->set_errors([]);
+        $this->set_warnings([]);
+
+        $this->verify_cs_results();
+    }
+
     public function test_moodle_files_moodleinternal_unexpected() {
-        // Old style if statement MOODLE_INTERNAL check.
+        // Unexpected (not needed) check.
         $this->set_standard('moodle');
         $this->set_sniff('moodle.Files.MoodleInternal');
         $this->set_fixture(__DIR__ . '/fixtures/files/moodleinternal/unexpected.php');
