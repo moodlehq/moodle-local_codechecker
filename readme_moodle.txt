@@ -1,3 +1,21 @@
+Instructions to upgrade the moodle-cs bundled version:
+
+- Update the subtree checkout:
+```
+git subtree pull --prefix rules https://github.com/moodlehq/moodle-cs main --squash
+```
+- Update the details in this readme
+
+Current checkout:
+
+  3.2.3 (12ac0d4e56a7c9caa02a73725a089019742ad63c)
+
+Local modifications (only allowed if there is a PR upstream backing it):
+
+  - None, right now.
+
+===== ===== ===== ===== ===== ===== =====
+
 Instructions to upgrade the phpcs bundled version:
 
 - Drop a checkout of git://github.com/squizlabs/PHP_CodeSniffer.git
