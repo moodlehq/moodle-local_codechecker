@@ -1,0 +1,4 @@
+path: ./
+exclude:
+  - vendor
+  - moodle/tests/fixtures

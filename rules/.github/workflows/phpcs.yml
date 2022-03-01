@@ -1,0 +1,49 @@
+name: Moodle Coding Style Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: 8.1
+          - php: 8.0
+          - php: 7.4
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ matrix.extensions }}
+          ini-values: pcov.directory=moodle
+          coverage: pcov
+          tools: composer, phpcpd
+
+      - name: Install composer dependencies
+        run: |
+          composer install
+
+      - name: Run phplint
+        if: ${{ always() }}
+        run: |
+          ./vendor/bin/phplint
+
+      - name: PHP Copy/Paste Detector
+        continue-on-error: true # This step will show errors but will not fail
+        if: ${{ always() }}
+        run: phpcpd --exclude moodle/tests moodle
+
+      - name: Run phpunit
+        if: ${{ always() }}
+        run: |
+          ./vendor/bin/phpunit --coverage-text
+
+      - name: Test coverage
+        run: ./vendor/bin/phpunit-coverage-check -t 80 clover.xml
