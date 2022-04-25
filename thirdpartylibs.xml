@@ -3,14 +3,22 @@
     <library>
         <location>phpcs</location>
         <name>PHP_CodeSniffer</name>
-        <version>3.5.6+ (7c1df7d2c)</version>
-        <license>BSD 3-Clause</license>
+        <version>3.6.2 (5e4e71592)</version>
+        <license>BSD</license>
+        <licenseversion>3-Clause</licenseversion>
     </library>
     <library>
         <location>PHPCompatibility</location>
         <name>PHP Compatibility Coding Standard</name>
         <version>9.3.5+ (9fb3244)</version>
         <license>LGPL</license>
+        <licenseversion>3</licenseversion>
+    </library>
+    <library>
+        <location>rules</location>
+        <name>Moodle Coding Style</name>
+        <version>v3.2.0 (93dcbe4)</version>
+        <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>
 </libraries>
