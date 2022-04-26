@@ -1,14 +1,18 @@
 Instructions to upgrade the moodle-cs bundled version:
 
-- Update the subtree checkout:
-```
-git subtree pull --prefix rules https://github.com/moodlehq/moodle-cs main --squash
-```
+- Drop a checkout of https://github.com/moodlehq/moodle-cs.git
+  within the "MoodleCS" directory of the plugin. Always removing
+  all the previous contents before copying.
+- Also, remove not needed stuff, like:
+  - All dot (.*) files and directories (git, travis...).
+  - Any composer.* and vendor files.
+  - All .xml and .dist files.
+  - The MoodleCS/moodle/Tests directory
 - Update the details in this readme
 
 Current checkout:
 
-  3.2.3 (12ac0d4e56a7c9caa02a73725a089019742ad63c)
+  3.2.3+ (3914b82)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
@@ -27,6 +31,7 @@ Instructions to upgrade the phpcs bundled version:
   - Any composer.* and vendor files.
   - All .ini, .xsd, .neon and .dist files.
   - The scripts, tests and vendor directories.
+- Update the details in this readme
 
 Current checkout:
 
@@ -44,6 +49,7 @@ Instructions to upgrade the PHPCompatibility bundled version:
   within the "PHPCompatibility" directory of the local_codechecker plugin. Always
   removing all the previous contents.
 - Don't delete anything. 100% complete drop.
+- Update the details in this readme
 
 Current checkout:
 

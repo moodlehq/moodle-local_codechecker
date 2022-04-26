@@ -77,7 +77,7 @@ class TestCaseCoversSniff implements Sniff {
         }
 
         // If the file isn't under tests directory, nothing to check.
-        if (strpos($file->getFilename(), '/tests/') === false) {
+        if (stripos($file->getFilename(), '/tests/') === false) {
             return; // @codeCoverageIgnore
         }
 

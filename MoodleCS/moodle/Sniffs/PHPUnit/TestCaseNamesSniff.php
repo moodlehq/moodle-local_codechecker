@@ -82,7 +82,7 @@ class TestCaseNamesSniff implements Sniff {
         }
 
         // If the file isn't under tests directory, nothing to check.
-        if (strpos($file->getFilename(), '/tests/') === false) {
+        if (stripos($file->getFilename(), '/tests/') === false) {
             return; // @codeCoverageIgnore
         }
 
@@ -222,7 +222,7 @@ class TestCaseNamesSniff implements Sniff {
                 $relns = str_replace('\\', '/', substr(trim($namespace, ' \\'), $bspos + 1));
 
                 // Calculate the relative path under tests directory.
-                $dirpos = strrpos(trim(dirname($file->getFilename()), ' /') . '/', '/tests/');
+                $dirpos = strripos(trim(dirname($file->getFilename()), ' /') . '/', '/tests/');
                 $reldir = str_replace('\\', '/', substr(trim(dirname($file->getFilename()), ' /'), $dirpos + 7));
 
                 // Warning if the relative namespace does not match the relative directory.
