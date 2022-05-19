@@ -41,14 +41,20 @@ jobs:
             # plugin needs xmlrpc services.
             extensions: xmlrpc-beta
           - php: 8.0
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: MOODLE_400_STABLE
             database: pgsql
             # The following line is only needed if you're going to run php8 jobs and your
             # plugin needs xmlrpc services.
             extensions: xmlrpc-beta
           - php: 8.0
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: MOODLE_400_STABLE
             database: mariadb
+            # The following line is only needed if you're going to run php8 jobs and your
+            # plugin needs xmlrpc services.
+            extensions: xmlrpc-beta
+          - php: 8.0
+            moodle-branch: MOODLE_311_STABLE
+            database: pgsql
             # The following line is only needed if you're going to run php8 jobs and your
             # plugin needs xmlrpc services.
             extensions: xmlrpc-beta
@@ -70,11 +76,14 @@ jobs:
             moodle-branch: master
             database: mariadb
           - php: 7.3
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: MOODLE_400_STABLE
             database: pgsql
           - php: 7.3
-            moodle-branch: MOODLE_311_STABLE
+            moodle-branch: MOODLE_400_STABLE
             database: mariadb
+          - php: 7.3
+            moodle-branch: MOODLE_311_STABLE
+            database: pgsql
           - php: 7.3
             moodle-branch: MOODLE_37_STABLE
             database: pgsql
