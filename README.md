@@ -19,7 +19,7 @@ Available releases can be downloaded and installed from
 
 To install it using git, type this command in the root of your Moodle install:
 
-    git clone git://github.com/moodlehq/moodle-local_codechecker.git local/codechecker
+    git clone https://github.com/moodlehq/moodle-local_codechecker.git local/codechecker
 
 Then add /local/codechecker to your git ignore.
 
