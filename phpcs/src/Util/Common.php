@@ -39,7 +39,7 @@ class Common
      */
     public static function isPharFile($path)
     {
-        if (strpos($path, 'phar://') === 0) {
+        if (strpos($path ?? '', 'phar://') === 0) {
             return true;
         }
 
