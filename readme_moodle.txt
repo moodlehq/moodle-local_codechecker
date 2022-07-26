@@ -22,7 +22,7 @@ Local modifications (only allowed if there is a PR upstream backing it):
 
 Instructions to upgrade the phpcs bundled version:
 
-- Drop a checkout of git://github.com/squizlabs/PHP_CodeSniffer.git
+- Drop a checkout of https://github.com/squizlabs/PHP_CodeSniffer.git
   within the "phpcs" directory of the plugin. Always removing
   all the previous contents before copying, but the CodeSniffer.conf
   file that is needed to autodetect the PHPCompatibility standard.
@@ -35,7 +35,7 @@ Instructions to upgrade the phpcs bundled version:
 
 Current checkout:
 
-  3.6.2 (5e4e71592)
+  3.7.1 (1359e176e)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
