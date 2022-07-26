@@ -54,6 +54,10 @@
     <rule ref="Squiz.Functions.LowercaseFunctionKeywords"/>
     <rule ref="PSR2.Methods.MethodDeclaration"/>
 
+    <rule ref="Squiz.Operators.ValidLogicalOperators">
+        <type>warning</type>
+    </rule>
+
     <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
     <rule ref="Squiz.PHP.CommentedOutCode">
         <properties>

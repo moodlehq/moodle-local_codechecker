@@ -351,6 +351,22 @@ class MoodleInternalSniff implements Sniff {
                         }
                     }
                     continue 2;
+                case T_STRING:
+                    if (isset($tokens[$i]['content']) === true) {
+                        // Ignore class_alias as this is no different to declaring a class.
+                        // This will be in the format `class_alias(source, target);` and represented by:
+                        // - T_STRING['content'] = 'class_alias'
+                        // - T_OPEN_PARENTHESIS
+                        // - ...
+                        // - T_CLOSE_PARENTHESIS
+                        if ($tokens[$i]['content'] === 'class_alias') {
+                            $paren = $file->findNext(T_OPEN_PARENTHESIS, ($i + 1));
+                            if ($paren !== false) {
+                                $i = $tokens[$paren]['parenthesis_closer'] + 1;
+                                continue 2;
+                            }
+                        }
+                    }
             }
 
             // Detect and skip over symbols.

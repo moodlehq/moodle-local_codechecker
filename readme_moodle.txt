@@ -7,12 +7,12 @@ Instructions to upgrade the moodle-cs bundled version:
   - All dot (.*) files and directories (git, travis...).
   - Any composer.* and vendor files.
   - All .xml and .dist files.
-  - The MoodleCS/moodle/Tests directory
+  - The moodle/Tests directory
 - Update the details in this readme
 
 Current checkout:
 
-  3.2.3+ (3914b82)
+  3.2.4+ (522bb7b)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

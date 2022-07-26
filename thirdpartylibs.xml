@@ -17,7 +17,7 @@
     <library>
         <location>MoodleCS</location>
         <name>Moodle Coding Style</name>
-        <version>v3.2.0 (93dcbe4)</version>
+        <version>v3.2.4+ (522bb7b)</version>
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>
