@@ -123,7 +123,7 @@ jobs:
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
-          IGNORE_PATHS: moodle/tests/fixtures,moodle/Sniffs
+          IGNORE_PATHS: tests/fixtures
 
       - name: PHP Lint
         if: ${{ always() }}
