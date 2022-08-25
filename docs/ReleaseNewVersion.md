@@ -17,8 +17,6 @@ Create a commit with message, and, optionally, anything worth commenting in the 
 Bump to YYYYMMDD (vX.Y.Z) - <<release name, if any>>
 ```
 
-(and, optionally, anything worth commenting in the commit description)
-
 Once the version bump PR has been reviewed and incorporated upstream, then you need to tag the release, that will trigger a new CI build (right now [@ GHA](https://github.com/moodlehq/moodle-local_codechecker/actions)) to run the integration testing.
 
 Tag `master` branch `HEAD` and push using commands:

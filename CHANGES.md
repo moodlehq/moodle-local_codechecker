@@ -1,3 +1,13 @@
+Changes in version 4.0.0 (20220825) - Welcome moodle-cs
+-------------------------------------------------------
+- [PR#192](https://github.com/moodlehq/moodle-local_codechecker/pull/192), [PR#197](https://github.com/moodlehq/moodle-local_codechecker/pull/197): Various fixes to own CI tests (stronk7).
+- [PR#193](https://github.com/moodlehq/moodle-local_codechecker/pull/193): Move to use the [moodle-cs](https://github.com/moodlehq/moodle-cs) standard that is now the source for everything else and should be the one used for all (tools, editors, IDEs...) integration. (Andrew Lyons and stronk7). This change includes, noticeably:
+    - PHP_CodeSniffer updated to current 3.7.1.
+    - moodle-cs updated to current 3.2.4+.
+    - Adjust tests, docs and other bits to keep everything working.
+- [PR#199](https://github.com/moodlehq/moodle-local_codechecker/pull/199): Correct handling of empty files (Michael Milette).
+- [PR#200](https://github.com/moodlehq/moodle-local_codechecker/pull/200): Fix GitHub repository URLs (David Mudrák).
+
 Changes in version 3.1.0 (20220225) - Fondant chocolate
 -------------------------------------------------------
 - [PR#176](https://github.com/moodlehq/moodle-local_codechecker/pull/176): Avoid some `use` statements to make the `MOODLE_INTERNAL` check to be required (stronk7).
