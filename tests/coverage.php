@@ -30,18 +30,17 @@ defined('MOODLE_INTERNAL') || die();
  */
 return new class extends phpunit_coverage_info {
     /** @var array The list of folders relative to the plugin root to include in coverage generation. */
-    protected $includelistfolders = [
-        'classes',
-        'moodle',
-    ];
+    protected $includelistfolders = [];
 
     /** @var array The list of files relative to the plugin root to include in coverage generation. */
-    protected $includelistfiles = [
-        'locallib.php'];
+    protected $includelistfiles = [];
 
     /** @var array The list of folders relative to the plugin root to exclude from coverage generation. */
     protected $excludelistfolders = [
-        'moodle/tests',
+        'MoodleCS',
+        'moodle',
+        'PHPCompatibility',
+        'phpcs',
     ];
 
     /** @var array The list of files relative to the plugin root to exclude from coverage generation. */

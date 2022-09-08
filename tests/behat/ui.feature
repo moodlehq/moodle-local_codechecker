@@ -19,7 +19,7 @@ Feature: Codechecker UI works as expected
       | index2.php                                         | Invalid path index2.php            | Files found: 1 |
       | local/codechecker/version.php                      | Well done!                         | Invalid path   |
       | local/codechecker/tests/                           | checker/tests/locallib_test.php    | Invalid path   |
-      | local/codechecker/tests/                           | Files found: 9                     | Invalid path   |
+      | local/codechecker/tests/                           | Files found: 11                    | Invalid path   |
       | local/codechecker/tests/locallib_test.php          | Well done!                         | Invalid path   |
       | local/codechecker/tests/fixtures/behat/problem.php | Files found: 1                     | Invalid path   |
       | local/codechecker/tests/fixtures/behat/problem.php | Total: 2 error(s) and 1 warning(s) | Well done!     |
@@ -38,8 +38,8 @@ Feature: Codechecker UI works as expected
 
     Examples:
       | path                     | exclude            | seen                          | notseen      |
-      | local/codechecker/tests  | */tests/fixtures/* | Files found: 2                | Invalid path |
-      | local/codechecker/tests/ | *one*, *moodle_*   | Files found: 8                | Invalid path |
+      | local/codechecker/tests  | */tests/fixtures/* | Files found: 3                | Invalid path |
+      | local/codechecker/tests/ | *one*, *moodle_*   | Files found: 10               | Invalid path |
       | local/codechecker/tests  | */tests/fixtures/* | locallib_test.php             | problem.php  |
       | local/codechecker/tests/ | *moodle_*          | Line 1 of the opening comment | moodle_php   |
       | local/codechecker/tests/ | *moodle_*          | fixtures/behat/phpcompat      | /moodle_php  |

@@ -333,15 +333,19 @@ function local_codechecker_check_other_file($file, $xml) {
     // Certain files are permitted lines of any length because they are
     // Auto-generated.
     $allowanylength = in_array(basename($file), array('install.xml')) ||
-            substr($file, -4, 4) === '.csv';
+        substr($file, -4, 4) === '.csv';
+    // We allow CRLF line endings in .csv tests/fixtures files (see #203).
+    $allowcrlf = substr($file, -4, 4) === '.csv' &&
+        strpos($file, '/tests/fixtures/') !== false;
 
     $lines = file($file);
     $index = 0;
     $blankrun = 0;
+    $donecrlf = false;
     foreach ($lines as $l) {
         $index++;
         // Incorrect [Windows] line ending.
-        if ((strpos($l, "\r\n") !== false) && empty($donecrlf)) {
+        if (!$donecrlf && !$allowcrlf && (strpos($l, "\r\n") !== false)) {
             local_codechecker_add_problem($fileinxml, $file, $index, 'crlf');
             $donecrlf = true;
         }
