@@ -108,7 +108,7 @@ class locallib_test extends \basic_testcase {
      * @param string[] $nomatches list of substring-matching strings not expected to be in the results.
      *
      * @dataProvider local_codechecker_find_other_files_provider()
-     * @covers ::local_codechecker_find_other_files()
+     * @covers ::local_codechecker_find_other_files
      */
     public function test_local_codechecker_find_other_files(string $path, array $ignores,
             array $extensions, array $matches, array $nomatches) {
@@ -142,5 +142,31 @@ class locallib_test extends \basic_testcase {
         foreach ($nomatches as $nomatch) {
             $this->assertStringNotContainsString($nomatch, $results);
         }
+    }
+
+    /**
+     * Verify test_local_codechecker_check_other_file() behaviour.
+     *
+     * @covers ::local_codechecker_check_other_file
+     */
+    public function test_local_codechecker_check_other_file() {
+
+        require_once(__DIR__ . '/../locallib.php');
+
+        // Verify that lf files are ok.
+        $xml = new \SimpleXMLElement('<xml/>');
+        local_codechecker_check_other_file(__DIR__ . '/../version.php', $xml);
+        $this->assertStringContainsString('errors="0" warnings="0"', $xml->asXML());
+
+        // Verify crlf files in /tests/fixtures/ locations are ok.
+        $xml = new \SimpleXMLElement('<xml/>');
+        local_codechecker_check_other_file(__DIR__ . '/fixtures/crlf.csv', $xml);
+        $this->assertStringContainsString('errors="0" warnings="0"', $xml->asXML());
+
+        // Verify crlf files in not in /tests/fixtures/ locations are wrong.
+        $xml = new \SimpleXMLElement('<xml/>');
+        local_codechecker_check_other_file(__DIR__ . '/fixtures2/crlf.csv', $xml);
+        $this->assertStringContainsString('errors="1" warnings="0"', $xml->asXML());
+        $this->assertStringContainsString('Windows (CRLF) line ending instead of just LF', $xml->asXML());
     }
 }
