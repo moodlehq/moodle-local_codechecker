@@ -1,3 +1,9 @@
+Changes in version 4.0.1 (20221007) - Dear Windows
+--------------------------------------------------
+- [PR#205](https://github.com/moodlehq/moodle-local_codechecker/pull/205): Allow CRLF (Windows) line ending in .csv testing fixtures (stronk7).
+- [PR#206](https://github.com/moodlehq/moodle-local_codechecker/pull/206): Fix various links to point to the [new coding style docs](https://moodledev.io/general/development/policies/codingstyle) (Tim Hunt).
+- [PR#209](https://github.com/moodlehq/moodle-local_codechecker/pull/209): Solve a problem, specially noticeable under Windows, where core's PHP_CodeSniffer configuration was interfering with codechecker runs (stronk7).
+
 Changes in version 4.0.0 (20220825) - Welcome moodle-cs
 -------------------------------------------------------
 - [PR#192](https://github.com/moodlehq/moodle-local_codechecker/pull/192), [PR#197](https://github.com/moodlehq/moodle-local_codechecker/pull/197): Various fixes to own CI tests (stronk7).
