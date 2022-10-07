@@ -7,7 +7,9 @@ Information
 -----------
 
 This Moodle plugin uses the [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) tool to
-check that code follows the [Moodle coding style](http://docs.moodle.org/dev/Coding_style). It uses the [Moodle Coding Style](https://github.com/moodlehq/moodle-cs) 'sniffs' that check many aspects of the code, including the awesome [PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) ones.
+check that code follows the [Moodle coding style](https://moodledev.io/general/development/policies/codingstyle).
+It uses the [Moodle Coding Style](https://github.com/moodlehq/moodle-cs) 'sniffs' that check many aspects of the code, including the awesome
+[PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) ones.
 
 It was created by developers at the Open University, including Sam Marshall,
 Tim Hunt and Jenny Gray. It is now maintained by Moodle HQ.

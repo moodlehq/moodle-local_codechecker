@@ -50,7 +50,7 @@ class local_codechecker_form extends moodleform {
         $mform = $this->_form;
 
         $a = new stdClass();
-        $a->link = html_writer::link('http://docs.moodle.org/dev/Coding_style',
+        $a->link = html_writer::link('https://moodledev.io/general/development/policies/codingstyle',
                 get_string('moodlecodingguidelines', 'local_codechecker'));
         $a->path = html_writer::tag('tt', 'local/codechecker');
         $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
