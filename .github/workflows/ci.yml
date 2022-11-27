@@ -28,27 +28,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Highest php versions supported by each branch (with master always being tested twice).
           - php: 8.0
             moodle-branch: master
             database: pgsql
-            # The following line is only needed if you're going to run php8 jobs and your
-            # plugin needs xmlrpc services.
-            extensions: xmlrpc-beta
           - php: 8.0
             moodle-branch: master
             database: mariadb
-            # The following line is only needed if you're going to run php8 jobs and your
-            # plugin needs xmlrpc services.
-            extensions: xmlrpc-beta
+          - php: 8.0
+            moodle-branch: MOODLE_401_STABLE
+            database: pgsql
           - php: 8.0
             moodle-branch: MOODLE_400_STABLE
             database: pgsql
-            # The following line is only needed if you're going to run php8 jobs and your
-            # plugin needs xmlrpc services.
-            extensions: xmlrpc-beta
-          - php: 8.0
-            moodle-branch: MOODLE_400_STABLE
-            database: mariadb
             # The following line is only needed if you're going to run php8 jobs and your
             # plugin needs xmlrpc services.
             extensions: xmlrpc-beta
@@ -64,29 +56,31 @@ jobs:
             database: pgsql
           - php: 7.4
             moodle-branch: MOODLE_39_STABLE
-            database: mariadb
+            database: pgsql
           - php: 7.4
             moodle-branch: MOODLE_38_STABLE
             database: pgsql
 
+          - php: 7.3
+            moodle-branch: MOODLE_37_STABLE
+            database: pgsql
+
+          # Lowest php versions supported by each branch (with master always being tested twice).
           - php: 7.4
             moodle-branch: master
             database: pgsql
           - php: 7.4
             moodle-branch: master
             database: mariadb
+          - php: 7.4
+            moodle-branch: MOODLE_401_STABLE
+            database: pgsql
 
           - php: 7.3
             moodle-branch: MOODLE_400_STABLE
             database: pgsql
           - php: 7.3
-            moodle-branch: MOODLE_400_STABLE
-            database: mariadb
-          - php: 7.3
             moodle-branch: MOODLE_311_STABLE
-            database: pgsql
-          - php: 7.3
-            moodle-branch: MOODLE_37_STABLE
             database: pgsql
 
           - php: 7.2
@@ -94,7 +88,7 @@ jobs:
             database: pgsql
           - php: 7.2
             moodle-branch: MOODLE_39_STABLE
-            database: mariadb
+            database: pgsql
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
