@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12
+        image: postgres:13
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -29,12 +29,13 @@ jobs:
       matrix:
         include:
           # Highest php versions supported by each branch (with master always being tested twice).
-          - php: 8.0
-            moodle-branch: master
-            database: pgsql
-          - php: 8.0
-            moodle-branch: master
-            database: mariadb
+          # TODO: Enable when master (4.2dev) supports php81
+          #- php: 8.1
+          #  moodle-branch: master
+          #  database: pgsql
+          #- php: 8.1
+          #  moodle-branch: master
+          #  database: mariadb
           - php: 8.0
             moodle-branch: MOODLE_401_STABLE
             database: pgsql
@@ -66,10 +67,10 @@ jobs:
             database: pgsql
 
           # Lowest php versions supported by each branch (with master always being tested twice).
-          - php: 7.4
+          - php: 8.0
             moodle-branch: master
             database: pgsql
-          - php: 7.4
+          - php: 8.0
             moodle-branch: master
             database: mariadb
           - php: 7.4
