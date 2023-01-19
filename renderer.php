@@ -138,7 +138,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
 
             $summary = '';
             if ($fileinxml['errors'] + $fileinxml['warnings'] > 0) {
-                $numerrwarn = (object) array('errors' => "${fileinxml['errors']}", 'warnings' => "${fileinxml['warnings']}");
+                $numerrwarn = (object) array('errors' => "{$fileinxml['errors']}", 'warnings' => "{$fileinxml['warnings']}");
                 $summary = get_string('numerrorswarnings', 'local_codechecker', $numerrwarn);
             }
 
