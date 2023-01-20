@@ -15,6 +15,13 @@
         <licenseversion>3</licenseversion>
     </library>
     <library>
+        <location>PHPCSUtils</location>
+        <name>A suite of utility functions for use with PHP_CodeSniffer</name>
+        <version>1.0.1 (4fd2e30)</version>
+        <license>GPL</license>
+        <licenseversion>3</licenseversion>
+    </library>
+    <library>
         <location>MoodleCS</location>
         <name>Moodle Coding Style</name>
         <version>v3.3.1 (e475bde)</version>
