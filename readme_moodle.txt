@@ -47,7 +47,7 @@ Local modifications (only allowed if there is a PR upstream backing it):
 
 Instructions to upgrade the PHPCompatibility bundled version:
 
-- Drop a checkout of the PHPCompatibility dir of https://github.com/wimg/PHPCompatibility.git
+- Drop a checkout of the PHPCompatibility dir of https://github.com/PHPCompatibility/PHPCompatibility
   within the "PHPCompatibility" directory of the local_codechecker plugin. Always
   removing all the previous contents.
 - Don't delete anything. 100% complete drop.
@@ -64,5 +64,24 @@ Local modifications (only allowed if there is a PR upstream backing it):
     because still there are a number of old class names within the standard. This
     doesn't have any upstream PR, because the file is there, just we had not needed
     it before the jump to phpcs 3.
+
+===== ===== ===== ===== ===== ===== =====
+
+Instructions to upgrade the PHPCSUtils bundled version:
+
+- Drop a checkout of the PHPCSUtils dir of https://github.com/PHPCSStandards/PHPCSUtils
+  within the "PHPCSUtils" directory of the local_codechecker plugin. Always
+  removing all the previous contents.
+- Don't delete anything. 100% complete drop.
+- Update the details in thirdpartylibs.xml
+- Update the details in this readme
+
+Current checkout:
+
+  1.0.1 (4fd2e30)
+
+Local modifications (only allowed if there is a PR upstream backing it):
+
+  - None, right now.
 
 ===== ===== ===== ===== ===== ===== =====
