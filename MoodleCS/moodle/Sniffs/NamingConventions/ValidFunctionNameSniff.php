@@ -47,9 +47,13 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
         'unset',
         'sleep',
         'wakeup',
+        'serialize',
+        'unserialize',
         'toString',
+        'invoke',
         'set_state',
         'clone',
+        'debuginfo',
     );
 
     /** @var array A list of all PHP magic functions. */
