@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,16 +49,16 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      */
     public function dataGroupUseDeclaration()
     {
-        return array(
-            array(23),
-            array(24),
-            array(25),
-            array(26),
-            array(33),
-            array(34),
-            array(35),
-            array(36),
-        );
+        return [
+            [23],
+            [24],
+            [25],
+            [26],
+            [33],
+            [34],
+            [35],
+            [36],
+        ];
     }
 
 
@@ -74,7 +74,7 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
     public function testGroupUseTrailingComma($line)
     {
         $file = $this->sniffFile(__FILE__, '7.1');
-        $this->assertError($file, $line, 'Trailing comma\'s are not allowed in group use statements in PHP 7.1 or earlier');
+        $this->assertError($file, $line, 'Trailing commas are not allowed in group use statements in PHP 7.1 or earlier');
     }
 
     /**
@@ -86,12 +86,12 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      */
     public function dataGroupUseTrailingComma()
     {
-        return array(
-            array(33),
-            array(34),
-            array(35),
-            array(39),
-        );
+        return [
+            [33],
+            [34],
+            [35],
+            [39],
+        ];
     }
 
 
@@ -119,12 +119,12 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositivesTrailingComma()
     {
-        return array(
-            array(23),
-            array(24),
-            array(25),
-            array(29),
-        );
+        return [
+            [23],
+            [24],
+            [25],
+            [29],
+        ];
     }
 
 
@@ -152,18 +152,18 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(4),
-            array(5),
-            array(6),
-            array(8),
-            array(9),
-            array(11),
-            array(13),
-            array(15),
-            array(19),
-            array(20),
-        );
+        return [
+            [4],
+            [5],
+            [6],
+            [8],
+            [9],
+            [11],
+            [13],
+            [15],
+            [19],
+            [20],
+        ];
     }
 
 

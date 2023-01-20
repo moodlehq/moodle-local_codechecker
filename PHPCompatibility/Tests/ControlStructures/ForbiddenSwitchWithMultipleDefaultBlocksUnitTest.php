@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,11 +49,11 @@ class ForbiddenSwitchWithMultipleDefaultBlocksUnitTest extends BaseSniffTest
      */
     public function dataForbiddenSwitchWithMultipleDefaultBlocks()
     {
-        return array(
-            array(3),
-            array(47),
-            array(56),
-        );
+        return [
+            [3],
+            [47],
+            [56],
+        ];
     }
 
 
@@ -81,12 +81,12 @@ class ForbiddenSwitchWithMultipleDefaultBlocksUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(14),
-            array(23),
-            array(43),
-            array(67), // Live coding.
-        );
+        return [
+            [14],
+            [23],
+            [43],
+            [67], // Live coding.
+        ];
     }
 
 

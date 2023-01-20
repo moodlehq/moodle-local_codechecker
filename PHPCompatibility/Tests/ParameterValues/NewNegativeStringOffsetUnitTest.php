@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -39,7 +39,7 @@ class NewNegativeStringOffsetUnitTest extends BaseSniffTest
     public function testNegativeStringOffset($line, $paramName, $functionName)
     {
         $file  = $this->sniffFile(__FILE__, '7.0');
-        $error = sprintf(
+        $error = \sprintf(
             'Negative string offsets were not supported for the $%1$s parameter in %2$s() in PHP 7.0 or lower.',
             $paramName,
             $functionName
@@ -56,25 +56,28 @@ class NewNegativeStringOffsetUnitTest extends BaseSniffTest
      */
     public function dataNegativeStringOffset()
     {
-        return array(
-            array(28, 'position', 'mb_ereg_search_setpos'),
-            array(34, 'position', 'MB_ereg_search_setpos'),
-            array(36, 'offset', 'file_get_contents'),
-            array(37, 'start', 'grapheme_extract'),
-            array(38, 'offset', 'grapheme_stripos'),
-            array(39, 'offset', 'grapheme_strpos'),
-            array(40, 'offset', 'iconv_strpos'),
-            array(41, 'start', 'mb_strimwidth'),
-            array(41, 'width', 'mb_strimwidth'),
-            array(42, 'offset', 'mb_stripos'),
-            array(43, 'offset', 'mb_strpos'),
-            array(44, 'offset', 'stripos'),
-            array(45, 'offset', 'strpos'),
-            array(46, 'offset', 'substr_count'),
-            array(46, 'length', 'substr_count'),
-            array(47, 'offset', 'Substr_Count'),
-            array(48, 'length', 'substr_count'),
-        );
+        return [
+            [28, 'offset', 'mb_ereg_search_setpos'],
+            [34, 'offset', 'MB_ereg_search_setpos'],
+            [36, 'offset', 'file_get_contents'],
+            [37, 'offset', 'grapheme_extract'],
+            [38, 'offset', 'grapheme_stripos'],
+            [39, 'offset', 'grapheme_strpos'],
+            [40, 'offset', 'iconv_strpos'],
+            [41, 'start', 'mb_strimwidth'],
+            [41, 'width', 'mb_strimwidth'],
+            [42, 'offset', 'mb_stripos'],
+            [43, 'offset', 'mb_strpos'],
+            [44, 'offset', 'stripos'],
+            [45, 'offset', 'strpos'],
+            [46, 'offset', 'substr_count'],
+            [46, 'length', 'substr_count'],
+            [47, 'offset', 'Substr_Count'],
+            [48, 'length', 'substr_count'],
+            [51, 'start', 'mb_strimwidth'],
+            [52, 'start', 'mb_strimwidth'],
+            [52, 'width', 'mb_strimwidth'],
+        ];
     }
 
 

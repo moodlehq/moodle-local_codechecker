@@ -3,16 +3,23 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Interfaces;
 
-use PHPCompatibility\AbstractNewFeatureSniff;
-use PHPCompatibility\PHPCSHelper;
-use PHP_CodeSniffer_File as File;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Exceptions\RuntimeException;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\ControlStructures;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\ObjectDeclarations;
+use PHPCSUtils\Utils\Variables;
 
 /**
  * Detect use of new PHP native interfaces and unsupported interface methods.
@@ -20,12 +27,14 @@ use PHP_CodeSniffer_File as File;
  * PHP version 5.0+
  *
  * @since 7.0.3
- * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
- * @since 7.1.4 Now also detects new interfaces when used as parameter type declarations.
- * @since 8.2.0 Now also detects new interfaces when used as return type declarations.
+ * @since 7.1.0  Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
+ * @since 7.1.4  Now also detects new interfaces when used as parameter type declarations.
+ * @since 8.2.0  Now also detects new interfaces when used as return type declarations.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionNewFeatureTrait`.
  */
-class NewInterfacesSniff extends AbstractNewFeatureSniff
+class NewInterfacesSniff extends Sniff
 {
+    use ComplexVersionNewFeatureTrait;
 
     /**
      * A list of new interfaces, not present in older versions.
@@ -37,73 +46,86 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => bool))
      */
-    protected $newInterfaces = array(
-        'Traversable' => array(
+    protected $newInterfaces = [
+        'Traversable' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'Reflector' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
+        ],
+        'Reflector' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
 
-        'Countable' => array(
+        'Countable' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'OuterIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'SeekableIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'Serializable' => [
             '5.0' => false,
             '5.1' => true,
-        ),
-        'OuterIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'RecursiveIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'SeekableIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'Serializable' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'SplObserver' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'SplSubject' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
+        ],
+        'SplObserver' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'SplSubject' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
 
-        'JsonSerializable' => array(
+        'JsonSerializable' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'json',
+        ],
+        'SessionHandlerInterface' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'SessionHandlerInterface' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
+        ],
 
-        'DateTimeInterface' => array(
+        'DateTimeInterface' => [
             '5.4' => false,
             '5.5' => true,
-        ),
+        ],
 
-        'SessionIdInterface' => array(
+        'SessionIdInterface' => [
             '5.5.0' => false,
             '5.5.1' => true,
-        ),
+        ],
 
-        'Throwable' => array(
+        'Throwable' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'SessionUpdateTimestampHandlerInterface' => array(
+        ],
+        'SessionUpdateTimestampHandlerInterface' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-    );
+        ],
+
+        'Stringable' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+    ];
 
     /**
      * A list of methods which cannot be used in combination with particular interfaces.
@@ -112,12 +134,12 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => string))
      */
-    protected $unsupportedMethods = array(
-        'Serializable' => array(
+    protected $unsupportedMethods = [
+        'Serializable' => [
             '__sleep'  => 'https://www.php.net/serializable',
             '__wakeup' => 'https://www.php.net/serializable',
-        ),
-    );
+        ],
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -129,22 +151,18 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
     public function register()
     {
         // Handle case-insensitivity of interface names.
-        $this->newInterfaces      = $this->arrayKeysToLowercase($this->newInterfaces);
-        $this->unsupportedMethods = $this->arrayKeysToLowercase($this->unsupportedMethods);
+        $this->newInterfaces      = \array_change_key_case($this->newInterfaces, \CASE_LOWER);
+        $this->unsupportedMethods = \array_change_key_case($this->unsupportedMethods, \CASE_LOWER);
 
-        $targets = array(
+        $targets = [
             \T_CLASS,
-            \T_FUNCTION,
-            \T_CLOSURE,
-        );
+            \T_ANON_CLASS,
+            \T_INTERFACE,
+            \T_VARIABLE,
+            \T_CATCH,
+        ];
 
-        if (\defined('T_ANON_CLASS')) {
-            $targets[] = \T_ANON_CLASS;
-        }
-
-        if (\defined('T_RETURN_TYPE')) {
-            $targets[] = \T_RETURN_TYPE;
-        }
+        $targets += Collections::functionDeclarationTokens();
 
         return $targets;
     }
@@ -155,9 +173,9 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      *
      * @since 7.0.3
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -165,31 +183,27 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        switch ($tokens[$stackPtr]['type']) {
-            case 'T_CLASS':
-            case 'T_ANON_CLASS':
+        switch ($tokens[$stackPtr]['code']) {
+            case \T_CLASS:
+            case \T_ANON_CLASS:
                 $this->processClassToken($phpcsFile, $stackPtr);
                 break;
 
-            case 'T_FUNCTION':
-            case 'T_CLOSURE':
-                $this->processFunctionToken($phpcsFile, $stackPtr);
-
-                // Deal with older PHPCS versions which don't recognize return type hints
-                // as well as newer PHPCS versions (3.3.0+) where the tokenization has changed.
-                $returnTypeHint = $this->getReturnTypeHintToken($phpcsFile, $stackPtr);
-                if ($returnTypeHint !== false) {
-                    $this->processReturnTypeToken($phpcsFile, $returnTypeHint);
-                }
+            case \T_INTERFACE:
+                $this->processInterfaceToken($phpcsFile, $stackPtr);
                 break;
 
-            case 'T_RETURN_TYPE':
-                $this->processReturnTypeToken($phpcsFile, $stackPtr);
+            case \T_VARIABLE:
+                $this->processVariableToken($phpcsFile, $stackPtr);
                 break;
 
-            default:
-                // Deliberately left empty.
+            case \T_CATCH:
+                $this->processCatchToken($phpcsFile, $stackPtr);
                 break;
+        }
+
+        if (isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === true) {
+            $this->processFunctionToken($phpcsFile, $stackPtr);
         }
     }
 
@@ -202,20 +216,65 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
      *
      * @since 7.1.4 Split off from the `process()` method.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
     private function processClassToken(File $phpcsFile, $stackPtr)
     {
-        $interfaces = PHPCSHelper::findImplementedInterfaceNames($phpcsFile, $stackPtr);
+        $interfaces = ObjectDeclarations::findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
-        if (\is_array($interfaces) === false || $interfaces === array()) {
+        if (\is_array($interfaces) === false || $interfaces === []) {
             return;
         }
 
+        $this->processInterfaceList($phpcsFile, $stackPtr, $interfaces, 'Classes that implement');
+    }
+
+
+    /**
+     * Processes this test for when an interface token is encountered.
+     *
+     * - Detect interfaces extending the new interfaces.
+     * - Detect interfaces extending the new interfaces with unsupported functions.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processInterfaceToken(File $phpcsFile, $stackPtr)
+    {
+        $interfaces = ObjectDeclarations::findExtendedInterfaceNames($phpcsFile, $stackPtr);
+
+        if (\is_array($interfaces) === false || $interfaces === []) {
+            return;
+        }
+
+        $this->processInterfaceList($phpcsFile, $stackPtr, $interfaces, 'Interfaces that extend');
+    }
+
+
+    /**
+     * Processes a list of interfaces being extended/implemented.
+     *
+     * @since 10.0.0 Split off from the `processClassToken()` method.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile  The file being scanned.
+     * @param int                         $stackPtr   The position of the current token in
+     *                                                the stack passed in $tokens.
+     * @param array                       $interfaces List of interface names.
+     * @param string                      $phrase     Start of the error phrase for unsupported functions.
+     *
+     * @return void
+     */
+    private function processInterfaceList(File $phpcsFile, $stackPtr, array $interfaces, $phrase)
+    {
         $tokens       = $phpcsFile->getTokens();
         $checkMethods = false;
 
@@ -225,36 +284,39 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
         }
 
         foreach ($interfaces as $interface) {
-            $interface   = ltrim($interface, '\\');
-            $interfaceLc = strtolower($interface);
+            $interface   = \ltrim($interface, '\\');
+            $interfaceLc = \strtolower($interface);
 
             if (isset($this->newInterfaces[$interfaceLc]) === true) {
-                $itemInfo = array(
+                $itemInfo = [
                     'name'   => $interface,
                     'nameLc' => $interfaceLc,
-                );
+                ];
                 $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
             }
 
             if ($checkMethods === true && isset($this->unsupportedMethods[$interfaceLc]) === true) {
                 $nextFunc = $stackPtr;
                 while (($nextFunc = $phpcsFile->findNext(\T_FUNCTION, ($nextFunc + 1), $scopeCloser)) !== false) {
-                    $funcName   = $phpcsFile->getDeclarationName($nextFunc);
-                    $funcNameLc = strtolower($funcName);
-                    if ($funcNameLc === '') {
-                        continue;
-                    }
-
-                    if (isset($this->unsupportedMethods[$interfaceLc][$funcNameLc]) === true) {
-                        $error     = 'Classes that implement interface %s do not support the method %s(). See %s';
-                        $errorCode = $this->stringToErrorCode($interface) . 'UnsupportedMethod';
-                        $data      = array(
+                    $funcName   = FunctionDeclarations::getName($phpcsFile, $nextFunc);
+                    $funcNameLc = \strtolower($funcName);
+                    if (empty($funcNameLc) === false
+                        && isset($this->unsupportedMethods[$interfaceLc][$funcNameLc]) === true
+                    ) {
+                        $error     = $phrase . ' interface %s do not support the method %s(). See %s';
+                        $errorCode = MessageHelper::stringToErrorCode($interfaceLc) . 'UnsupportedMethod';
+                        $data      = [
                             $interface,
                             $funcName,
                             $this->unsupportedMethods[$interfaceLc][$funcNameLc],
-                        );
+                        ];
 
                         $phpcsFile->addError($error, $nextFunc, $errorCode, $data);
+                    }
+
+                    // Skip over the function body.
+                    if (isset($tokens[$nextFunc]['scope_closer']) === true) {
+                        $nextFunc = $tokens[$nextFunc]['scope_closer'];
                     }
                 }
             }
@@ -263,100 +325,212 @@ class NewInterfacesSniff extends AbstractNewFeatureSniff
 
 
     /**
+     * Processes this test for when a variable token is encountered.
+     *
+     * - Detect new interfaces when used as a property type declaration.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processVariableToken(File $phpcsFile, $stackPtr)
+    {
+        try {
+            $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
+        } catch (RuntimeException $e) {
+            // Not a class property.
+            return;
+        }
+
+        if ($properties['type'] === '') {
+            return;
+        }
+
+        $this->checkTypeHint($phpcsFile, $properties['type_token'], $properties['type']);
+    }
+
+
+    /**
      * Processes this test for when a function token is encountered.
      *
-     * - Detect new interfaces when used as a type hint.
+     * - Detect new interfaces when used as a parameter type hint.
+     * - Detect new interfaces when used as a return type hint.
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
     private function processFunctionToken(File $phpcsFile, $stackPtr)
     {
-        $typeHints = $this->getTypeHintsFromFunctionDeclaration($phpcsFile, $stackPtr);
-        if (empty($typeHints) || \is_array($typeHints) === false) {
+        /*
+         * Check parameter type declarations.
+         */
+        $parameters = FunctionDeclarations::getParameters($phpcsFile, $stackPtr);
+        if (empty($parameters) === false && \is_array($parameters) === true) {
+            foreach ($parameters as $param) {
+                if ($param['type_hint'] === '') {
+                    continue;
+                }
+
+                $this->checkTypeHint($phpcsFile, $param['type_hint_token'], $param['type_hint']);
+            }
+        }
+
+        /*
+         * Check return type declarations.
+         */
+        $properties = FunctionDeclarations::getProperties($phpcsFile, $stackPtr);
+        if ($properties['return_type'] === '') {
             return;
         }
 
-        foreach ($typeHints as $hint) {
+        $this->checkTypeHint($phpcsFile, $properties['return_type_token'], $properties['return_type']);
+    }
 
-            $typeHintLc = strtolower($hint);
 
-            if (isset($this->newInterfaces[$typeHintLc]) === true) {
-                $itemInfo = array(
-                    'name'   => $hint,
-                    'nameLc' => $typeHintLc,
-                );
-                $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+    /**
+     * Processes a type declaration.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
+     * @param string                      $typeHint  The type declaration.
+     *
+     * @return void
+     */
+    private function checkTypeHint($phpcsFile, $stackPtr, $typeHint)
+    {
+        // Strip off potential nullable indication.
+        $typeHint = \ltrim($typeHint, '?');
+        $types    = \preg_split('`[|&]`', $typeHint, -1, \PREG_SPLIT_NO_EMPTY);
+
+        if (empty($types) === true) {
+            return;
+        }
+
+        foreach ($types as $type) {
+            // Strip off potential (global) namespace indication.
+            $type = \ltrim($type, '\\');
+
+            if ($type === '') {
+                return;
+            }
+
+            $typeLc = \strtolower($type);
+            if (isset($this->newInterfaces[$typeLc]) === false) {
+                return;
+            }
+
+            $itemInfo = [
+                'name'   => $type,
+                'nameLc' => $typeLc,
+            ];
+            $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+        }
+    }
+
+
+    /**
+     * Processes this test for when a catch token is encountered.
+     *
+     * - Detect interfaces (Throwable) when used in a catch statement.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processCatchToken(File $phpcsFile, $stackPtr)
+    {
+        try {
+            $exceptions = ControlStructures::getCaughtExceptions($phpcsFile, $stackPtr);
+        } catch (RuntimeException $e) {
+            // Parse error or live coding.
+            return;
+        }
+
+        if (empty($exceptions) === true) {
+            return;
+        }
+
+        foreach ($exceptions as $exception) {
+            // Strip off potential (global) namespace indication.
+            $name   = \ltrim($exception['type'], '\\');
+            $nameLC = \strtolower($name);
+
+            if (isset($this->newInterfaces[$nameLC]) === true) {
+                $itemInfo = [
+                    'name'   => $name,
+                    'nameLc' => $nameLC,
+                ];
+                $this->handleFeature($phpcsFile, $exception['type_token'], $itemInfo);
             }
         }
     }
 
 
     /**
-     * Processes this test for when a return type token is encountered.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error for a matched item.
      *
-     * - Detect new interfaces when used as a return type declaration.
+     * @since 10.0.0
      *
-     * @since 8.2.0
-     *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
      *
      * @return void
      */
-    private function processReturnTypeToken(File $phpcsFile, $stackPtr)
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        $returnTypeHint = $this->getReturnTypeHintName($phpcsFile, $stackPtr);
-        if (empty($returnTypeHint)) {
+        $itemArray   = $this->newInterfaces[$itemInfo['nameLc']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+
+        if (empty($versionInfo['not_in_version'])
+            || $this->supportsBelow($versionInfo['not_in_version']) === false
+        ) {
             return;
         }
 
-        $returnTypeHint   = ltrim($returnTypeHint, '\\');
-        $returnTypeHintLc = strtolower($returnTypeHint);
-
-        if (isset($this->newInterfaces[$returnTypeHintLc]) === false) {
-            return;
-        }
-
-        // Still here ? Then this is a return type declaration using a new interface.
-        $itemInfo = array(
-            'name'   => $returnTypeHint,
-            'nameLc' => $returnTypeHintLc,
-        );
-        $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+        $this->addError($phpcsFile, $stackPtr, $itemInfo, $versionInfo);
     }
 
 
     /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
+     * Generates the error for this item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @param array $itemInfo Base information about the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
      *
-     * @return array Version and other information about the item.
+     * @return void
      */
-    public function getItemArray(array $itemInfo)
+    protected function addError(File $phpcsFile, $stackPtr, array $itemInfo, array $versionInfo)
     {
-        return $this->newInterfaces[$itemInfo['nameLc']];
-    }
+        // Overrule the default message template.
+        $this->msgTemplate = 'The built-in interface %s is not present in PHP version %s or earlier';
 
+        $msgInfo = $this->getMessageInfo($itemInfo['name'], $itemInfo['nameLc'], $versionInfo);
 
-    /**
-     * Get the error message template for this sniff.
-     *
-     * @since 7.1.0
-     *
-     * @return string
-     */
-    protected function getErrorMsgTemplate()
-    {
-        return 'The built-in interface ' . parent::getErrorMsgTemplate();
+        $phpcsFile->addError($msgInfo['message'], $stackPtr, $msgInfo['errorcode'], $msgInfo['data']);
     }
 }

@@ -3,15 +3,17 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ParameterValues;
 
-use PHPCompatibility\AbstractNewFeatureSniff;
-use PHP_CodeSniffer_File as File;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHPCompatibility\Helpers\HashAlgorithmsTrait;
+use PHP_CodeSniffer\Files\File;
 
 /**
  * Detect the use of newly introduced hash algorithms.
@@ -21,10 +23,15 @@ use PHP_CodeSniffer_File as File;
  * @link https://www.php.net/manual/en/function.hash-algos.php#refsect1-function.hash-algos-changelog
  *
  * @since 7.0.7
- * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
+ * @since 7.1.0  Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
+ * @since 10.0.0 Now uses the new `HashAlgorithmsTrait`.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionNewFeatureTrait`.
  */
-class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
+class NewHashAlgorithmsSniff extends Sniff
 {
+    use ComplexVersionNewFeatureTrait;
+    use HashAlgorithmsTrait;
+
     /**
      * A list of new hash algorithms, not present in older versions.
      *
@@ -35,81 +42,110 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => bool))
      */
-    protected $newAlgorithms = array(
-        'md2' => array(
+    protected $newAlgorithms = [
+        'md2' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'ripemd256' => array(
+        ],
+        'ripemd256' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'ripemd320' => array(
+        ],
+        'ripemd320' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'salsa10' => array(
+        ],
+        'salsa10' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'salsa20' => array(
+        ],
+        'salsa20' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'snefru256' => array(
+        ],
+        'snefru256' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'sha224' => array(
+        ],
+        'sha224' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'joaat' => array(
+        ],
+        'joaat' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'fnv132' => array(
+        ],
+        'fnv132' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'fnv164' => array(
+        ],
+        'fnv164' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'gost-crypto' => array(
+        ],
+        'gost-crypto' => [
             '5.5' => false,
             '5.6' => true,
-        ),
+        ],
 
-        'sha512/224' => array(
+        'sha512/224' => [
             '7.0' => false,
             '7.1' => true,
-        ),
-        'sha512/256' => array(
+        ],
+        'sha512/256' => [
             '7.0' => false,
             '7.1' => true,
-        ),
-        'sha3-224' => array(
+        ],
+        'sha3-224' => [
             '7.0' => false,
             '7.1' => true,
-        ),
-        'sha3-256' => array(
+        ],
+        'sha3-256' => [
             '7.0' => false,
             '7.1' => true,
-        ),
-        'sha3-384' => array(
+        ],
+        'sha3-384' => [
             '7.0' => false,
             '7.1' => true,
-        ),
-        'sha3-512' => array(
+        ],
+        'sha3-512' => [
             '7.0' => false,
             '7.1' => true,
-        ),
-        'crc32c' => array(
+        ],
+        'crc32c' => [
             '7.3' => false,
             '7.4' => true,
-        ),
-    );
+        ],
+
+        'murmur3a' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'murmur3c' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'murmur3f' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'xxh32' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'xxh64' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'xxh3' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'xxh128' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+    ];
 
 
     /**
@@ -121,7 +157,7 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
      */
     public function register()
     {
-        return array(\T_STRING);
+        return [\T_STRING];
     }
 
 
@@ -130,9 +166,9 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
      *
      * @since 7.0.7
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -149,37 +185,62 @@ class NewHashAlgorithmsSniff extends AbstractNewFeatureSniff
         }
 
         // Check if the algorithm used is new.
-        $itemInfo = array(
-            'name'   => $algo,
-        );
+        $itemInfo = [
+            'name' => $algo,
+        ];
         $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
     }
 
 
     /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error for a matched item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @param array $itemInfo Base information about the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
      *
-     * @return array Version and other information about the item.
+     * @return void
      */
-    public function getItemArray(array $itemInfo)
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        return $this->newAlgorithms[$itemInfo['name']];
+        $itemArray   = $this->newAlgorithms[$itemInfo['name']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+
+        if (empty($versionInfo['not_in_version'])
+            || $this->supportsBelow($versionInfo['not_in_version']) === false
+        ) {
+            return;
+        }
+
+        $this->addError($phpcsFile, $stackPtr, $itemInfo, $versionInfo);
     }
 
 
     /**
-     * Get the error message template for this sniff.
+     * Generates the error for this item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @return string
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
+     *
+     * @return void
      */
-    protected function getErrorMsgTemplate()
+    protected function addError(File $phpcsFile, $stackPtr, array $itemInfo, array $versionInfo)
     {
-        return 'The %s hash algorithm is not present in PHP version %s or earlier';
+        // Overrule the default message template.
+        $this->msgTemplate = "The '%s' hash algorithm is not present in PHP version %s or earlier";
+
+        $msgInfo = $this->getMessageInfo($itemInfo['name'], $itemInfo['name'], $versionInfo);
+
+        $phpcsFile->addError($msgInfo['message'], $stackPtr, $msgInfo['errorcode'], $msgInfo['data']);
     }
 }

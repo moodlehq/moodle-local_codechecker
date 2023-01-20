@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -30,15 +30,15 @@ class NewHTMLEntitiesEncodingDefaultUnitTest extends BaseSniffTest
      *
      * @dataProvider dataNewHTMLEntitiesEncodingDefault
      *
-     * @param int    $line     Line number where the error should occur.
-     * @param string $function The name of the function called.
+     * @param int    $line         Line number where the error should occur.
+     * @param string $functionName The name of the function called.
      *
      * @return void
      */
-    public function testNewHTMLEntitiesEncodingDefault($line, $function)
+    public function testNewHTMLEntitiesEncodingDefault($line, $functionName)
     {
         $file  = $this->sniffFile(__FILE__, '5.3-5.4');
-        $error = "The default value of the \$encoding parameter for {$function}() was changed from ISO-8859-1 to UTF-8 in PHP 5.4";
+        $error = "The default value of the \$encoding parameter for {$functionName}() was changed from ISO-8859-1 to UTF-8 in PHP 5.4";
 
         $this->assertError($file, $line, $error);
     }
@@ -52,11 +52,12 @@ class NewHTMLEntitiesEncodingDefaultUnitTest extends BaseSniffTest
      */
     public function dataNewHTMLEntitiesEncodingDefault()
     {
-        return array(
-            array(9, 'htmlentities'),
-            array(10, 'htmlspecialchars'),
-            array(11, 'HTML_entity_decode'),
-        );
+        return [
+            [10, 'htmlentities'],
+            [11, 'htmlspecialchars'],
+            [12, 'HTML_entity_decode'],
+            [13, 'get_html_translation_table'],
+        ];
     }
 
 
@@ -69,8 +70,8 @@ class NewHTMLEntitiesEncodingDefaultUnitTest extends BaseSniffTest
     {
         $file = $this->sniffFile(__FILE__, '5.3-5.4');
 
-        // No errors expected on the first 7 lines.
-        for ($line = 1; $line <= 7; $line++) {
+        // No errors expected on the first 8 lines.
+        for ($line = 1; $line <= 8; $line++) {
             $this->assertNoViolation($file, $line);
         }
     }
@@ -100,9 +101,9 @@ class NewHTMLEntitiesEncodingDefaultUnitTest extends BaseSniffTest
      */
     public function dataNoViolationsInFileOnValidVersion()
     {
-        return array(
-            array('5.0-5.3'),
-            array('5.4-'),
-        );
+        return [
+            ['5.0-5.3'],
+            ['5.4-'],
+        ];
     }
 }

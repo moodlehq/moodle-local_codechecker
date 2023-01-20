@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -26,19 +26,20 @@ class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
 {
 
     /**
-     * testOptionalRequiredParameterDeprecated
+     * testOptionalRequiredParameterDeprecatedRemoved
      *
-     * @dataProvider dataOptionalRequiredParameterDeprecated
+     * @dataProvider dataOptionalRequiredParameterDeprecatedRemoved
      *
      * @param string $functionName     Function name.
      * @param string $parameterName    Parameter name.
-     * @param string $softRequiredFrom The last PHP version in which the parameter was still optional.
+     * @param string $softRequiredFrom The last PHP version in which the parameter was still optional (deprecated).
+     * @param string $hardRequiredFrom The last PHP version in which the parameter was still optional (removed).
      * @param array  $lines            The line numbers in the test file which apply to this class.
      * @param string $okVersion        A PHP version in which to test for no violation.
      *
      * @return void
      */
-    public function testOptionalRequiredParameterDeprecated($functionName, $parameterName, $softRequiredFrom, $lines, $okVersion)
+    public function testOptionalRequiredParameterDeprecatedRemoved($functionName, $parameterName, $softRequiredFrom, $hardRequiredFrom, $lines, $okVersion)
     {
         $file  = $this->sniffFile(__FILE__, $softRequiredFrom);
         $error = "The \"{$parameterName}\" parameter for function {$functionName}() is missing. Passing this parameter is no longer optional. The optional nature of the parameter is deprecated since PHP {$softRequiredFrom}";
@@ -46,6 +47,12 @@ class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
             $this->assertWarning($file, $line, $error);
         }
 
+        $file  = $this->sniffFile(__FILE__, $hardRequiredFrom);
+        $error = "The \"{$parameterName}\" parameter for function {$functionName}() is missing. Passing this parameter is no longer optional. The optional nature of the parameter is deprecated since PHP {$softRequiredFrom} and removed since PHP {$hardRequiredFrom}";
+        foreach ($lines as $line) {
+            $this->assertError($file, $line, $error);
+        }
+
         $file = $this->sniffFile(__FILE__, $okVersion);
         foreach ($lines as $line) {
             $this->assertNoViolation($file, $line);
@@ -55,37 +62,39 @@ class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
     /**
      * Data provider.
      *
-     * @see testOptionalRequiredParameterDeprecated()
+     * @see testOptionalRequiredParameterDeprecatedRemoved()
      *
      * @return array
      */
-    public function dataOptionalRequiredParameterDeprecated()
+    public function dataOptionalRequiredParameterDeprecatedRemoved()
     {
-        return array(
-            array('parse_str', 'result', '7.2', array(7), '7.1'),
-        );
+        return [
+            ['mktime', 'hour', '5.1', '8.0', [19], '5.0'],
+            ['crypt', 'salt', '5.6', '8.0', [8], '5.5'],
+            ['parse_str', 'result', '7.2', '8.0', [7, 37], '7.1'],
+        ];
     }
 
 
     /**
-     * testOptionalRecommendedParameter
+     * testOptionalRequiredParameterRemoved
      *
-     * @dataProvider dataOptionalRecommendedParameter
+     * @dataProvider dataOptionalRequiredParameterRemoved
      *
-     * @param string $functionName        Function name.
-     * @param string $parameterName       Parameter name.
-     * @param string $softRecommendedFrom The PHP version in which the parameter became recommended.
-     * @param array  $lines               The line numbers in the test file which apply to this class.
-     * @param string $okVersion           A PHP version in which to test for no violation.
+     * @param string $functionName     Function name.
+     * @param string $parameterName    Parameter name.
+     * @param string $hardRequiredFrom The last PHP version in which the parameter was still optional.
+     * @param array  $lines            The line numbers in the test file which apply to this class.
+     * @param string $okVersion        A PHP version in which to test for no violation.
      *
      * @return void
      */
-    public function testOptionalRecommendedParameter($functionName, $parameterName, $softRecommendedFrom, $lines, $okVersion)
+    public function testOptionalRequiredParameterRemoved($functionName, $parameterName, $hardRequiredFrom, $lines, $okVersion)
     {
-        $file  = $this->sniffFile(__FILE__, $softRecommendedFrom);
-        $error = "The \"{$parameterName}\" parameter for function {$functionName}() is missing. Passing this parameter is strongly recommended since PHP {$softRecommendedFrom}";
+        $file  = $this->sniffFile(__FILE__, $hardRequiredFrom);
+        $error = "The \"{$parameterName}\" parameter for function {$functionName}() is missing. Passing this parameter is no longer optional. The optional nature of the parameter is removed since PHP {$hardRequiredFrom}";
         foreach ($lines as $line) {
-            $this->assertWarning($file, $line, $error);
+            $this->assertError($file, $line, $error);
         }
 
         $file = $this->sniffFile(__FILE__, $okVersion);
@@ -97,20 +106,23 @@ class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
     /**
      * Data provider.
      *
-     * @see testOptionalRecommendedParameter()
+     * @see testOptionalRequiredParameterRemoved()
      *
      * @return array
      */
-    public function dataOptionalRecommendedParameter()
+    public function dataOptionalRequiredParameterRemoved()
     {
-        return array(
-            array('crypt', 'salt', '5.6', array(8), '5.5'),
-        );
+        return [
+            ['gmmktime', 'hour', '8.0', [18, 31], '7.4'],
+            ['mb_parse_str', 'result', '8.0', [22], '7.4'],
+            ['openssl_seal', 'cipher_algo', '8.0', [25, 40], '7.4'],
+            ['openssl_open', 'cipher_algo', '8.0', [28], '7.4'],
+        ];
     }
 
 
     /**
-     * testNoFalsePositives
+     * Verify no false positives are thrown for valid code.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -133,9 +145,14 @@ class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(4),
-        );
+        return [
+            [4],
+            [14],
+            [15],
+            [21],
+            [32],
+            [43],
+        ];
     }
 
 
@@ -146,7 +163,7 @@ class OptionalToRequiredFunctionParametersUnitTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        $file = $this->sniffFile(__FILE__, '5.5'); // Version before earliest required/optional change.
+        $file = $this->sniffFile(__FILE__, '5.0'); // Version before earliest required/optional change.
         $this->assertNoViolation($file);
     }
 }

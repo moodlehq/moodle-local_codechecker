@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,22 +49,23 @@ class NewDynamicAccessToStaticUnitTest extends BaseSniffTest
      */
     public function dataDynamicAccessToStatic()
     {
-        return array(
-            array(20),
-            array(21),
-            array(22),
-            array(25),
-            array(26),
-            array(27),
-            array(32),
-            array(34),
-            array(35),
-            array(41),
-            array(42),
-            array(43),
-            array(61),
-            array(62),
-        );
+        return [
+            [20],
+            [21],
+            [22],
+            [25],
+            [26],
+            [27],
+            [32],
+            [34],
+            [35],
+            [41],
+            [42],
+            [43],
+            [61],
+            [62],
+            [66],
+        ];
     }
 
 
@@ -92,16 +93,16 @@ class NewDynamicAccessToStaticUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(14),
-            array(15),
-            array(16),
-            array(50),
-            array(51),
-            array(53),
-            array(54),
-            array(57),
-        );
+        return [
+            [14],
+            [15],
+            [16],
+            [50],
+            [51],
+            [53],
+            [54],
+            [57],
+        ];
     }
 
 

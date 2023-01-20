@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2009-2019 PHPCompatibility Contributors
+ * @copyright 2009-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,12 @@
 namespace PHPCompatibility\Sniffs\Syntax;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Detect the use of call time pass by reference.
@@ -34,40 +38,13 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
     /**
      * Tokens that represent assignments or equality comparisons.
      *
-     * Near duplicate of Tokens::$assignmentTokens + Tokens::$equalityTokens.
-     * Copied in for PHPCS cross-version compatibility.
+     * Tokens are set via register(). Combines Tokens::$assignmentTokens + Tokens::$equalityTokens.
      *
      * @since 8.1.0
      *
      * @var array
      */
-    private $assignOrCompare = array(
-        // Equality tokens.
-        'T_IS_EQUAL'            => true,
-        'T_IS_NOT_EQUAL'        => true,
-        'T_IS_IDENTICAL'        => true,
-        'T_IS_NOT_IDENTICAL'    => true,
-        'T_IS_SMALLER_OR_EQUAL' => true,
-        'T_IS_GREATER_OR_EQUAL' => true,
-
-        // Assignment tokens.
-        'T_EQUAL'          => true,
-        'T_AND_EQUAL'      => true,
-        'T_OR_EQUAL'       => true,
-        'T_CONCAT_EQUAL'   => true,
-        'T_DIV_EQUAL'      => true,
-        'T_MINUS_EQUAL'    => true,
-        'T_POW_EQUAL'      => true,
-        'T_MOD_EQUAL'      => true,
-        'T_MUL_EQUAL'      => true,
-        'T_PLUS_EQUAL'     => true,
-        'T_XOR_EQUAL'      => true,
-        'T_DOUBLE_ARROW'   => true,
-        'T_SL_EQUAL'       => true,
-        'T_SR_EQUAL'       => true,
-        'T_COALESCE_EQUAL' => true,
-        'T_ZSR_EQUAL'      => true,
-    );
+    private $assignOrCompare = [];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -78,10 +55,12 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        $this->assignOrCompare = BCTokens::assignmentTokens() + BCTokens::equalityTokens();
+
+        return [
             \T_STRING,
             \T_VARIABLE,
-        );
+        ];
     }
 
     /**
@@ -89,9 +68,9 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
      *
      * @since 5.5
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
@@ -117,7 +96,7 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
             true
         );
 
-        if ($prevNonEmpty !== false && \in_array($tokens[$prevNonEmpty]['type'], array('T_FUNCTION', 'T_CLASS', 'T_INTERFACE', 'T_TRAIT'), true)) {
+        if ($prevNonEmpty !== false && isset(Collections::closedScopes()[$tokens[$prevNonEmpty]['code']]) === true) {
             return;
         }
 
@@ -132,7 +111,7 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
         }
 
         // Get the function call parameters.
-        $parameters = $this->getFunctionCallParameters($phpcsFile, $stackPtr);
+        $parameters = PassedParameters::getParameters($phpcsFile, $stackPtr);
         if (\count($parameters) === 0) {
             return;
         }
@@ -156,7 +135,7 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
                     $errorCode = 'NotAllowed';
                 }
 
-                $this->addMessage($phpcsFile, $error, $parameter['start'], $isError, $errorCode);
+                MessageHelper::addMessage($phpcsFile, $error, $parameter['start'], $isError, $errorCode);
             }
         }
     }
@@ -167,10 +146,10 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
      *
      * @since 7.0.6 Split off from the `process()` method.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param array                 $parameter    Information on the current parameter
-     *                                            to be examined.
-     * @param int                   $nestingLevel Target nesting level.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param array                       $parameter    Information on the current parameter
+     *                                                  to be examined.
+     * @param int                         $nestingLevel Target nesting level.
      *
      * @return bool
      */
@@ -178,19 +157,34 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
     {
         $tokens = $phpcsFile->getTokens();
 
+        $find = [
+            \T_VARIABLE,
+            \T_ARRAY,
+            \T_OPEN_SHORT_ARRAY,
+            \T_CLOSURE,
+            \T_FN,
+        ];
+
         $searchStartToken = $parameter['start'] - 1;
         $searchEndToken   = $parameter['end'] + 1;
         $nextVariable     = $searchStartToken;
         do {
-            $nextVariable = $phpcsFile->findNext(array(\T_VARIABLE, \T_OPEN_SHORT_ARRAY, \T_CLOSURE), ($nextVariable + 1), $searchEndToken);
+            $nextVariable = $phpcsFile->findNext($find, ($nextVariable + 1), $searchEndToken);
             if ($nextVariable === false) {
                 return false;
             }
 
+            // Ignore anything within long array definition brackets.
+            if ($tokens[$nextVariable]['type'] === 'T_ARRAY'
+                && isset($tokens[$nextVariable]['parenthesis_closer'])
+            ) {
+                // Skip forward to the end of the short array definition.
+                $nextVariable = $tokens[$nextVariable]['parenthesis_closer'];
+                continue;
+            }
+
             // Ignore anything within short array definition brackets.
             if ($tokens[$nextVariable]['type'] === 'T_OPEN_SHORT_ARRAY'
-                && (isset($tokens[$nextVariable]['bracket_opener'])
-                    && $tokens[$nextVariable]['bracket_opener'] === $nextVariable)
                 && isset($tokens[$nextVariable]['bracket_closer'])
             ) {
                 // Skip forward to the end of the short array definition.
@@ -198,13 +192,12 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
                 continue;
             }
 
-            // Skip past closures passed as function parameters.
-            if ($tokens[$nextVariable]['type'] === 'T_CLOSURE'
-                && (isset($tokens[$nextVariable]['scope_condition'])
-                    && $tokens[$nextVariable]['scope_condition'] === $nextVariable)
+            // Skip past closures and arrow functions passed as function parameters.
+            if (($tokens[$nextVariable]['type'] === 'T_CLOSURE'
+                || $tokens[$nextVariable]['type'] === 'T_FN')
                 && isset($tokens[$nextVariable]['scope_closer'])
             ) {
-                // Skip forward to the end of the closure declaration.
+                // Skip forward to the end of the closure/arrow function declaration.
                 $nextVariable = $tokens[$nextVariable]['scope_closer'];
                 continue;
             }
@@ -244,7 +237,7 @@ class ForbiddenCallTimePassByReferenceSniff extends Sniff
 
             // Prevent false positive on assign by reference and compare with reference
             // within function call parameters.
-            if (isset($this->assignOrCompare[$tokens[$tokenBefore]['type']])) {
+            if (isset($this->assignOrCompare[$tokens[$tokenBefore]['code']])) {
                 continue;
             }
 

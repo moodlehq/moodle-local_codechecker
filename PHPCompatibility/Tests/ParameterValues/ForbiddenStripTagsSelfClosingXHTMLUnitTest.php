@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -38,7 +38,7 @@ class ForbiddenStripTagsSelfClosingXHTMLUnitTest extends BaseSniffTest
     public function testForbiddenStripTagsSelfClosingXHTML($line, $paramValue)
     {
         $file  = $this->sniffFile(__FILE__, '5.4');
-        $error = 'Self-closing XHTML tags are ignored. Only non-self-closing tags should be used in the strip_tags() $allowable_tags parameter since PHP 5.3.4. Found: ' . $paramValue;
+        $error = 'Self-closing XHTML tags are ignored. Only non-self-closing tags should be used in the strip_tags() $allowed_tags parameter since PHP 5.3.4. Found: ' . $paramValue;
 
         $this->assertError($file, $line, $error);
     }
@@ -52,10 +52,10 @@ class ForbiddenStripTagsSelfClosingXHTMLUnitTest extends BaseSniffTest
      */
     public function dataForbiddenStripTagsSelfClosingXHTML()
     {
-        return array(
-            array(14, "'<br/>'"),
-            array(15, "'<img/><br/>' . '<meta/><input/>'"),
-        );
+        return [
+            [14, "'<br/>'"],
+            [15, "'<img/><br/>' . '<meta/><input/>'"],
+        ];
     }
 
 

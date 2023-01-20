@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Sniffs\Miscellaneous;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Tokens\Collections;
 
 /**
  * Check for use of alternative PHP tags, support for which was removed in PHP 7.0.
@@ -47,16 +48,15 @@ class RemovedAlternativePHPTagsSniff extends Sniff
      */
     public function register()
     {
-        if (version_compare(\PHP_VERSION_ID, '70000', '<') === true) {
+        if (\version_compare(\PHP_VERSION_ID, '70000', '<') === true) {
             // phpcs:ignore PHPCompatibility.IniDirectives.RemovedIniDirectives.asp_tagsRemoved
-            $this->aspTags = (bool) ini_get('asp_tags');
+            $this->aspTags = (bool) \ini_get('asp_tags');
         }
 
-        return array(
-            \T_OPEN_TAG,
-            \T_OPEN_TAG_WITH_ECHO,
-            \T_INLINE_HTML,
-        );
+        $targets                 = Collections::phpOpenTags();
+        $targets[\T_INLINE_HTML] = \T_INLINE_HTML;
+
+        return $targets;
     }
 
 
@@ -65,9 +65,9 @@ class RemovedAlternativePHPTagsSniff extends Sniff
      *
      * @since 7.0.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
@@ -79,41 +79,40 @@ class RemovedAlternativePHPTagsSniff extends Sniff
 
         $tokens  = $phpcsFile->getTokens();
         $openTag = $tokens[$stackPtr];
-        $content = trim($openTag['content']);
+        $content = \trim($openTag['content']);
 
         if ($content === '' || $content === '<?php') {
             return;
         }
 
-        if ($openTag['code'] === \T_OPEN_TAG || $openTag['code'] === \T_OPEN_TAG_WITH_ECHO) {
+        if (isset(Collections::phpOpenTags()[$openTag['code']]) === true) {
 
             if ($content === '<%' || $content === '<%=') {
-                $data      = array(
+                $data      = [
                     'ASP',
                     $content,
-                );
+                ];
                 $errorCode = 'ASPOpenTagFound';
 
-            } elseif (strpos($content, '<script ') !== false) {
-                $data      = array(
+            } elseif (\strpos($content, '<script ') !== false) {
+                $data      = [
                     'Script',
                     $content,
-                );
+                ];
                 $errorCode = 'ScriptOpenTagFound';
             } else {
                 return;
             }
         }
         // Account for incorrect script open tags.
-        // The "(?:<s)?" in the regex is to work-around a bug in the tokenizer in PHP 5.2.
         elseif ($openTag['code'] === \T_INLINE_HTML
-            && preg_match('`((?:<s)?cript (?:[^>]+)?language=[\'"]?php[\'"]?(?:[^>]+)?>)`i', $content, $match) === 1
+            && \preg_match('`(<script (?:[^>]+)?language=[\'"]?php[\'"]?(?:[^>]+)?>)`i', $content, $match) === 1
         ) {
             $found     = $match[1];
-            $data      = array(
+            $data      = [
                 'Script',
                 $found,
-            );
+            ];
             $errorCode = 'ScriptOpenTagFound';
         }
 
@@ -129,10 +128,10 @@ class RemovedAlternativePHPTagsSniff extends Sniff
 
         // If we're still here, we can't be sure if what we found was really intended as ASP open tags.
         if ($openTag['code'] === \T_INLINE_HTML && $this->aspTags === false) {
-            if (strpos($content, '<%') !== false) {
+            if (\strpos($content, '<%') !== false) {
                 $error   = 'Possible use of ASP style opening tags detected. ASP style opening tags have been removed in PHP 7.0. Found: %s';
                 $snippet = $this->getSnippet($content, '<%');
-                $data    = array('<%' . $snippet);
+                $data    = ['<%' . $snippet];
 
                 $phpcsFile->addWarning($error, $stackPtr, 'MaybeASPOpenTagFound', $data);
             }
@@ -156,13 +155,13 @@ class RemovedAlternativePHPTagsSniff extends Sniff
         $startPos = 0;
 
         if ($startAt !== '') {
-            $startPos = strpos($content, $startAt);
+            $startPos = \strpos($content, $startAt);
             if ($startPos !== false) {
                 $startPos += \strlen($startAt);
             }
         }
 
-        $snippet = substr($content, $startPos, $length);
+        $snippet = \substr($content, $startPos, $length);
         if ((\strlen($content) - $startPos) > $length) {
             $snippet .= '...';
         }

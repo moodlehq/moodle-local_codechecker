@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Sniffs\Lists;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\Lists;
 
 /**
  * Detect short list syntax for symmetric array destructuring.
@@ -39,7 +40,10 @@ class NewShortListSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_OPEN_SHORT_ARRAY);
+        return [
+            \T_OPEN_SHORT_ARRAY,
+            \T_OPEN_SQUARE_BRACKET,
+        ];
     }
 
     /**
@@ -47,9 +51,9 @@ class NewShortListSniff extends Sniff
      *
      * @since 9.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
@@ -60,7 +64,7 @@ class NewShortListSniff extends Sniff
             return;
         }
 
-        if ($this->isShortList($phpcsFile, $stackPtr) === false) {
+        if (Lists::isShortList($phpcsFile, $stackPtr) === false) {
             return;
         }
 

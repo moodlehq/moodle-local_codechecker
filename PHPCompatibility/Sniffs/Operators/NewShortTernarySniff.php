@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Sniffs\Operators;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\Operators;
 
 /**
  * Detect usage of the short ternary (elvis) operator as introduced in PHP 5.3.
@@ -40,7 +41,7 @@ class NewShortTernarySniff extends Sniff
      */
     public function register()
     {
-        return array(\T_INLINE_THEN);
+        return [\T_INLINE_THEN];
     }
 
     /**
@@ -48,9 +49,9 @@ class NewShortTernarySniff extends Sniff
      *
      * @since 7.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -60,7 +61,7 @@ class NewShortTernarySniff extends Sniff
             return;
         }
 
-        if ($this->isShortTernary($phpcsFile, $stackPtr) === false) {
+        if (Operators::isShortTernary($phpcsFile, $stackPtr) === false) {
             return;
         }
 

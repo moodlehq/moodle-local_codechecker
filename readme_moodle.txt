@@ -8,11 +8,12 @@ Instructions to upgrade the moodle-cs bundled version:
   - Any composer.* and vendor files.
   - All .xml and .dist files.
   - The moodle/Tests directory
+- Update the details in thirdpartylibs.xml
 - Update the details in this readme
 
 Current checkout:
 
-  3.2.4+ (522bb7b)
+  3.3.1 (e475bde)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
@@ -31,6 +32,7 @@ Instructions to upgrade the phpcs bundled version:
   - Any composer.* and vendor files.
   - All .ini, .xsd, .neon and .dist files.
   - The scripts, tests and vendor directories.
+- Update the details in thirdpartylibs.xml
 - Update the details in this readme
 
 Current checkout:
@@ -49,11 +51,12 @@ Instructions to upgrade the PHPCompatibility bundled version:
   within the "PHPCompatibility" directory of the local_codechecker plugin. Always
   removing all the previous contents.
 - Don't delete anything. 100% complete drop.
+- Update the details in thirdpartylibs.xml
 - Update the details in this readme
 
 Current checkout:
 
-  9.3.5+ (9fb3244)
+  10.0dev (2fb82334)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,7 @@
 namespace PHPCompatibility\Sniffs\ControlStructures;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
 
 /**
  * Catching multiple exception types in one statement is available since PHP 7.1.
@@ -26,6 +26,7 @@ use PHP_CodeSniffer_File as File;
  */
 class NewMultiCatchSniff extends Sniff
 {
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -35,7 +36,7 @@ class NewMultiCatchSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_CATCH);
+        return [\T_CATCH];
     }
 
     /**
@@ -43,9 +44,9 @@ class NewMultiCatchSniff extends Sniff
      *
      * @since 7.0.7
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */

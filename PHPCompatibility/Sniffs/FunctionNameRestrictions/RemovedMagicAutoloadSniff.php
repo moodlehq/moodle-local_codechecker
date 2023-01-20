@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,14 +11,20 @@
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\Namespaces;
+use PHPCSUtils\Utils\Scopes;
 
 /**
- * Detect declaration of the magic `__autoload()` method.
+ * Detect declaration of the magic `__autoload()` function.
  *
- * This method has been deprecated in PHP 7.2 in favour of `spl_autoload_register()`.
+ * This functionality has been deprecated in PHP 7.2 and removed in PHP 8.0 in favour of `spl_autoload_register()`.
  *
  * PHP version 7.2
+ * PHP version 8.0
  *
  * @link https://www.php.net/manual/en/migration72.deprecated.php#migration72.deprecated.__autoload-method
  * @link https://wiki.php.net/rfc/deprecations_php_7_2#autoload
@@ -29,20 +35,19 @@ use PHP_CodeSniffer_File as File;
  */
 class RemovedMagicAutoloadSniff extends Sniff
 {
+
     /**
      * Scopes to look for when testing using validDirectScope.
+     *
+     * {@internal More tokens are added on register().}
      *
      * @since 8.1.0
      *
      * @var array
      */
-    private $checkForScopes = array(
-        'T_CLASS'      => true,
-        'T_ANON_CLASS' => true,
-        'T_INTERFACE'  => true,
-        'T_TRAIT'      => true,
-        'T_NAMESPACE'  => true,
-    );
+    private $checkForScopes = [
+        \T_NAMESPACE => \T_NAMESPACE,
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -53,7 +58,9 @@ class RemovedMagicAutoloadSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_FUNCTION);
+        $this->checkForScopes += BCTokens::ooScopeTokens();
+
+        return [\T_FUNCTION];
     }
 
     /**
@@ -61,9 +68,9 @@ class RemovedMagicAutoloadSniff extends Sniff
      *
      * @since 8.1.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -73,20 +80,30 @@ class RemovedMagicAutoloadSniff extends Sniff
             return;
         }
 
-        $funcName = $phpcsFile->getDeclarationName($stackPtr);
+        $funcName = FunctionDeclarations::getName($phpcsFile, $stackPtr);
 
-        if (strtolower($funcName) !== '__autoload') {
+        if (\strtolower($funcName) !== '__autoload') {
             return;
         }
 
-        if ($this->validDirectScope($phpcsFile, $stackPtr, $this->checkForScopes) !== false) {
+        if (Scopes::validDirectScope($phpcsFile, $stackPtr, $this->checkForScopes) !== false) {
             return;
         }
 
-        if ($this->determineNamespace($phpcsFile, $stackPtr) !== '') {
+        if (Namespaces::determineNamespace($phpcsFile, $stackPtr) !== '') {
             return;
         }
 
-        $phpcsFile->addWarning('Use of __autoload() function is deprecated since PHP 7.2', $stackPtr, 'Found');
+        $error   = 'Specifying an autoloader using an __autoload() function is deprecated since PHP 7.2';
+        $code    = 'Deprecated';
+        $isError = false;
+
+        if ($this->supportsAbove('8.0') === true) {
+            $error  .= ' and no longer supported since PHP 8.0';
+            $code    = 'Removed';
+            $isError = true;
+        }
+
+        MessageHelper::addMessage($phpcsFile, $error, $stackPtr, $isError, $code);
     }
 }

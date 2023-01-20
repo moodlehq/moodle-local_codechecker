@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,9 @@
 namespace PHPCompatibility\Sniffs\Interfaces;
 
 use PHPCompatibility\Sniff;
-use PHPCompatibility\PHPCSHelper;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\ObjectDeclarations;
 
 /**
  * Detect classes which implement PHP native interfaces intended only for PHP internal use.
@@ -37,11 +38,11 @@ class InternalInterfacesSniff extends Sniff
      *
      * @var array(string => string)
      */
-    protected $internalInterfaces = array(
+    protected $internalInterfaces = [
         'Traversable'       => 'shouldn\'t be implemented directly, implement the Iterator or IteratorAggregate interface instead.',
         'DateTimeInterface' => 'is intended for type hints only and is not implementable.',
         'Throwable'         => 'cannot be implemented directly, extend the Exception class instead.',
-    );
+    ];
 
 
     /**
@@ -54,15 +55,12 @@ class InternalInterfacesSniff extends Sniff
     public function register()
     {
         // Handle case-insensitivity of interface names.
-        $this->internalInterfaces = $this->arrayKeysToLowercase($this->internalInterfaces);
+        $this->internalInterfaces = \array_change_key_case($this->internalInterfaces, \CASE_LOWER);
 
-        $targets = array(\T_CLASS);
-
-        if (\defined('T_ANON_CLASS')) {
-            $targets[] = \T_ANON_CLASS;
-        }
-
-        return $targets;
+        return [
+            \T_CLASS,
+            \T_ANON_CLASS,
+        ];
     }
 
 
@@ -71,30 +69,30 @@ class InternalInterfacesSniff extends Sniff
      *
      * @since 7.0.3
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $interfaces = PHPCSHelper::findImplementedInterfaceNames($phpcsFile, $stackPtr);
+        $interfaces = ObjectDeclarations::findImplementedInterfaceNames($phpcsFile, $stackPtr);
 
-        if (\is_array($interfaces) === false || $interfaces === array()) {
+        if (\is_array($interfaces) === false || $interfaces === []) {
             return;
         }
 
         foreach ($interfaces as $interface) {
-            $interface   = ltrim($interface, '\\');
-            $interfaceLc = strtolower($interface);
+            $interface   = \ltrim($interface, '\\');
+            $interfaceLc = \strtolower($interface);
             if (isset($this->internalInterfaces[$interfaceLc]) === true) {
                 $error     = 'The interface %s %s';
-                $errorCode = $this->stringToErrorCode($interfaceLc) . 'Found';
-                $data      = array(
+                $errorCode = MessageHelper::stringToErrorCode($interfaceLc) . 'Found';
+                $data      = [
                     $interface,
                     $this->internalInterfaces[$interfaceLc],
-                );
+                ];
 
                 $phpcsFile->addError($error, $stackPtr, $errorCode, $data);
             }

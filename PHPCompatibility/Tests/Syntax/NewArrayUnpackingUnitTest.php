@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,38 +49,61 @@ class NewArrayUnpackingUnitTest extends BaseSniffTest
      */
     public function dataNewArrayUnpacking()
     {
-        return array(
-            array(11),
-            array(14),
-            array(15),
-            array(17),
-            array(18),
-            array(22),
-            array(23),
-            array(27),
-            array(28),
-            array(33),
-            array(34),
-            array(35),
-            array(38),
-            array(42),
-            array(43),
-        );
+        return [
+            [11],
+            [14],
+            [15],
+            [17],
+            [18],
+            [22],
+            [23],
+            [27],
+            [28],
+            [33],
+            [34],
+            [35],
+            [38],
+        ];
     }
 
 
     /**
      * Verify the sniff doesn't throw false positives.
      *
+     * @dataProvider dataNoFalsePositives
+     *
+     * @param array $line The line number on which the error should occur.
+     *
      * @return void
      */
-    public function testNoFalsePositives()
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(__FILE__, '7.3');
+        $this->assertNoViolation($file, $line);
+    }
 
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositives()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositives()
+    {
+        $data = [];
         for ($line = 1; $line < 7; $line++) {
-            $this->assertNoViolation($file, $line);
+            $data[] = [$line];
         }
+
+        // Short list.
+        $data[] = [41];
+
+        // Don't report for live coding.
+        $data[] = [45];
+        $data[] = [46];
+
+        return $data;
     }
 
 

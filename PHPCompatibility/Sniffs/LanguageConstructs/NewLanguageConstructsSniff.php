@@ -3,15 +3,16 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\LanguageConstructs;
 
-use PHPCompatibility\AbstractNewFeatureSniff;
-use PHP_CodeSniffer_File as File;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHP_CodeSniffer\Files\File;
 
 /**
  * Detect use of new PHP language constructs.
@@ -23,11 +24,13 @@ use PHP_CodeSniffer_File as File;
  * @link https://wiki.php.net/rfc/argument_unpacking
  *
  * @since 5.6
- * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
- * @since 9.0.0 Detection for new operator tokens has been moved to the `NewOperators` sniff.
+ * @since 7.1.0  Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class..
+ * @since 9.0.0  Detection for new operator tokens has been moved to the `NewOperators` sniff.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionNewFeatureTrait`.
  */
-class NewLanguageConstructsSniff extends AbstractNewFeatureSniff
+class NewLanguageConstructsSniff extends Sniff
 {
+    use ComplexVersionNewFeatureTrait;
 
     /**
      * A list of new language constructs, not present in older versions.
@@ -39,18 +42,18 @@ class NewLanguageConstructsSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => bool|string))
      */
-    protected $newConstructs = array(
-        'T_NS_SEPARATOR' => array(
-            '5.2' => false,
-            '5.3' => true,
+    protected $newConstructs = [
+        'T_NS_SEPARATOR' => [
+            '5.2'         => false,
+            '5.3'         => true,
             'description' => 'the \ operator (for namespaces)',
-        ),
-        'T_ELLIPSIS' => array(
-            '5.5' => false,
-            '5.6' => true,
+        ],
+        'T_ELLIPSIS' => [
+            '5.5'         => false,
+            '5.6'         => true,
             'description' => 'the ... spread operator',
-        ),
-    );
+        ],
+    ];
 
 
     /**
@@ -62,9 +65,9 @@ class NewLanguageConstructsSniff extends AbstractNewFeatureSniff
      */
     public function register()
     {
-        $tokens = array();
+        $tokens = [];
         foreach ($this->newConstructs as $token => $versions) {
-            $tokens[] = constant($token);
+            $tokens[] = \constant($token);
         }
         return $tokens;
     }
@@ -75,9 +78,9 @@ class NewLanguageConstructsSniff extends AbstractNewFeatureSniff
      *
      * @since 5.6
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -86,74 +89,61 @@ class NewLanguageConstructsSniff extends AbstractNewFeatureSniff
         $tokens    = $phpcsFile->getTokens();
         $tokenType = $tokens[$stackPtr]['type'];
 
-        $itemInfo = array(
+        $itemInfo = [
             'name' => $tokenType,
-        );
+        ];
         $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
     }
 
 
     /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error for a matched item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @param array $itemInfo Base information about the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
      *
-     * @return array Version and other information about the item.
+     * @return void
      */
-    public function getItemArray(array $itemInfo)
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        return $this->newConstructs[$itemInfo['name']];
+        $itemArray   = $this->newConstructs[$itemInfo['name']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+
+        if (empty($versionInfo['not_in_version'])
+            || $this->supportsBelow($versionInfo['not_in_version']) === false
+        ) {
+            return;
+        }
+
+        $this->addError($phpcsFile, $stackPtr, $itemInfo, $itemArray, $versionInfo);
     }
 
 
     /**
-     * Get an array of the non-PHP-version array keys used in a sub-array.
+     * Generates the error for this item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @return array
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param array                       $itemArray   The sub-array with all the details about
+     *                                                 this item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
+     *
+     * @return void
      */
-    protected function getNonVersionArrayKeys()
+    protected function addError(File $phpcsFile, $stackPtr, array $itemInfo, array $itemArray, array $versionInfo)
     {
-        return array('description');
-    }
+        $msgInfo = $this->getMessageInfo($itemArray['description'], $itemInfo['name'], $versionInfo);
 
-
-    /**
-     * Retrieve the relevant detail (version) information for use in an error message.
-     *
-     * @since 7.1.0
-     *
-     * @param array $itemArray Version and other information about the item.
-     * @param array $itemInfo  Base information about the item.
-     *
-     * @return array
-     */
-    public function getErrorInfo(array $itemArray, array $itemInfo)
-    {
-        $errorInfo                = parent::getErrorInfo($itemArray, $itemInfo);
-        $errorInfo['description'] = $itemArray['description'];
-
-        return $errorInfo;
-    }
-
-
-    /**
-     * Allow for concrete child classes to filter the error data before it's passed to PHPCS.
-     *
-     * @since 7.1.0
-     *
-     * @param array $data      The error data array which was created.
-     * @param array $itemInfo  Base information about the item this error message applies to.
-     * @param array $errorInfo Detail information about an item this error message applies to.
-     *
-     * @return array
-     */
-    protected function filterErrorData(array $data, array $itemInfo, array $errorInfo)
-    {
-        $data[0] = $errorInfo['description'];
-        return $data;
+        $phpcsFile->addError($msgInfo['message'], $stackPtr, $msgInfo['errorcode'], $msgInfo['data']);
     }
 }

@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,6 @@
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 
 use PHPCompatibility\Tests\BaseSniffTest;
-use PHPCompatibility\PHPCSHelper;
 
 /**
  * Test the RemovedNamespacedAssert sniff.
@@ -20,7 +19,6 @@ use PHPCompatibility\PHPCSHelper;
  * @group functionNameRestrictions
  *
  * @covers \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedNamespacedAssertSniff
- * @covers \PHPCompatibility\Sniff::determineNamespace
  *
  * @since 9.0.0
  */
@@ -42,28 +40,6 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
     const TEST_FILE_NAMESPACED = 'RemovedNamespacedAssertUnitTest.2.inc';
 
     /**
-     * Whether or not traits and interfaces will be properly scoped in PHPCS.
-     *
-     * @var bool
-     */
-    protected static $recognizesTraitsAndInterfaces = true;
-
-    /**
-     * Set up skip condition.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are
-        // not recognized and the scope condition for interfaces will not be set.
-        if (version_compare(PHPCSHelper::getVersion(), '2.4.0', '<') && version_compare(\PHP_VERSION_ID, '50400', '<')) {
-            self::$recognizesTraitsAndInterfaces = false;
-        }
-        parent::setUpBeforeClass();
-    }
-
-    /**
      * Test deprecation of namespaced free-standing assert() function declaration.
      *
      * @dataProvider dataIsDeprecated
@@ -73,10 +49,15 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      *
      * @return void
      */
-    public function testIsDeprecated($testFile, $line)
+    public function testRemovedNamespacedAssert($testFile, $line)
     {
-        $file = $this->sniffFile(__DIR__ . '/' . $testFile, '7.3');
-        $this->assertWarning($file, $line, 'Declaring a free-standing function called assert() is deprecated since PHP 7.3');
+        $error = 'Declaring a namespaced function called assert() is deprecated since PHP 7.3';
+        $file  = $this->sniffFile(__DIR__ . '/' . $testFile, '7.3');
+        $this->assertWarning($file, $line, $error);
+
+        $error .= ' and will throw a fatal error since PHP 8.0';
+        $file   = $this->sniffFile(__DIR__ . '/' . $testFile, '8.0');
+        $this->assertError($file, $line, $error);
     }
 
     /**
@@ -88,10 +69,12 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      */
     public function dataIsDeprecated()
     {
-        return array(
-            array(self::TEST_FILE, 22),
-            array(self::TEST_FILE_NAMESPACED, 5),
-        );
+        return [
+            [self::TEST_FILE, 22],
+            [self::TEST_FILE_NAMESPACED, 5],
+            [self::TEST_FILE_NAMESPACED, 25],
+            [self::TEST_FILE_NAMESPACED, 30],
+        ];
     }
 
     /**
@@ -99,19 +82,13 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      *
      * @dataProvider dataNoFalsePositives
      *
-     * @param string $testFile  The file to test.
-     * @param int    $line      The line number.
-     * @param bool   $maybeSkip Whether this test needs to be skipped on old PHP/PHPCS combis.
+     * @param string $testFile The file to test.
+     * @param int    $line     The line number.
      *
      * @return void
      */
-    public function testNoFalsePositives($testFile, $line, $maybeSkip = false)
+    public function testNoFalsePositives($testFile, $line)
     {
-        if ($maybeSkip === true && self::$recognizesTraitsAndInterfaces === false) {
-            $this->markTestSkipped('Traits are not recognized and interface scope conditions not added on PHPCS < 2.4.0 in combination with PHP < 5.4');
-            return;
-        }
-
         $file = $this->sniffFile(__DIR__ . '/' . $testFile, '7.3');
         $this->assertNoViolation($file, $line);
     }
@@ -125,17 +102,19 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(self::TEST_FILE, 3),
-            array(self::TEST_FILE, 6),
-            array(self::TEST_FILE, 10),
-            array(self::TEST_FILE, 14),
-            array(self::TEST_FILE, 18),
-            array(self::TEST_FILE_NAMESPACED, 8),
-            array(self::TEST_FILE_NAMESPACED, 12, true),
-            array(self::TEST_FILE_NAMESPACED, 16, true),
-            array(self::TEST_FILE_NAMESPACED, 20),
-        );
+        return [
+            [self::TEST_FILE, 3],
+            [self::TEST_FILE, 6],
+            [self::TEST_FILE, 10],
+            [self::TEST_FILE, 14],
+            [self::TEST_FILE, 18],
+            [self::TEST_FILE, 27],
+            [self::TEST_FILE, 32],
+            [self::TEST_FILE_NAMESPACED, 8],
+            [self::TEST_FILE_NAMESPACED, 12],
+            [self::TEST_FILE_NAMESPACED, 16],
+            [self::TEST_FILE_NAMESPACED, 20],
+        ];
     }
 
 

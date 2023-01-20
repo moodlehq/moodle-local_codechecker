@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,9 @@
 namespace PHPCompatibility\Sniffs\ControlStructures;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\Conditions;
+use PHPCSUtils\Utils\MessageHelper;
 
 /**
  * Detect using `break` and/or `continue` statements outside of a looping structure.
@@ -34,25 +36,13 @@ class ForbiddenBreakContinueOutsideLoopSniff extends Sniff
      *
      * @var array
      */
-    protected $validLoopStructures = array(
-        \T_FOR     => true,
-        \T_FOREACH => true,
-        \T_WHILE   => true,
-        \T_DO      => true,
-        \T_SWITCH  => true,
-    );
-
-    /**
-     * Token codes which did not correctly get a condition assigned in older PHPCS versions.
-     *
-     * @since 7.0.7
-     *
-     * @var array
-     */
-    protected $backCompat = array(
-        \T_CASE    => true,
-        \T_DEFAULT => true,
-    );
+    protected $validLoopStructures = [
+        \T_FOR     => \T_FOR,
+        \T_FOREACH => \T_FOREACH,
+        \T_WHILE   => \T_WHILE,
+        \T_DO      => \T_DO,
+        \T_SWITCH  => \T_SWITCH,
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -63,10 +53,10 @@ class ForbiddenBreakContinueOutsideLoopSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_BREAK,
             \T_CONTINUE,
-        );
+        ];
     }
 
     /**
@@ -74,36 +64,26 @@ class ForbiddenBreakContinueOutsideLoopSniff extends Sniff
      *
      * @since 7.0.7
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-        $token  = $tokens[$stackPtr];
-
         // Check if the break/continue is within a valid loop structure.
-        if (empty($token['conditions']) === false) {
-            foreach ($token['conditions'] as $tokenCode) {
-                if (isset($this->validLoopStructures[$tokenCode]) === true) {
-                    return;
-                }
-            }
-        } else {
-            // Deal with older PHPCS versions.
-            if (isset($token['scope_condition']) === true && isset($this->backCompat[$tokens[$token['scope_condition']]['code']]) === true) {
-                return;
-            }
+        if (Conditions::getCondition($phpcsFile, $stackPtr, $this->validLoopStructures) !== false) {
+            return;
         }
 
         // If we're still here, no valid loop structure container has been found, so throw an error.
+        $tokens = $phpcsFile->getTokens();
+
         $error     = "Using '%s' outside of a loop or switch structure is invalid";
         $isError   = false;
         $errorCode = 'Found';
-        $data      = array($token['content']);
+        $data      = [$tokens[$stackPtr]['content']];
 
         if ($this->supportsAbove('7.0')) {
             $error    .= ' and will throw a fatal error since PHP 7.0';
@@ -111,6 +91,6 @@ class ForbiddenBreakContinueOutsideLoopSniff extends Sniff
             $errorCode = 'FatalError';
         }
 
-        $this->addMessage($phpcsFile, $error, $stackPtr, $isError, $errorCode, $data);
+        MessageHelper::addMessage($phpcsFile, $error, $stackPtr, $isError, $errorCode, $data);
     }
 }

@@ -31,3 +31,20 @@ preg_replace_callback_array(
     ],
     $subject
 );
+
+// Verify support for heredocs and nowdocs.
+$text = preg_match_all(
+    <<<'EOD'
+/(?<!\\\\)     # not preceded by a backslash
+  <            # an open bracket
+  >            # close bracket
+/iJx
+EOD
+    ,
+    '[$1]',
+    $text
+  );
+
+// Safeguard support for PHP 8 named parameters.
+preg_grep(array: $input, pattern: '#some text#i'); // OK.
+preg_grep(array: $input, pattern: '#some text#Ji', flags: $flags); // Error.

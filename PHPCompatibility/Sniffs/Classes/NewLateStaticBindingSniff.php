@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,10 @@
 namespace PHPCompatibility\Sniffs\Classes;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Utils\Conditions;
 
 /**
  * Detect use of late static binding as introduced in PHP 5.3.
@@ -31,16 +33,21 @@ use PHP_CodeSniffer_Tokens as Tokens;
  */
 class NewLateStaticBindingSniff extends Sniff
 {
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @since 7.0.3
+     * @since 10.0.0 Now also sniffs for `T_STRING`.
      *
      * @return array
      */
     public function register()
     {
-        return array(\T_STATIC);
+        return [
+            \T_STATIC,
+            \T_STRING,
+        ];
     }
 
 
@@ -48,26 +55,53 @@ class NewLateStaticBindingSniff extends Sniff
      * Processes this test, when one of its tokens is encountered.
      *
      * @since 7.0.3
+     * @since 10.0.0 Will now also detect LSB with `instanceof static` and `new static`.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, $stackPtr + 1, null, true, null, true);
-        if ($nextNonEmpty === false) {
-            return;
-        }
-
         $tokens = $phpcsFile->getTokens();
-        if ($tokens[$nextNonEmpty]['code'] !== \T_DOUBLE_COLON) {
-            return;
+
+        switch ($tokens[$stackPtr]['code']) {
+            case \T_STRING:
+                // PHPCS changes T_STATIC to T_STRING when used with instanceof.
+                if ($tokens[$stackPtr]['content'] !== 'static') {
+                    return;
+                }
+
+                $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
+                if ($prevNonEmpty === false
+                    || $tokens[$prevNonEmpty]['code'] !== \T_INSTANCEOF
+                ) {
+                    return;
+                }
+
+                break;
+
+            case \T_STATIC:
+                $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
+                if ($nextNonEmpty === false) {
+                    return;
+                }
+
+                if ($tokens[$nextNonEmpty]['code'] !== \T_DOUBLE_COLON) {
+                    $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true, null, true);
+                    if ($prevNonEmpty === false
+                        || $tokens[$prevNonEmpty]['code'] !== \T_NEW
+                    ) {
+                        return;
+                    }
+                }
+
+                break;
         }
 
-        $inClass = $this->inClassScope($phpcsFile, $stackPtr, false);
+        $inClass = Conditions::hasCondition($phpcsFile, $stackPtr, BCTokens::ooScopeTokens());
 
         if ($inClass === true && $this->supportsBelow('5.2') === true) {
             $phpcsFile->addError(

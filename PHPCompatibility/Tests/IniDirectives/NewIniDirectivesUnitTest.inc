@@ -2,11 +2,11 @@
 function some_random_function() {} // Verify sniff doesn't flag this line.
 some_random_function(); // Verify sniff doesn't flag this line.
 ini_set('display_errors', 1); // Verify sniff doesn't flag this ini directive.
-ini_set($iniName, 'filter.default'); // Verify sniff doesn't flag on second parameter.
+ini_set(value: 'filter.default', option: $iniName); // Verify sniff doesn't flag on the value parameter.
+$obj?->ini_set('allow_url_include', 1); // Verify sniff doesn't flag methods with the same name as the PHP native function.
 
-ini_set('allow_url_include', 1);
-$test = ini_get('allow_url_include');
-
+ini_set(option: 'allow_url_include', value: 1);
+$test = ini_get(option: 'allow_url_include');
 
 ini_set('pcre.backtrack_limit', 1);
 $test = ini_get('pcre.backtrack_limit');
@@ -227,8 +227,8 @@ $test = ini_get('mysqli.allow_persistent');
 ini_set('mysqli.max_persistent', 1);
 $test = ini_get('mysqli.max_persistent');
 
-ini_set('mysqli.cache_size', 1);
-$test = ini_get('mysqli.cache_size');
+// The mysqli.cache_size ini directive was removed in PHP 5.3.
+// Removing tests as it is unclear whether the directive was ever in released version of PHP.
 
 ini_set('mysqlnd.collect_memory_statistics', 1);
 $test = ini_get('mysqlnd.collect_memory_statistics');
@@ -460,3 +460,87 @@ $test = ini_get('ffi.enable');
 
 ini_set('ffi.preload', 1);
 $test = ini_get('ffi.preload');
+
+ini_set('opcache.preload_user', 1);
+$test = ini_get('opcache.preload_user');
+
+ini_set('phpdbg.path', 1);
+$test = ini_get('phpdbg.path');
+
+ini_set('phpdbg.eol', 1);
+$test = ini_get('phpdbg.eol');
+
+ini_set('phar.readonly', 1);
+$test = ini_get('phar.readonly');
+
+ini_set('phar.require_hash', 1);
+$test = ini_get('phar.require_hash');
+
+ini_set('phar.extract_list', 1);
+$test = ini_get('phar.extract_list');
+
+ini_set('openssl.cafile', 1);
+$test = ini_get('openssl.cafile');
+
+ini_set('openssl.capath', 1);
+$test = ini_get('openssl.capath');
+
+ini_set('pdo_odbc.connection_pooling', 1);
+$test = ini_get('pdo_odbc.connection_pooling');
+
+ini_set('pdo_odbc.db2_instance_name', 1);
+$test = ini_get('pdo_odbc.db2_instance_name');
+
+ini_set('mysqli.reconnect', 1);
+$test = ini_get('mysqli.reconnect');
+
+ini_set('mysqlnd.fetch_data_copy', 1);
+$test = ini_get('mysqlnd.fetch_data_copy');
+
+ini_set('oci8.connection_class', 1);
+$test = ini_get('oci8.connection_class');
+
+ini_set('oci8.default_prefetch', 1);
+$test = ini_get('oci8.default_prefetch');
+
+ini_set('oci8.events', 1);
+$test = ini_get('oci8.events');
+
+ini_set('oci8.max_persistent', 1);
+$test = ini_get('oci8.max_persistent');
+
+ini_set('oci8.old_oci_close_semantics', 1);
+$test = ini_get('oci8.old_oci_close_semantics');
+
+ini_set('oci8.persistent_timeout', 1);
+$test = ini_get('oci8.persistent_timeout');
+
+ini_set('oci8.ping_interval', 1);
+$test = ini_get('oci8.ping_interval');
+
+ini_set('oci8.privileged_connect', 1);
+$test = ini_get('oci8.privileged_connect');
+
+ini_set('oci8.statement_cache_size', 1);
+$test = ini_get('oci8.statement_cache_size');
+
+ini_set('sqlite3.defensive', 1);
+$test = ini_get('sqlite3.defensive');
+
+ini_set('zend.exception_string_param_max_len', 30);
+$test = ini_get('zend.exception_string_param_max_len');
+
+ini_set('pm.status_listen', '127.0.0.1:9001');
+$test = ini_get('pm.status_listen');
+
+ini_set('com.dotnet_version', 'v4.0.30319');
+$test = ini_get('com.dotnet_version');
+
+ini_set('fiber.stack_size', 10);
+$test = ini_get('fiber.stack_size');
+
+ini_set('mysqli.local_infile_directory', 10);
+$test = ini_get('mysqli.local_infile_directory');
+
+ini_set('pm.max_spawn_rate', 10);
+$test = ini_get('pm.max_spawn_rate');

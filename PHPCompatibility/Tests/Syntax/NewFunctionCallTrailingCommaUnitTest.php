@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -38,7 +38,7 @@ class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
     public function testTrailingComma($line, $type = 'function calls')
     {
         $file = $this->sniffFile(__FILE__, '7.2');
-        $this->assertError($file, $line, "Trailing comma's are not allowed in {$type} in PHP 7.2 or earlier");
+        $this->assertError($file, $line, "Trailing commas are not allowed in {$type} in PHP 7.2 or earlier");
     }
 
     /**
@@ -50,22 +50,22 @@ class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
      */
     public function dataTrailingComma()
     {
-        return array(
-            array(15, 'calls to unset()'),
-            array(16, 'calls to isset()'),
-            array(21, 'calls to unset()'),
-            array(27), // x2.
-            array(33),
-            array(36),
-            array(38),
-            array(40),
-            array(44),
-            array(47),
-            array(49),
-            array(52),
-            array(62),
-            array(65),
-        );
+        return [
+            [15, 'calls to unset()'],
+            [16, 'calls to isset()'],
+            [21, 'calls to unset()'],
+            [27], // x2.
+            [33],
+            [36],
+            [38],
+            [40],
+            [44],
+            [47],
+            [49],
+            [52],
+            [62],
+            [65],
+        ];
     }
 
 
@@ -93,17 +93,17 @@ class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(6),
-            array(7),
-            array(8),
-            array(9),
-            array(51),
-            array(58),
-            array(59),
-            array(68),
-            array(71),
-        );
+        return [
+            [6],
+            [7],
+            [8],
+            [9],
+            [51],
+            [58],
+            [59],
+            [68],
+            [71],
+        ];
     }
 
 

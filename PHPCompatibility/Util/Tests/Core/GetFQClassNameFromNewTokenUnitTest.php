@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -38,7 +38,7 @@ class GetFQClassNameFromNewTokenUnitTest extends CoreMethodTestFrame
     public function testGetFQClassNameFromNewToken($commentString, $expected)
     {
         $stackPtr = $this->getTargetToken($commentString, \T_NEW);
-        $result   = $this->helperClass->getFQClassNameFromNewToken($this->phpcsFile, $stackPtr);
+        $result   = self::$helperClass->getFQClassNameFromNewToken(self::$phpcsFile, $stackPtr);
         $this->assertSame($expected, $result);
     }
 
@@ -51,23 +51,23 @@ class GetFQClassNameFromNewTokenUnitTest extends CoreMethodTestFrame
      */
     public function dataGetFQClassNameFromNewToken()
     {
-        return array(
-            array('/* Case 1 */', '\DateTime'),
-            array('/* Case 2 */', '\MyTesting\DateTime'),
-            array('/* Case 3 */', '\MyTesting\DateTime'),
-            array('/* Case 4 */', '\DateTime'),
-            array('/* Case 5 */', '\MyTesting\anotherNS\DateTime'),
-            array('/* Case 6 */', '\FQNS\DateTime'),
-            array('/* Case 7 */', '\AnotherTesting\DateTime'),
-            array('/* Case 8 */', '\AnotherTesting\DateTime'),
-            array('/* Case 9 */', '\DateTime'),
-            array('/* Case 10 */', '\AnotherTesting\anotherNS\DateTime'),
-            array('/* Case 11 */', '\FQNS\DateTime'),
-            array('/* Case 12 */', '\DateTime'),
-            array('/* Case 13 */', '\DateTime'),
-            array('/* Case 14 */', '\AnotherTesting\DateTime'),
-            array('/* Case 15 */', ''),
-            array('/* Case 16 */', ''),
-        );
+        return [
+            ['/* test 1 */', '\DateTime'],
+            ['/* test 2 */', '\MyTesting\DateTime'],
+            ['/* test 3 */', '\MyTesting\DateTime'],
+            ['/* test 4 */', '\DateTime'],
+            ['/* test 5 */', '\MyTesting\anotherNS\DateTime'],
+            ['/* test 6 */', '\FQNS\DateTime'],
+            ['/* test 7 */', '\AnotherTesting\DateTime'],
+            ['/* test 8 */', '\AnotherTesting\DateTime'],
+            ['/* test 9 */', '\DateTime'],
+            ['/* test 10 */', '\AnotherTesting\anotherNS\DateTime'],
+            ['/* test 11 */', '\FQNS\DateTime'],
+            ['/* test 12 */', '\DateTime'],
+            ['/* test 13 */', '\DateTime'],
+            ['/* test 14 */', '\AnotherTesting\DateTime'],
+            ['/* test 15 */', ''],
+            ['/* test 16 */', ''],
+        ];
     }
 }

@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,11 +11,11 @@
 namespace PHPCompatibility\Sniffs\Syntax;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Detect trailing comma's in function calls, `isset()` and `unset()` as allowed since PHP 7.3.
+ * Detect trailing commas in function calls, `isset()` and `unset()` as allowed since PHP 7.3.
  *
  * PHP version 7.3
  *
@@ -27,6 +27,7 @@ use PHP_CodeSniffer_Tokens as Tokens;
  */
 class NewFunctionCallTrailingCommaSniff extends Sniff
 {
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -36,12 +37,12 @@ class NewFunctionCallTrailingCommaSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_STRING,
             \T_VARIABLE,
             \T_ISSET,
             \T_UNSET,
-        );
+        ];
     }
 
 
@@ -50,9 +51,9 @@ class NewFunctionCallTrailingCommaSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -72,11 +73,11 @@ class NewFunctionCallTrailingCommaSniff extends Sniff
         }
 
         if ($tokens[$stackPtr]['code'] === \T_STRING) {
-            $ignore = array(
-                \T_FUNCTION        => true,
-                \T_CONST           => true,
-                \T_USE             => true,
-            );
+            $ignore = [
+                \T_FUNCTION => true,
+                \T_CONST    => true,
+                \T_USE      => true,
+            ];
 
             $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
             if (isset($ignore[$tokens[$prevNonEmpty]['code']]) === true) {
@@ -92,7 +93,7 @@ class NewFunctionCallTrailingCommaSniff extends Sniff
             return;
         }
 
-        $data = array();
+        $data = [];
         switch ($tokens[$stackPtr]['code']) {
             case \T_ISSET:
                 $data[]    = 'calls to isset()';
@@ -111,7 +112,7 @@ class NewFunctionCallTrailingCommaSniff extends Sniff
         }
 
         $phpcsFile->addError(
-            'Trailing comma\'s are not allowed in %s in PHP 7.2 or earlier',
+            'Trailing commas are not allowed in %s in PHP 7.2 or earlier',
             $lastInParenthesis,
             $errorCode,
             $data

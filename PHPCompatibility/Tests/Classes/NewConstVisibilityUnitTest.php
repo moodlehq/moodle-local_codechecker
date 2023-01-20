@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -26,7 +26,7 @@ class NewConstVisibilityUnitTest extends BaseSniffTest
 {
 
     /**
-     * testConstVisibility
+     * Test that an error is thrown for class constants declared with visibility.
      *
      * @dataProvider dataConstVisibility
      *
@@ -49,24 +49,28 @@ class NewConstVisibilityUnitTest extends BaseSniffTest
      */
     public function dataConstVisibility()
     {
-        return array(
-            array(10),
-            array(11),
-            array(12),
+        return [
+            [10],
+            [11],
+            [12],
 
-            array(20),
-            array(23),
-            array(24),
+            [20],
+            [23],
+            [24],
 
-            array(33),
-            array(34),
-            array(35),
-        );
+            [33],
+            [34],
+            [35],
+
+            [57],
+            [58],
+            [59],
+        ];
     }
 
 
     /**
-     * testNoFalsePositives
+     * Verify that there are no false positives for valid code.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -89,14 +93,14 @@ class NewConstVisibilityUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(3),
-            array(7),
-            array(17),
-            array(30),
-            array(44),
-            array(48),
-        );
+        return [
+            [3],
+            [7],
+            [17],
+            [30],
+            [44],
+            [48],
+        ];
     }
 
 

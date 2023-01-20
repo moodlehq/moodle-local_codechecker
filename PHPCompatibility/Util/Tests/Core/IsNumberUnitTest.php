@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -45,13 +45,13 @@ class IsNumberUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken($commentString, \T_EQUAL) + 1);
         $end   = ($this->getTargetToken($commentString, \T_SEMICOLON) - 1);
 
-        $result = $this->helperClass->isNumber($this->phpcsFile, $start, $end, $allowFloats);
+        $result = self::$helperClass->isNumber(self::$phpcsFile, $start, $end, $allowFloats);
         $this->assertSame($isNumber, $result);
 
-        $result = $this->helperClass->isPositiveNumber($this->phpcsFile, $start, $end, $allowFloats);
+        $result = self::$helperClass->isPositiveNumber(self::$phpcsFile, $start, $end, $allowFloats);
         $this->assertSame($isPositiveNumber, $result);
 
-        $result = $this->helperClass->isNegativeNumber($this->phpcsFile, $start, $end, $allowFloats);
+        $result = self::$helperClass->isNegativeNumber(self::$phpcsFile, $start, $end, $allowFloats);
         $this->assertSame($isNegativeNumber, $result);
     }
 
@@ -69,94 +69,94 @@ class IsNumberUnitTest extends CoreMethodTestFrame
      */
     public function dataIsNumber()
     {
-        return array(
-            array('/* Case 1 */', true, false, false, false),
-            array('/* Case 2 */', true, false, false, false),
-            array('/* Case 4 */', true, false, false, false),
-            array('/* Case 5 */', true, false, false, false),
-            array('/* Case 6 */', true, false, false, false),
-            array('/* Case 7 */', true, false, false, false),
-            array('/* Case 8 */', true, false, false, false),
-            array('/* Case 9 */', true, false, false, false),
-            array('/* Case 10 */', true, false, false, false),
+        return [
+            ['/* test 1 */', true, false, false, false],
+            ['/* test 2 */', true, false, false, false],
+            ['/* test 4 */', true, false, false, false],
+            ['/* test 5 */', true, false, false, false],
+            ['/* test 6 */', true, false, false, false],
+            ['/* test 7 */', true, false, false, false],
+            ['/* test 8 */', true, false, false, false],
+            ['/* test 9 */', true, false, false, false],
+            ['/* test 10 */', true, false, false, false],
 
-            array('/* Case ZI1 */', false, 0, false, false),
-            array('/* Case ZI2 */', false, 0, false, false),
-            array('/* Case ZI3 */', false, -0, false, false),
-            array('/* Case ZI4 */', false, 0, false, false),
-            array('/* Case ZI5 */', false, -0, false, false),
-            array('/* Case ZI6 */', false, 0, false, false),
-            array('/* Case ZI7 */', false, 0, false, false),
+            ['/* test ZI1 */', false, 0, false, false],
+            ['/* test ZI2 */', false, 0, false, false],
+            ['/* test ZI3 */', false, -0, false, false],
+            ['/* test ZI4 */', false, 0, false, false],
+            ['/* test ZI5 */', false, -0, false, false],
+            ['/* test ZI6 */', false, 0, false, false],
+            ['/* test ZI7 */', false, 0, false, false],
 
-            array('/* Case ZI1 */', true, 0.0, false, false),
-            array('/* Case ZI2 */', true, 0.0, false, false),
-            array('/* Case ZI3 */', true, -0.0, false, false),
-            array('/* Case ZI4 */', true, 0.0, false, false),
-            array('/* Case ZI5 */', true, -0.0, false, false),
-            array('/* Case ZI6 */', true, 0.0, false, false),
-            array('/* Case ZI7 */', true, 0.0, false, false),
+            ['/* test ZI1 */', true, 0.0, false, false],
+            ['/* test ZI2 */', true, 0.0, false, false],
+            ['/* test ZI3 */', true, -0.0, false, false],
+            ['/* test ZI4 */', true, 0.0, false, false],
+            ['/* test ZI5 */', true, -0.0, false, false],
+            ['/* test ZI6 */', true, 0.0, false, false],
+            ['/* test ZI7 */', true, 0.0, false, false],
 
-            array('/* Case ZF1 */', false, false, false, false),
-            array('/* Case ZF2 */', false, false, false, false),
+            ['/* test ZF1 */', false, false, false, false],
+            ['/* test ZF2 */', false, false, false, false],
 
-            array('/* Case ZF1 */', true, 0.0, false, false),
-            array('/* Case ZF2 */', true, -0.0, false, false),
+            ['/* test ZF1 */', true, 0.0, false, false],
+            ['/* test ZF2 */', true, -0.0, false, false],
 
-            array('/* Case I1 */', false, 1, true, false),
-            array('/* Case I2 */', false, -10, false, true),
-            array('/* Case I3 */', false, 10, true, false),
-            array('/* Case I4 */', false, -10, false, true),
-            array('/* Case I5 */', false, 10, true, false),
-            array('/* Case I6 */', false, 10, true, false),
-            array('/* Case I7 */', false, 10, true, false),
-            array('/* Case I8 */', false, -10, false, true),
-            array('/* Case I9 */', false, 10, true, false),
-            array('/* Case I10 */', false, -1, false, true),
-            array('/* Case I11 */', false, 10, true, false),
-            array('/* Case I12 */', false, 10, true, false),
-            array('/* Case I14 */', false, -1, false, true),
-            array('/* Case I15 */', false, 123, true, false),
-            array('/* Case I16 */', false, 10, true, false),
+            ['/* test I1 */', false, 1, true, false],
+            ['/* test I2 */', false, -10, false, true],
+            ['/* test I3 */', false, 10, true, false],
+            ['/* test I4 */', false, -10, false, true],
+            ['/* test I5 */', false, 10, true, false],
+            ['/* test I6 */', false, 10, true, false],
+            ['/* test I7 */', false, 10, true, false],
+            ['/* test I8 */', false, -10, false, true],
+            ['/* test I9 */', false, 10, true, false],
+            ['/* test I10 */', false, -1, false, true],
+            ['/* test I11 */', false, 10, true, false],
+            ['/* test I12 */', false, 10, true, false],
+            ['/* test I14 */', false, -1, false, true],
+            ['/* test I15 */', false, 123, true, false],
+            ['/* test I16 */', false, 10, true, false],
 
-            array('/* Case I1 */', true, 1.0, true, false),
-            array('/* Case I2 */', true, -10.0, false, true),
-            array('/* Case I3 */', true, 10.0, true, false),
-            array('/* Case I4 */', true, -10.0, false, true),
-            array('/* Case I5 */', true, 10.0, true, false),
-            array('/* Case I6 */', true, 10.0, true, false),
-            array('/* Case I7 */', true, 10.0, true, false),
-            array('/* Case I8 */', true, -10.0, false, true),
-            array('/* Case I9 */', true, 10.0, true, false),
-            array('/* Case I10 */', true, -1.0, false, true),
-            array('/* Case I11 */', true, 10.0, true, false),
-            array('/* Case I12 */', true, 10.0, true, false),
-            array('/* Case I14 */', true, -1.0, false, true),
-            array('/* Case I15 */', true, 123.0, true, false),
-            array('/* Case I16 */', true, 10.0, true, false),
+            ['/* test I1 */', true, 1.0, true, false],
+            ['/* test I2 */', true, -10.0, false, true],
+            ['/* test I3 */', true, 10.0, true, false],
+            ['/* test I4 */', true, -10.0, false, true],
+            ['/* test I5 */', true, 10.0, true, false],
+            ['/* test I6 */', true, 10.0, true, false],
+            ['/* test I7 */', true, 10.0, true, false],
+            ['/* test I8 */', true, -10.0, false, true],
+            ['/* test I9 */', true, 10.0, true, false],
+            ['/* test I10 */', true, -1.0, false, true],
+            ['/* test I11 */', true, 10.0, true, false],
+            ['/* test I12 */', true, 10.0, true, false],
+            ['/* test I14 */', true, -1.0, false, true],
+            ['/* test I15 */', true, 123.0, true, false],
+            ['/* test I16 */', true, 10.0, true, false],
 
-            array('/* Case F1 */', false, false, false, false),
-            array('/* Case F2 */', false, false, false, false),
-            array('/* Case F3 */', false, false, false, false),
-            array('/* Case F4 */', false, false, false, false),
-            array('/* Case F5 */', false, false, false, false),
-            array('/* Case F6 */', false, false, false, false),
-            array('/* Case F7 */', false, false, false, false),
-            array('/* Case F8 */', false, false, false, false),
-            array('/* Case F9 */', false, false, false, false),
-            array('/* Case F10 */', false, false, false, false),
-            array('/* Case F11 */', false, false, false, false),
+            ['/* test F1 */', false, false, false, false],
+            ['/* test F2 */', false, false, false, false],
+            ['/* test F3 */', false, false, false, false],
+            ['/* test F4 */', false, false, false, false],
+            ['/* test F5 */', false, false, false, false],
+            ['/* test F6 */', false, false, false, false],
+            ['/* test F7 */', false, false, false, false],
+            ['/* test F8 */', false, false, false, false],
+            ['/* test F9 */', false, false, false, false],
+            ['/* test F10 */', false, false, false, false],
+            ['/* test F11 */', false, false, false, false],
 
-            array('/* Case F1 */', true, 1.23, true, false),
-            array('/* Case F2 */', true, -10.123, false, true),
-            array('/* Case F3 */', true, 10.123, true, false),
-            array('/* Case F4 */', true, -10.123, false, true),
-            array('/* Case F5 */', true, 10.123, true, false),
-            array('/* Case F6 */', true, 10.123, true, false),
-            array('/* Case F7 */', true, 10.123, true, false),
-            array('/* Case F8 */', true, -10E3, false, true),
-            array('/* Case F9 */', true, -10e8, false, true),
-            array('/* Case F10 */', true, 10.123, true, false),
-            array('/* Case F11 */', true, 0.123, true, false),
-        );
+            ['/* test F1 */', true, 1.23, true, false],
+            ['/* test F2 */', true, -10.123, false, true],
+            ['/* test F3 */', true, 10.123, true, false],
+            ['/* test F4 */', true, -10.123, false, true],
+            ['/* test F5 */', true, 10.123, true, false],
+            ['/* test F6 */', true, 10.123, true, false],
+            ['/* test F7 */', true, 10.123, true, false],
+            ['/* test F8 */', true, -10E3, false, true],
+            ['/* test F9 */', true, -10e8, false, true],
+            ['/* test F10 */', true, 10.123, true, false],
+            ['/* test F11 */', true, 0.123, true, false],
+        ];
     }
 }

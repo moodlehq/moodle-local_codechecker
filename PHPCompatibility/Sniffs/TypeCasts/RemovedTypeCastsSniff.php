@@ -3,15 +3,17 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\TypeCasts;
 
-use PHPCompatibility\AbstractRemovedFeatureSniff;
-use PHP_CodeSniffer_File as File;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionDeprecatedRemovedFeatureTrait;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\MessageHelper;
 
 /**
  * Detect use of deprecated/removed type casts.
@@ -23,10 +25,13 @@ use PHP_CodeSniffer_File as File;
  * @link https://wiki.php.net/rfc/deprecations_php_7_4#the_real_type
  *
  * @since 8.0.1
- * @since 9.0.0 Renamed from `DeprecatedTypeCastsSniff` to `RemovedTypeCastsSniff`.
+ * @since 9.0.0  Renamed from `DeprecatedTypeCastsSniff` to `RemovedTypeCastsSniff`.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionDeprecatedRemovedFeatureTrait`.
  */
-class RemovedTypeCastsSniff extends AbstractRemovedFeatureSniff
+class RemovedTypeCastsSniff extends Sniff
 {
+    use ComplexVersionDeprecatedRemovedFeatureTrait;
+
     /**
      * A list of deprecated and removed type casts with their alternatives.
      *
@@ -37,18 +42,20 @@ class RemovedTypeCastsSniff extends AbstractRemovedFeatureSniff
      *
      * @var array(string => array(string => bool|string))
      */
-    protected $deprecatedTypeCasts = array(
-        'T_UNSET_CAST' => array(
+    protected $deprecatedTypeCasts = [
+        'T_UNSET_CAST' => [
             '7.2'         => false,
+            '8.0'         => true,
             'alternative' => 'unset()',
             'description' => 'unset',
-        ),
-        'T_DOUBLE_CAST' => array(
+        ],
+        'T_DOUBLE_CAST' => [
             '7.4'         => false,
+            '8.0'         => true,
             'alternative' => '(float)',
             'description' => 'real',
-        ),
-    );
+        ],
+    ];
 
 
     /**
@@ -60,9 +67,9 @@ class RemovedTypeCastsSniff extends AbstractRemovedFeatureSniff
      */
     public function register()
     {
-        $tokens = array();
+        $tokens = [];
         foreach ($this->deprecatedTypeCasts as $token => $versions) {
-            $tokens[] = constant($token);
+            $tokens[] = \constant($token);
         }
 
         return $tokens;
@@ -74,9 +81,9 @@ class RemovedTypeCastsSniff extends AbstractRemovedFeatureSniff
      *
      * @since 8.0.1
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -86,73 +93,90 @@ class RemovedTypeCastsSniff extends AbstractRemovedFeatureSniff
         $tokenType = $tokens[$stackPtr]['type'];
 
         // Special case `T_DOUBLE_CAST` as the same token is used for (float) and (double) casts.
-        if ($tokenType === 'T_DOUBLE_CAST' && strpos($tokens[$stackPtr]['content'], 'real') === false) {
+        if ($tokenType === 'T_DOUBLE_CAST' && \strpos($tokens[$stackPtr]['content'], 'real') === false) {
             // Float/double casts, not (real) cast.
             return;
         }
 
-        $itemInfo = array(
+        $itemInfo = [
             'name'        => $tokenType,
             'description' => $this->deprecatedTypeCasts[$tokenType]['description'],
-        );
+        ];
         $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
     }
 
 
     /**
-     * Get an array of the non-PHP-version array keys used in a sub-array.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error/warning for a matched item.
      *
-     * @since 8.0.1
+     * @since 10.0.0
      *
-     * @return array
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
+     *
+     * @return void
      */
-    protected function getNonVersionArrayKeys()
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        return array('description', 'alternative');
+        $itemArray   = $this->deprecatedTypeCasts[$itemInfo['name']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+        $isError     = null;
+
+        if (empty($versionInfo['removed']) === false
+            && $this->supportsAbove($versionInfo['removed']) === true
+        ) {
+            $isError = true;
+        } elseif (empty($versionInfo['deprecated']) === false
+            && $this->supportsAbove($versionInfo['deprecated']) === true
+        ) {
+            $isError = false;
+
+            // Reset the 'removed' info as it is not relevant for the current notice.
+            $versionInfo['removed'] = '';
+        }
+
+        if (isset($isError) === false) {
+            return;
+        }
+
+        $this->addMessage($phpcsFile, $stackPtr, $isError, $itemInfo, $itemArray, $versionInfo);
     }
 
-    /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
-     *
-     * @since 8.0.1
-     *
-     * @param array $itemInfo Base information about the item.
-     *
-     * @return array Version and other information about the item.
-     */
-    public function getItemArray(array $itemInfo)
-    {
-        return $this->deprecatedTypeCasts[$itemInfo['name']];
-    }
-
 
     /**
-     * Get the error message template for this sniff.
+     * Generates the error or warning for this item.
      *
-     * @since 8.0.1
+     * @since 10.0.0
      *
-     * @return string
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param bool                        $isError     Whether this should be an error or a warning.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param array                       $itemArray   The sub-array with all the details about
+     *                                                 this item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
+     *
+     * @return void
      */
-    protected function getErrorMsgTemplate()
+    protected function addMessage(File $phpcsFile, $stackPtr, $isError, array $itemInfo, array $itemArray, array $versionInfo)
     {
-        return 'The %s cast is ';
-    }
+        // Overrule the default message template.
+        $this->msgTemplate = 'The %s cast is ';
 
+        $msgInfo = $this->getMessageInfo($itemInfo['description'], $itemInfo['name'], $versionInfo);
 
-    /**
-     * Filter the error data before it's passed to PHPCS.
-     *
-     * @since 8.0.1
-     *
-     * @param array $data      The error data array which was created.
-     * @param array $itemInfo  Base information about the item this error message applies to.
-     * @param array $errorInfo Detail information about an item this error message applies to.
-     *
-     * @return array
-     */
-    protected function filterErrorData(array $data, array $itemInfo, array $errorInfo)
-    {
-        $data[0] = $itemInfo['description'];
-        return $data;
+        MessageHelper::addMessage(
+            $phpcsFile,
+            $msgInfo['message'],
+            $stackPtr,
+            $isError,
+            $msgInfo['errorcode'],
+            $msgInfo['data']
+        );
     }
 }

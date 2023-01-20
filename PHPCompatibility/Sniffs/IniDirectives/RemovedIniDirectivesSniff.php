@@ -3,15 +3,20 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\IniDirectives;
 
-use PHPCompatibility\AbstractRemovedFeatureSniff;
-use PHP_CodeSniffer_File as File;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionDeprecatedRemovedFeatureTrait;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\PassedParameters;
+use PHPCSUtils\Utils\TextStrings;
 
 /**
  * Detect the use of deprecated and removed INI directives through `ini_set()` or `ini_get()`.
@@ -22,14 +27,39 @@ use PHP_CodeSniffer_File as File;
  * @link https://www.php.net/manual/en/ini.core.php
  *
  * @since 5.5
- * @since 7.0.0 This sniff now throws a warning (deprecated) or an error (removed) depending
- *              on the `testVersion` set. Previously it would always throw a warning.
- * @since 7.0.1 The sniff will now only throw warnings for `ini_get()`.
- * @since 7.1.0 Now extends the `AbstractRemovedFeatureSniff` instead of the base `Sniff` class.
- * @since 9.0.0 Renamed from `DeprecatedIniDirectivesSniff` to `RemovedIniDirectivesSniff`.
+ * @since 7.0.0  This sniff now throws a warning (deprecated) or an error (removed) depending
+ *               on the `testVersion` set. Previously it would always throw a warning.
+ * @since 7.0.1  The sniff will now only throw warnings for `ini_get()`.
+ * @since 7.1.0  Now extends the `AbstractRemovedFeatureSniff` instead of the base `Sniff` class.
+ * @since 9.0.0  Renamed from `DeprecatedIniDirectivesSniff` to `RemovedIniDirectivesSniff`.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionDeprecatedRemovedFeatureTrait`.
  */
-class RemovedIniDirectivesSniff extends AbstractRemovedFeatureSniff
+class RemovedIniDirectivesSniff extends Sniff
 {
+    use ComplexVersionDeprecatedRemovedFeatureTrait;
+
+    /**
+     * List of functions which take an ini directive as parameter (always the first parameter).
+     *
+     * Key is the function name, value an array containing the 1-based parameter position
+     * and the official name of the parameter.
+     *
+     * @since 7.1.0
+     * @since 10.0.0 Moved from the base `Sniff` class to this sniff.
+     *
+     * @var array
+     */
+    protected $iniFunctions = [
+        'ini_get' => [
+            'position' => 1,
+            'name'     => 'option',
+        ],
+        'ini_set' => [
+            'position' => 1,
+            'name'     => 'option',
+        ],
+    ];
+
     /**
      * A list of deprecated/removed INI directives.
      *
@@ -41,260 +71,575 @@ class RemovedIniDirectivesSniff extends AbstractRemovedFeatureSniff
      *
      * @var array(string)
      */
-    protected $deprecatedIniDirectives = array(
-        'fbsql.batchSize' => array(
+    protected $deprecatedIniDirectives = [
+        'crack.default_dictionary' => [
+            '5.0'       => true,
+            'extension' => 'crack',
+        ],
+        'dbx.colnames_case' => [
+            '5.1'       => true,
+            'extension' => 'dbx',
+        ],
+        'fbsql.batchSize' => [
             '5.1'         => true,
             'alternative' => 'fbsql.batchsize',
-        ),
-        'pfpro.defaulthost' => array(
-            '5.1' => true,
-        ),
-        'pfpro.defaultport' => array(
-            '5.1' => true,
-        ),
-        'pfpro.defaulttimeout' => array(
-            '5.1' => true,
-        ),
-        'pfpro.proxyaddress' => array(
-            '5.1' => true,
-        ),
-        'pfpro.proxyport' => array(
-            '5.1' => true,
-        ),
-        'pfpro.proxylogon' => array(
-            '5.1' => true,
-        ),
-        'pfpro.proxypassword' => array(
-            '5.1' => true,
-        ),
+            'extension'   => 'fbsql',
+        ],
+        'pfpro.defaulthost' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'pfpro.defaultport' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'pfpro.defaulttimeout' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'pfpro.proxyaddress' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'pfpro.proxyport' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'pfpro.proxylogon' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'pfpro.proxypassword' => [
+            '5.1'       => true,
+            'extension' => 'pfpro',
+        ],
+        'ingres.allow_persistent' => [
+            '5.1'       => true,
+            'extension' => 'ingres',
+        ],
+        'ingres.default_database' => [
+            '5.1'       => true,
+            'extension' => 'ingres',
+        ],
+        'ingres.default_password' => [
+            '5.1'       => true,
+            'extension' => 'ingres',
+        ],
+        'ingres.default_user' => [
+            '5.1'       => true,
+            'extension' => 'ingres',
+        ],
+        'ingres.max_links' => [
+            '5.1'       => true,
+            'extension' => 'ingres',
+        ],
+        'ingres.max_persistent' => [
+            '5.1'       => true,
+            'extension' => 'ingres',
+        ],
 
-        'ifx.allow_persistent' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.blobinfile' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.byteasvarchar' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.charasvarchar' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.default_host' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.default_password' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.default_user' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.max_links' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.max_persistent' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.nullformat' => array(
-            '5.2.1' => true,
-        ),
-        'ifx.textasvarchar' => array(
-            '5.2.1' => true,
-        ),
+        'hwapi.allow_persistent' => [
+            '5.2'       => true,
+            'extension' => 'hwapi',
+        ],
 
-        'zend.ze1_compatibility_mode' => array(
+        'ifx.allow_persistent' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.blobinfile' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.byteasvarchar' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.charasvarchar' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.default_host' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.default_password' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.default_user' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.max_links' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.max_persistent' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.nullformat' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+        'ifx.textasvarchar' => [
+            '5.2.1'     => true,
+            'extension' => 'ifx',
+        ],
+
+        'mime_magic.debug' => [
+            '5.3'       => true,
+            'extension' => 'mimetype',
+        ],
+        'mime_magic.magicfile' => [
+            '5.3'       => true,
+            'extension' => 'mimetype',
+        ],
+        'zend.ze1_compatibility_mode' => [
             '5.3' => true,
-        ),
+        ],
+        'fbsql.allow_persistent' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.generate_warnings' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.autocommit' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.max_persistent' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.max_links' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.max_connections' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.max_results' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.default_host' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.default_user' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.default_password' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.default_database' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'fbsql.default_database_password' => [
+            '5.3'       => true,
+            'extension' => 'fbsql',
+        ],
+        'msql.allow_persistent' => [
+            '5.3'       => true,
+            'extension' => 'msql',
+        ],
+        'msql.max_persistent' => [
+            '5.3'       => true,
+            'extension' => 'msql',
+        ],
+        'msql.max_links' => [
+            '5.3'       => true,
+            'extension' => 'msql',
+        ],
 
-        'allow_call_time_pass_reference' => array(
+        'allow_call_time_pass_reference' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'define_syslog_variables' => array(
+        ],
+        'define_syslog_variables' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'detect_unicode' => array(
+        ],
+        'detect_unicode' => [
             '5.4'         => true,
             'alternative' => 'zend.detect_unicode',
-        ),
-        'highlight.bg' => array(
+        ],
+        'highlight.bg' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'magic_quotes_gpc' => array(
+        ],
+        'magic_quotes_gpc' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'magic_quotes_runtime' => array(
+        ],
+        'magic_quotes_runtime' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'magic_quotes_sybase' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
-        'mbstring.script_encoding' => array(
+        ],
+        'magic_quotes_sybase' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'sybase',
+        ],
+        'mbstring.script_encoding' => [
             '5.4'         => true,
             'alternative' => 'zend.script_encoding',
-        ),
-        'register_globals' => array(
+        ],
+        'phar.extract_list' => [
+            '5.4' => true,
+        ],
+        'register_globals' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'register_long_arrays' => array(
+        ],
+        'register_long_arrays' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'safe_mode' => array(
+        ],
+        'safe_mode' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'safe_mode_allowed_env_vars' => array(
+        ],
+        'safe_mode_allowed_env_vars' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'safe_mode_exec_dir' => array(
+        ],
+        'safe_mode_exec_dir' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'safe_mode_gid' => array(
+        ],
+        'safe_mode_gid' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'safe_mode_include_dir' => array(
+        ],
+        'safe_mode_include_dir' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'safe_mode_protected_env_vars' => array(
+        ],
+        'safe_mode_protected_env_vars' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'session.bug_compat_42' => array(
+        ],
+        'session.bug_compat_42' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'session.bug_compat_warn' => array(
+        ],
+        'session.bug_compat_warn' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'y2k_compliance' => array(
+        ],
+        'y2k_compliance' => [
             '5.3' => false,
             '5.4' => true,
-        ),
+        ],
 
-        'always_populate_raw_post_data' => array(
+        'sqlite.assoc_case' => [
+            '5.4'       => true,
+            'extension' => 'sqlite',
+        ],
+
+        'always_populate_raw_post_data' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'iconv.input_encoding' => array(
+        ],
+        'iconv.input_encoding' => [
             '5.6' => false,
-        ),
-        'iconv.output_encoding' => array(
+        ],
+        'iconv.output_encoding' => [
             '5.6' => false,
-        ),
-        'iconv.internal_encoding' => array(
+        ],
+        'iconv.internal_encoding' => [
             '5.6' => false,
-        ),
-        'mbstring.http_input' => array(
+        ],
+        'mbstring.http_input' => [
             '5.6' => false,
-        ),
-        'mbstring.http_output' => array(
+        ],
+        'mbstring.http_output' => [
             '5.6' => false,
-        ),
-        'mbstring.internal_encoding' => array(
+        ],
+        'mbstring.internal_encoding' => [
             '5.6' => false,
-        ),
+        ],
 
-        'asp_tags' => array(
+        'asp_tags' => [
             '7.0' => true,
-        ),
-        'xsl.security_prefs' => array(
+        ],
+        'xsl.security_prefs' => [
             '7.0' => true,
-        ),
-        'opcache.load_comments' => array(
+        ],
+        'opcache.load_comments' => [
             '7.0' => true,
-        ),
+        ],
+        'mssql.allow_persistent' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.max_persistent' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.max_links' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.min_error_severity' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.min_message_severity' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.compatibility_mode' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.connect_timeout' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.timeout' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.textsize' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.textlimit' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.batchsize' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.datetimeconvert' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.secure_connection' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.max_procs' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mssql.charset' => [
+            '7.0'       => true,
+            'extension' => 'mssql',
+        ],
+        'mysql.allow_local_infile' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.allow_persistent' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.max_persistent' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.max_links' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.trace_mode' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.default_port' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.default_socket' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.default_host' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.default_user' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.default_password' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'mysql.connect_timeout' => [
+            '7.0'       => true,
+            'extension' => 'mysql',
+        ],
+        'sybase.allow_persistent' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
+        'sybase.max_persistent' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
+        'sybase.max_links' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
+        'sybase.interface_file' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
+        'sybase.min_error_severity' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
+        'sybase.min_message_severity' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
+        'sybase.compatability_mode' => [
+            '7.0'       => true,
+            'extension' => 'sybase',
+        ],
 
-        'mcrypt.algorithms_dir' => array(
-            '7.1' => false,
-            '7.2' => true,
-        ),
-        'mcrypt.modes_dir' => array(
-            '7.1' => false,
-            '7.2' => true,
-        ),
-        'session.entropy_file' => array(
+        'mcrypt.algorithms_dir' => [
+            '7.1'       => false,
+            '7.2'       => true,
+            'extension' => 'mcrypt',
+        ],
+        'mcrypt.modes_dir' => [
+            '7.1'       => false,
+            '7.2'       => true,
+            'extension' => 'mcrypt',
+        ],
+        'session.entropy_file' => [
             '7.1' => true,
-        ),
-        'session.entropy_length' => array(
+        ],
+        'session.entropy_length' => [
             '7.1' => true,
-        ),
-        'session.hash_function' => array(
+        ],
+        'session.hash_function' => [
             '7.1' => true,
-        ),
-        'session.hash_bits_per_character' => array(
+        ],
+        'session.hash_bits_per_character' => [
             '7.1' => true,
-        ),
+        ],
 
-        'mbstring.func_overload' => array(
+        'mbstring.func_overload' => [
             '7.2' => false,
-        ),
-        'sql.safe_mode' => array(
+            '8.0' => true,
+        ],
+        'sql.safe_mode' => [
             '7.2' => true,
-        ),
-        'track_errors' => array(
+        ],
+        'track_errors' => [
             '7.2' => false,
-        ),
-        'opcache.fast_shutdown' => array(
+            '8.0' => true,
+        ],
+        'opcache.fast_shutdown' => [
             '7.2' => true,
-        ),
+        ],
 
-        'birdstep.max_links' => array(
+        'birdstep.max_links' => [
             '7.3' => true,
-        ),
-        'opcache.inherited_hack' => array(
+        ],
+        'opcache.inherited_hack' => [
             '5.3' => false, // Soft deprecated, i.e. ignored.
             '7.3' => true,
-        ),
-        'pdo_odbc.db2_instance_name' => array(
+        ],
+        'pdo_odbc.db2_instance_name' => [
             '7.3' => false, // Has been marked as deprecated in the manual from before this time. Now hard-deprecated.
-        ),
+            '8.0' => true,
+        ],
 
-        'allow_url_include' => array(
+        'allow_url_include' => [
             '7.4' => false,
-        ),
-        'ibase.allow_persistent' => array(
-            '7.4' => true,
-        ),
-        'ibase.max_persistent' => array(
-            '7.4' => true,
-        ),
-        'ibase.max_links' => array(
-            '7.4' => true,
-        ),
-        'ibase.default_db' => array(
-            '7.4' => true,
-        ),
-        'ibase.default_user' => array(
-            '7.4' => true,
-        ),
-        'ibase.default_password' => array(
-            '7.4' => true,
-        ),
-        'ibase.default_charset' => array(
-            '7.4' => true,
-        ),
-        'ibase.timestampformat' => array(
-            '7.4' => true,
-        ),
-        'ibase.dateformat' => array(
-            '7.4' => true,
-        ),
-        'ibase.timeformat' => array(
-            '7.4' => true,
-        ),
-    );
+        ],
+        'ibase.allow_persistent' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.max_persistent' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.max_links' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.default_db' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.default_user' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.default_password' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.default_charset' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.timestampformat' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.dateformat' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+        'ibase.timeformat' => [
+            '7.4'       => true,
+            'extension' => 'ibase',
+        ],
+
+        'assert.quiet_eval' => [
+            '8.0' => true,
+        ],
+
+        'auto_detect_line_endings' => [
+            '8.1' => false,
+        ],
+        'log_errors_max_len' => [
+            '8.1' => true,
+        ],
+        'date.default_latitude' => [
+            '8.1'       => false,
+            'extension' => 'date',
+        ],
+        'date.default_longitude' => [
+            '8.1'       => false,
+            'extension' => 'date',
+        ],
+        'date.sunset_zenith' => [
+            '8.1'       => false,
+            'extension' => 'date',
+        ],
+        'filter.default' => [
+            '8.1'       => false,
+            'extension' => 'filter',
+        ],
+        'filter.default_options' => [
+            '8.1'       => false,
+            'extension' => 'filter',
+        ],
+        'oci8.old_oci_close_semantics' => [
+            '8.1'       => false,
+            'extension' => 'oci8',
+        ],
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -305,7 +650,7 @@ class RemovedIniDirectivesSniff extends AbstractRemovedFeatureSniff
      */
     public function register()
     {
-        return array(\T_STRING);
+        return [\T_STRING];
     }
 
     /**
@@ -313,9 +658,9 @@ class RemovedIniDirectivesSniff extends AbstractRemovedFeatureSniff
      *
      * @since 5.5
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -323,12 +668,11 @@ class RemovedIniDirectivesSniff extends AbstractRemovedFeatureSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        $ignore = array(
-            \T_DOUBLE_COLON    => true,
-            \T_OBJECT_OPERATOR => true,
-            \T_FUNCTION        => true,
-            \T_CONST           => true,
-        );
+        $ignore  = [
+            \T_FUNCTION => true,
+            \T_CONST    => true,
+        ];
+        $ignore += Collections::objectOperators();
 
         $prevToken = $phpcsFile->findPrevious(\T_WHITESPACE, ($stackPtr - 1), null, true);
         if (isset($ignore[$tokens[$prevToken]['code']]) === true) {
@@ -336,89 +680,105 @@ class RemovedIniDirectivesSniff extends AbstractRemovedFeatureSniff
             return;
         }
 
-        $functionLc = strtolower($tokens[$stackPtr]['content']);
+        $functionLc = \strtolower($tokens[$stackPtr]['content']);
         if (isset($this->iniFunctions[$functionLc]) === false) {
             return;
         }
 
-        $iniToken = $this->getFunctionCallParameter($phpcsFile, $stackPtr, $this->iniFunctions[$functionLc]);
+        $paramInfo = $this->iniFunctions[$functionLc];
+        $iniToken  = PassedParameters::getParameter($phpcsFile, $stackPtr, $paramInfo['position'], $paramInfo['name']);
         if ($iniToken === false) {
             return;
         }
 
-        $filteredToken = $this->stripQuotes($iniToken['raw']);
+        $filteredToken = TextStrings::stripQuotes($iniToken['raw']);
         if (isset($this->deprecatedIniDirectives[$filteredToken]) === false) {
             return;
         }
 
-        $itemInfo = array(
+        $itemInfo = [
             'name'       => $filteredToken,
             'functionLc' => $functionLc,
-        );
+        ];
         $this->handleFeature($phpcsFile, $iniToken['end'], $itemInfo);
     }
 
 
     /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error/warning for a matched item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @param array $itemInfo Base information about the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
      *
-     * @return array Version and other information about the item.
+     * @return void
      */
-    public function getItemArray(array $itemInfo)
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        return $this->deprecatedIniDirectives[$itemInfo['name']];
-    }
+        $itemArray   = $this->deprecatedIniDirectives[$itemInfo['name']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+        $isError     = null;
 
+        if (empty($versionInfo['removed']) === false
+            && $this->supportsAbove($versionInfo['removed']) === true
+        ) {
+            $isError = true;
+        } elseif (empty($versionInfo['deprecated']) === false
+            && $this->supportsAbove($versionInfo['deprecated']) === true
+        ) {
+            $isError = false;
 
-    /**
-     * Retrieve the relevant detail (version) information for use in an error message.
-     *
-     * @since 7.1.0
-     *
-     * @param array $itemArray Version and other information about the item.
-     * @param array $itemInfo  Base information about the item.
-     *
-     * @return array
-     */
-    public function getErrorInfo(array $itemArray, array $itemInfo)
-    {
-        $errorInfo = parent::getErrorInfo($itemArray, $itemInfo);
-
-        // Lower error level to warning if the function used was ini_get.
-        if ($errorInfo['error'] === true && $itemInfo['functionLc'] === 'ini_get') {
-            $errorInfo['error'] = false;
+            // Reset the 'removed' info as it is not relevant for the current notice.
+            $versionInfo['removed'] = '';
         }
 
-        return $errorInfo;
+        if (isset($isError) === false) {
+            return;
+        }
+
+        $this->addMessage($phpcsFile, $stackPtr, $isError, $itemInfo, $versionInfo);
     }
 
 
     /**
-     * Get the error message template for this sniff.
+     * Generates the error or warning for this item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @return string
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param bool                        $isError     Whether this should be an error or a warning.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
+     *
+     * @return void
      */
-    protected function getErrorMsgTemplate()
+    protected function addMessage(File $phpcsFile, $stackPtr, $isError, array $itemInfo, array $versionInfo)
     {
-        return "INI directive '%s' is ";
-    }
+        // Overrule the default message template.
+        $this->msgTemplate               = "INI directive '%s' is ";
+        $this->alternativeOptionTemplate = "; Use '%s' instead";
 
+        $msgInfo = $this->getMessageInfo($itemInfo['name'], $itemInfo['name'], $versionInfo);
 
-    /**
-     * Get the error message template for suggesting an alternative for a specific sniff.
-     *
-     * @since 7.1.0
-     *
-     * @return string
-     */
-    protected function getAlternativeOptionTemplate()
-    {
-        return str_replace('%s', "'%s'", parent::getAlternativeOptionTemplate());
+        // Lower error level to warning if the function called was `ini_get()`.
+        if ($itemInfo['functionLc'] === 'ini_get') {
+            $isError = false;
+        }
+
+        MessageHelper::addMessage(
+            $phpcsFile,
+            $msgInfo['message'],
+            $stackPtr,
+            $isError,
+            $msgInfo['errorcode'],
+            $msgInfo['data']
+        );
     }
 }

@@ -3,15 +3,21 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Classes;
 
-use PHPCompatibility\AbstractNewFeatureSniff;
-use PHP_CodeSniffer_File as File;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHP_CodeSniffer\Exceptions\RuntimeException;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\ControlStructures;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\Variables;
 
 /**
  * Detect use of new PHP native classes.
@@ -22,16 +28,19 @@ use PHP_CodeSniffer_File as File;
  * - Static use of class properties, constants or functions using the double colon.
  * - Function/closure declarations to detect new classes used as parameter type declarations.
  * - Function/closure declarations to detect new classes used as return type declarations.
+ * - Property declarations to detect new classes used as property type declarations.
  * - Try/catch statements to detect new exception classes being caught.
  *
  * PHP version All
  *
  * @since 5.5
- * @since 5.6   Now extends the base `Sniff` class.
- * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` class.
+ * @since 5.6    Now extends the base `Sniff` class.
+ * @since 7.1.0  Now extends the `AbstractNewFeatureSniff` class.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionNewFeatureTrait`.
  */
-class NewClassesSniff extends AbstractNewFeatureSniff
+class NewClassesSniff extends Sniff
 {
+    use ComplexVersionNewFeatureTrait;
 
     /**
      * A list of new classes, not present in older versions.
@@ -43,380 +52,750 @@ class NewClassesSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => bool))
      */
-    protected $newClasses = array(
-        'ArrayObject' => array(
+    protected $newClasses = [
+        'ArrayObject' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'spl',
+        ],
+        'ArrayIterator' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'spl',
+        ],
+        'CachingIterator' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'spl',
+        ],
+        'DirectoryIterator' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveDirectoryIterator' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveIteratorIterator' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'spl',
+        ],
+        'php_user_filter' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'ArrayIterator' => array(
+        ],
+        'tidy' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'tidy',
+        ],
+        'tidyNode' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'tidy',
+        ],
+        'Reflection' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionClass' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionExtension' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionFunction' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionMethod' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionObject' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionParameter' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionProperty' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'SoapClient' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'soap',
+        ],
+        'SoapServer' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'soap',
+        ],
+        'SoapHeader' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'soap',
+        ],
+        'SoapParam' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'soap',
+        ],
+        'SoapVar' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'soap',
+        ],
+        'COMPersistHelper' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'CachingIterator' => array(
+        ],
+        'DOMAttr' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMCdataSection' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMCharacterData' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMComment' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMDocument' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMDocumentFragment' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMDocumentType' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMElement' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMEntity' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMEntityReference' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMImplementation' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMNamedNodeMap' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMNode' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMNodeList' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMNotation' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMProcessingInstruction' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMText' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'DOMXPath' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'SimpleXMLElement' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'simplexml',
+        ],
+        'XSLTProcessor' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'xsl',
+        ],
+        'SQLiteDatabase' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'sqlite',
+        ],
+        'SQLiteResult' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'sqlite',
+        ],
+        'SQLiteUnbuffered' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'sqlite',
+        ],
+        'mysqli' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'mysqli',
+        ],
+        'mysqli_stmt' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'mysqli',
+        ],
+        'mysqli_result' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'mysqli',
+        ],
+        'mysqli_driver' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'mysqli',
+        ],
+        'mysqli_warning' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'mysqli',
+        ],
+        /*
+        See: https://bugs.php.net/bug.php?id=79625
+        'OCI-Collection' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'DirectoryIterator' => array(
+        ],
+        'OCI-Lob' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'RecursiveDirectoryIterator' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
-        'RecursiveIteratorIterator' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
-        'php_user_filter' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
-        'tidy' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
+        ],
+        */
 
-        'SimpleXMLElement' => array(
-            '5.0.0' => false,
-            '5.0.1' => true,
-        ),
-        'tidyNode' => array(
-            '5.0.0' => false,
-            '5.0.1' => true,
-        ),
+        'libXMLError' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'libxml',
+        ],
+        'PDO' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'pdo',
+        ],
+        'PDOStatement' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'pdo',
+        ],
+        'AppendIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'EmptyIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'FilterIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'InfiniteIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'IteratorIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'LimitIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'NoRewindIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'ParentIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveArrayIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveCachingIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveFilterIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'SimpleXMLIterator' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'simplexml',
+        ],
+        'SplFileObject' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'SplObjectStorage' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'XMLReader' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'xmlreader',
+        ],
 
-        'libXMLError' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'PDO' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'PDOStatement' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'AppendIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'EmptyIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'FilterIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'InfiniteIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'IteratorIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'LimitIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'NoRewindIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'ParentIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'RecursiveArrayIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'RecursiveCachingIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'RecursiveFilterIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'SimpleXMLIterator' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'SplFileObject' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'XMLReader' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
+        'SplFileInfo' => [
+            '5.1.1'     => false,
+            '5.1.2'     => true,
+            'extension' => 'spl',
+        ],
+        'SplTempFileObject' => [
+            '5.1.1'     => false,
+            '5.1.2'     => true,
+            'extension' => 'spl',
+        ],
+        'XMLWriter' => [
+            '5.1.1'     => false,
+            '5.1.2'     => true,
+            'extension' => 'xmlwriter',
+        ],
 
-        'SplFileInfo' => array(
-            '5.1.1' => false,
-            '5.1.2' => true,
-        ),
-        'SplTempFileObject' => array(
-            '5.1.1' => false,
-            '5.1.2' => true,
-        ),
-        'XMLWriter' => array(
-            '5.1.1' => false,
-            '5.1.2' => true,
-        ),
-
-        'DateTime' => array(
+        'DateTime' => [
             '5.1' => false,
             '5.2' => true,
-        ),
-        'DateTimeZone' => array(
+        ],
+        'DateTimeZone' => [
             '5.1' => false,
             '5.2' => true,
-        ),
-        'RegexIterator' => array(
+        ],
+        'RegexIterator' => [
+            '5.1'       => false,
+            '5.2'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveRegexIterator' => [
+            '5.1'       => false,
+            '5.2'       => true,
+            'extension' => 'spl',
+        ],
+        'ReflectionFunctionAbstract' => [
+            '5.1'       => false,
+            '5.2'       => true,
+            'extension' => 'reflection',
+        ],
+        'ZipArchive' => [
             '5.1' => false,
             '5.2' => true,
-        ),
-        'RecursiveRegexIterator' => array(
-            '5.1' => false,
-            '5.2' => true,
-        ),
-        'ReflectionFunctionAbstract' => array(
-            '5.1' => false,
-            '5.2' => true,
-        ),
-        'ZipArchive' => array(
-            '5.1' => false,
-            '5.2' => true,
-        ),
+        ],
 
-        'Closure' => array(
+        'Closure' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'DateInterval' => array(
+        ],
+        'DateInterval' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'DatePeriod' => array(
+        ],
+        'DatePeriod' => [
             '5.2' => false,
             '5.3' => true,
-        ),
-        'finfo' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'Collator' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'NumberFormatter' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'Locale' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'Normalizer' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'MessageFormatter' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'IntlDateFormatter' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'Phar' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'PharData' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'PharFileInfo' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'FilesystemIterator' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'GlobIterator' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'MultipleIterator' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'RecursiveTreeIterator' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplDoublyLinkedList' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplFixedArray' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplHeap' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplMaxHeap' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplMinHeap' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplObjectStorage' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplPriorityQueue' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplQueue' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
-        'SplStack' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
+        ],
+        'finfo' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'fileinfo',
+        ],
+        'Collator' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'intl',
+        ],
+        'NumberFormatter' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'intl',
+        ],
+        'Locale' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'intl',
+        ],
+        'Normalizer' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'intl',
+        ],
+        'MessageFormatter' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlDateFormatter' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'intl',
+        ],
+        'Phar' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'phar',
+        ],
+        'PharData' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'phar',
+        ],
+        'PharFileInfo' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'phar',
+        ],
+        'FilesystemIterator' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'GlobIterator' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'MultipleIterator' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveTreeIterator' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplDoublyLinkedList' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplFixedArray' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplHeap' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplMaxHeap' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplMinHeap' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplPriorityQueue' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplQueue' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SplStack' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'spl',
+        ],
+        'SQLite3' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'sqlite3',
+        ],
+        'SQLite3Stmt' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'sqlite3',
+        ],
+        'SQLite3Result' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'sqlite3',
+        ],
 
-        'ResourceBundle' => array(
-            '5.3.1' => false,
-            '5.3.2' => true,
-        ),
+        'ResourceBundle' => [
+            '5.3.1'     => false,
+            '5.3.2'     => true,
+            'extension' => 'intl',
+        ],
 
-        'CallbackFilterIterator' => array(
+        'CallbackFilterIterator' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'spl',
+        ],
+        'RecursiveCallbackFilterIterator' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'spl',
+        ],
+        'ReflectionZendExtension' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'reflection',
+        ],
+        'SessionHandler' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'RecursiveCallbackFilterIterator' => array(
+        ],
+        'SNMP' => [
             '5.3' => false,
             '5.4' => true,
-        ),
-        'ReflectionZendExtension' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
-        'SessionHandler' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
-        'SNMP' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
-        'Transliterator' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
-        'Spoofchecker' => array(
-            '5.3' => false,
-            '5.4' => true,
-        ),
+        ],
+        'Transliterator' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'intl',
+        ],
+        'Spoofchecker' => [
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'intl',
+        ],
 
-        'Generator' => array(
+        'Generator' => [
             '5.4' => false,
             '5.5' => true,
-        ),
-        'CURLFile' => array(
+        ],
+        'CURLFile' => [
             '5.4' => false,
             '5.5' => true,
-        ),
-        'DateTimeImmutable' => array(
+        ],
+        'DateTimeImmutable' => [
             '5.4' => false,
             '5.5' => true,
-        ),
-        'IntlCalendar' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
-        'IntlGregorianCalendar' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
-        'IntlTimeZone' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
-        'IntlBreakIterator' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
-        'IntlRuleBasedBreakIterator' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
-        'IntlCodePointBreakIterator' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
-        'UConverter' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
+        ],
+        'IntlCalendar' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlGregorianCalendar' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlTimeZone' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlBreakIterator' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlRuleBasedBreakIterator' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlCodePointBreakIterator' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlPartsIterator' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'IntlIterator' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
+        'UConverter' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
 
-        'GMP' => array(
+        'GMP' => [
             '5.5' => false,
             '5.6' => true,
-        ),
+        ],
 
-        'IntlChar' => array(
-            '5.6' => false,
-            '7.0' => true,
-        ),
-        'ReflectionType' => array(
-            '5.6' => false,
-            '7.0' => true,
-        ),
-        'ReflectionGenerator' => array(
-            '5.6' => false,
-            '7.0' => true,
-        ),
+        'IntlChar' => [
+            '5.6'       => false,
+            '7.0'       => true,
+            'extension' => 'intl',
+        ],
+        'ReflectionType' => [
+            '5.6'       => false,
+            '7.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionGenerator' => [
+            '5.6'       => false,
+            '7.0'       => true,
+            'extension' => 'reflection',
+        ],
 
-        'ReflectionClassConstant' => array(
-            '7.0' => false,
-            '7.1' => true,
-        ),
+        'ReflectionClassConstant' => [
+            '7.0'       => false,
+            '7.1'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionNamedType' => [
+            '7.0'       => false,
+            '7.1'       => true,
+            'extension' => 'reflection',
+        ],
 
-        'FFI' => array(
+        'HashContext' => [
+            '7.1'       => false,
+            '7.2'       => true,
+            'extension' => 'hash',
+        ],
+
+        'FFI' => [
+            '7.3'       => false,
+            '7.4'       => true,
+            'extension' => 'ffi',
+        ],
+        'FFI\CData' => [
+            '7.3'       => false,
+            '7.4'       => true,
+            'extension' => 'ffi',
+        ],
+        'FFI\CType' => [
+            '7.3'       => false,
+            '7.4'       => true,
+            'extension' => 'ffi',
+        ],
+        'ReflectionReference' => [
+            '7.3'       => false,
+            '7.4'       => true,
+            'extension' => 'reflection',
+        ],
+        'WeakReference' => [
             '7.3' => false,
             '7.4' => true,
-        ),
-        'FFI\CData' => array(
-            '7.3' => false,
-            '7.4' => true,
-        ),
-        'FFI\CType' => array(
-            '7.3' => false,
-            '7.4' => true,
-        ),
-        'ReflectionReference' => array(
-            '7.3' => false,
-            '7.4' => true,
-        ),
-        'WeakReference' => array(
-            '7.3' => false,
-            '7.4' => true,
-        ),
-    );
+        ],
+
+        'Attribute' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+        'PhpToken' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+        'ReflectionUnionType' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+        'WeakMap' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+        'OCICollection' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+        'OCILob' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+
+        'IntlDatePatternGenerator' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'Fiber' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+        'ReflectionFiber' => [
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'reflection',
+        ],
+        'CURLStringFile' => [
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'curl',
+        ],
+    ];
 
     /**
      * A list of new Exception classes, not present in older versions.
@@ -435,222 +814,246 @@ class NewClassesSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => bool))
      */
-    protected $newExceptions = array(
-        'com_exception' => array(
+    protected $newExceptions = [
+        'com_exception' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'DOMException' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
-        'Exception' => array(
+        ],
+        'DOMException' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'dom',
+        ],
+        'Exception' => [
             // According to the docs introduced in PHP 5.1, but this appears to be.
             // an error.  Class was introduced with try/catch keywords in PHP 5.0.
             '4.4' => false,
             '5.0' => true,
-        ),
-        'ReflectionException' => array(
+        ],
+        'ReflectionException' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'reflection',
+        ],
+        'SoapFault' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'soap',
+        ],
+        'SQLiteException' => [
             '4.4' => false,
             '5.0' => true,
-        ),
-        'SoapFault' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
-        'SQLiteException' => array(
-            '4.4' => false,
-            '5.0' => true,
-        ),
+        ],
+        'mysqli_sql_exception' => [
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'mysqli',
+        ],
 
-        'ErrorException' => array(
+        'ErrorException' => [
             '5.0' => false,
             '5.1' => true,
-        ),
-        'BadFunctionCallException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'BadMethodCallException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'DomainException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'InvalidArgumentException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'LengthException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'LogicException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'mysqli_sql_exception' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'OutOfBoundsException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'OutOfRangeException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'OverflowException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'PDOException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'RangeException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'RuntimeException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'UnderflowException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
-        'UnexpectedValueException' => array(
-            '5.0' => false,
-            '5.1' => true,
-        ),
+        ],
+        'BadFunctionCallException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'BadMethodCallException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'DomainException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'InvalidArgumentException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'LengthException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'LogicException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'OutOfBoundsException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'OutOfRangeException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'OverflowException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'PDOException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'pdo',
+        ],
+        'RangeException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'RuntimeException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'UnderflowException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
+        'UnexpectedValueException' => [
+            '5.0'       => false,
+            '5.1'       => true,
+            'extension' => 'spl',
+        ],
 
-        'PharException' => array(
-            '5.2' => false,
-            '5.3' => true,
-        ),
+        'PharException' => [
+            '5.2'       => false,
+            '5.3'       => true,
+            'extension' => 'phar',
+        ],
 
-        'SNMPException' => array(
+        'SNMPException' => [
             '5.3' => false,
             '5.4' => true,
-        ),
+        ],
 
-        'IntlException' => array(
-            '5.4' => false,
-            '5.5' => true,
-        ),
+        'IntlException' => [
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'intl',
+        ],
 
-        'Error' => array(
+        'Error' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'ArithmeticError' => array(
+        ],
+        'ArithmeticError' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'AssertionError' => array(
+        ],
+        'AssertionError' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'DivisionByZeroError' => array(
+        ],
+        'DivisionByZeroError' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'ParseError' => array(
+        ],
+        'ParseError' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'TypeError' => array(
+        ],
+        'TypeError' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'ClosedGeneratorException' => array(
+        ],
+        'ClosedGeneratorException' => [
             '5.6' => false,
             '7.0' => true,
-        ),
-        'UI\Exception\InvalidArgumentException' => array(
-            '5.6' => false,
-            '7.0' => true,
-        ),
-        'UI\Exception\RuntimeException' => array(
-            '5.6' => false,
-            '7.0' => true,
-        ),
+        ],
 
-        'ArgumentCountError' => array(
+        'ArgumentCountError' => [
             '7.0' => false,
             '7.1' => true,
-        ),
+        ],
 
-        'SodiumException' => array(
+        'SodiumException' => [
             '7.1' => false,
             '7.2' => true,
-        ),
+        ],
 
-        'CompileError' => array(
+        'CompileError' => [
             '7.2' => false,
             '7.3' => true,
-        ),
-        'JsonException' => array(
-            '7.2' => false,
-            '7.3' => true,
-        ),
+        ],
+        'JsonException' => [
+            '7.2'       => false,
+            '7.3'       => true,
+            'extension' => 'json',
+        ],
 
-        'FFI\Exception' => array(
-            '7.3' => false,
-            '7.4' => true,
-        ),
-        'FFI\ParserException' => array(
-            '7.3' => false,
-            '7.4' => true,
-        ),
-    );
+        'FFI\Exception' => [
+            '7.3'       => false,
+            '7.4'       => true,
+            'extension' => 'ffi',
+        ],
+        'FFI\ParserException' => [
+            '7.3'       => false,
+            '7.4'       => true,
+            'extension' => 'ffi',
+        ],
+
+        'UnhandledMatchError' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+        'ValueError' => [
+            '7.4' => false,
+            '8.0' => true,
+        ],
+
+        'FiberError' => [
+            '8.0' => false,
+            '8.1' => true,
+        ],
+    ];
 
 
     /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @since 5.5
-     * @since 7.0.3 - Now also targets the `class` keyword to detect extended classes.
-     *              - Now also targets double colons to detect static class use.
-     * @since 7.1.4 - Now also targets anonymous classes to detect extended classes.
-     *              - Now also targets functions/closures to detect new classes used
-     *                as parameter type declarations.
-     *              - Now also targets the `catch` control structure to detect new
-     *                exception classes being caught.
-     * @since 8.2.0 Now also targets the `T_RETURN_TYPE` token to detect new classes used
-     *              as return type declarations.
+     * @since 7.0.3  - Now also targets the `class` keyword to detect extended classes.
+     *               - Now also targets double colons to detect static class use.
+     * @since 7.1.4  - Now also targets anonymous classes to detect extended classes.
+     *               - Now also targets functions/closures to detect new classes used
+     *                 as parameter type declarations.
+     *               - Now also targets the `catch` control structure to detect new
+     *                 exception classes being caught.
+     * @since 8.2.0  Now also targets the `T_RETURN_TYPE` token to detect new classes used
+     *               as return type declarations.
+     * @since 10.0.0 `T_RETURN_TYPE` token removed after PHPCS < 3.7.1 version drop.
      *
      * @return array
      */
     public function register()
     {
         // Handle case-insensitivity of class names.
-        $this->newClasses    = $this->arrayKeysToLowercase($this->newClasses);
-        $this->newExceptions = $this->arrayKeysToLowercase($this->newExceptions);
+        $this->newClasses    = \array_change_key_case($this->newClasses, \CASE_LOWER);
+        $this->newExceptions = \array_change_key_case($this->newExceptions, \CASE_LOWER);
 
         // Add the Exception classes to the Classes list.
-        $this->newClasses = array_merge($this->newClasses, $this->newExceptions);
+        $this->newClasses = \array_merge($this->newClasses, $this->newExceptions);
 
-        $targets = array(
+        $targets = [
             \T_NEW,
             \T_CLASS,
+            \T_ANON_CLASS,
+            \T_VARIABLE,
             \T_DOUBLE_COLON,
-            \T_FUNCTION,
-            \T_CLOSURE,
             \T_CATCH,
-        );
+        ];
 
-        if (\defined('T_ANON_CLASS')) {
-            $targets[] = \T_ANON_CLASS;
-        }
-
-        if (\defined('T_RETURN_TYPE')) {
-            $targets[] = \T_RETURN_TYPE;
-        }
+        $targets += Collections::functionDeclarationTokens();
 
         return $targets;
     }
@@ -661,9 +1064,9 @@ class NewClassesSniff extends AbstractNewFeatureSniff
      *
      * @since 5.5
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -671,30 +1074,22 @@ class NewClassesSniff extends AbstractNewFeatureSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        switch ($tokens[$stackPtr]['type']) {
-            case 'T_FUNCTION':
-            case 'T_CLOSURE':
-                $this->processFunctionToken($phpcsFile, $stackPtr);
-
-                // Deal with older PHPCS version which don't recognize return type hints
-                // as well as newer PHPCS versions (3.3.0+) where the tokenization has changed.
-                $returnTypeHint = $this->getReturnTypeHintToken($phpcsFile, $stackPtr);
-                if ($returnTypeHint !== false) {
-                    $this->processReturnTypeToken($phpcsFile, $returnTypeHint);
-                }
+        switch ($tokens[$stackPtr]['code']) {
+            case \T_VARIABLE:
+                $this->processVariableToken($phpcsFile, $stackPtr);
                 break;
 
-            case 'T_CATCH':
+            case \T_CATCH:
                 $this->processCatchToken($phpcsFile, $stackPtr);
-                break;
-
-            case 'T_RETURN_TYPE':
-                $this->processReturnTypeToken($phpcsFile, $stackPtr);
                 break;
 
             default:
                 $this->processSingularToken($phpcsFile, $stackPtr);
                 break;
+        }
+
+        if (isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === true) {
+            $this->processFunctionToken($phpcsFile, $stackPtr);
         }
     }
 
@@ -704,9 +1099,9 @@ class NewClassesSniff extends AbstractNewFeatureSniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -715,13 +1110,13 @@ class NewClassesSniff extends AbstractNewFeatureSniff
         $tokens      = $phpcsFile->getTokens();
         $FQClassName = '';
 
-        if ($tokens[$stackPtr]['type'] === 'T_NEW') {
+        if ($tokens[$stackPtr]['code'] === \T_NEW) {
             $FQClassName = $this->getFQClassNameFromNewToken($phpcsFile, $stackPtr);
 
-        } elseif ($tokens[$stackPtr]['type'] === 'T_CLASS' || $tokens[$stackPtr]['type'] === 'T_ANON_CLASS') {
+        } elseif ($tokens[$stackPtr]['code'] === \T_CLASS || $tokens[$stackPtr]['code'] === \T_ANON_CLASS) {
             $FQClassName = $this->getFQExtendedClassName($phpcsFile, $stackPtr);
 
-        } elseif ($tokens[$stackPtr]['type'] === 'T_DOUBLE_COLON') {
+        } elseif ($tokens[$stackPtr]['code'] === \T_DOUBLE_COLON) {
             $FQClassName = $this->getFQClassNameFromDoubleColonToken($phpcsFile, $stackPtr);
         }
 
@@ -729,17 +1124,17 @@ class NewClassesSniff extends AbstractNewFeatureSniff
             return;
         }
 
-        $className   = substr($FQClassName, 1); // Remove global namespace indicator.
-        $classNameLc = strtolower($className);
+        $className   = \substr($FQClassName, 1); // Remove global namespace indicator.
+        $classNameLc = \strtolower($className);
 
         if (isset($this->newClasses[$classNameLc]) === false) {
             return;
         }
 
-        $itemInfo = array(
+        $itemInfo = [
             'name'   => $className,
             'nameLc' => $classNameLc,
-        );
+        ];
         $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
     }
 
@@ -748,34 +1143,114 @@ class NewClassesSniff extends AbstractNewFeatureSniff
      * Processes this test for when a function token is encountered.
      *
      * - Detect new classes when used as a parameter type declaration.
+     * - Detect new classes when used as a return type declaration.
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
     private function processFunctionToken(File $phpcsFile, $stackPtr)
     {
-        // Retrieve typehints stripped of global NS indicator and/or nullable indicator.
-        $typeHints = $this->getTypeHintsFromFunctionDeclaration($phpcsFile, $stackPtr);
-        if (empty($typeHints) || \is_array($typeHints) === false) {
+        /*
+         * Check parameter type declarations.
+         */
+        $parameters = FunctionDeclarations::getParameters($phpcsFile, $stackPtr);
+        if (empty($parameters) === false && \is_array($parameters) === true) {
+            foreach ($parameters as $param) {
+                if ($param['type_hint'] === '') {
+                    continue;
+                }
+
+                $this->checkTypeDeclaration($phpcsFile, $param['type_hint_token'], $param['type_hint']);
+            }
+        }
+
+        /*
+         * Check return type declarations.
+         */
+        $properties = FunctionDeclarations::getProperties($phpcsFile, $stackPtr);
+        if ($properties['return_type'] === '') {
             return;
         }
 
-        foreach ($typeHints as $hint) {
+        $this->checkTypeDeclaration($phpcsFile, $properties['return_type_token'], $properties['return_type']);
+    }
 
-            $typeHintLc = strtolower($hint);
 
-            if (isset($this->newClasses[$typeHintLc]) === true) {
-                $itemInfo = array(
-                    'name'   => $hint,
-                    'nameLc' => $typeHintLc,
-                );
-                $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+    /**
+     * Processes this test for when a variable token is encountered.
+     *
+     * - Detect new classes when used as a property type declaration.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
+     *
+     * @return void
+     */
+    private function processVariableToken(File $phpcsFile, $stackPtr)
+    {
+        try {
+            $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
+        } catch (RuntimeException $e) {
+            // Not a class property.
+            return;
+        }
+
+        if ($properties['type'] === '') {
+            return;
+        }
+
+        $this->checkTypeDeclaration($phpcsFile, $properties['type_token'], $properties['type']);
+    }
+
+
+    /**
+     * Processes a type declaration.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile  The file being scanned.
+     * @param int                         $stackPtr   The position of the current token in
+     *                                                the stack passed in $tokens.
+     * @param string                      $typeString The type declaration.
+     *
+     * @return void
+     */
+    private function checkTypeDeclaration($phpcsFile, $stackPtr, $typeString)
+    {
+        // Strip off potential nullable indication.
+        $typeString = \ltrim($typeString, '?');
+        $types      = \preg_split('`[|&]`', $typeString, -1, \PREG_SPLIT_NO_EMPTY);
+
+        if (empty($types) === true) {
+            return;
+        }
+
+        foreach ($types as $type) {
+            // Strip off potential (global) namespace indication.
+            $type = \ltrim($type, '\\');
+
+            if ($type === '') {
+                return;
             }
+
+            $typeLc = \strtolower($type);
+            if (isset($this->newClasses[$typeLc]) === false) {
+                return;
+            }
+
+            $itemInfo = [
+                'name'   => $type,
+                'nameLc' => $typeLc,
+            ];
+            $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
         }
     }
 
@@ -787,127 +1262,90 @@ class NewClassesSniff extends AbstractNewFeatureSniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
     private function processCatchToken(File $phpcsFile, $stackPtr)
     {
-        $tokens = $phpcsFile->getTokens();
-
-        // Bow out during live coding.
-        if (isset($tokens[$stackPtr]['parenthesis_opener'], $tokens[$stackPtr]['parenthesis_closer']) === false) {
+        try {
+            $exceptions = ControlStructures::getCaughtExceptions($phpcsFile, $stackPtr);
+        } catch (RuntimeException $e) {
+            // Parse error or live coding.
             return;
         }
 
-        $opener = $tokens[$stackPtr]['parenthesis_opener'];
-        $closer = ($tokens[$stackPtr]['parenthesis_closer'] + 1);
-        $name   = '';
-        $listen = array(
-            // Parts of a (namespaced) class name.
-            \T_STRING              => true,
-            \T_NS_SEPARATOR        => true,
-            // End/split tokens.
-            \T_VARIABLE            => false,
-            \T_BITWISE_OR          => false,
-            \T_CLOSE_CURLY_BRACKET => false, // Shouldn't be needed as we expect a var before this.
-        );
+        if (empty($exceptions) === true) {
+            return;
+        }
 
-        for ($i = ($opener + 1); $i < $closer; $i++) {
-            if (isset($listen[$tokens[$i]['code']]) === false) {
-                continue;
-            }
+        foreach ($exceptions as $exception) {
+            // Strip off potential (global) namespace indication.
+            $name   = \ltrim($exception['type'], '\\');
+            $nameLC = \strtolower($name);
 
-            if ($listen[$tokens[$i]['code']] === true) {
-                $name .= $tokens[$i]['content'];
-                continue;
-            } else {
-                if (empty($name) === true) {
-                    // Weird, we should have a name by the time we encounter a variable or |.
-                    // So this may be the closer.
-                    continue;
-                }
-
-                $name   = ltrim($name, '\\');
-                $nameLC = strtolower($name);
-
-                if (isset($this->newExceptions[$nameLC]) === true) {
-                    $itemInfo = array(
-                        'name'   => $name,
-                        'nameLc' => $nameLC,
-                    );
-                    $this->handleFeature($phpcsFile, $i, $itemInfo);
-                }
-
-                // Reset for a potential multi-catch.
-                $name = '';
+            if (isset($this->newExceptions[$nameLC]) === true) {
+                $itemInfo = [
+                    'name'   => $name,
+                    'nameLc' => $nameLC,
+                ];
+                $this->handleFeature($phpcsFile, $exception['type_token'], $itemInfo);
             }
         }
     }
 
 
     /**
-     * Processes this test for when a return type token is encountered.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error for a matched item.
      *
-     * - Detect new classes when used as a return type declaration.
+     * @since 10.0.0
      *
-     * @since 8.2.0
-     *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
      *
      * @return void
      */
-    private function processReturnTypeToken(File $phpcsFile, $stackPtr)
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        $returnTypeHint = $this->getReturnTypeHintName($phpcsFile, $stackPtr);
-        if (empty($returnTypeHint)) {
+        $itemArray   = $this->newClasses[$itemInfo['nameLc']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+
+        if (empty($versionInfo['not_in_version'])
+            || $this->supportsBelow($versionInfo['not_in_version']) === false
+        ) {
             return;
         }
 
-        $returnTypeHint   = ltrim($returnTypeHint, '\\');
-        $returnTypeHintLc = strtolower($returnTypeHint);
-
-        if (isset($this->newClasses[$returnTypeHintLc]) === false) {
-            return;
-        }
-
-        // Still here ? Then this is a return type declaration using a new class.
-        $itemInfo = array(
-            'name'   => $returnTypeHint,
-            'nameLc' => $returnTypeHintLc,
-        );
-        $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+        $this->addError($phpcsFile, $stackPtr, $itemInfo, $versionInfo);
     }
 
 
     /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
+     * Generates the error for this item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @param array $itemInfo Base information about the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
      *
-     * @return array Version and other information about the item.
+     * @return void
      */
-    public function getItemArray(array $itemInfo)
+    protected function addError(File $phpcsFile, $stackPtr, array $itemInfo, array $versionInfo)
     {
-        return $this->newClasses[$itemInfo['nameLc']];
-    }
+        // Overrule the default message template.
+        $this->msgTemplate = 'The built-in class %s is not present in PHP version %s or earlier';
 
+        $msgInfo = $this->getMessageInfo($itemInfo['name'], $itemInfo['name'], $versionInfo);
 
-    /**
-     * Get the error message template for this sniff.
-     *
-     * @since 7.1.0
-     *
-     * @return string
-     */
-    protected function getErrorMsgTemplate()
-    {
-        return 'The built-in class ' . parent::getErrorMsgTemplate();
+        $phpcsFile->addError($msgInfo['message'], $stackPtr, $msgInfo['errorcode'], $msgInfo['data']);
     }
 }

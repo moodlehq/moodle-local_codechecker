@@ -209,3 +209,27 @@ preg_replace("/double-quoted/$e", $Replace, $Source); // Ok.
 // https://wordpress.org/support/topic/false-positive-preg_replace-e-modifier/
 $code = preg_replace("'(?<![\$.a-zA-Z0-9_])while\('", '3#(', $code); // Ok.
 $code = preg_replace("'(?<![\$.a-zA-Z0-9_])while\('e", '3#(', $code); // Bad.
+
+// Verify support for heredocs and nowdocs.
+preg_filter(<<<EOD
+`
+  multi
+  line[r]
+`x{$mod['e']}
+EOD
+    , $replace, $source); // OK.
+
+preg_filter(<<<EOD
+`
+  multi$text
+  line[r]
+`xe
+EOD
+    , $replace, $source); // Bad.
+
+// Safeguard support for PHP 8 named parameters.
+preg_replace( subject: '/pattern/e', pattern: '/pattern/', count: $count, replacement: $replacement, limit: $limit ); // OK.
+preg_replace( limit: $limit, count: $count, pattern: '/some text/emS', replacement: $replacement, subject: $subject ); // Error.
+
+// Test handling of more complex embedded variables and expressions.
+preg_replace("/double-quoted/${e->{$z}}", $Replace, $Source); // Ok.

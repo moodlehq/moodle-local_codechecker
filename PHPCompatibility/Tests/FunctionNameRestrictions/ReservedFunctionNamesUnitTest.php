@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -26,18 +26,19 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
 {
 
     /**
-     * testReservedFunctionNames
+     * Test that double underscore prefixed functions/methods which aren't reserved names trigger an error.
      *
      * @dataProvider dataReservedFunctionNames
      *
-     * @param int $line The line number.
+     * @param int    $line The line number.
+     * @param string $type Either 'function' or 'method'.
      *
      * @return void
      */
-    public function testReservedFunctionNames($line)
+    public function testReservedFunctionNames($line, $type)
     {
         $file = $this->sniffFile(__FILE__);
-        $this->assertWarning($file, $line, ' is discouraged; PHP has reserved all method names with a double underscore prefix for future use.');
+        $this->assertWarning($file, $line, " is discouraged; PHP has reserved all $type names with a double underscore prefix for future use.");
     }
 
     /**
@@ -49,40 +50,49 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
      */
     public function dataReservedFunctionNames()
     {
-        return array(
-            array(20),
-            array(21),
-            array(22),
+        return [
+            [20, 'method'],
+            [21, 'method'],
+            [22, 'method'],
 
-            array(25),
-            array(26),
-            array(27),
-            array(28),
-            array(29),
-            array(30),
-            array(31),
-            array(32),
-            array(33),
-            array(34),
-            array(35),
-            array(37),
-            array(38),
-            array(39),
-            array(41),
-            array(42),
+            [25, 'function'],
+            [26, 'function'],
+            [27, 'function'],
+            [28, 'function'],
+            [29, 'function'],
+            [30, 'function'],
+            [31, 'function'],
+            [32, 'function'],
+            [33, 'function'],
+            [34, 'function'],
+            [35, 'function'],
+            [37, 'function'],
+            [38, 'function'],
+            [39, 'function'],
+            [41, 'function'],
+            [42, 'function'],
 
-            array(92),
-            array(93),
-            array(94),
+            [92, 'method'],
+            [93, 'method'],
+            [94, 'method'],
 
-            array(107),
-            array(109),
-        );
+            [107, 'method'],
+            [109, 'method'],
+
+            [139, 'function'],
+            [142, 'method'],
+
+            [149, 'function'],
+            [150, 'function'],
+
+            [160, 'function'],
+            [161, 'function'],
+        ];
     }
 
 
     /**
-     * testNoFalsePositives
+     * Verify the sniff doesn't throw false positives.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -105,58 +115,64 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(5),
-            array(6),
-            array(7),
-            array(8),
-            array(9),
-            array(10),
-            array(11),
-            array(12),
-            array(13),
-            array(14),
-            array(15),
-            array(16),
-            array(17),
-            array(18),
-            array(19),
+        return [
+            [5],
+            [6],
+            [7],
+            [8],
+            [9],
+            [10],
+            [11],
+            [12],
+            [13],
+            [14],
+            [15],
+            [16],
+            [17],
+            [18],
+            [19],
 
-            array(40),
-            array(50),
-            array(51),
-            array(52),
-            array(54),
+            [40],
+            [46],
+            [50],
+            [51],
+            [52],
+            [54],
 
-            array(58),
-            array(63),
-            array(66),
-            array(69),
-            array(72),
+            [58],
+            [63],
+            [66],
+            [69],
+            [72],
 
-            array(77),
-            array(78),
-            array(79),
-            array(80),
-            array(81),
-            array(82),
-            array(83),
-            array(84),
-            array(85),
-            array(86),
-            array(87),
-            array(88),
-            array(89),
-            array(90),
-            array(91),
+            [77],
+            [78],
+            [79],
+            [80],
+            [81],
+            [82],
+            [83],
+            [84],
+            [85],
+            [86],
+            [87],
+            [88],
+            [89],
+            [90],
+            [91],
 
-            array(98),
-            array(101),
-            array(102),
+            [98],
+            [101],
+            [102],
 
-            array(124),
-            array(135),
-        );
+            [124],
+            [135],
+
+            [148],
+
+            [156],
+            [157],
+        ];
     }
 
 

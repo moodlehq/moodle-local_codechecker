@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,9 @@
 namespace PHPCompatibility\Sniffs\UseDeclarations;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\UseStatements;
 
 /**
  * Detect importing constants and functions via a `use` statement.
@@ -39,10 +40,10 @@ class NewUseConstFunctionSniff extends Sniff
      *
      * @var array(string => string)
      */
-    protected $validUseNames = array(
+    protected $validUseNames = [
         'const'    => true,
         'function' => true,
-    );
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -53,7 +54,7 @@ class NewUseConstFunctionSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_USE);
+        return [\T_USE];
     }
 
 
@@ -62,15 +63,19 @@ class NewUseConstFunctionSniff extends Sniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
         if ($this->supportsBelow('5.5') !== true) {
+            return;
+        }
+
+        if (UseStatements::isImportUse($phpcsFile, $stackPtr) === false) {
             return;
         }
 
@@ -82,7 +87,7 @@ class NewUseConstFunctionSniff extends Sniff
             return;
         }
 
-        if (isset($this->validUseNames[strtolower($tokens[$nextNonEmpty]['content'])]) === false) {
+        if (isset($this->validUseNames[\strtolower($tokens[$nextNonEmpty]['content'])]) === false) {
             // Not a `use const` or `use function` statement.
             return;
         }

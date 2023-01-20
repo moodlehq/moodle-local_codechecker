@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,15 +49,16 @@ class ForbiddenGlobalVariableVariableUnitTest extends BaseSniffTest
      */
     public function dataGlobalVariableVariable()
     {
-        return array(
-            array(21),
-            array(22),
-            array(23),
-            array(24),
-            array(25),
-            array(29),
-            array(31),
-        );
+        return [
+            [21],
+            [22],
+            [23],
+            [24],
+            [25],
+            [29],
+            [31],
+            [55],
+        ];
     }
 
 
@@ -85,24 +86,24 @@ class ForbiddenGlobalVariableVariableUnitTest extends BaseSniffTest
      */
     public function dataGlobalNonBareVariable()
     {
-        return array(
-            array(11), // x2
-            array(17),
-            array(18),
-            array(35),
-            array(36),
-            array(37),
-            array(38),
-            array(39),
-            array(42),
-            array(43),
-            array(44),
-            array(45),
-            array(46),
-            array(47),
-            array(51),
-            array(52),
-        );
+        return [
+            [11], // x2
+            [17],
+            [18],
+            [35],
+            [36],
+            [37],
+            [38],
+            [39],
+            [42],
+            [43],
+            [44],
+            [45],
+            [46],
+            [47],
+            [51],
+            [52],
+        ];
     }
 
 
@@ -130,14 +131,14 @@ class ForbiddenGlobalVariableVariableUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(8),
-            array(14),
-            array(15),
-            array(16),
-            array(50),
-            array(55),
-        );
+        return [
+            [8],
+            [14],
+            [15],
+            [16],
+            [50],
+            [58],
+        ];
     }
 
 

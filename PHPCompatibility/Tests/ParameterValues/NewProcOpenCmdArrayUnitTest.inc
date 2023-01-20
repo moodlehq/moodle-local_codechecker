@@ -21,7 +21,7 @@ $proc = proc_open(
         'php',
         '-r',
         'echo "Hello World\n";',
-    ),
+    ), // Not using escapeshellarg() as PHP will do the escaping.
     $descriptors,
     $pipes
 );
@@ -31,9 +31,32 @@ $proc = proc_open(['php', '-r', escapeshellarg($echo)], $descriptors, $pipes);
 $proc = proc_open(
     array(
         'phpcs',
-        '--standard=' . escapeshellarg($standard),
+        '--standard=' . escapeshellarg($standard), // Escaping.
         './path/to/' . escapeshellarg($file),
     ),
     $descriptors,
     $pipes
 );
+
+// Safeguard support for PHP 8 named parameters.
+$proc = proc_open(
+    descriptor_spec: array(
+        0 => array("pipe", "r"),
+        1 => array("pipe", "w"),
+        2 => array("file", "/tmp/error-output.txt", "a"),
+    ),
+    command: '"findstr" "search" "filename.txt"',
+    pipes: $pipes,
+    env_vars: $env_vars
+); // OK.
+
+$proc = proc_open(
+    pipes: $pipes,
+    env_vars: $env_vars,
+    descriptor_spec: array(
+        0 => array("pipe", "r"),
+        1 => array("pipe", "w"),
+        2 => array("file", "/tmp/error-output.txt", "a"),
+    ),
+    command: array('php', '-r', escapeshellarg($echo)),
+); // Error + Warning.

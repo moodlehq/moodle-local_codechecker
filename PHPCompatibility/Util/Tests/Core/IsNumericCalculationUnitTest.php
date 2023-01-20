@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -40,7 +40,7 @@ class IsNumericCalculationUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken($commentString, \T_EQUAL) + 1);
         $end   = ($this->getTargetToken($commentString, \T_SEMICOLON) - 1);
 
-        $result = $this->helperClass->isNumericCalculation($this->phpcsFile, $start, $end);
+        $result = self::$helperClass->isNumericCalculation(self::$phpcsFile, $start, $end);
         $this->assertSame($isCalc, $result);
     }
 
@@ -53,20 +53,20 @@ class IsNumericCalculationUnitTest extends CoreMethodTestFrame
      */
     public function dataIsNumericCalculation()
     {
-        return array(
-            array('/* Case A1 */', false),
-            array('/* Case A2 */', false),
-            array('/* Case A3 */', false),
-            array('/* Case A4 */', false),
-            array('/* Case A5 */', false),
+        return [
+            ['/* test A1 */', false],
+            ['/* test A2 */', false],
+            ['/* test A3 */', false],
+            ['/* test A4 */', false],
+            ['/* test A5 */', false],
 
-            array('/* Case B1 */', true),
-            array('/* Case B2 */', true),
-            array('/* Case B3 */', true),
-            array('/* Case B4 */', true),
-            array('/* Case B5 */', true),
-            array('/* Case B6 */', true),
-            array('/* Case B7 */', true),
-        );
+            ['/* test B1 */', true],
+            ['/* test B2 */', true],
+            ['/* test B3 */', true],
+            ['/* test B4 */', true],
+            ['/* test B5 */', true],
+            ['/* test B6 */', true],
+            ['/* test B7 */', true],
+        ];
     }
 }

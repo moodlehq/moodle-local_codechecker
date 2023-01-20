@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,10 @@
 namespace PHPCompatibility\Sniffs\Variables;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\GetTokensAsString;
 
 /**
  * Detect use of `global` with variable variables, support for which has been removed in PHP 7.0.
@@ -35,7 +37,7 @@ class ForbiddenGlobalVariableVariableSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_GLOBAL);
+        return [\T_GLOBAL];
     }
 
     /**
@@ -43,9 +45,9 @@ class ForbiddenGlobalVariableVariableSniff extends Sniff
      *
      * @since 7.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -56,7 +58,7 @@ class ForbiddenGlobalVariableVariableSniff extends Sniff
         }
 
         $tokens         = $phpcsFile->getTokens();
-        $endOfStatement = $phpcsFile->findNext(array(\T_SEMICOLON, \T_CLOSE_TAG), ($stackPtr + 1));
+        $endOfStatement = $phpcsFile->findNext([\T_SEMICOLON, \T_CLOSE_TAG], ($stackPtr + 1));
         if ($endOfStatement === false) {
             // No semi-colon - live coding.
             return;
@@ -67,8 +69,8 @@ class ForbiddenGlobalVariableVariableSniff extends Sniff
             $nextComma   = $phpcsFile->findNext(\T_COMMA, $ptr, $endOfStatement, false, null, true);
             $varEnd      = ($nextComma === false) ? $endOfStatement : $nextComma;
             $variable    = $phpcsFile->findNext(\T_VARIABLE, $ptr, $varEnd);
-            $varString   = trim($phpcsFile->getTokensAsString($ptr, ($varEnd - $ptr)));
-            $data        = array($varString);
+            $varString   = GetTokensAsString::noEmpties($phpcsFile, $ptr, ($varEnd - 1));
+            $data        = [$varString];
 
             if ($variable !== false) {
 
@@ -79,7 +81,8 @@ class ForbiddenGlobalVariableVariableSniff extends Sniff
                     $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($variable + 1), $varEnd, true);
 
                     if ($next !== false
-                        && \in_array($tokens[$next]['code'], array(\T_OPEN_SQUARE_BRACKET, \T_OBJECT_OPERATOR, \T_DOUBLE_COLON), true) === true
+                        && (isset(Collections::objectOperators()[$tokens[$next]['code']]) === true
+                            || $tokens[$next]['code'] === \T_OPEN_SQUARE_BRACKET)
                     ) {
                         $phpcsFile->addError(
                             'Global with variable variables is not allowed since PHP 7.0. Found %s',

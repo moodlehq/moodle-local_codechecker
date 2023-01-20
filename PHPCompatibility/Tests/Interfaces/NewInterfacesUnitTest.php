@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -19,9 +19,6 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group interfaces
  *
  * @covers \PHPCompatibility\Sniffs\Interfaces\NewInterfacesSniff
- * @covers \PHPCompatibility\Sniff::getReturnTypeHintName
- * @covers \PHPCompatibility\Sniff::getReturnTypeHintToken
- * @covers \PHPCompatibility\Sniff::getTypeHintsFromFunctionDeclaration
  *
  * @since 7.0.3
  */
@@ -66,23 +63,24 @@ class NewInterfacesUnitTest extends BaseSniffTest
      */
     public function dataNewInterface()
     {
-        return array(
-            array('Reflector', '4.4', array(75), '5.0'),
-            array('Traversable', '4.4', array(35, 50, 60, 71, 79), '5.0'),
-            array('Countable', '5.0', array(3, 17, 41), '5.1'),
-            array('OuterIterator', '5.0', array(4, 42, 65), '5.1'),
-            array('RecursiveIterator', '5.0', array(5, 43, 65), '5.1'),
-            array('SeekableIterator', '5.0', array(6, 17, 28, 44), '5.1'),
-            array('Serializable', '5.0', array(7, 29, 45, 55, 70), '5.1'),
-            array('SplObserver', '5.0', array(11, 46, 65), '5.1'),
-            array('SplSubject', '5.0', array(12, 17, 47, 69), '5.1'),
-            array('JsonSerializable', '5.3', array(13, 48), '5.4'),
-            array('SessionHandlerInterface', '5.3', array(14, 49), '5.4'),
-            array('DateTimeInterface', '5.4', array(36, 51, 61, 80), '5.5'),
-            array('SessionIdInterface', '5.5.0', array(89), '5.6', '5.5'),
-            array('Throwable', '5.6', array(37, 52, 62), '7.0'),
-            array('SessionUpdateTimestampHandlerInterface', '5.6', array(90), '7.0'),
-        );
+        return [
+            ['Reflector', '4.4', [75, 115, 162], '5.0'],
+            ['Traversable', '4.4', [35, 50, 60, 71, 79, 162], '5.0'],
+            ['Countable', '5.0', [3, 17, 41, 151], '5.1'],
+            ['OuterIterator', '5.0', [4, 42, 65, 152], '5.1'],
+            ['RecursiveIterator', '5.0', [5, 43, 65, 152], '5.1'],
+            ['SeekableIterator', '5.0', [6, 17, 28, 44, 161], '5.1'],
+            ['Serializable', '5.0', [7, 29, 45, 55, 70, 118, 124], '5.1'],
+            ['SplObserver', '5.0', [11, 46, 65, 151], '5.1'],
+            ['SplSubject', '5.0', [12, 17, 47, 69, 161], '5.1'],
+            ['JsonSerializable', '5.3', [13, 48, 133, 134, 153], '5.4'],
+            ['SessionHandlerInterface', '5.3', [14, 49, 145, 153], '5.4'],
+            ['DateTimeInterface', '5.4', [36, 51, 61, 80], '5.5'],
+            ['SessionIdInterface', '5.5.0', [89, 116, 144], '5.6', '5.5'],
+            ['Throwable', '5.6', [37, 52, 62, 93, 98, 103, 160], '7.0'],
+            ['SessionUpdateTimestampHandlerInterface', '5.6', [90, 140, 160], '7.0'],
+            ['Stringable', '7.4', [112], '8.0'],
+        ];
     }
 
     /**
@@ -98,7 +96,7 @@ class NewInterfacesUnitTest extends BaseSniffTest
     public function testUnsupportedMethods($line, $methodName)
     {
         $file = $this->sniffFile(__FILE__, '5.1'); // Version in which the Serializable interface was introduced.
-        $this->assertError($file, $line, "Classes that implement interface Serializable do not support the method {$methodName}(). See https://www.php.net/serializable");
+        $this->assertError($file, $line, " interface Serializable do not support the method {$methodName}(). See https://www.php.net/serializable");
     }
 
     /**
@@ -110,12 +108,45 @@ class NewInterfacesUnitTest extends BaseSniffTest
      */
     public function dataUnsupportedMethods()
     {
-        return array(
-            array(8, '__sleep'),
-            array(9, '__wakeup'),
-            array(30, '__sleep'),
-            array(31, '__wakeup'),
-        );
+        return [
+            [8, '__sleep'],
+            [9, '__wakeup'],
+            [30, '__sleep'],
+            [31, '__wakeup'],
+            [119, '__sleep'],
+            [120, '__wakeup'],
+        ];
+    }
+
+
+    /**
+     * Verify that the unsupported methods check doesn't throw false positives.
+     *
+     * @dataProvider dataNoFalsePositivesUnsupportedMethods
+     *
+     * @param array $line The line number.
+     *
+     * @return void
+     */
+    public function testNoFalsePositivesUnsupportedMethods($line)
+    {
+        $file = $this->sniffFile(__FILE__, '5.1'); // Version in which the Serializable interface was introduced.
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositivesUnsupportedMethods()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositivesUnsupportedMethods()
+    {
+        return [
+            [126],
+            [127],
+        ];
     }
 
 
@@ -158,16 +189,20 @@ class NewInterfacesUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(24),
-            array(25),
-            array(56),
-            array(57),
-            array(72),
-            array(84),
-            array(85),
-            array(86),
-        );
+        return [
+            [24],
+            [25],
+            [56],
+            [57],
+            [72],
+            [84],
+            [85],
+            [86],
+            [108],
+            [137],
+            [149],
+            [158],
+        ];
     }
 
 

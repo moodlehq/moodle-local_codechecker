@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -29,7 +29,7 @@ class LowPHPUnitTest extends BaseSniffTest
     /**
      * Sniffed file
      *
-     * @var \PHP_CodeSniffer_File
+     * @var \PHP_CodeSniffer\Files\File
      */
     protected $sniffResult;
 
@@ -44,15 +44,15 @@ class LowPHPUnitTest extends BaseSniffTest
     /**
      * Set up the test file for this unit test.
      *
+     * @before
+     *
      * @return void
      */
-    protected function setUp()
+    protected function setUpPHPCS()
     {
-        parent::setUp();
-
         // Sniff file without testVersion as all checks run independently of testVersion being set.
         $this->sniffResult = $this->sniffFile(__FILE__);
-        $this->phpVersion  = phpversion();
+        $this->phpVersion  = \phpversion();
     }
 
 
@@ -63,13 +63,13 @@ class LowPHPUnitTest extends BaseSniffTest
      */
     public function testUpgradeNotice()
     {
-        if (version_compare($this->phpVersion, LowPHPSniff::MIN_SUPPORTED_VERSION, '<')) {
+        if (\version_compare($this->phpVersion, LowPHPSniff::MIN_SUPPORTED_VERSION, '<')) {
             $this->assertError(
                 $this->sniffResult,
                 1,
                 'Please be advised that the minimum PHP version the PHPCompatibility standard supports is ' . LowPHPSniff::MIN_SUPPORTED_VERSION
             );
-        } elseif (version_compare($this->phpVersion, LowPHPSniff::MIN_RECOMMENDED_VERSION, '<')) {
+        } elseif (\version_compare($this->phpVersion, LowPHPSniff::MIN_RECOMMENDED_VERSION, '<')) {
             $this->assertWarning(
                 $this->sniffResult,
                 1,

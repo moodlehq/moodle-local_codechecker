@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -42,7 +42,7 @@ class NewFopenModesUnitTest extends BaseSniffTest
     public function testFopenMode($line, $mode, $errorVersion, $okVersion, $displayVersion = null)
     {
         $file  = $this->sniffFile(__FILE__, $errorVersion);
-        $error = sprintf(
+        $error = \sprintf(
             'Passing "%s" as the $mode to fopen() is not supported in PHP %s or lower.',
             $mode,
             isset($displayVersion) ? $displayVersion : $errorVersion
@@ -62,13 +62,13 @@ class NewFopenModesUnitTest extends BaseSniffTest
      */
     public function dataFopenMode()
     {
-        return array(
-            array(9, 'e', '7.0', '7.1', '7.0.15'),
-            array(10, 'c+', '5.2', '5.3', '5.2.5'),
-            array(11, 'c', '5.2', '5.3', '5.2.5'),
-            array(12, 'c', '5.2', '7.1', '5.2.5'), // High okVersion, to pass by the second violation.
-            array(12, 'e', '7.0', '7.1', '7.0.15'),
-        );
+        return [
+            [9, 'e', '7.0', '7.1', '7.0.15'],
+            [10, 'c+', '5.2', '5.3', '5.2.5'],
+            [11, 'c', '5.2', '5.3', '5.2.5'],
+            [12, 'c', '5.2', '7.1', '5.2.5'], // High okVersion, to pass by the second violation.
+            [12, 'e', '7.0', '7.1', '7.0.15'],
+        ];
     }
 
 
@@ -96,11 +96,17 @@ class NewFopenModesUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(4),
-            array(5),
-            array(6),
-        );
+        $data = [];
+
+        // No errors expected on the first 6 lines.
+        for ($line = 1; $line <= 6; $line++) {
+            $data[] = [$line];
+        }
+
+        $data[] = [15];
+        $data[] = [16];
+
+        return $data;
     }
 
 

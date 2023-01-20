@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -50,10 +50,10 @@ class NewShortTernaryUnitTest extends BaseSniffTest
      */
     public function dataElvisOperator()
     {
-        return array(
-            array(8),
-            array(10),
-        );
+        return [
+            [8],
+            [10],
+        ];
     }
 
 

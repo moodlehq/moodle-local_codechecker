@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,10 @@
 namespace PHPCompatibility;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Abstract class to use as a base for examining the parameter values passed to function calls.
@@ -21,6 +23,7 @@ use PHP_CodeSniffer_Tokens as Tokens;
  */
 abstract class AbstractFunctionCallParameterSniff extends Sniff
 {
+
     /**
      * Is the sniff looking for a function call or a method call ?
      *
@@ -45,24 +48,21 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
      *            Other than that, the array can have arbitrary content
      *            depending on your needs.
      */
-    protected $targetFunctions = array();
+    protected $targetFunctions = [];
 
     /**
      * List of tokens which when they preceed the $stackPtr indicate that this
      * is not a function call.
      *
+     * {@internal The object operators are added to the array in the register() method.}
+     *
      * @since 8.2.0
      *
      * @var array
      */
-    private $ignoreTokens = array(
-        \T_DOUBLE_COLON    => true,
-        \T_OBJECT_OPERATOR => true,
-        \T_FUNCTION        => true,
-        \T_NEW             => true,
-        \T_CONST           => true,
-        \T_USE             => true,
-    );
+    private $ignoreTokens = [
+        \T_NEW => true,
+    ];
 
 
     /**
@@ -74,10 +74,12 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
      */
     public function register()
     {
-        // Handle case-insensitivity of function names.
-        $this->targetFunctions = $this->arrayKeysToLowercase($this->targetFunctions);
+        $this->ignoreTokens += Collections::objectOperators();
 
-        return array(\T_STRING);
+        // Handle case-insensitivity of function names.
+        $this->targetFunctions = \array_change_key_case($this->targetFunctions, \CASE_LOWER);
+
+        return [\T_STRING];
     }
 
 
@@ -86,9 +88,9 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
@@ -101,18 +103,24 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
 
         $tokens     = $phpcsFile->getTokens();
         $function   = $tokens[$stackPtr]['content'];
-        $functionLc = strtolower($function);
+        $functionLc = \strtolower($function);
 
         if (isset($this->targetFunctions[$functionLc]) === false) {
+            return;
+        }
+
+        $nextToken = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
+        if ($nextToken === false
+            || $tokens[$nextToken]['code'] !== \T_OPEN_PARENTHESIS
+            || isset($tokens[$nextToken]['parenthesis_owner']) === true
+        ) {
             return;
         }
 
         $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
 
         if ($this->isMethod === true) {
-            if ($tokens[$prevNonEmpty]['code'] !== \T_DOUBLE_COLON
-                && $tokens[$prevNonEmpty]['code'] !== \T_OBJECT_OPERATOR
-            ) {
+            if (isset(Collections::objectOperators()[$tokens[$prevNonEmpty]['code']]) === false) {
                 // Not a call to a PHP method.
                 return;
             }
@@ -122,15 +130,18 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
                 return;
             }
 
-            if ($tokens[$prevNonEmpty]['code'] === \T_NS_SEPARATOR
-                && $tokens[$prevNonEmpty - 1]['code'] === \T_STRING
-            ) {
-                // Namespaced function.
-                return;
+            if ($tokens[$prevNonEmpty]['code'] === \T_NS_SEPARATOR) {
+                $prevPrevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($prevNonEmpty - 1), null, true);
+                if ($tokens[$prevPrevToken]['code'] === \T_STRING
+                    || $tokens[$prevPrevToken]['code'] === \T_NAMESPACE
+                ) {
+                    // Namespaced function.
+                    return;
+                }
             }
         }
 
-        $parameters = $this->getFunctionCallParameters($phpcsFile, $stackPtr);
+        $parameters = PassedParameters::getParameters($phpcsFile, $stackPtr);
 
         if (empty($parameters)) {
             return $this->processNoParameters($phpcsFile, $stackPtr, $function);
@@ -160,10 +171,10 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                   $stackPtr     The position of the current token in the stack.
-     * @param string                $functionName The token content (function name) which was matched.
-     * @param array                 $parameters   Array with information about the parameters.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token in the stack.
+     * @param string                      $functionName The token content (function name) which was matched.
+     * @param array                       $parameters   Array with information about the parameters.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
@@ -179,9 +190,9 @@ abstract class AbstractFunctionCallParameterSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                   $stackPtr     The position of the current token in the stack.
-     * @param string                $functionName The token content (function name) which was matched.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token in the stack.
+     * @param string                      $functionName The token content (function name) which was matched.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.

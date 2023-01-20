@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,8 @@
 namespace PHPCompatibility\Sniffs\Syntax;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Detect dynamic access to static methods and properties, as well as class constants.
@@ -39,9 +39,9 @@ class NewDynamicAccessToStaticSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_DOUBLE_COLON,
-        );
+        ];
     }
 
     /**
@@ -49,9 +49,9 @@ class NewDynamicAccessToStaticSniff extends Sniff
      *
      * @since 8.1.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -75,7 +75,9 @@ class NewDynamicAccessToStaticSniff extends Sniff
         if ($tokens[$prevNonEmpty]['code'] === \T_STRING) {
             $prevPrevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($prevNonEmpty - 1), null, true);
 
-            if ($tokens[$prevPrevNonEmpty]['code'] !== \T_OBJECT_OPERATOR) {
+            if ($tokens[$prevPrevNonEmpty]['code'] !== \T_OBJECT_OPERATOR
+                && $tokens[$prevPrevNonEmpty]['code'] !== \T_NULLSAFE_OBJECT_OPERATOR
+            ) {
                 return;
             }
         }

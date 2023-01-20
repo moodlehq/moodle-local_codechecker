@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -37,8 +37,8 @@ class GetFQExtendedClassNameUnitTest extends CoreMethodTestFrame
      */
     public function testGetFQExtendedClassName($commentString, $expected)
     {
-        $stackPtr = $this->getTargetToken($commentString, array(\T_CLASS, \T_INTERFACE));
-        $result   = $this->helperClass->getFQExtendedClassName($this->phpcsFile, $stackPtr);
+        $stackPtr = $this->getTargetToken($commentString, [\T_CLASS, \T_INTERFACE]);
+        $result   = self::$helperClass->getFQExtendedClassName(self::$phpcsFile, $stackPtr);
         $this->assertSame($expected, $result);
     }
 
@@ -51,24 +51,24 @@ class GetFQExtendedClassNameUnitTest extends CoreMethodTestFrame
      */
     public function dataGetFQExtendedClassName()
     {
-        return array(
-            array('/* Case 1 */', ''),
-            array('/* Case 2 */', '\DateTime'),
-            array('/* Case 3 */', '\MyTesting\DateTime'),
-            array('/* Case 4 */', '\DateTime'),
-            array('/* Case 5 */', '\MyTesting\anotherNS\DateTime'),
-            array('/* Case 6 */', '\FQNS\DateTime'),
-            array('/* Case 7 */', '\AnotherTesting\DateTime'),
-            array('/* Case 8 */', '\DateTime'),
-            array('/* Case 9 */', '\AnotherTesting\anotherNS\DateTime'),
-            array('/* Case 10 */', '\FQNS\DateTime'),
-            array('/* Case 11 */', '\DateTime'),
-            array('/* Case 12 */', '\DateTime'),
-            array('/* Case 13 */', '\Yet\More\Testing\DateTime'),
-            array('/* Case 14 */', '\Yet\More\Testing\anotherNS\DateTime'),
-            array('/* Case 15 */', '\FQNS\DateTime'),
-            array('/* Case 16 */', '\SomeInterface'),
-            array('/* Case 17 */', '\Yet\More\Testing\SomeInterface'),
-        );
+        return [
+            ['/* test 1 */', ''],
+            ['/* test 2 */', '\DateTime'],
+            ['/* test 3 */', '\MyTesting\DateTime'],
+            ['/* test 4 */', '\DateTime'],
+            ['/* test 5 */', '\MyTesting\anotherNS\DateTime'],
+            ['/* test 6 */', '\FQNS\DateTime'],
+            ['/* test 7 */', '\AnotherTesting\DateTime'],
+            ['/* test 8 */', '\DateTime'],
+            ['/* test 9 */', '\AnotherTesting\anotherNS\DateTime'],
+            ['/* test 10 */', '\FQNS\DateTime'],
+            ['/* test 11 */', '\DateTime'],
+            ['/* test 12 */', '\DateTime'],
+            ['/* test 13 */', '\Yet\More\Testing\DateTime'],
+            ['/* test 14 */', '\Yet\More\Testing\anotherNS\DateTime'],
+            ['/* test 15 */', '\FQNS\DateTime'],
+            ['/* test 16 */', '\SomeInterface'],
+            ['/* test 17 */', '\Yet\More\Testing\SomeInterface'],
+        ];
     }
 }

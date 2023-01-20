@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -94,6 +94,20 @@ class NewOperatorsUnitTest extends BaseSniffTest
 
         $file = $this->sniffFile(__FILE__, '7.4');
         $this->assertNoViolation($file, 7);
+    }
+
+    /**
+     * Nullsafe object operator.
+     *
+     * @return void
+     */
+    public function testNullsafeObjectOperator()
+    {
+        $file = $this->sniffFile(__FILE__, '7.4');
+        $this->assertError($file, 11, 'nullsafe object operator (?->) is not present in PHP version 7.4 or earlier');
+
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertNoViolation($file, 11);
     }
 
     /**

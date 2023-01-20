@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -56,14 +56,15 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
      */
     public function dataArrayDereferencing()
     {
-        return array(
-            array(3),
-            array(14),
-            array(15),
-            array(16),
-            array(28, true),
-            array(29, true),
-        );
+        return [
+            [3],
+            [14],
+            [15],
+            [16],
+            [28, true],
+            [29, true],
+            [37],
+        ];
     }
 
 
@@ -91,14 +92,14 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
      */
     public function dataArrayDereferencingUsingCurlies()
     {
-        return array(
-            array(22),
-            array(23),
-            array(24),
-            array(25),
-            array(28),
-            array(29),
-        );
+        return [
+            [22],
+            [23],
+            [24],
+            [25],
+            [28],
+            [29],
+        ];
     }
 
 
@@ -126,15 +127,15 @@ class NewFunctionArrayDereferencingUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(5),
-            array(8),
-            array(9),
-            array(10),
-            array(11),
-            array(32),
-            array(37),
-        );
+        return [
+            [5],
+            [8],
+            [9],
+            [10],
+            [11],
+            [32],
+            [40],
+        ];
     }
 
 

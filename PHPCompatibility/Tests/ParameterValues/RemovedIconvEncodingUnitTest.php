@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,13 +49,13 @@ class RemovedIconvEncodingUnitTest extends BaseSniffTest
      */
     public function dataIconvEncoding()
     {
-        return array(
-            array(14),
-            array(15),
-            array(16),
-            array(17),
-            array(18),
-        );
+        return [
+            [14],
+            [15],
+            [16],
+            [17],
+            [18],
+        ];
     }
 
 

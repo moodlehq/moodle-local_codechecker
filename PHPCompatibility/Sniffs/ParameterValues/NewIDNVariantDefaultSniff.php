@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Sniffs\ParameterValues;
 
 use PHPCompatibility\AbstractFunctionCallParameterSniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * The default value for the `$variant` parameter has changed from `INTL_IDNA_VARIANT_2003`
@@ -32,17 +33,23 @@ class NewIDNVariantDefaultSniff extends AbstractFunctionCallParameterSniff
     /**
      * Functions to check for.
      *
-     * Key is the function name, value the 1-based parameter position of
-     * the $variant parameter.
+     * Key is the function name, value an array containing the 1-based parameter position
+     * and the official name of the parameter.
      *
      * @since 9.3.0
      *
      * @var array
      */
-    protected $targetFunctions = array(
-        'idn_to_ascii' => 3,
-        'idn_to_utf8'  => 3,
-    );
+    protected $targetFunctions = [
+        'idn_to_ascii' => [
+            'position' => 3,
+            'name'     => 'variant',
+        ],
+        'idn_to_utf8' => [
+            'position' => 3,
+            'name'     => 'variant',
+        ],
+    ];
 
     /**
      * Do a version check to determine if this sniff needs to run at all.
@@ -65,27 +72,29 @@ class NewIDNVariantDefaultSniff extends AbstractFunctionCallParameterSniff
      *
      * @since 9.3.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                   $stackPtr     The position of the current token in the stack.
-     * @param string                $functionName The token content (function name) which was matched.
-     * @param array                 $parameters   Array with information about the parameters.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token in the stack.
+     * @param string                      $functionName The token content (function name) which was matched.
+     * @param array                       $parameters   Array with information about the parameters.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
      */
     public function processParameters(File $phpcsFile, $stackPtr, $functionName, $parameters)
     {
-        $functionLC = strtolower($functionName);
-        if (isset($parameters[$this->targetFunctions[$functionLC]]) === true) {
+        $functionLC  = \strtolower($functionName);
+        $paramInfo   = $this->targetFunctions[$functionLC];
+        $targetParam = PassedParameters::getParameterFromStack($parameters, $paramInfo['position'], $paramInfo['name']);
+        if ($targetParam !== false) {
             return;
         }
 
-        $error = 'The default value of the %s() $variant parameter has changed from INTL_IDNA_VARIANT_2003 to INTL_IDNA_VARIANT_UTS46 in PHP 7.4. For optimal cross-version compatibility, the $variant parameter should be explicitly set.';
+        $error = 'The default value of the %1$s() $%2$s parameter has changed from INTL_IDNA_VARIANT_2003 to INTL_IDNA_VARIANT_UTS46 in PHP 7.4. For optimal cross-version compatibility, the $%2$s parameter should be explicitly set.';
         $phpcsFile->addError(
             $error,
             $stackPtr,
             'NotSet',
-            array($functionName)
+            [$functionName, $paramInfo['name']]
         );
     }
 }

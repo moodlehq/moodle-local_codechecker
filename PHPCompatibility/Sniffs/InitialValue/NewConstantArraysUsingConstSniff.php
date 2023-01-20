@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,9 @@
 namespace PHPCompatibility\Sniffs\InitialValue;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\Arrays;
 
 /**
  * Detect declaration of constants using the `const` keyword with a (constant) array value
@@ -37,7 +39,7 @@ class NewConstantArraysUsingConstSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_CONST);
+        return [\T_CONST];
     }
 
     /**
@@ -45,9 +47,9 @@ class NewConstantArraysUsingConstSniff extends Sniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -58,23 +60,24 @@ class NewConstantArraysUsingConstSniff extends Sniff
         }
 
         $tokens = $phpcsFile->getTokens();
-        $find   = array(
-            \T_ARRAY            => \T_ARRAY,
-            \T_OPEN_SHORT_ARRAY => \T_OPEN_SHORT_ARRAY,
-        );
+        $find   = Collections::arrayOpenTokensBC();
 
         while (($hasArray = $phpcsFile->findNext($find, ($stackPtr + 1), null, false, null, true)) !== false) {
-            $phpcsFile->addError(
-                'Constant arrays using the "const" keyword are not allowed in PHP 5.5 or earlier',
-                $hasArray,
-                'Found'
-            );
+            if ($tokens[$hasArray]['code'] === \T_ARRAY
+                || Arrays::isShortArray($phpcsFile, $hasArray) === true
+            ) {
+                $phpcsFile->addError(
+                    'Constant arrays using the "const" keyword are not allowed in PHP 5.5 or earlier',
+                    $hasArray,
+                    'Found'
+                );
+            }
 
             // Skip past the content of the array.
             $stackPtr = $hasArray;
-            if ($tokens[$hasArray]['code'] === \T_OPEN_SHORT_ARRAY && isset($tokens[$hasArray]['bracket_closer'])) {
+            if (isset($tokens[$hasArray]['bracket_closer'])) {
                 $stackPtr = $tokens[$hasArray]['bracket_closer'];
-            } elseif ($tokens[$hasArray]['code'] === \T_ARRAY && isset($tokens[$hasArray]['parenthesis_closer'])) {
+            } elseif (isset($tokens[$hasArray]['parenthesis_closer'])) {
                 $stackPtr = $tokens[$hasArray]['parenthesis_closer'];
             }
         }
