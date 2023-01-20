@@ -1,3 +1,14 @@
+Changes in version 4.0.2 (20230120) - Comp-at-ibility
+-----------------------------------------------------
+- Various small internal changes:
+  - 401_STABLE CI support.
+  - Prepare for 4.2 new requirements.
+  - PHP 8.1 fixes.
+- Bundled dependencies overhaul:
+    - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to 3.3.1 ([from 3.2.4](https://github.com/moodlehq/moodle-cs/compare/v3.2.4...v3.3.1)).
+    - [PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) updated to 10.0dev (2fb82334).
+    - [PHPCSUtils](https://github.com/PHPCSStandards/PHPCSUtils) updated to 1.0.1.
+
 Changes in version 4.0.1 (20221007) - Dear Windows
 --------------------------------------------------
 - [PR#205](https://github.com/moodlehq/moodle-local_codechecker/pull/205): Allow CRLF (Windows) line ending in .csv testing fixtures (stronk7).
