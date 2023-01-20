@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Sniffs\ParameterValues;
 
 use PHPCompatibility\AbstractFunctionCallParameterSniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Detect passing deprecated `$type` values to `iconv_get_encoding()`.
@@ -39,9 +40,9 @@ class RemovedIconvEncodingSniff extends AbstractFunctionCallParameterSniff
      *
      * @var array
      */
-    protected $targetFunctions = array(
+    protected $targetFunctions = [
         'iconv_set_encoding' => true,
-    );
+    ];
 
 
     /**
@@ -62,25 +63,26 @@ class RemovedIconvEncodingSniff extends AbstractFunctionCallParameterSniff
      *
      * @since 9.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                   $stackPtr     The position of the current token in the stack.
-     * @param string                $functionName The token content (function name) which was matched.
-     * @param array                 $parameters   Array with information about the parameters.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token in the stack.
+     * @param string                      $functionName The token content (function name) which was matched.
+     * @param array                       $parameters   Array with information about the parameters.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
      */
     public function processParameters(File $phpcsFile, $stackPtr, $functionName, $parameters)
     {
-        if (isset($parameters[1]) === false) {
+        $targetParam = PassedParameters::getParameterFromStack($parameters, 1, 'type');
+        if ($targetParam === false) {
             return;
         }
 
         $phpcsFile->addWarning(
             'All previously accepted values for the $type parameter of iconv_set_encoding() have been deprecated since PHP 5.6. Found %s',
-            $parameters[1]['start'],
+            $targetParam['start'],
             'DeprecatedValueFound',
-            $parameters[1]['raw']
+            [$targetParam['clean']]
         );
     }
 }

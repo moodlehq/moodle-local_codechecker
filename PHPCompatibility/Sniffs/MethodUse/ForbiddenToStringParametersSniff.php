@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,10 @@
 namespace PHPCompatibility\Sniffs\MethodUse;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * As of PHP 5.3, the `__toString()` magic method can no longer be passed arguments.
@@ -38,10 +40,7 @@ class ForbiddenToStringParametersSniff extends Sniff
      */
     public function register()
     {
-        return array(
-            \T_DOUBLE_COLON,
-            \T_OBJECT_OPERATOR,
-        );
+        return Collections::objectOperators();
     }
 
     /**
@@ -49,9 +48,9 @@ class ForbiddenToStringParametersSniff extends Sniff
      *
      * @since 9.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
@@ -76,20 +75,12 @@ class ForbiddenToStringParametersSniff extends Sniff
             return;
         }
 
-        if (strtolower($tokens[$nextNonEmpty]['content']) !== '__tostring') {
+        if (\strtolower($tokens[$nextNonEmpty]['content']) !== '__tostring') {
             // Not a call to the __toString() method.
             return;
         }
 
-        $openParens = $phpcsFile->findNext(Tokens::$emptyTokens, ($nextNonEmpty + 1), null, true);
-        if ($openParens === false || $tokens[$openParens]['code'] !== \T_OPEN_PARENTHESIS) {
-            // Not a method call.
-            return;
-        }
-
-        $closeParens = $phpcsFile->findNext(Tokens::$emptyTokens, ($openParens + 1), null, true);
-        if ($closeParens === false || $tokens[$closeParens]['code'] === \T_CLOSE_PARENTHESIS) {
-            // Not a method call.
+        if (PassedParameters::hasParameters($phpcsFile, $nextNonEmpty) === false) {
             return;
         }
 

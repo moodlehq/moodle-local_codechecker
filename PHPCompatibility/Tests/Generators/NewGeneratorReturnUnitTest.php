@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,14 +49,14 @@ class NewGeneratorReturnUnitTest extends BaseSniffTest
      */
     public function dataNewGeneratorReturn()
     {
-        return array(
-            array(30),
-            array(35),
-            array(39),
-            array(64),
-            array(83),
-            array(101),
-        );
+        return [
+            [30],
+            [35],
+            [39],
+            [64],
+            [83],
+            [101],
+        ];
     }
 
 
@@ -84,13 +84,14 @@ class NewGeneratorReturnUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(6),
-            array(15),
-            array(21),
-            array(53),
-            array(107),
-        );
+        return [
+            [6],
+            [15],
+            [21],
+            [53],
+            [107],
+            [119],
+        ];
     }
 
 

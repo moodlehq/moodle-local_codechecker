@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Sniffs\ParameterValues;
 
 use PHPCompatibility\AbstractFunctionCallParameterSniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Detect: Passing `null` to `get_class()` is no longer allowed as of PHP 7.2.
@@ -34,9 +35,9 @@ class ForbiddenGetClassNullSniff extends AbstractFunctionCallParameterSniff
      *
      * @var array
      */
-    protected $targetFunctions = array(
+    protected $targetFunctions = [
         'get_class' => true,
-    );
+    ];
 
 
     /**
@@ -57,27 +58,28 @@ class ForbiddenGetClassNullSniff extends AbstractFunctionCallParameterSniff
      *
      * @since 9.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile    The file being scanned.
-     * @param int                   $stackPtr     The position of the current token in the stack.
-     * @param string                $functionName The token content (function name) which was matched.
-     * @param array                 $parameters   Array with information about the parameters.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
+     * @param int                         $stackPtr     The position of the current token in the stack.
+     * @param string                      $functionName The token content (function name) which was matched.
+     * @param array                       $parameters   Array with information about the parameters.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
      */
     public function processParameters(File $phpcsFile, $stackPtr, $functionName, $parameters)
     {
-        if (isset($parameters[1]) === false) {
+        $target = PassedParameters::getParameterFromStack($parameters, 1, 'object');
+        if ($target === false) {
             return;
         }
 
-        if ($parameters[1]['raw'] !== 'null') {
+        if ($target['clean'] !== 'null') {
             return;
         }
 
         $phpcsFile->addError(
             'Passing "null" as the $object to get_class() is not allowed since PHP 7.2.',
-            $parameters[1]['start'],
+            $target['start'],
             'Found'
         );
     }

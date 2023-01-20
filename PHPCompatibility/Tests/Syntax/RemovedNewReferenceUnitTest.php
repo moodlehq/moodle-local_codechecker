@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -52,12 +52,12 @@ class RemovedNewReferenceUnitTest extends BaseSniffTest
      */
     public function dataDeprecatedNewReference()
     {
-        return array(
-            array(9),
-            array(10),
-            array(11),
-            array(12),
-        );
+        return [
+            [9],
+            [10],
+            [11],
+            [12],
+        ];
     }
 
 

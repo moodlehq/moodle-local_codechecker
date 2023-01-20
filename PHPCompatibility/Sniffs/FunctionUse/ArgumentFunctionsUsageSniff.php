@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,10 @@
 namespace PHPCompatibility\Sniffs\FunctionUse;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\MessageHelper;
 
 /**
  * Detect usage of `func_get_args()`, `func_get_arg()` and `func_num_args()` in invalid context.
@@ -41,11 +43,11 @@ class ArgumentFunctionsUsageSniff extends Sniff
      *
      * @var array
      */
-    protected $targetFunctions = array(
+    protected $targetFunctions = [
         'func_get_args' => true,
         'func_get_arg'  => true,
         'func_num_args' => true,
-    );
+    ];
 
 
     /**
@@ -57,7 +59,7 @@ class ArgumentFunctionsUsageSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_STRING);
+        return [\T_STRING];
     }
 
 
@@ -66,16 +68,16 @@ class ArgumentFunctionsUsageSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
     public function process(File $phpcsFile, $stackPtr)
     {
         $tokens     = $phpcsFile->getTokens();
-        $functionLc = strtolower($tokens[$stackPtr]['content']);
+        $functionLc = \strtolower($tokens[$stackPtr]['content']);
         if (isset($this->targetFunctions[$functionLc]) === false) {
             return;
         }
@@ -86,12 +88,11 @@ class ArgumentFunctionsUsageSniff extends Sniff
             return;
         }
 
-        $ignore = array(
-            \T_DOUBLE_COLON    => true,
-            \T_OBJECT_OPERATOR => true,
-            \T_FUNCTION        => true,
-            \T_NEW             => true,
-        );
+        $ignore  = [
+            \T_FUNCTION => true,
+            \T_NEW      => true,
+        ];
+        $ignore += Collections::objectOperators();
 
         $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
         if (isset($ignore[$tokens[$prevNonEmpty]['code']]) === true) {
@@ -102,7 +103,7 @@ class ArgumentFunctionsUsageSniff extends Sniff
             return;
         }
 
-        $data = $tokens[$stackPtr]['content'];
+        $data = [$tokens[$stackPtr]['content']];
 
         /*
          * Check for use of the functions in the global scope.
@@ -110,7 +111,7 @@ class ArgumentFunctionsUsageSniff extends Sniff
          * As PHPCS can not determine whether a file is included from within a function in
          * another file, so always throw a warning/error.
          */
-        if ($phpcsFile->hasCondition($stackPtr, array(\T_FUNCTION, \T_CLOSURE)) === false) {
+        if ($phpcsFile->hasCondition($stackPtr, [\T_FUNCTION, \T_CLOSURE]) === false) {
             $isError = false;
             $message = 'Use of %s() outside of a user-defined function is only supported if the file is included from within a user-defined function in another file prior to PHP 5.3.';
 
@@ -119,7 +120,7 @@ class ArgumentFunctionsUsageSniff extends Sniff
                 $message .= ' As of PHP 5.3, it is no longer supported at all.';
             }
 
-            $this->addMessage($phpcsFile, $message, $stackPtr, $isError, 'OutsideFunctionScope', $data);
+            MessageHelper::addMessage($phpcsFile, $message, $stackPtr, $isError, 'OutsideFunctionScope', $data);
         }
 
         /*
@@ -135,13 +136,13 @@ class ArgumentFunctionsUsageSniff extends Sniff
 
         $throwError = false;
 
-        $closer = end($tokens[$stackPtr]['nested_parenthesis']);
+        $closer = \end($tokens[$stackPtr]['nested_parenthesis']);
         if (isset($tokens[$closer]['parenthesis_owner'])
             && $tokens[$tokens[$closer]['parenthesis_owner']]['type'] === 'T_CLOSURE'
         ) {
             $throwError = true;
         } else {
-            $opener       = key($tokens[$stackPtr]['nested_parenthesis']);
+            $opener       = \key($tokens[$stackPtr]['nested_parenthesis']);
             $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($opener - 1), null, true);
             if ($tokens[$prevNonEmpty]['code'] !== \T_STRING) {
                 return;

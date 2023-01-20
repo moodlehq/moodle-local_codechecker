@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,6 @@
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 
 use PHPCompatibility\Tests\BaseSniffTest;
-use PHPCompatibility\PHPCSHelper;
 
 /**
  * Test the RemovedMagicAutoload sniff.
@@ -20,7 +19,6 @@ use PHPCompatibility\PHPCSHelper;
  * @group functionNameRestrictions
  *
  * @covers \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedMagicAutoloadSniff
- * @covers \PHPCompatibility\Sniff::determineNamespace
  *
  * @since 8.1.0
  */
@@ -43,27 +41,6 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
     const TEST_FILE_NAMESPACED = 'RemovedMagicAutoloadUnitTest.2.inc';
 
     /**
-     * Whether or not traits and interfaces will be recognized in PHPCS.
-     *
-     * @var bool
-     */
-    protected static $recognizesTraitsOrInterfaces = true;
-
-    /**
-     * Set up skip condition.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        // When using PHPCS 2.3.4 or lower combined with PHP 5.3 or lower, traits are not recognized.
-        if (version_compare(PHPCSHelper::getVersion(), '2.4.0', '<') && version_compare(\PHP_VERSION_ID, '50400', '<')) {
-            self::$recognizesTraitsOrInterfaces = false;
-        }
-        parent::setUpBeforeClass();
-    }
-
-    /**
      * Test __autoload deprecation not causing issue in 7.1.
      *
      * @return void
@@ -75,32 +52,36 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
     }
 
     /**
-     * Test __autoload deprecation.
+     * Test detection of __autoload declarations for which support has been deprecated/removed.
      *
-     * @dataProvider dataIsDeprecated
+     * @dataProvider dataRemovedMagicAutoload
      *
      * @param int $line The line number where the error should occur.
      *
      * @return void
      */
-    public function testIsDeprecated($line)
+    public function testRemovedMagicAutoload($line)
     {
         $file = $this->sniffFile(__DIR__ . '/' . self::TEST_FILE, '7.2');
-        $this->assertWarning($file, $line, 'Use of __autoload() function is deprecated since PHP 7.2');
+        $this->assertWarning($file, $line, 'Specifying an autoloader using an __autoload() function is deprecated since PHP 7.2');
+
+        $file = $this->sniffFile(__DIR__ . '/' . self::TEST_FILE, '8.0');
+        $this->assertError($file, $line, 'Specifying an autoloader using an __autoload() function is deprecated since PHP 7.2 and no longer supported since PHP 8.0');
     }
 
     /**
-     * dataIsDeprecated
+     * Data provider.
      *
-     * @see testIsDeprecated()
+     * @see testRemovedMagicAutoload()
      *
      * @return array
      */
-    public function dataIsDeprecated()
+    public function dataRemovedMagicAutoload()
     {
-        return array(
-            array(3),
-        );
+        return [
+            [3],
+            [32],
+        ];
     }
 
     /**
@@ -110,17 +91,11 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
      *
      * @param string $testFile The file to test.
      * @param int    $line     The line number where the error should occur.
-     * @param bool   $isTrait  Whether the test relates to a method in a trait.
      *
      * @return void
      */
-    public function testIsNotAffected($testFile, $line, $isTrait = false)
+    public function testIsNotAffected($testFile, $line)
     {
-        if ($isTrait === true && self::$recognizesTraitsOrInterfaces === false) {
-            $this->markTestSkipped('Traits are not recognized on PHPCS < 2.4.0 in combination with PHP < 5.4');
-            return;
-        }
-
         $file = $this->sniffFile(__DIR__ . '/' . $testFile, '7.2');
         $this->assertNoViolation($file, $line);
     }
@@ -134,16 +109,16 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
      */
     public function dataIsNotAffected()
     {
-        return array(
-            array(self::TEST_FILE, 8),
-            array(self::TEST_FILE, 14, true),
-            array(self::TEST_FILE, 18, true),
-            array(self::TEST_FILE, 24),
-            array(self::TEST_FILE_NAMESPACED, 5),
-            array(self::TEST_FILE_NAMESPACED, 10),
-            array(self::TEST_FILE_NAMESPACED, 16),
-            array(self::TEST_FILE_NAMESPACED, 20),
-            array(self::TEST_FILE_NAMESPACED, 26),
-        );
+        return [
+            [self::TEST_FILE, 8],
+            [self::TEST_FILE, 14],
+            [self::TEST_FILE, 18],
+            [self::TEST_FILE, 24],
+            [self::TEST_FILE_NAMESPACED, 5],
+            [self::TEST_FILE_NAMESPACED, 10],
+            [self::TEST_FILE_NAMESPACED, 16],
+            [self::TEST_FILE_NAMESPACED, 20],
+            [self::TEST_FILE_NAMESPACED, 26],
+        ];
     }
 }

@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,8 @@
 namespace PHPCompatibility\Sniffs\Syntax;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
 
 /**
  * Detect array and string literal dereferencing.
@@ -49,11 +49,11 @@ class NewArrayStringDereferencingSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_ARRAY,
             \T_OPEN_SHORT_ARRAY,
             \T_CONSTANT_ENCAPSED_STRING,
-        );
+        ];
     }
 
     /**
@@ -61,9 +61,9 @@ class NewArrayStringDereferencingSniff extends Sniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -82,27 +82,24 @@ class NewArrayStringDereferencingSniff extends Sniff
         $supports54 = $this->supportsBelow('5.4');
 
         foreach ($dereferencing['braces'] as $openBrace => $closeBrace) {
-            if ($supports54 === true
-                && ($tokens[$openBrace]['type'] === 'T_OPEN_SQUARE_BRACKET'
-                    || $tokens[$openBrace]['type'] === 'T_OPEN_SHORT_ARRAY') // Work around bug #1381 in PHPCS 2.8.1 and lower.
-            ) {
+            if ($supports54 === true && $tokens[$openBrace]['code'] === \T_OPEN_SQUARE_BRACKET) {
                 $phpcsFile->addError(
                     'Direct array dereferencing of %s is not present in PHP version 5.4 or earlier',
                     $openBrace,
                     'Found',
-                    array($dereferencing['type'])
+                    [$dereferencing['type']]
                 );
 
                 continue;
             }
 
             // PHP 7.0 Array/string dereferencing using curly braces.
-            if ($tokens[$openBrace]['type'] === 'T_OPEN_CURLY_BRACKET') {
+            if ($tokens[$openBrace]['code'] === \T_OPEN_CURLY_BRACKET) {
                 $phpcsFile->addError(
                     'Direct array dereferencing of %s using curly braces is not present in PHP version 5.6 or earlier',
                     $openBrace,
                     'FoundUsingCurlies',
-                    array($dereferencing['type'])
+                    [$dereferencing['type']]
                 );
             }
         }
@@ -114,9 +111,9 @@ class NewArrayStringDereferencingSniff extends Sniff
      *
      * @since 9.3.0 Logic split off from the process method.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return array Array containing the type of access and stack pointers to the
      *               open/close braces involved in the array/string dereferencing;
@@ -135,7 +132,7 @@ class NewArrayStringDereferencingSniff extends Sniff
             case \T_ARRAY:
                 if (isset($tokens[$stackPtr]['parenthesis_closer']) === false) {
                     // Live coding.
-                    return array();
+                    return [];
                 } else {
                     $type = 'arrays';
                     $end  = $tokens[$stackPtr]['parenthesis_closer'];
@@ -145,7 +142,7 @@ class NewArrayStringDereferencingSniff extends Sniff
             case \T_OPEN_SHORT_ARRAY:
                 if (isset($tokens[$stackPtr]['bracket_closer']) === false) {
                     // Live coding.
-                    return array();
+                    return [];
                 } else {
                     $type = 'arrays';
                     $end  = $tokens[$stackPtr]['bracket_closer'];
@@ -155,10 +152,10 @@ class NewArrayStringDereferencingSniff extends Sniff
 
         if (isset($type, $end) === false) {
             // Shouldn't happen, but for some reason did.
-            return array();
+            return [];
         }
 
-        $braces = array();
+        $braces = [];
 
         do {
             $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($end + 1), null, true, null, true);
@@ -166,9 +163,8 @@ class NewArrayStringDereferencingSniff extends Sniff
                 break;
             }
 
-            if ($tokens[$nextNonEmpty]['type'] === 'T_OPEN_SQUARE_BRACKET'
-                || $tokens[$nextNonEmpty]['type'] === 'T_OPEN_CURLY_BRACKET' // PHP 7.0+.
-                || $tokens[$nextNonEmpty]['type'] === 'T_OPEN_SHORT_ARRAY' // Work around bug #1381 in PHPCS 2.8.1 and lower.
+            if ($tokens[$nextNonEmpty]['code'] === \T_OPEN_SQUARE_BRACKET
+                || $tokens[$nextNonEmpty]['code'] === \T_OPEN_CURLY_BRACKET // PHP 7.0+.
             ) {
                 if (isset($tokens[$nextNonEmpty]['bracket_closer']) === false) {
                     // Live coding or parse error.
@@ -188,12 +184,12 @@ class NewArrayStringDereferencingSniff extends Sniff
         } while (true);
 
         if (empty($braces)) {
-            return array();
+            return [];
         }
 
-        return array(
+        return [
             'type'   => $type,
             'braces' => $braces,
-        );
+        ];
     }
 }

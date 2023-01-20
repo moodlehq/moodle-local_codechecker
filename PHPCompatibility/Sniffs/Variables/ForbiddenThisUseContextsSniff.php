@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,9 +11,12 @@
 namespace PHPCompatibility\Sniffs\Variables;
 
 use PHPCompatibility\Sniff;
-use PHPCompatibility\PHPCSHelper;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\Scopes;
 
 /**
  * Detect using `$this` in incompatible contexts.
@@ -52,31 +55,16 @@ class ForbiddenThisUseContextsSniff extends Sniff
 {
 
     /**
-     * OO scope tokens.
-     *
-     * Duplicate of Tokens::$ooScopeTokens array in PHPCS which was added in 3.1.0.
-     *
-     * @since 9.1.0
-     *
-     * @var array
-     */
-    private $ooScopeTokens = array(
-        'T_CLASS'     => \T_CLASS,
-        'T_INTERFACE' => \T_INTERFACE,
-        'T_TRAIT'     => \T_TRAIT,
-    );
-
-    /**
      * Scopes to skip over when examining the contents of functions.
      *
      * @since 9.1.0
      *
      * @var array
      */
-    private $skipOverScopes = array(
-        'T_FUNCTION' => true,
-        'T_CLOSURE'  => true,
-    );
+    private $skipOverScopes = [
+        \T_FUNCTION => true,
+        \T_CLOSURE  => true,
+    ];
 
     /**
      * Valid uses of $this in plain functions or methods outside object context.
@@ -85,10 +73,10 @@ class ForbiddenThisUseContextsSniff extends Sniff
      *
      * @var array
      */
-    private $validUseOutsideObject = array(
+    private $validUseOutsideObject = [
         \T_ISSET => true,
         \T_EMPTY => true,
-    );
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -99,20 +87,16 @@ class ForbiddenThisUseContextsSniff extends Sniff
      */
     public function register()
     {
-        if (\defined('T_ANON_CLASS')) {
-            $this->ooScopeTokens['T_ANON_CLASS'] = \T_ANON_CLASS;
-        }
+        $this->skipOverScopes += BCTokens::ooScopeTokens();
 
-        $this->skipOverScopes += $this->ooScopeTokens;
-
-        return array(
+        return [
             \T_FUNCTION,
             \T_CLOSURE,
             \T_GLOBAL,
             \T_CATCH,
             \T_FOREACH,
             \T_UNSET,
-        );
+        ];
     }
 
     /**
@@ -120,9 +104,9 @@ class ForbiddenThisUseContextsSniff extends Sniff
      *
      * @since 9.1.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -150,7 +134,7 @@ class ForbiddenThisUseContextsSniff extends Sniff
                  * This worked in PHP 7.0, though in PHP 5.x, it would throw a
                  * fatal "Cannot re-assign $this" error.
                  */
-                $endOfStatement = $phpcsFile->findNext(array(\T_SEMICOLON, \T_CLOSE_TAG), ($stackPtr + 1));
+                $endOfStatement = $phpcsFile->findNext([\T_SEMICOLON, \T_CLOSE_TAG], ($stackPtr + 1));
                 if ($endOfStatement === false) {
                     // No semi-colon - live coding.
                     return;
@@ -207,7 +191,7 @@ class ForbiddenThisUseContextsSniff extends Sniff
                 }
 
                 $stopPtr = $phpcsFile->findPrevious(
-                    array(\T_AS, \T_DOUBLE_ARROW),
+                    [\T_AS, \T_DOUBLE_ARROW],
                     ($tokens[$stackPtr]['parenthesis_closer'] - 1),
                     $tokens[$stackPtr]['parenthesis_opener']
                 );
@@ -232,8 +216,7 @@ class ForbiddenThisUseContextsSniff extends Sniff
                 );
 
                 if ($afterThis !== false
-                    && ($tokens[$afterThis]['code'] === \T_OBJECT_OPERATOR
-                        || $tokens[$afterThis]['code'] === \T_DOUBLE_COLON)
+                    && isset(Collections::objectOperators()[$tokens[$afterThis]['code']]) === true
                 ) {
                     return;
                 }
@@ -271,8 +254,7 @@ class ForbiddenThisUseContextsSniff extends Sniff
                     );
 
                     if ($afterThis !== false
-                        && ($tokens[$afterThis]['code'] === \T_OBJECT_OPERATOR
-                            || $tokens[$afterThis]['code'] === \T_DOUBLE_COLON
+                        && (isset(Collections::objectOperators()[$tokens[$afterThis]['code']]) === true
                             || $tokens[$afterThis]['code'] === \T_OPEN_SQUARE_BRACKET)
                     ) {
                         $i = $afterThis;
@@ -298,19 +280,19 @@ class ForbiddenThisUseContextsSniff extends Sniff
      *
      * @since 9.1.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
     protected function isThisUsedAsParameter(File $phpcsFile, $stackPtr)
     {
-        if ($this->validDirectScope($phpcsFile, $stackPtr, $this->ooScopeTokens) !== false) {
+        if (Scopes::validDirectScope($phpcsFile, $stackPtr, BCTokens::ooScopeTokens()) !== false) {
             return;
         }
 
-        $params = PHPCSHelper::getMethodParameters($phpcsFile, $stackPtr);
+        $params = FunctionDeclarations::getParameters($phpcsFile, $stackPtr);
         if (empty($params)) {
             return;
         }
@@ -350,9 +332,9 @@ class ForbiddenThisUseContextsSniff extends Sniff
      *
      * @since 9.1.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -364,7 +346,7 @@ class ForbiddenThisUseContextsSniff extends Sniff
             return;
         }
 
-        if ($this->validDirectScope($phpcsFile, $stackPtr, $this->ooScopeTokens) !== false) {
+        if (Scopes::validDirectScope($phpcsFile, $stackPtr, BCTokens::ooScopeTokens()) !== false) {
             $methodProps = $phpcsFile->getMethodProperties($stackPtr);
             if ($methodProps['is_static'] === false) {
                 return;
@@ -381,7 +363,7 @@ class ForbiddenThisUseContextsSniff extends Sniff
         }
 
         for ($i = ($tokens[$stackPtr]['scope_opener'] + 1); $i < $tokens[$stackPtr]['scope_closer']; $i++) {
-            if (isset($this->skipOverScopes[$tokens[$i]['type']])) {
+            if (isset($this->skipOverScopes[$tokens[$i]['code']])) {
                 if (isset($tokens[$i]['scope_closer']) === false) {
                     // Live coding or parse error, will only lead to inaccurate results.
                     return;
@@ -398,8 +380,8 @@ class ForbiddenThisUseContextsSniff extends Sniff
 
             if (isset($tokens[$i]['nested_parenthesis']) === true) {
                 $nestedParenthesis     = $tokens[$i]['nested_parenthesis'];
-                $nestedOpenParenthesis = array_keys($nestedParenthesis);
-                $lastOpenParenthesis   = array_pop($nestedOpenParenthesis);
+                $nestedOpenParenthesis = \array_keys($nestedParenthesis);
+                $lastOpenParenthesis   = \array_pop($nestedOpenParenthesis);
 
                 $previousNonEmpty = $phpcsFile->findPrevious(
                     Tokens::$emptyTokens,

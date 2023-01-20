@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,11 @@
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\Scopes;
 
 /**
  * As of PHP 7.4, throwing exceptions from a `__toString()` method is allowed.
@@ -28,20 +31,6 @@ class NewExceptionsFromToStringSniff extends Sniff
 {
 
     /**
-     * Valid scopes for the __toString() method to live in.
-     *
-     * @since 9.2.0
-     * @since 9.3.0 Visibility changed from `public` to `protected`.
-     *
-     * @var array
-     */
-    protected $ooScopeTokens = array(
-        'T_CLASS'      => true,
-        'T_TRAIT'      => true,
-        'T_ANON_CLASS' => true,
-    );
-
-    /**
      * Tokens which should be ignored when they preface a function declaration
      * when trying to find the docblock (if any).
      *
@@ -51,9 +40,9 @@ class NewExceptionsFromToStringSniff extends Sniff
      *
      * @var array
      */
-    private $docblockIgnoreTokens = array(
+    private $docblockIgnoreTokens = [
         \T_WHITESPACE => \T_WHITESPACE,
-    );
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -66,11 +55,9 @@ class NewExceptionsFromToStringSniff extends Sniff
     {
         // Enhance the array of tokens to ignore for finding the docblock.
         $this->docblockIgnoreTokens += Tokens::$methodPrefixes;
-        if (isset(Tokens::$phpcsCommentTokens)) {
-            $this->docblockIgnoreTokens += Tokens::$phpcsCommentTokens;
-        }
+        $this->docblockIgnoreTokens += BCTokens::phpcsCommentTokens();
 
-        return array(\T_FUNCTION);
+        return [\T_FUNCTION];
     }
 
     /**
@@ -78,9 +65,9 @@ class NewExceptionsFromToStringSniff extends Sniff
      *
      * @since 9.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
@@ -96,13 +83,13 @@ class NewExceptionsFromToStringSniff extends Sniff
             return;
         }
 
-        $functionName = $phpcsFile->getDeclarationName($stackPtr);
-        if (strtolower($functionName) !== '__tostring') {
+        $functionName = FunctionDeclarations::getName($phpcsFile, $stackPtr);
+        if (\strtolower($functionName) !== '__tostring') {
             // Not the right function.
             return;
         }
 
-        if ($this->validDirectScope($phpcsFile, $stackPtr, $this->ooScopeTokens) === false) {
+        if (Scopes::isOOMethod($phpcsFile, $stackPtr) === false) {
             // Function, not method.
             return;
         }
@@ -115,30 +102,22 @@ class NewExceptionsFromToStringSniff extends Sniff
         $errorThrown = false;
 
         do {
-            $throwPtr = $phpcsFile->findNext(\T_THROW, ($throwPtr + 1), $tokens[$stackPtr]['scope_closer']);
+            $throwPtr = $phpcsFile->findNext([\T_THROW, \T_TRY], ($throwPtr + 1), $tokens[$stackPtr]['scope_closer']);
             if ($throwPtr === false) {
                 break;
             }
 
-            $conditions = $tokens[$throwPtr]['conditions'];
-            $conditions = array_reverse($conditions, true);
-            $inTryCatch = false;
-            foreach ($conditions as $ptr => $type) {
-                if ($type === \T_TRY) {
-                    $inTryCatch = true;
-                    break;
-                }
-
-                if ($ptr === $stackPtr) {
-                    // Don't check the conditions outside the function scope.
-                    break;
-                }
+            if ($tokens[$throwPtr]['code'] === \T_TRY
+                && isset($tokens[$throwPtr]['scope_closer']) === true
+            ) {
+                // Skip over the try part of try/catch statements.
+                $throwPtr = $tokens[$throwPtr]['scope_closer'];
+                continue;
             }
 
-            if ($inTryCatch === false) {
-                $phpcsFile->addError($error, $throwPtr, 'Found');
-                $errorThrown = true;
-            }
+            $phpcsFile->addError($error, $throwPtr, 'Found');
+            $errorThrown = true;
+
         } while (true);
 
         if ($errorThrown === true) {

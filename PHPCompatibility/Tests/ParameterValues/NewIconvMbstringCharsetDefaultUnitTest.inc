@@ -36,7 +36,7 @@ $a = mb_strtolower( $str, $encoding );
 $a = mb_strtoupper( $str, $encoding );
 $a = mb_strwidth( $str, $encoding );
 $a = mb_substr_count( $haystack, $needle, $encoding );
-$a = mb_substr($str, $start, $length, $encoding);
+$a = mb_substr(string: $str, start: $start, encoding: $encoding);
 
 /*
  * Error: parameter not set.
@@ -71,7 +71,7 @@ $a = mb_strtolower($str);
 $a = mb_strtoupper( $str );
 $a = mb_strwidth( $str );
 $a = mb_substr_count( $haystack, $needle );
-$a = mb_substr($str, $start);
+$a = mb_substr(string: $str, start: $start, length: 10);
 
 /*
  * iconv_mime_encode() specific tests.
@@ -108,3 +108,13 @@ $a = iconv_mime_encode(
         'line-length'      => 80,
     ]
 ); // Error: 'input-charset' not set.
+
+$a = iconv_mime_encode(
+    $field_name,
+    $field_value,
+    [
+        'Input-CharSet'    => 'ISO-8859-1',
+        'output-charset'   => 'UTF-8',
+        'line-length'      => 80,
+    ]
+); // Error: 'input-charset' not set (because case-sensitive).

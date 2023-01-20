@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -19,7 +19,6 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group functionNameRestrictions
  *
  * @covers \PHPCompatibility\Sniffs\FunctionNameRestrictions\RemovedPHP4StyleConstructorsSniff
- * @covers \PHPCompatibility\Sniff::determineNamespace
  *
  * @since 7.0.0
  */
@@ -38,7 +37,10 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
     public function testIsDeprecated($line)
     {
         $file = $this->sniffFile(__FILE__, '7.0');
-        $this->assertWarning($file, $line, 'Use of deprecated PHP4 style class constructor is not supported since PHP 7');
+        $this->assertWarning($file, $line, 'Declaration of a PHP4 style class constructor is deprecated since PHP 7.0');
+
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertError($file, $line, 'Declaration of a PHP4 style class constructor is deprecated since PHP 7.0 and removed since PHP 8.0');
     }
 
     /**
@@ -50,12 +52,13 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
      */
     public function dataIsDeprecated()
     {
-        return array(
-            array(3),
-            array(18),
-            array(33),
-            array(66),
-        );
+        return [
+            [3],
+            [18],
+            [33],
+            [66],
+            [86],
+        ];
     }
 
 
@@ -83,18 +86,19 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(9),
-            array(12),
-            array(26),
-            array(37),
-            array(41),
-            array(42),
-            array(47),
-            array(51),
-            array(53),
-            array(65),
-        );
+        return [
+            [9],
+            [12],
+            [26],
+            [37],
+            [41],
+            [42],
+            [47],
+            [51],
+            [53],
+            [65],
+            [87],
+        ];
     }
 
 

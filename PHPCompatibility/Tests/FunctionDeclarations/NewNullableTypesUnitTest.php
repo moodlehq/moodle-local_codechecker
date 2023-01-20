@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -20,7 +20,6 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group typeDeclarations
  *
  * @covers \PHPCompatibility\Sniffs\FunctionDeclarations\NewNullableTypesSniff
- * @covers \PHPCompatibility\Sniff::getReturnTypeHintToken
  *
  * @since 7.0.7
  */
@@ -51,20 +50,21 @@ class NewNullableTypesUnitTest extends BaseSniffTest
      */
     public function dataNewNullableReturnTypes()
     {
-        return array(
-            array(21),
-            array(22),
-            array(23),
-            array(24),
-            array(25),
-            array(26),
-            array(27),
-            array(28),
-            array(29),
+        return [
+            [21],
+            [22],
+            [23],
+            [24],
+            [25],
+            [26],
+            [27],
+            [28],
+            [29],
 
-            array(63),
-            array(77),
-        );
+            [63],
+            [77],
+            [86],
+        ];
     }
 
 
@@ -92,23 +92,24 @@ class NewNullableTypesUnitTest extends BaseSniffTest
      */
     public function dataNewNullableTypeHints()
     {
-        return array(
-            array(48),
-            array(49),
-            array(50),
-            array(51),
-            array(52),
-            array(53),
-            array(54),
-            array(55),
-            array(56),
+        return [
+            [48],
+            [49],
+            [50],
+            [51],
+            [52],
+            [53],
+            [54],
+            [55],
+            [56],
 
-            array(59), // Three errors of the same.
+            [59], // Three errors of the same.
 
-            array(64),
-            array(68),
-            array(74),
-        );
+            [64],
+            [68],
+            [74],
+            [86],
+        ];
     }
 
 
@@ -136,27 +137,27 @@ class NewNullableTypesUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(8),
-            array(9),
-            array(10),
-            array(11),
-            array(12),
-            array(13),
-            array(14),
-            array(15),
-            array(16),
+        return [
+            [8],
+            [9],
+            [10],
+            [11],
+            [12],
+            [13],
+            [14],
+            [15],
+            [16],
 
-            array(35),
-            array(36),
-            array(37),
-            array(38),
-            array(39),
-            array(40),
-            array(41),
-            array(42),
-            array(43),
-        );
+            [35],
+            [36],
+            [37],
+            [38],
+            [39],
+            [40],
+            [41],
+            [42],
+            [43],
+        ];
     }
 
 

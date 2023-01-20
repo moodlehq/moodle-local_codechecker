@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,10 @@
 namespace PHPCompatibility\Sniffs\ControlStructures;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Utils\Numbers;
 
 /**
  * Detect use of `continue` in `switch` control structures.
@@ -41,13 +43,13 @@ class DiscouragedSwitchContinueSniff extends Sniff
      *
      * @var array
      */
-    protected $loopStructures = array(
+    protected $loopStructures = [
         \T_FOR     => \T_FOR,
         \T_FOREACH => \T_FOREACH,
         \T_WHILE   => \T_WHILE,
         \T_DO      => \T_DO,
         \T_SWITCH  => \T_SWITCH,
-    );
+    ];
 
     /**
      * Tokens which start a new case within a switch.
@@ -56,10 +58,10 @@ class DiscouragedSwitchContinueSniff extends Sniff
      *
      * @var array
      */
-    protected $caseTokens = array(
+    protected $caseTokens = [
         \T_CASE    => \T_CASE,
         \T_DEFAULT => \T_DEFAULT,
-    );
+    ];
 
     /**
      * Token codes which are accepted to determine the level for the continue.
@@ -70,11 +72,11 @@ class DiscouragedSwitchContinueSniff extends Sniff
      *
      * @var array
      */
-    protected $acceptedLevelTokens = array(
+    protected $acceptedLevelTokens = [
         \T_LNUMBER           => \T_LNUMBER,
         \T_OPEN_PARENTHESIS  => \T_OPEN_PARENTHESIS,
         \T_CLOSE_PARENTHESIS => \T_CLOSE_PARENTHESIS,
-    );
+    ];
 
 
     /**
@@ -86,10 +88,10 @@ class DiscouragedSwitchContinueSniff extends Sniff
      */
     public function register()
     {
-        $this->acceptedLevelTokens += Tokens::$arithmeticTokens;
+        $this->acceptedLevelTokens += BCTokens::arithmeticTokens();
         $this->acceptedLevelTokens += Tokens::$emptyTokens;
 
-        return array(\T_SWITCH);
+        return [\T_SWITCH];
     }
 
     /**
@@ -97,9 +99,9 @@ class DiscouragedSwitchContinueSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -150,13 +152,13 @@ class DiscouragedSwitchContinueSniff extends Sniff
             $doCount          = 0;
             while (($controlStructure = $phpcsFile->findNext($this->loopStructures, ($controlStructure + 1), $caseCloser)) !== false) {
                 if ($tokens[$controlStructure]['code'] === \T_DO) {
-                    $doCount++;
+                    ++$doCount;
                 }
 
                 if (isset($tokens[$controlStructure]['scope_opener'], $tokens[$controlStructure]['scope_closer']) === false) {
                     if ($tokens[$controlStructure]['code'] === \T_WHILE && $doCount > 0) {
                         // While in a do-while construct.
-                        $doCount--;
+                        --$doCount;
                         continue;
                     }
 
@@ -174,24 +176,30 @@ class DiscouragedSwitchContinueSniff extends Sniff
                     break;
                 }
 
-                $nextSemicolon = $phpcsFile->findNext(array(\T_SEMICOLON, \T_CLOSE_TAG), ($continue + 1), $caseCloser);
+                $nextSemicolon = $phpcsFile->findNext([\T_SEMICOLON, \T_CLOSE_TAG], ($continue + 1), $caseCloser);
                 $codeString    = '';
                 for ($i = ($continue + 1); $i < $nextSemicolon; $i++) {
+                    $content = $tokens[$i]['content'];
                     if (isset($this->acceptedLevelTokens[$tokens[$i]['code']]) === false) {
                         // Function call/variable or other token which make numeric level impossible to determine.
                         continue 2;
+                    } elseif ($tokens[$i]['code'] === \T_LNUMBER) {
+                        // Deal with potential PHP 7.4 numeric literals with underscores.
+                        $numberInfo = Numbers::getCompleteNumber($phpcsFile, $i);
+                        $content    = $numberInfo['decimal'];
+                        $i          = $numberInfo['last_token'];
                     }
 
                     if (isset(Tokens::$emptyTokens[$tokens[$i]['code']]) === true) {
                         continue;
                     }
 
-                    $codeString .= $tokens[$i]['content'];
+                    $codeString .= $content;
                 }
 
                 $level = null;
                 if ($codeString !== '') {
-                    if (is_numeric($codeString)) {
+                    if (\is_numeric($codeString)) {
                         $level = (int) $codeString;
                     } else {
                         // With the above logic, the string can only contain digits and operators, eval!
@@ -208,7 +216,7 @@ class DiscouragedSwitchContinueSniff extends Sniff
                     continue;
                 }
 
-                $conditions = array_reverse($tokens[$continue]['conditions'], true);
+                $conditions = \array_reverse($tokens[$continue]['conditions'], true);
                 // PHPCS adds more structures to the conditions array than we want to take into
                 // consideration, so clean up the array.
                 foreach ($conditions as $tokenPtr => $tokenCode) {
@@ -222,7 +230,7 @@ class DiscouragedSwitchContinueSniff extends Sniff
                     continue;
                 }
 
-                $conditionToken = key($targetCondition);
+                $conditionToken = \key($targetCondition);
                 if ($conditionToken === $stackPtr) {
                     $phpcsFile->addWarning(
                         "Targeting a 'switch' control structure with a 'continue' statement is strongly discouraged and will throw a warning as of PHP 7.3.",
@@ -230,7 +238,6 @@ class DiscouragedSwitchContinueSniff extends Sniff
                         'Found'
                     );
                 }
-
             } while ($continue < $caseCloser);
 
         } while ($caseDefault < $switchCloser);

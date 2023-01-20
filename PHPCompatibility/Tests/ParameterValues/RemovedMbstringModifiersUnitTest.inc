@@ -16,7 +16,7 @@ MB_eregi_replace( $pattern, $replace, $subject, "seim" );
 mb_regex_set_options( 'im' . 'se' );
 
 // Interpolated strings: These should NOT be flagged.
-mb_ereg_replace( $pattern, $replace, $subject, "$e" );
+mb_ereg_replace( $pattern, $replace, $subject, "${se->{$b}}" );
 mb_eregi_replace( $pattern, $replace, $subject, "s$eim" );
 mb_regex_set_options( 'im' . "$se" );
 
@@ -25,6 +25,10 @@ mb_ereg_replace( $pattern, $replace, $subject, "e$m" );
 mb_eregi_replace( $pattern, $replace, $subject, "me$i" );
 Mb_Regex_Set_Options( 'im' . "{$se}e" );
 
-// Verify the sniff also pick up on the function aliases.
+// Verify the sniff also picks up on the function aliases.
 mbereg_replace( $pattern, $replace, $subject, 'e' );
 mberegi_replace( $pattern, $replace, $subject, "me$i" );
+
+// Issue #1043 - ignore function calls, constants etc.
+mb_ereg_replace( $pattern, $replace, $subject, getOptions('type'));
+mb_eregi_replace( $pattern, $replace, $subject, CONSTANT_NAME['array_access'] );

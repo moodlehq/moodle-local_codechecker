@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -52,26 +52,50 @@ class RemovedSetlocaleStringUnitTest extends BaseSniffTest
      */
     public function dataSetlocaleString()
     {
-        return array(
-            array(9),
-            array(10),
-        );
+        return [
+            [9],
+            [10],
+            [18],
+        ];
     }
 
 
     /**
      * testNoFalsePositives
      *
+     * @dataProvider dataNoFalsePositives
+     *
+     * @param int $line Line number.
+     *
      * @return void
      */
-    public function testNoFalsePositives()
+    public function testNoFalsePositives($line)
     {
         $file = $this->sniffFile(__FILE__, '7.0');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositives()
+     *
+     * @return array
+     */
+    public function dataNoFalsePositives()
+    {
+        $data = [];
 
         // No errors expected on the first 7 lines.
         for ($line = 1; $line <= 7; $line++) {
-            $this->assertNoViolation($file, $line);
+            $data[] = [$line];
         }
+
+        $data[] = [13];
+        $data[] = [14];
+        $data[] = [17];
+
+        return $data;
     }
 
 

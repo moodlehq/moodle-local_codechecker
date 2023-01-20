@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,14 +11,19 @@
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\Namespaces;
+use PHPCSUtils\Utils\NamingConventions;
+use PHPCSUtils\Utils\ObjectDeclarations;
 
 /**
- * Detect declarations of PHP 4 style constructors which are deprecated as of PHP 7.0.0.
+ * Detect declarations of PHP 4 style constructors which are deprecated as of PHP 7.0.0
+ * and for which support has been removed in PHP 8.0.0.
  *
  * PHP 4 style constructors - methods that have the same name as the class they are defined in -
- * are deprecated as of PHP 7.0.0, and will be removed in the future.
+ * are deprecated as of PHP 7.0.0, and have been removed in PHP 8.0.
  * PHP 7 will emit `E_DEPRECATED` if a PHP 4 constructor is the only constructor defined
  * within a class. Classes that implement a `__construct()` method are unaffected.
  *
@@ -26,6 +31,7 @@ use PHP_CodeSniffer_Tokens as Tokens;
  * are not recognized as constructors anyway and therefore outside the scope of this sniff.
  *
  * PHP version 7.0
+ * PHP version 8.0
  *
  * @link https://www.php.net/manual/en/migration70.deprecated.php#migration70.deprecated.php4-constructors
  * @link https://wiki.php.net/rfc/remove_php4_constructors
@@ -48,9 +54,9 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_CLASS,
-        );
+        ];
     }
 
     /**
@@ -60,9 +66,9 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
      * @since 7.0.8 The message is downgraded from error to warning as - for now - support
      *              for PHP4-style constructors is just deprecated, not yet removed.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -72,7 +78,7 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
             return;
         }
 
-        if ($this->determineNamespace($phpcsFile, $stackPtr) !== '') {
+        if (Namespaces::determineNamespace($phpcsFile, $stackPtr) !== '') {
             /*
              * Namespaced methods with the same name as the class are treated as
              * regular methods, so we can bow out if we're in a namespace.
@@ -84,32 +90,24 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
         }
 
         $tokens = $phpcsFile->getTokens();
+        $class  = $tokens[$stackPtr];
 
-        $class = $tokens[$stackPtr];
-
-        if (isset($class['scope_closer']) === false) {
-            return;
-        }
-
-        $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
-        if ($nextNonEmpty === false || $tokens[$nextNonEmpty]['code'] !== \T_STRING) {
-            // Anonymous class in combination with PHPCS 2.3.x.
+        if (isset($class['scope_opener'], $class['scope_closer']) === false) {
             return;
         }
 
         $scopeCloser = $class['scope_closer'];
-        $className   = $tokens[$nextNonEmpty]['content'];
+        $className   = ObjectDeclarations::getName($phpcsFile, $stackPtr);
 
         if (empty($className) || \is_string($className) === false) {
             return;
         }
 
-        $nextFunc            = $stackPtr;
-        $classNameLc         = strtolower($className);
+        $nextFunc            = $class['scope_opener'];
         $newConstructorFound = false;
         $oldConstructorFound = false;
         $oldConstructorPos   = -1;
-        while (($nextFunc = $phpcsFile->findNext(array(\T_FUNCTION, \T_DOC_COMMENT_OPEN_TAG), ($nextFunc + 1), $scopeCloser)) !== false) {
+        while (($nextFunc = $phpcsFile->findNext([\T_FUNCTION, \T_DOC_COMMENT_OPEN_TAG], ($nextFunc + 1), $scopeCloser)) !== false) {
             // Skip over docblocks.
             if ($tokens[$nextFunc]['code'] === \T_DOC_COMMENT_OPEN_TAG) {
                 $nextFunc = $tokens[$nextFunc]['comment_closer'];
@@ -122,19 +120,17 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
                 $functionScopeCloser = $tokens[$nextFunc]['scope_closer'];
             }
 
-            $funcName = $phpcsFile->getDeclarationName($nextFunc);
+            $funcName = FunctionDeclarations::getName($phpcsFile, $nextFunc);
             if (empty($funcName) || \is_string($funcName) === false) {
                 $nextFunc = $functionScopeCloser;
                 continue;
             }
 
-            $funcNameLc = strtolower($funcName);
-
-            if ($funcNameLc === '__construct') {
+            if (\strtolower($funcName) === '__construct') {
                 $newConstructorFound = true;
             }
 
-            if ($funcNameLc === $classNameLc) {
+            if (NamingConventions::isEqual($funcName, $className) === true) {
                 $oldConstructorFound = true;
                 $oldConstructorPos   = $nextFunc;
             }
@@ -148,11 +144,17 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
         }
 
         if ($newConstructorFound === false && $oldConstructorFound === true) {
-            $phpcsFile->addWarning(
-                'Use of deprecated PHP4 style class constructor is not supported since PHP 7.',
-                $oldConstructorPos,
-                'Found'
-            );
+            $error   = 'Declaration of a PHP4 style class constructor is deprecated since PHP 7.0';
+            $code    = 'Deprecated';
+            $isError = false;
+
+            if ($this->supportsAbove('8.0') === true) {
+                $error  .= ' and removed since PHP 8.0';
+                $code    = 'Removed';
+                $isError = true;
+            }
+
+            MessageHelper::addMessage($phpcsFile, $error, $oldConstructorPos, $isError, $code);
         }
     }
 }

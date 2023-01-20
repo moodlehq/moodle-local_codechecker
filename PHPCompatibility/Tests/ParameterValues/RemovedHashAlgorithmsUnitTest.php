@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -20,7 +20,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group hashAlgorithms
  *
  * @covers \PHPCompatibility\Sniffs\ParameterValues\RemovedHashAlgorithmsSniff
- * @covers \PHPCompatibility\Sniff::getHashAlgorithmParameter
+ * @covers \PHPCompatibility\Helpers\HashAlgorithmsTrait
  *
  * @since 5.5
  */
@@ -57,18 +57,18 @@ class RemovedHashAlgorithmsUnitTest extends BaseSniffTest
      */
     public function dataRemovedHashAlgorithms()
     {
-        return array(
-            array('salsa10', '5.4', 13, '5.3'),
-            array('salsa20', '5.4', 14, '5.3'),
-            array('salsa10', '5.4', 15, '5.3'),
-            array('salsa20', '5.4', 16, '5.3'),
-            array('salsa10', '5.4', 18, '5.3'),
-            array('salsa20', '5.4', 19, '5.3'),
-            array('salsa10', '5.4', 20, '5.3'),
-            array('salsa10', '5.4', 22, '5.3'),
-            array('salsa10', '5.4', 23, '5.3'),
-            array('salsa20', '5.4', 25, '5.3'),
-        );
+        return [
+            ['salsa10', '5.4', 13, '5.3'],
+            ['salsa20', '5.4', 14, '5.3'],
+            ['salsa10', '5.4', 15, '5.3'],
+            ['salsa20', '5.4', 16, '5.3'],
+            ['salsa10', '5.4', 18, '5.3'],
+            ['salsa20', '5.4', 19, '5.3'],
+            ['salsa10', '5.4', 20, '5.3'],
+            ['salsa10', '5.4', 22, '5.3'],
+            ['salsa10', '5.4', 23, '5.3'],
+            ['salsa20', '5.4', 25, '5.3'],
+        ];
     }
 
 
@@ -96,11 +96,11 @@ class RemovedHashAlgorithmsUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(6),
-            array(7),
-            array(8),
-        );
+        return [
+            [6],
+            [7],
+            [8],
+        ];
     }
 
 

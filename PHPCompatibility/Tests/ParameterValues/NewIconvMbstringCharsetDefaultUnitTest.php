@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -30,17 +30,17 @@ class NewIconvMbstringCharsetDefaultUnitTest extends BaseSniffTest
      *
      * @dataProvider dataNewIconvMbstringCharsetDefault
      *
-     * @param int    $line      Line number where the error should occur.
-     * @param string $function  The name of the function called.
-     * @param string $paramName The name of parameter which is missing.
-     *                          Defaults to `$encoding`.
+     * @param int    $line         Line number where the error should occur.
+     * @param string $functionName The name of the function called.
+     * @param string $paramName    The name of parameter which is missing.
+     *                             Defaults to `$encoding`.
      *
      * @return void
      */
-    public function testNewIconvMbstringCharsetDefault($line, $function, $paramName = '$encoding')
+    public function testNewIconvMbstringCharsetDefault($line, $functionName, $paramName = '$encoding')
     {
         $file  = $this->sniffFile(__FILE__, '5.4-7.0');
-        $error = "The default value of the {$paramName} parameter for {$function}() was changed from ISO-8859-1 to UTF-8 in PHP 5.6";
+        $error = "The default value of the {$paramName} parameter for {$functionName}() was changed from ISO-8859-1 to UTF-8 in PHP 5.6";
 
         $this->assertError($file, $line, $error);
     }
@@ -54,39 +54,39 @@ class NewIconvMbstringCharsetDefaultUnitTest extends BaseSniffTest
      */
     public function dataNewIconvMbstringCharsetDefault()
     {
-        return array(
-            array(44, 'iconv_mime_decode_headers', '$charset'),
-            array(45, 'iconv_mime_decode', '$charset'),
-            array(46, 'Iconv_Strlen', '$charset'),
-            array(47, 'iconv_strpos', '$charset'),
-            array(48, 'iconv_strrpos', '$charset'),
-            array(49, 'iconv_substr', '$charset'),
+        return [
+            [44, 'iconv_mime_decode_headers'],
+            [45, 'iconv_mime_decode'],
+            [46, 'Iconv_Strlen'],
+            [47, 'iconv_strpos'],
+            [48, 'iconv_strrpos'],
+            [49, 'iconv_substr'],
 
-            array(51, 'mb_check_encoding'),
-            array(52, 'MB_chr'),
-            array(53, 'mb_convert_case'),
-            array(54, 'mb_convert_encoding', '$from_encoding'),
-            array(55, 'mb_convert_kana'),
-            array(56, 'mb_decode_numericentity'),
-            array(57, 'mb_encode_numericentity'),
-            array(58, 'mb_ord'),
-            array(59, 'mb_scrub'),
-            array(60, 'mb_strcut'),
-            array(61, 'mb_stripos'),
-            array(62, 'mb_stristr'),
-            array(63, 'mb_strlen'),
-            array(64, 'mb_strpos'),
-            array(65, 'mb_strrchr'),
-            array(66, 'mb_strrichr'),
-            array(67, 'mb_strripos'),
-            array(68, 'mb_strrpos'),
-            array(69, 'mb_strstr'),
-            array(70, 'mb_strtolower'),
-            array(71, 'mb_strtoupper'),
-            array(72, 'mb_strwidth'),
-            array(73, 'mb_substr_count'),
-            array(74, 'mb_substr'),
-        );
+            [51, 'mb_check_encoding'],
+            [52, 'MB_chr'],
+            [53, 'mb_convert_case'],
+            [54, 'mb_convert_encoding', '$from_encoding'],
+            [55, 'mb_convert_kana'],
+            [56, 'mb_decode_numericentity'],
+            [57, 'mb_encode_numericentity'],
+            [58, 'mb_ord'],
+            [59, 'mb_scrub'],
+            [60, 'mb_strcut'],
+            [61, 'mb_stripos'],
+            [62, 'mb_stristr'],
+            [63, 'mb_strlen'],
+            [64, 'mb_strpos'],
+            [65, 'mb_strrchr'],
+            [66, 'mb_strrichr'],
+            [67, 'mb_strripos'],
+            [68, 'mb_strrpos'],
+            [69, 'mb_strstr'],
+            [70, 'mb_strtolower'],
+            [71, 'mb_strtoupper'],
+            [72, 'mb_strwidth'],
+            [73, 'mb_substr_count'],
+            [74, 'mb_substr'],
+        ];
     }
 
 
@@ -109,17 +109,43 @@ class NewIconvMbstringCharsetDefaultUnitTest extends BaseSniffTest
     /**
      * Test the special handling of calls to iconv_mime_encode().
      *
+     * @dataProvider dataIconvMimeEncode
+     *
+     * @param int    $line    Line number where the error should occur.
+     * @param string $missing The preferences which are missing.
+     * @param string $type    Whether an error or a warning is expected. Defaults to 'error'.
+     *
      * @return void
      */
-    public function testIconvMimeEncode()
+    public function testIconvMimeEncode($line, $missing, $type = 'error')
     {
         $file  = $this->sniffFile(__FILE__, '5.4-7.0');
         $error = 'The default value of the %s parameter index for iconv_mime_encode() was changed from ISO-8859-1 to UTF-8 in PHP 5.6';
+        $error = \sprintf($error, $missing);
 
-        $this->assertError($file, 91, sprintf($error, '$preferences[\'input/output-charset\']'));
-        $this->assertWarning($file, 92, sprintf($error, '$preferences[\'input/output-charset\']'));
-        $this->assertError($file, 96, sprintf($error, '$preferences[\'output-charset\']'));
-        $this->assertError($file, 106, sprintf($error, '$preferences[\'input-charset\']'));
+        if ($type === 'error') {
+            $this->assertError($file, $line, $error);
+        } else {
+            $this->assertWarning($file, $line, $error);
+        }
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testIconvMimeEncode()
+     *
+     * @return array
+     */
+    public function dataIconvMimeEncode()
+    {
+        return [
+            [91, '$options[\'input/output-charset\']'],
+            [92, '$options[\'input/output-charset\']', 'warning'],
+            [96, '$options[\'output-charset\']'],
+            [106, '$options[\'input-charset\']'],
+            [115, '$options[\'input-charset\']'],
+        ];
     }
 
 
@@ -163,9 +189,9 @@ class NewIconvMbstringCharsetDefaultUnitTest extends BaseSniffTest
      */
     public function dataNoViolationsInFileOnValidVersion()
     {
-        return array(
-            array('-5.5'),
-            array('5.6-'),
-        );
+        return [
+            ['-5.5'],
+            ['5.6-'],
+        ];
     }
 }

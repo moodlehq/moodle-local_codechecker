@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,9 @@
 namespace PHPCompatibility\Sniffs\Syntax;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Operators;
 
 /**
  * Detect class member access on object instantiation/cloning.
@@ -50,10 +51,10 @@ class NewClassMemberAccessSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_NEW,
             \T_CLONE,
-        );
+        ];
     }
 
     /**
@@ -61,9 +62,9 @@ class NewClassMemberAccessSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -82,11 +83,11 @@ class NewClassMemberAccessSniff extends Sniff
         $supports53 = $this->supportsBelow('5.3');
 
         $error     = 'Class member access on object %s was not supported in PHP %s or earlier';
-        $data      = array('instantiation', '5.3');
+        $data      = ['instantiation', '5.3'];
         $errorCode = 'OnNewFound';
 
         if ($tokens[$stackPtr]['code'] === \T_CLONE) {
-            $data      = array('cloning', '5.6');
+            $data      = ['cloning', '5.6'];
             $errorCode = 'OnCloneFound';
         }
 
@@ -107,7 +108,7 @@ class NewClassMemberAccessSniff extends Sniff
                 && $tokens[$open]['code'] === \T_OPEN_CURLY_BRACKET
             ) {
                 // Non-curlies was already handled above.
-                $itemData      = array('instantiation using curly braces', '5.6');
+                $itemData      = ['instantiation using curly braces', '5.6'];
                 $itemErrorCode = 'OnNewFoundUsingCurlies';
             }
 
@@ -121,9 +122,9 @@ class NewClassMemberAccessSniff extends Sniff
      *
      * @since 9.3.0 Logic split off from the process method.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return array Array containing the stack pointers to the object operator or
      *               the open/close braces involved in the class member access;
@@ -135,24 +136,24 @@ class NewClassMemberAccessSniff extends Sniff
 
         if (isset($tokens[$stackPtr]['nested_parenthesis']) === false) {
             // The `new className/clone $a` has to be in parentheses, without is not supported.
-            return array();
+            return [];
         }
 
-        $parenthesisCloser = end($tokens[$stackPtr]['nested_parenthesis']);
-        $parenthesisOpener = key($tokens[$stackPtr]['nested_parenthesis']);
+        $parenthesisCloser = \end($tokens[$stackPtr]['nested_parenthesis']);
+        $parenthesisOpener = \key($tokens[$stackPtr]['nested_parenthesis']);
 
         if (isset($tokens[$parenthesisOpener]['parenthesis_owner']) === true) {
             // If there is an owner, these parentheses are for a different purpose.
-            return array();
+            return [];
         }
 
         $prevBeforeParenthesis = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($parenthesisOpener - 1), null, true);
         if ($prevBeforeParenthesis !== false && $tokens[$prevBeforeParenthesis]['code'] === \T_STRING) {
             // This is most likely a function call with the new/cloned object as a parameter.
-            return array();
+            return [];
         }
 
-        $braces = array();
+        $braces = [];
         $end    = $parenthesisCloser;
 
         do {
@@ -161,7 +162,9 @@ class NewClassMemberAccessSniff extends Sniff
                 break;
             }
 
-            if ($tokens[$nextNonEmpty]['code'] === \T_OBJECT_OPERATOR) {
+            if ($tokens[$nextNonEmpty]['code'] === \T_OBJECT_OPERATOR
+                || $tokens[$nextNonEmpty]['code'] === \T_NULLSAFE_OBJECT_OPERATOR
+            ) {
                 // No need to walk any further if this is object access.
                 $braces[$nextNonEmpty] = true;
                 break;

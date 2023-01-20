@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -26,21 +26,24 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
 {
 
     /**
-     * testDeprecatedTypeCastWithAlternative
+     * testDeprecatedRemovedTypeCastWithAlternative
      *
-     * @dataProvider dataDeprecatedTypeCastWithAlternative
+     * @dataProvider dataDeprecatedRemovedTypeCastWithAlternative
      *
      * @param string $castDescription   The type of type cast.
      * @param string $deprecatedIn      The PHP version in which the function was deprecated.
+     * @param string $removedIn         The PHP version in which the extension was removed.
      * @param string $alternative       An alternative type cast.
      * @param array  $lines             The line numbers in the test file which apply to this function.
      * @param string $okVersion         A PHP version in which the function was still valid.
      * @param string $deprecatedVersion Optional PHP version to test deprecation message with -
      *                                  if different from the $deprecatedIn version.
+     * @param string $removedVersion    Optional PHP version to test removal message with -
+     *                                  if different from the $removedIn version.
      *
      * @return void
      */
-    public function testDeprecatedTypeCastWithAlternative($castDescription, $deprecatedIn, $alternative, $lines, $okVersion, $deprecatedVersion = null)
+    public function testDeprecatedRemovedTypeCastWithAlternative($castDescription, $deprecatedIn, $removedIn, $alternative, $lines, $okVersion, $deprecatedVersion = null, $removedVersion = null)
     {
         $file = $this->sniffFile(__FILE__, $okVersion);
         foreach ($lines as $line) {
@@ -53,21 +56,28 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
         foreach ($lines as $line) {
             $this->assertWarning($file, $line, $error);
         }
+
+        $errorVersion = (isset($removedVersion)) ? $removedVersion : $removedIn;
+        $file         = $this->sniffFile(__FILE__, $errorVersion);
+        $error        = "{$castDescription} is deprecated since PHP {$deprecatedIn} and removed since PHP {$removedIn}; Use {$alternative} instead";
+        foreach ($lines as $line) {
+            $this->assertError($file, $line, $error);
+        }
     }
 
     /**
      * Data provider.
      *
-     * @see testDeprecatedTypeCastWithAlternative()
+     * @see testDeprecatedRemovedTypeCastWithAlternative()
      *
      * @return array
      */
-    public function dataDeprecatedTypeCastWithAlternative()
+    public function dataDeprecatedRemovedTypeCastWithAlternative()
     {
-        return array(
-            array('The unset cast', '7.2', 'unset()', array(8, 11, 12), '7.1'),
-            array('The real cast', '7.4', '(float)', array(15, 16), '7.3'),
-        );
+        return [
+            ['The unset cast', '7.2', '8.0', 'unset()', [8, 11, 12], '7.1'],
+            ['The real cast', '7.4', '8.0', '(float)', [15, 16], '7.3'],
+        ];
     }
 
 
@@ -95,11 +105,11 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(4),
-            array(5),
-            array(17),
-        );
+        return [
+            [4],
+            [5],
+            [17],
+        ];
     }
 
 

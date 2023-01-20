@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -57,15 +57,17 @@ class NewArrayReduceInitialTypeUnitTest extends BaseSniffTest
      */
     public function dataArrayReduceInitialType()
     {
-        return array(
-            array(16),
+        return [
+            [16],
 
-            array(19, false),
-            array(20, false),
-            array(21, false),
-            array(22, false),
-            array(23, false),
-        );
+            [19, false],
+            [20, false],
+            [21, false],
+            [22, false],
+            [23, false],
+
+            [26],
+        ];
     }
 
 

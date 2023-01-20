@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -28,7 +28,7 @@ class InternalInterfacesUnitTest extends BaseSniffTest
     /**
      * Sniffed file
      *
-     * @var \PHP_CodeSniffer_File
+     * @var \PHP_CodeSniffer\Files\File
      */
     protected $sniffResult;
 
@@ -37,21 +37,21 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      *
      * @var array
      */
-    protected $messages = array(
+    protected $messages = [
         'Traversable'       => 'The interface Traversable shouldn\'t be implemented directly, implement the Iterator or IteratorAggregate interface instead.',
         'DateTimeInterface' => 'The interface DateTimeInterface is intended for type hints only and is not implementable.',
         'Throwable'         => 'The interface Throwable cannot be implemented directly, extend the Exception class instead.',
-    );
+    ];
 
     /**
      * Set up the test file for this unit test.
      *
+     * @before
+     *
      * @return void
      */
-    protected function setUp()
+    protected function setUpPHPCS()
     {
-        parent::setUp();
-
         // Sniff file without testVersion as all checks run independently of testVersion being set.
         $this->sniffResult = $this->sniffFile(__FILE__);
     }
@@ -80,20 +80,20 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      */
     public function dataInternalInterfaces()
     {
-        return array(
-            array('Traversable', 3),
-            array('DateTimeInterface', 4),
-            array('Throwable', 5),
-            array('Traversable', 7),
-            array('Throwable', 7),
+        return [
+            ['Traversable', 3],
+            ['DateTimeInterface', 4],
+            ['Throwable', 5],
+            ['Traversable', 7],
+            ['Throwable', 7],
 
             // Anonymous classes.
-            array('Traversable', 17),
-            array('DateTimeInterface', 18),
-            array('Throwable', 19),
-            array('Traversable', 20),
-            array('Throwable', 20),
-        );
+            ['Traversable', 17],
+            ['DateTimeInterface', 18],
+            ['Throwable', 19],
+            ['Traversable', 20],
+            ['Throwable', 20],
+        ];
     }
 
     /**
@@ -130,10 +130,10 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(13),
-            array(14),
-        );
+        return [
+            [13],
+            [14],
+        ];
     }
 
 

@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,9 @@
 namespace PHPCompatibility\Sniffs\Syntax;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 
 /**
  * Detect function array dereferencing as introduced in PHP 5.4.
@@ -38,6 +39,7 @@ use PHP_CodeSniffer_Tokens as Tokens;
  */
 class NewFunctionArrayDereferencingSniff extends Sniff
 {
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -47,7 +49,7 @@ class NewFunctionArrayDereferencingSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_STRING);
+        return [\T_STRING];
     }
 
     /**
@@ -55,9 +57,9 @@ class NewFunctionArrayDereferencingSniff extends Sniff
      *
      * @since 7.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -105,9 +107,9 @@ class NewFunctionArrayDereferencingSniff extends Sniff
      *
      * @since 9.3.0 Logic split off from the process method.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return array Array containing stack pointers to the open/close braces
      *               involved in the function dereferencing;
@@ -120,41 +122,41 @@ class NewFunctionArrayDereferencingSniff extends Sniff
         // Next non-empty token should be the open parenthesis.
         $openParenthesis = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true, null, true);
         if ($openParenthesis === false || $tokens[$openParenthesis]['code'] !== \T_OPEN_PARENTHESIS) {
-            return array();
+            return [];
         }
 
         // Don't throw errors during live coding.
         if (isset($tokens[$openParenthesis]['parenthesis_closer']) === false) {
-            return array();
+            return [];
         }
 
         // Is this T_STRING really a function or method call ?
         $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
         if ($prevToken !== false
-            && \in_array($tokens[$prevToken]['code'], array(\T_DOUBLE_COLON, \T_OBJECT_OPERATOR), true) === false
+            && isset(Collections::objectOperators()[$tokens[$prevToken]['code']]) === false
         ) {
             if ($tokens[$prevToken]['code'] === \T_BITWISE_AND) {
                 // This may be a function declared by reference.
                 $prevToken = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($prevToken - 1), null, true);
             }
 
-            $ignore = array(
+            $ignore = [
                 \T_FUNCTION  => true,
                 \T_CONST     => true,
                 \T_USE       => true,
                 \T_NEW       => true,
                 \T_CLASS     => true,
                 \T_INTERFACE => true,
-            );
+            ];
 
             if (isset($ignore[$tokens[$prevToken]['code']]) === true) {
                 // Not a call to a PHP function or method.
-                return array();
+                return [];
             }
         }
 
         $current = $tokens[$openParenthesis]['parenthesis_closer'];
-        $braces  = array();
+        $braces  = [];
 
         do {
             $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($current + 1), null, true, null, true);

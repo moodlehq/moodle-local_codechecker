@@ -1,7 +1,7 @@
 <?php
 
-ini_set('define_syslog_variables', 'a');
-$a = ini_get('define_syslog_variables');
+ini_set(option: 'define_syslog_variables', value: 'a');
+$a = ini_get(option: 'define_syslog_variables');
 
 ini_set('register_globals', 'a');
 $a = ini_get('register_globals');
@@ -240,3 +240,216 @@ $a = ini_get('allow_url_include');
 
 ini_set('opcache.load_comments', 'On');
 $a = ini_get('opcache.load_comments');
+
+ini_set('phar.extract_list', 1);
+$test = ini_get('phar.extract_list');
+
+ini_set('mime_magic.debug', 1);
+$test = ini_get('mime_magic.debug');
+
+ini_set('mime_magic.magicfile', 'path');
+$test = ini_get('mime_magic.magicfile');
+
+ini_set('hwapi.allow_persistent', 0);
+$test = ini_get('hwapi.allow_persistent');
+
+ini_set('crack.default_dictionary', 0);
+$test = ini_get('crack.default_dictionary');
+
+ini_set('dbx.colnames_case', 0);
+$test = ini_get('dbx.colnames_case');
+
+ini_set('fbsql.allow_persistent', 0);
+$test = ini_get('fbsql.allow_persistent');
+
+ini_set('fbsql.generate_warnings', 0);
+$test = ini_get('fbsql.generate_warnings');
+
+ini_set('fbsql.autocommit', 0);
+$test = ini_get('fbsql.autocommit');
+
+ini_set('fbsql.max_persistent', 0);
+$test = ini_get('fbsql.max_persistent');
+
+ini_set('fbsql.max_links', 0);
+$test = ini_get('fbsql.max_links');
+
+ini_set('fbsql.max_connections', 0);
+$test = ini_get('fbsql.max_connections');
+
+ini_set('fbsql.max_results', 0);
+$test = ini_get('fbsql.max_results');
+
+ini_set('fbsql.default_host', 0);
+$test = ini_get('fbsql.default_host');
+
+ini_set('fbsql.default_user', 0);
+$test = ini_get('fbsql.default_user');
+
+ini_set('fbsql.default_password', 0);
+$test = ini_get('fbsql.default_password');
+
+ini_set('fbsql.default_database', 0);
+$test = ini_get('fbsql.default_database');
+
+ini_set('fbsql.default_database_password', 0);
+$test = ini_get('fbsql.default_database_password');
+
+ini_set('ingres.allow_persistent', 0);
+$test = ini_get('ingres.allow_persistent');
+
+ini_set('ingres.default_database', 0);
+$test = ini_get('ingres.default_database');
+
+ini_set('ingres.default_password', 0);
+$test = ini_get('ingres.default_password');
+
+ini_set('ingres.default_user', 0);
+$test = ini_get('ingres.default_user');
+
+ini_set('ingres.max_links', 0);
+$test = ini_get('ingres.max_links');
+
+ini_set('ingres.max_persistent', 0);
+$test = ini_get('ingres.max_persistent');
+
+ini_set('msql.allow_persistent', 0);
+$test = ini_get('msql.allow_persistent');
+
+ini_set('msql.max_persistent', 0);
+$test = ini_get('msql.max_persistent');
+
+ini_set('msql.max_links', 0);
+$test = ini_get('msql.max_links');
+
+ini_set('mssql.allow_persistent', 0);
+$test = ini_get('mssql.allow_persistent');
+
+ini_set('mssql.max_persistent', 0);
+$test = ini_get('mssql.max_persistent');
+
+ini_set('mssql.max_links', 0);
+$test = ini_get('mssql.max_links');
+
+ini_set('mssql.min_error_severity', 0);
+$test = ini_get('mssql.min_error_severity');
+
+ini_set('mssql.min_message_severity', 0);
+$test = ini_get('mssql.min_message_severity');
+
+ini_set('mssql.compatibility_mode', 0);
+$test = ini_get('mssql.compatibility_mode');
+
+ini_set('mssql.connect_timeout', 0);
+$test = ini_get('mssql.connect_timeout');
+
+ini_set('mssql.timeout', 0);
+$test = ini_get('mssql.timeout');
+
+ini_set('mssql.textsize', 0);
+$test = ini_get('mssql.textsize');
+
+ini_set('mssql.textlimit', 0);
+$test = ini_get('mssql.textlimit');
+
+ini_set('mssql.batchsize', 0);
+$test = ini_get('mssql.batchsize');
+
+ini_set('mssql.datetimeconvert', 0);
+$test = ini_get('mssql.datetimeconvert');
+
+ini_set('mssql.secure_connection', 0);
+$test = ini_get('mssql.secure_connection');
+
+ini_set('mssql.max_procs', 0);
+$test = ini_get('mssql.max_procs');
+
+ini_set('mssql.charset', 0);
+$test = ini_get('mssql.charset');
+
+ini_set('sqlite.assoc_case', 0);
+$test = ini_get('sqlite.assoc_case');
+
+ini_set('mysql.allow_local_infile', 0);
+$test = ini_get('mysql.allow_local_infile');
+
+ini_set('mysql.allow_persistent', 0);
+$test = ini_get('mysql.allow_persistent');
+
+ini_set('mysql.max_persistent', 0);
+$test = ini_get('mysql.max_persistent');
+
+ini_set('mysql.max_links', 0);
+$test = ini_get('mysql.max_links');
+
+ini_set('mysql.trace_mode', 0);
+$test = ini_get('mysql.trace_mode');
+
+ini_set('mysql.default_port', 0);
+$test = ini_get('mysql.default_port');
+
+ini_set('mysql.default_socket', 0);
+$test = ini_get('mysql.default_socket');
+
+ini_set('mysql.default_host', 0);
+$test = ini_get('mysql.default_host');
+
+ini_set('mysql.default_user', 0);
+$test = ini_get('mysql.default_user');
+
+ini_set('mysql.default_password', 0);
+$test = ini_get('mysql.default_password');
+
+ini_set('mysql.connect_timeout', 0);
+$test = ini_get('mysql.connect_timeout');
+
+ini_set('sybase.allow_persistent', 0);
+$test = ini_get('sybase.allow_persistent');
+
+ini_set('sybase.max_persistent', 0);
+$test = ini_get('sybase.max_persistent');
+
+ini_set('sybase.max_links', 0);
+$test = ini_get('sybase.max_links');
+
+ini_set('sybase.interface_file', 0);
+$test = ini_get('sybase.interface_file');
+
+ini_set('sybase.min_error_severity', 0);
+$test = ini_get('sybase.min_error_severity');
+
+ini_set('sybase.min_message_severity', 0);
+$test = ini_get('sybase.min_message_severity');
+
+ini_set('sybase.compatability_mode', 0);
+$test = ini_get('sybase.compatability_mode');
+
+ini_set('assert.quiet_eval', 0);
+$test = ini_get('assert.quiet_eval');
+
+ini_set('auto_detect_line_endings', 0);
+$test = ini_get('auto_detect_line_endings');
+
+ini_set('log_errors_max_len', 0);
+$test = ini_get('log_errors_max_len');
+
+ini_set('date.default_latitude', 0);
+$test = ini_get('date.default_latitude');
+
+ini_set('date.default_longitude', 0);
+$test = ini_get('date.default_longitude');
+
+ini_set('date.sunset_zenith', 0);
+$test = ini_get('date.sunset_zenith');
+
+ini_set('filter.default', 0);
+$test = ini_get('filter.default');
+
+ini_set('filter.default_options', 0);
+$test = ini_get('filter.default_options');
+
+ini_set('oci8.old_oci_close_semantics', 0);
+$test = ini_get('oci8.old_oci_close_semantics');
+
+// Prevent false positives on PHP 8.0+ nullsafe method calls.
+$obj?->ini_set('y2k_compliance', 1);

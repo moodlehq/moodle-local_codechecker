@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,28 +49,29 @@ class NewKeyedListUnitTest extends BaseSniffTest
      */
     public function dataNewKeyedList()
     {
-        return array(
-            array(15), // x3.
-            array(16), // x2.
-            array(17), // x2.
-            array(18),
-            array(19), // x2.
-            array(20), // x2.
-            array(22), // x3.
-            array(23), // x2.
-            array(28),
-            array(29),
-            array(30),
-            array(31),
-            array(36), // x2.
-            array(37), // x2.
-            array(41), // x2.
-            array(42), // x2.
-            array(46),
-            array(48),
-            array(58),
-            array(62),
-        );
+        return [
+            [15], // x3.
+            [16], // x2.
+            [17], // x2.
+            [18],
+            [19], // x2.
+            [20], // x2.
+            [22], // x3.
+            [23], // x2.
+            [28],
+            [29],
+            [30],
+            [31],
+            [36], // x2.
+            [37], // x2.
+            [41], // x2.
+            [42], // x2.
+            [46],
+            [48],
+            [54],
+            [62],
+            [66],
+        ];
     }
 
 
@@ -98,17 +99,17 @@ class NewKeyedListUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(6),
-            array(8),
-            array(10),
-            array(27),
-            array(35),
-            array(40),
-            array(45),
-            array(47),
-            array(49),
-        );
+        return [
+            [6],
+            [8],
+            [10],
+            [27],
+            [35],
+            [40],
+            [45],
+            [47],
+            [49],
+        ];
     }
 
 

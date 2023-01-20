@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -41,7 +41,7 @@ class ForbiddenGetClassNullUnitTest extends BaseSniffTest
     }
 
     /**
-     * dataGetClassNull
+     * Data provider.
      *
      * @see testGetClassNull()
      *
@@ -49,9 +49,11 @@ class ForbiddenGetClassNullUnitTest extends BaseSniffTest
      */
     public function dataGetClassNull()
     {
-        return array(
-            array(11),
-        );
+        return [
+            [11],
+            [12],
+            [15],
+        ];
     }
 
 

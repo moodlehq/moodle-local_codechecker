@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -42,6 +42,9 @@ class RemovedMbstringModifiersUnitTest extends BaseSniffTest
 
         $file = $this->sniffFile(__FILE__, '7.1');
         $this->assertWarning($file, $line, 'The Mbstring regex "e" modifier is deprecated since PHP 7.1. Use mb_ereg_replace_callback() instead (PHP 5.4.1+).');
+
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertError($file, $line, 'The Mbstring regex "e" modifier is deprecated since PHP 7.1 and removed since PHP 8.0. Use mb_ereg_replace_callback() instead (PHP 5.4.1+).');
     }
 
     /**
@@ -53,16 +56,16 @@ class RemovedMbstringModifiersUnitTest extends BaseSniffTest
      */
     public function dataMbstringEModifier()
     {
-        return array(
-            array(14),
-            array(15),
-            array(16),
-            array(24),
-            array(25),
-            array(26),
-            array(29),
-            array(30),
-        );
+        return [
+            [14],
+            [15],
+            [16],
+            [24],
+            [25],
+            [26],
+            [29],
+            [30],
+        ];
     }
 
 
@@ -90,17 +93,19 @@ class RemovedMbstringModifiersUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(4),
-            array(5),
-            array(6),
-            array(9),
-            array(10),
-            array(11),
-            array(19),
-            array(20),
-            array(21),
-        );
+        return [
+            [4],
+            [5],
+            [6],
+            [9],
+            [10],
+            [11],
+            [19],
+            [20],
+            [21],
+            [33],
+            [34],
+        ];
     }
 
 

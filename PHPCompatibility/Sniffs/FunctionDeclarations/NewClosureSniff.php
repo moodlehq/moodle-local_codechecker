@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,11 @@
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCTokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\Conditions;
 
 /**
  * Detect closures and verify that the features used are supported.
@@ -39,6 +42,7 @@ use PHP_CodeSniffer_Tokens as Tokens;
  */
 class NewClosureSniff extends Sniff
 {
+
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -48,7 +52,7 @@ class NewClosureSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_CLOSURE);
+        return [\T_CLOSURE];
     }
 
     /**
@@ -61,9 +65,9 @@ class NewClosureSniff extends Sniff
      *              - Added check for use of `$this` variable outside class context (unsupported).
      * @since 8.2.0 Added check for use of `self`/`static`/`parent` < 5.4.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return int|void Integer stack pointer to skip forward or void to continue
      *                  normal file processing.
@@ -130,7 +134,7 @@ class NewClosureSniff extends Sniff
                         'Closures / anonymous functions could not use "%s::" in PHP 5.3 or earlier',
                         $usesClassRef,
                         'ClassRefFound',
-                        array(strtolower($tokens[$usesClassRef]['content']))
+                        [\strtolower($tokens[$usesClassRef]['content'])]
                     );
 
                     $usesClassRef = $this->findClassRefUsageInClosure($phpcsFile, ($usesClassRef + 1), $scopeEnd);
@@ -161,7 +165,7 @@ class NewClosureSniff extends Sniff
                 /*
                  * Closures only have access to $this if used within a class context.
                  */
-                elseif ($this->inClassScope($phpcsFile, $stackPtr, false) === false) {
+                elseif (Conditions::hasCondition($phpcsFile, $stackPtr, BCTokens::ooScopeTokens()) === false) {
                     $phpcsFile->addWarning(
                         'Closures / anonymous functions only have access to $this if used within a class or when bound to an object using bindTo(). Please verify.',
                         $thisFound,
@@ -184,9 +188,9 @@ class NewClosureSniff extends Sniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return bool
      */
@@ -204,9 +208,9 @@ class NewClosureSniff extends Sniff
      *
      * @since 7.1.4
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile  The file being scanned.
-     * @param int                   $startToken The position within the closure to continue searching from.
-     * @param int                   $endToken   The closure scope closer to stop searching at.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile  The file being scanned.
+     * @param int                         $startToken The position within the closure to continue searching from.
+     * @param int                         $endToken   The closure scope closer to stop searching at.
      *
      * @return int|false The stackPtr to the first $this usage if found or false if
      *                   $this is not used.
@@ -232,9 +236,9 @@ class NewClosureSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile  The file being scanned.
-     * @param int                   $startToken The position within the closure to continue searching from.
-     * @param int                   $endToken   The closure scope closer to stop searching at.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile  The file being scanned.
+     * @param int                         $startToken The position within the closure to continue searching from.
+     * @param int                         $endToken   The closure scope closer to stop searching at.
      *
      * @return int|false The stackPtr to the first classRef usage if found or false if
      *                   they are not used.
@@ -247,7 +251,7 @@ class NewClosureSniff extends Sniff
         }
 
         $tokens   = $phpcsFile->getTokens();
-        $classRef = $phpcsFile->findNext(array(\T_SELF, \T_PARENT, \T_STATIC), $startToken, $endToken);
+        $classRef = $phpcsFile->findNext(Collections::ooHierarchyKeywords(), $startToken, $endToken);
 
         if ($classRef === false || $tokens[$classRef]['code'] !== \T_STATIC) {
             return $classRef;

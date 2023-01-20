@@ -3,17 +3,19 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\ControlStructures;
 
-use PHPCompatibility\AbstractNewFeatureSniff;
-use PHPCompatibility\PHPCSHelper;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\TextStrings;
 
 /**
  * Check for valid execution directives set with `declare()`.
@@ -33,10 +35,12 @@ use PHP_CodeSniffer_Tokens as Tokens;
  * @link https://wiki.php.net/rfc/scalar_type_hints_v5#strict_types_declare_directive
  *
  * @since 7.0.3
- * @since 7.1.0 Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class.
+ * @since 7.1.0  Now extends the `AbstractNewFeatureSniff` instead of the base `Sniff` class.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionNewFeatureTrait`.
  */
-class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
+class NewExecutionDirectivesSniff extends Sniff
 {
+    use ComplexVersionNewFeatureTrait;
 
     /**
      * A list of new execution directives
@@ -49,25 +53,24 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
      *
      * @var array(string => array(string => bool|string|array))
      */
-    protected $newDirectives = array(
-        'ticks' => array(
-            '3.1' => false,
-            '4.0' => true,
+    protected $newDirectives = [
+        'ticks' => [
+            '3.1'                  => false,
+            '4.0'                  => true,
             'valid_value_callback' => 'isNumeric',
-        ),
-        'encoding' => array(
-            '5.2' => false,
-            '5.3' => '--enable-zend-multibyte', // Directive ignored unless.
-            '5.4' => true,
+        ],
+        'encoding' => [
+            '5.2'                  => false,
+            '5.3'                  => '--enable-zend-multibyte', // Directive ignored unless.
+            '5.4'                  => true,
             'valid_value_callback' => 'validEncoding',
-        ),
-        'strict_types' => array(
-            '5.6' => false,
-            '7.0' => true,
-            'valid_values' => array(1),
-        ),
-    );
-
+        ],
+        'strict_types' => [
+            '5.6'          => false,
+            '7.0'          => true,
+            'valid_values' => ['0', '1'],
+        ],
+    ];
 
     /**
      * Tokens to ignore when trying to find the value for the directive.
@@ -76,7 +79,7 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
      *
      * @var array
      */
-    protected $ignoreTokens = array();
+    protected $ignoreTokens = [];
 
 
     /**
@@ -91,7 +94,7 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
         $this->ignoreTokens           = Tokens::$emptyTokens;
         $this->ignoreTokens[\T_EQUAL] = \T_EQUAL;
 
-        return array(\T_DECLARE);
+        return [\T_DECLARE];
     }
 
 
@@ -100,9 +103,9 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
      *
      * @since 7.0.3
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in
-     *                                         the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in
+     *                                               the stack passed in $tokens.
      *
      * @return void
      */
@@ -110,144 +113,152 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]['parenthesis_opener'], $tokens[$stackPtr]['parenthesis_closer']) === true) {
-            $openParenthesis  = $tokens[$stackPtr]['parenthesis_opener'];
-            $closeParenthesis = $tokens[$stackPtr]['parenthesis_closer'];
-        } else {
-            if (version_compare(PHPCSHelper::getVersion(), '2.3.4', '>=')) {
-                return;
-            }
-
-            // Deal with PHPCS 2.3.0-2.3.3 which do not yet set the parenthesis properly for declare statements.
-            $openParenthesis = $phpcsFile->findNext(\T_OPEN_PARENTHESIS, ($stackPtr + 1), null, false, null, true);
-            if ($openParenthesis === false || isset($tokens[$openParenthesis]['parenthesis_closer']) === false) {
-                return;
-            }
-            $closeParenthesis = $tokens[$openParenthesis]['parenthesis_closer'];
+        if (isset($tokens[$stackPtr]['parenthesis_opener'], $tokens[$stackPtr]['parenthesis_closer']) === false) {
+            return;
         }
 
-        $directivePtr = $phpcsFile->findNext(\T_STRING, ($openParenthesis + 1), $closeParenthesis, false);
+        $openParenthesis  = $tokens[$stackPtr]['parenthesis_opener'];
+        $closeParenthesis = $tokens[$stackPtr]['parenthesis_closer'];
+
+        $start = ($openParenthesis + 1);
+        do {
+            $comma = $phpcsFile->findNext(\T_COMMA, $start, $closeParenthesis);
+            if ($comma === false) {
+                // Found last directive.
+                $this->processDirective($phpcsFile, $start, $closeParenthesis);
+                break;
+            }
+
+            // Multi-directive declare statement.
+            $this->processDirective($phpcsFile, $start, $comma);
+
+            $start = ($comma + 1);
+        } while ($start < $closeParenthesis);
+    }
+
+
+    /**
+     * Processes one individual declare execution directive.
+     *
+     * @since 10.0.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $start     The position of the start of the directive.
+     * @param int                         $end       The position of the end of the directive.
+     *
+     * @return void
+     */
+    protected function processDirective($phpcsFile, $start, $end)
+    {
+        $tokens       = $phpcsFile->getTokens();
+        $directivePtr = $phpcsFile->findNext(\T_STRING, $start, $end);
+
         if ($directivePtr === false) {
             return;
         }
 
-        $directiveContent = $tokens[$directivePtr]['content'];
+        $directiveContent   = $tokens[$directivePtr]['content'];
+        $directiveContentLC = \strtolower($directiveContent);
 
-        if (isset($this->newDirectives[$directiveContent]) === false) {
+        if (isset($this->newDirectives[$directiveContentLC]) === false) {
             $error = 'Declare can only be used with the directives %s. Found: %s';
-            $data  = array(
-                implode(', ', array_keys($this->newDirectives)),
+            $data  = [
+                \implode(', ', \array_keys($this->newDirectives)),
                 $directiveContent,
-            );
+            ];
 
-            $phpcsFile->addError($error, $stackPtr, 'InvalidDirectiveFound', $data);
-
+            $phpcsFile->addError($error, $directivePtr, 'InvalidDirectiveFound', $data);
         } else {
             // Check for valid directive for version.
-            $itemInfo = array(
-                'name'   => $directiveContent,
-            );
-            $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
+            $itemInfo = [
+                'name' => $directiveContentLC,
+            ];
+            $this->handleFeature($phpcsFile, $directivePtr, $itemInfo);
 
             // Check for valid directive value.
-            $valuePtr = $phpcsFile->findNext($this->ignoreTokens, $directivePtr + 1, $closeParenthesis, true);
+            $valuePtr = $phpcsFile->findNext($this->ignoreTokens, $directivePtr + 1, $end, true);
             if ($valuePtr === false) {
                 return;
             }
 
-            $this->addWarningOnInvalidValue($phpcsFile, $valuePtr, $directiveContent);
+            $this->addWarningOnInvalidValue($phpcsFile, $valuePtr, $directiveContentLC);
         }
     }
 
 
     /**
-     * Determine whether an error/warning should be thrown for an item based on collected information.
+     * Retrieve the "last version before" and potential conditions from an array with arbitrary contents.
      *
-     * @since 7.1.0
+     * The array is expected to have at least one entry with a PHP version number as a key
+     * and `false` as the value.
      *
-     * @param array $errorInfo Detail information about an item.
+     * @param array $itemArray Sub-array for a specific matched item from a complex version array.
      *
-     * @return bool
+     * @return string[] Array with three keys `'not_in_version'`, `'conditional_version'`, `'condition'`.
+     *                  The array values will always be strings and will be either the values retrieved
+     *                  from the $itemArray or an empty string if the value for a key was unavailable
+     *                  or could not be determined.
      */
-    protected function shouldThrowError(array $errorInfo)
+    protected function getExtendedVersionInfo(array $itemArray)
     {
-        return ($errorInfo['not_in_version'] !== '' || $errorInfo['conditional_version'] !== '');
-    }
+        $versionInfo                        = $this->getVersionInfo($itemArray);
+        $versionInfo['conditional_version'] = '';
+        $versionInfo['condition']           = '';
 
+        foreach ($itemArray as $version => $present) {
+            if (\preg_match('`^\d\.\d(\.\d{1,2})?$`', $version) !== 1) {
+                // Not a version key.
+                continue;
+            }
 
-    /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
-     *
-     * @since 7.1.0
-     *
-     * @param array $itemInfo Base information about the item.
-     *
-     * @return array Version and other information about the item.
-     */
-    public function getItemArray(array $itemInfo)
-    {
-        return $this->newDirectives[$itemInfo['name']];
-    }
-
-
-    /**
-     * Get an array of the non-PHP-version array keys used in a sub-array.
-     *
-     * @since 7.1.0
-     *
-     * @return array
-     */
-    protected function getNonVersionArrayKeys()
-    {
-        return array(
-            'valid_value_callback',
-            'valid_values',
-        );
-    }
-
-
-    /**
-     * Retrieve the relevant detail (version) information for use in an error message.
-     *
-     * @since 7.1.0
-     *
-     * @param array $itemArray Version and other information about the item.
-     * @param array $itemInfo  Base information about the item.
-     *
-     * @return array
-     */
-    public function getErrorInfo(array $itemArray, array $itemInfo)
-    {
-        $errorInfo                        = parent::getErrorInfo($itemArray, $itemInfo);
-        $errorInfo['conditional_version'] = '';
-        $errorInfo['condition']           = '';
-
-        $versionArray = $this->getVersionArray($itemArray);
-
-        if (empty($versionArray) === false) {
-            foreach ($versionArray as $version => $present) {
-                if (\is_string($present) === true && $this->supportsBelow($version) === true) {
-                    // We cannot test for compilation option (ok, except by scraping the output of phpinfo...).
-                    $errorInfo['conditional_version'] = $version;
-                    $errorInfo['condition']           = $present;
-                }
+            if (\is_string($present) === true) {
+                // We cannot test for compilation option (ok, except by scraping the output of phpinfo...).
+                $versionInfo['conditional_version'] = $version;
+                $versionInfo['condition']           = $present;
             }
         }
 
-        return $errorInfo;
+        return $versionInfo;
     }
 
 
     /**
-     * Get the error message template for this sniff.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error for a matched item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @return string
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
+     *
+     * @return void
      */
-    protected function getErrorMsgTemplate()
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        return 'Directive ' . parent::getErrorMsgTemplate();
+        $itemArray   = $this->newDirectives[$itemInfo['name']];
+        $versionInfo = $this->getExtendedVersionInfo($itemArray);
+        $shouldError = false;
+
+        if (empty($versionInfo['not_in_version']) === false
+            && $this->supportsBelow($versionInfo['not_in_version']) === true
+        ) {
+            $shouldError = true;
+        } elseif (empty($versionInfo['conditional_version']) === false
+            && $this->supportsBelow($versionInfo['conditional_version']) === true
+        ) {
+            $shouldError = true;
+
+            // Reset the 'not_in_version' info as it is not relevant for the current notice.
+            $versionInfo['not_in_version'] = '';
+        }
+
+        if ($shouldError === false) {
+            return;
+        }
+
+        $this->addError($phpcsFile, $stackPtr, $itemInfo, $itemArray, $versionInfo);
     }
 
 
@@ -255,31 +266,41 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
      * Generates the error or warning for this item.
      *
      * @since 7.0.3
-     * @since 7.1.0 This method now overloads the method from the `AbstractNewFeatureSniff` class.
-     *              - Renamed from `maybeAddError()` to `addError()`.
-     *              - Changed visibility from `protected` to `public`.
+     * @since 7.1.0  This method now overloads the method from the `AbstractNewFeatureSniff` class.
+     *               - Renamed from `maybeAddError()` to `addError()`.
+     *               - Changed visibility from `protected` to `public`.
+     * @since 10.0.0 - Added new $itemArray parameter.
+     *               - Changed visibility from `public` to `protected`.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the relevant token in
-     *                                         the stack.
-     * @param array                 $itemInfo  Base information about the item.
-     * @param array                 $errorInfo Array with detail (version) information
-     *                                         relevant to the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param array                       $itemArray   The sub-array with all the details about
+     *                                                 this item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
      *
      * @return void
      */
-    public function addError(File $phpcsFile, $stackPtr, array $itemInfo, array $errorInfo)
+    protected function addError(File $phpcsFile, $stackPtr, array $itemInfo, array $itemArray, array $versionInfo)
     {
-        if ($errorInfo['not_in_version'] !== '') {
-            parent::addError($phpcsFile, $stackPtr, $itemInfo, $errorInfo);
-        } elseif ($errorInfo['conditional_version'] !== '') {
+        if ($versionInfo['not_in_version'] !== '') {
+            // Overrule the default message template.
+            $this->msgTemplate = 'Directive %s is not present in PHP version %s or earlier';
+
+            $msgInfo = $this->getMessageInfo($itemInfo['name'], $itemInfo['name'], $versionInfo);
+
+            $phpcsFile->addError($msgInfo['message'], $stackPtr, $msgInfo['errorcode'], $msgInfo['data']);
+
+        } elseif ($versionInfo['conditional_version'] !== '') {
             $error     = 'Directive %s is present in PHP version %s but will be disregarded unless PHP is compiled with %s';
-            $errorCode = $this->stringToErrorCode($itemInfo['name']) . 'WithConditionFound';
-            $data      = array(
+            $errorCode = MessageHelper::stringToErrorCode($itemInfo['name'], true) . 'WithConditionFound';
+            $data      = [
                 $itemInfo['name'],
-                $errorInfo['conditional_version'],
-                $errorInfo['condition'],
-            );
+                $versionInfo['conditional_version'],
+                $versionInfo['condition'],
+            ];
 
             $phpcsFile->addWarning($error, $stackPtr, $errorCode, $data);
         }
@@ -292,10 +313,10 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
      * @since 7.0.3
      * @since 7.0.6 Renamed from `addErrorOnInvalidValue()` to `addWarningOnInvalidValue()`.
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the execution directive value
-     *                                         in the token array.
-     * @param string                $directive The directive.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the execution directive value
+     *                                               in the token array.
+     * @param string                      $directive The directive.
      *
      * @return void
      */
@@ -304,17 +325,17 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
         $tokens = $phpcsFile->getTokens();
 
         $value = $tokens[$stackPtr]['content'];
-        if (isset(Tokens::$stringTokens[$tokens[$stackPtr]['code']]) === true) {
-            $value = $this->stripQuotes($value);
+        if ($directive === 'encoding' && isset(Tokens::$stringTokens[$tokens[$stackPtr]['code']]) === true) {
+            $value = TextStrings::stripQuotes($value);
         }
 
         $isError = false;
         if (isset($this->newDirectives[$directive]['valid_values'])) {
-            if (\in_array($value, $this->newDirectives[$directive]['valid_values']) === false) {
+            if (\in_array($value, $this->newDirectives[$directive]['valid_values'], true) === false) {
                 $isError = true;
             }
         } elseif (isset($this->newDirectives[$directive]['valid_value_callback'])) {
-            $valid = \call_user_func(array($this, $this->newDirectives[$directive]['valid_value_callback']), $value);
+            $valid = \call_user_func([$this, $this->newDirectives[$directive]['valid_value_callback']], $value);
             if ($valid === false) {
                 $isError = true;
             }
@@ -322,11 +343,11 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
 
         if ($isError === true) {
             $error     = 'The execution directive %s does not seem to have a valid value. Please review. Found: %s';
-            $errorCode = $this->stringToErrorCode($directive) . 'InvalidValueFound';
-            $data      = array(
+            $errorCode = MessageHelper::stringToErrorCode($directive, true) . 'InvalidValueFound';
+            $data      = [
                 $directive,
                 $value,
-            );
+            ];
 
             $phpcsFile->addWarning($error, $stackPtr, $errorCode, $data);
         }
@@ -346,7 +367,7 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
      */
     protected function isNumeric($value)
     {
-        return is_numeric($value);
+        return \is_numeric($value);
     }
 
 
@@ -364,8 +385,8 @@ class NewExecutionDirectivesSniff extends AbstractNewFeatureSniff
     protected function validEncoding($value)
     {
         static $encodings;
-        if (isset($encodings) === false && function_exists('mb_list_encodings')) {
-            $encodings = mb_list_encodings();
+        if (isset($encodings) === false && \function_exists('mb_list_encodings')) {
+            $encodings = \mb_list_encodings();
         }
 
         if (empty($encodings) || \is_array($encodings) === false) {

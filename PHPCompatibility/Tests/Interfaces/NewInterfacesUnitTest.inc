@@ -25,11 +25,11 @@ class MyJsonSerializable implements JsonSerializableSomething {}
 class MyJsonSerializable implements myNameSpace\JsonSerializable {}
 
 // Test anonymous class support.
-$a = new class implements SeekableIterator {}
+$a = new class implements SeekableIterator {};
 $b = new class implements \Serializable {
     public function __sleep() {}
     public function __wakeup() {}
-}
+};
 
 // Additional new interfaces.
 class MyTraversable implements Traversable {}
@@ -37,32 +37,32 @@ class MyDateTimeInterface implements DateTimeInterface {}
 class MyThrowable implements Throwable {}
 
 class MyClass {
-	// Interfaces as typehints.
-	function CountableTypeHint( Countable $a ) {}
-	function OuterIteratorTypeHint( OuterIterator $a ) {}
-	function RecursiveIteratorTypeHint( RecursiveIterator $a ) {}
-	function SeekableIteratorTypeHint( SeekableIterator $a ) {}
-	function SerializableTypeHint( Serializable $a ) {}
-	function SplObserverTypeHint( SplObserver $a ) {}
-	function SplSubjectTypeHint( SplSubject $a ) {}
-	function JsonSerializableTypeHint( JsonSerializable $a ) {}
-	function SessionHandlerInterfaceTypeHint( SessionHandlerInterface $a ) {}
-	function TraversableTypeHint( Traversable $a ) {}
-	function DateTimeInterfaceTypeHint( DateTimeInterface $a ) {}
-	function ThrowableTypeHint( Throwable $a ) {}
+    // Interfaces as typehints.
+    function CountableTypeHint( Countable $a ) {}
+    function OuterIteratorTypeHint( OuterIterator $a ) {}
+    function RecursiveIteratorTypeHint( RecursiveIterator $a ) {}
+    function SeekableIteratorTypeHint( SeekableIterator $a ) {}
+    function SerializableTypeHint( Serializable $a ) {}
+    function SplObserverTypeHint( SplObserver $a ) {}
+    function SplSubjectTypeHint( SplSubject $a ) {}
+    function JsonSerializableTypeHint( JsonSerializable $a ) {}
+    function SessionHandlerInterfaceTypeHint( SessionHandlerInterface $a ) {}
+    function TraversableTypeHint( Traversable $a ) {}
+    function DateTimeInterfaceTypeHint( DateTimeInterface $a ) {}
+    function ThrowableTypeHint( Throwable $a ) {}
 
-	// Namespaced interfaces as typehints
-	function SerializableTypeHint( \Serializable $a ) {} // Error: global namespace.
-	function SplObserverTypeHint( myNameSpace\SplObserver $a ) {} // Ok.
-	function SplSubjectTypeHint( \some\other\SplSubject $a ) {} // Ok.
+    // Namespaced interfaces as typehints
+    function SerializableTypeHint( \Serializable $a ) {} // Error: global namespace.
+    function SplObserverTypeHint( myNameSpace\SplObserver $a ) {} // Ok.
+    function SplSubjectTypeHint( \some\other\SplSubject $a ) {} // Ok.
 
-	// Interfaces as nullable typehints (PHP 7.1+).
-	function TraversableTypeHint( ?Traversable $a ) {}
-	function DateTimeInterfaceTypeHint( ?\DateTimeInterface $a ) {}
-	function ThrowableTypeHint( ?Throwable $a ) {}
-	
-	// Function with multiple typehinted parameters.
-	function MultipleTypeHints (OuterIterator $a, ?int $b, SplObserver $c, ?\RecursiveIterator $d) {}
+    // Interfaces as nullable typehints (PHP 7.1+).
+    function TraversableTypeHint( ?Traversable $a ) {}
+    function DateTimeInterfaceTypeHint( ?\DateTimeInterface $a ) {}
+    function ThrowableTypeHint( ?Throwable $a ) {}
+
+    // Function with multiple typehinted parameters.
+    function MultipleTypeHints (OuterIterator $a, ?int $b, SplObserver $c, ?\RecursiveIterator $d) {}
 }
 
 // Interfaces in type hints in anonymous functions.
@@ -88,3 +88,76 @@ function SplSubjectReturnTypeHint( $a ) : \MyNS\SplSubject\AnotherInterface {}
 // More new interfaces.
 class MySessionIdInterface implements SessionIdInterface {}
 class MySessionUpdateTimestampHandlerInterface implements SessionUpdateTimestampHandlerInterface {}
+
+try {
+} catch (Throwable $e) {
+}
+
+// Multi-catch.
+try {
+} catch (Throwable | \RuntimeException $e) {
+}
+
+// Global namespace, should throw error.
+try {
+} catch (\Throwable $e) {
+}
+
+// Namespaced, should be ignored.
+try {
+} catch (\My\Except\Throwable $e) {
+}
+
+// PHP 8.0 new interfaces.
+function StringableTypeHint( Stringable $a ) {}
+
+// Test interfaces extending interfaces.
+interface MyReflection extends Reflector {}
+interface MySession extends SessionABC, SessionIdInterface {}
+
+interface NewSerial extends \Serializable {
+    public function __sleep();
+    public function __wakeup();
+}
+
+// Function declarations nested in methods are not magic.
+class Nested implements Serializable {
+    public function declaredNested() {
+        function __sleep() {}
+        function __wakeup() {}
+    }
+}
+
+// Test error line precision.
+function errorLinePrecisionCheck(
+    JsonSerializable $param
+) : JsonSerializable {}
+
+// Test support for PHP 7.4 property types.
+public Throwable $var; // Ignore, not a property, parse error.
+
+$anon = class() {
+    public SessionUpdateTimestampHandlerInterface $property;
+};
+
+// Test support for PHP 7.4 arrow functions.
+$fn = fn(SessionIdInterface $param) => $param;
+$fn = fn($param): SessionHandlerInterface => $param;
+
+// Test support for PHP 8.0 union types.
+class UnionTypes {
+    public NotATarget|AlsoNotATarget $okay;
+
+    public Countable|SplObserver $property;
+    public function paramType(OuterIterator|RecursiveIterator $param) {}
+    public function returnType($param) : SessionHandlerInterface|JsonSerializable {}
+}
+
+// Test support for PHP 8.1 intersection types.
+class IntersectionTypes {
+    public function paramType(NotATarget&AlsoNotATarget $okay) {}
+
+    public Throwable&SessionUpdateTimestampHandlerInterface $property;
+    public function paramType(SeekableIterator&SplSubject $param) {}
+    public function returnType($param) : Reflector&Traversable {}
+}

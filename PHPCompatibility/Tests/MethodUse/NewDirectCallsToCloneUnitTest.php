@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,10 +49,11 @@ class NewDirectCallsToCloneUnitTest extends BaseSniffTest
      */
     public function dataDirectCallToClone()
     {
-        return array(
-            array(33),
-            array(34),
-        );
+        return [
+            [33],
+            [34],
+            [35],
+        ];
     }
 
 
@@ -80,10 +81,10 @@ class NewDirectCallsToCloneUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        $cases = array();
+        $cases = [];
         // No errors expected on the first 29 lines.
         for ($line = 1; $line <= 29; $line++) {
-            $cases[] = array($line);
+            $cases[] = [$line];
         }
 
         return $cases;

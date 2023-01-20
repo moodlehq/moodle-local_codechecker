@@ -116,3 +116,24 @@ ldap_read( $link_identifier, $base_dn, $filter, $attributes, $attrsonly, $sizeli
 ldap_rename( $link_identifier, $dn, $newrdn, $newparent, $deleteoldrdn, $serverctrls );
 ldap_search( $link_identifier, $base_dn, $filter, $attributes, $attrsonly, $sizelimit, $timelimit, $deref, $serverctrls );
 preg_replace_callback_array($patterns_and_callbacks, $subject, $limit, $count, $flags);
+date_time_set($object, $hour, $minute, $second, $microseconds);
+mb_decode_numericentity($str, $convmap, mb_internal_encoding(), FALSE );
+ldap_exop( $link, $reqoid, $reqdata, $serverctrls);
+ldap_exop_passwd( $link, $user, $oldpw, $newpw, &$serverctrls );
+pg_escape_bytea( $connection, $data );
+pg_escape_string( $connection, $data );
+pg_meta_data($connection, $table_name, $extended);
+hash($algo, $data, $binary, []);
+hash_file($algo, $filename, $binary, $options);
+hash_init($algo, $flags, $key, MyClass::$options);
+fputcsv($stream, $fields, ",", "\"", "\\", $eol);
+
+// Safeguard support for PHP 8 named parameters.
+ucwords(string : $foo); // OK.
+ucwords(string: $foo, separators: '|'); // Error.
+
+mb_strrpos( $haystack, encoding: 'UTF-8', needle: $needle ); // OK
+mb_strrpos( $haystack, encoding: 'UTF-8', needle: $needle, offset: 2 ); // Error.
+
+// Prevent false positives on PHP 8.0+ nullsafe method calls.
+$obj?->getenv($varname, true ); // OK.

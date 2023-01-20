@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,10 +49,11 @@ class NewConstantArraysUsingDefineUnitTest extends BaseSniffTest
      */
     public function dataConstantArraysUsingDefine()
     {
-        return array(
-            array(3),
-            array(9),
-        );
+        return [
+            [3],
+            [9],
+            [39],
+        ];
     }
 
 
@@ -80,17 +81,21 @@ class NewConstantArraysUsingDefineUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(15),
-            array(18),
-            array(19),
-            array(22),
-            array(23),
-            array(26),
-            array(28),
-            array(31),
-            array(32),
-        );
+        return [
+            [15],
+            [18],
+            [19],
+            [22],
+            [23],
+            [26],
+            [28],
+            [31],
+            [32],
+            [35],
+            [36],
+            [40],
+            [43],
+        ];
     }
 
 

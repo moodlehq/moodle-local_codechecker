@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,10 @@
 namespace PHPCompatibility\Sniffs\InitialValue;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\Arrays;
+use PHPCSUtils\Utils\PassedParameters;
 
 /**
  * Detect declaration of constants using `define()` with a (constant) array value
@@ -37,7 +40,7 @@ class NewConstantArraysUsingDefineSniff extends Sniff
      */
     public function register()
     {
-        return array(\T_STRING);
+        return [\T_STRING];
     }
 
     /**
@@ -45,9 +48,9 @@ class NewConstantArraysUsingDefineSniff extends Sniff
      *
      * @since 7.0.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -59,12 +62,11 @@ class NewConstantArraysUsingDefineSniff extends Sniff
 
         $tokens = $phpcsFile->getTokens();
 
-        $ignore = array(
-            \T_DOUBLE_COLON    => true,
-            \T_OBJECT_OPERATOR => true,
-            \T_FUNCTION        => true,
-            \T_CONST           => true,
-        );
+        $ignore  = [
+            \T_FUNCTION => true,
+            \T_CONST    => true,
+        ];
+        $ignore += Collections::objectOperators();
 
         $prevToken = $phpcsFile->findPrevious(\T_WHITESPACE, ($stackPtr - 1), null, true);
         if (isset($ignore[$tokens[$prevToken]['code']]) === true) {
@@ -72,12 +74,12 @@ class NewConstantArraysUsingDefineSniff extends Sniff
             return;
         }
 
-        $functionLc = strtolower($tokens[$stackPtr]['content']);
+        $functionLc = \strtolower($tokens[$stackPtr]['content']);
         if ($functionLc !== 'define') {
             return;
         }
 
-        $secondParam = $this->getFunctionCallParameter($phpcsFile, $stackPtr, 2);
+        $secondParam = PassedParameters::getParameter($phpcsFile, $stackPtr, 2, 'value');
         if (isset($secondParam['start'], $secondParam['end']) === false) {
             return;
         }
@@ -87,8 +89,11 @@ class NewConstantArraysUsingDefineSniff extends Sniff
             $targetNestingLevel = \count($tokens[$secondParam['start']]['nested_parenthesis']);
         }
 
-        $array = $phpcsFile->findNext(array(\T_ARRAY, \T_OPEN_SHORT_ARRAY), $secondParam['start'], ($secondParam['end'] + 1));
-        if ($array !== false) {
+        $array = $phpcsFile->findNext(Collections::arrayOpenTokensBC(), $secondParam['start'], ($secondParam['end'] + 1));
+        if ($array !== false
+            && ($tokens[$array]['code'] === \T_ARRAY
+                || Arrays::isShortArray($phpcsFile, $array) === true)
+        ) {
             if ((isset($tokens[$array]['nested_parenthesis']) === false && $targetNestingLevel === 0) || \count($tokens[$array]['nested_parenthesis']) === $targetNestingLevel) {
                 $phpcsFile->addError(
                     'Constant arrays using define are not allowed in PHP 5.6 or earlier',

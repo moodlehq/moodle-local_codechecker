@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -26,7 +26,7 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
 {
 
     /**
-     * testNewMagicClassConstant
+     * Test correctly identifying the magic class constant.
      *
      * @dataProvider dataNewMagicClassConstant
      *
@@ -38,10 +38,13 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
     {
         $file = $this->sniffFile(__FILE__, '5.4');
         $this->assertError($file, $line, 'The magic class constant ClassName::class was not available in PHP 5.4 or earlier');
+
+        $file = $this->sniffFile(__FILE__, '5.5');
+        $this->assertNoViolation($file, $line);
     }
 
     /**
-     * Data provider dataNewMagicClassConstant.
+     * Data provider.
      *
      * @see testNewMagicClassConstant()
      *
@@ -49,15 +52,21 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
      */
     public function dataNewMagicClassConstant()
     {
-        return array(
-            array(6),
-            array(12),
-        );
+        return [
+            [6],
+            [12],
+            [27],
+            [28],
+            [29],
+            [30],
+            [31],
+            [32],
+        ];
     }
 
 
     /**
-     * testNoFalsePositives
+     * Verify that no false positives are thrown for valid code.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -80,12 +89,52 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(4),
-            array(10),
-            array(18),
-            array(19),
-        );
+        return [
+            [4],
+            [10],
+            [18],
+            [19],
+        ];
+    }
+
+
+    /**
+     * Test correctly identifying the magic class constant when used on instantiated objects.
+     *
+     * @dataProvider dataNewMagicClassConstantOnObject
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testNewMagicClassConstantOnObject($line)
+    {
+        $file = $this->sniffFile(__FILE__, '7.4');
+        $this->assertError($file, $line, 'Using the magic class constant ::class with dynamic class names is not supported in PHP 7.4 or earlier');
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNewMagicClassConstantOnObject()
+     *
+     * @return array
+     */
+    public function dataNewMagicClassConstantOnObject()
+    {
+        return [
+            [35],
+            [36],
+            [37],
+            [38],
+            [39],
+
+            // Still not supported, but throwing an error anyhow.
+            [49],
+            [50],
+            [51],
+            [52],
+        ];
     }
 
 
@@ -96,7 +145,7 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion()
     {
-        $file = $this->sniffFile(__FILE__, '5.5');
+        $file = $this->sniffFile(__FILE__, '8.0');
         $this->assertNoViolation($file);
     }
 }

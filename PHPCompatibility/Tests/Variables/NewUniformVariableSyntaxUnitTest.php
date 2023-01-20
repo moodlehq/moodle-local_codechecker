@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,15 +49,20 @@ class NewUniformVariableSyntaxUnitTest extends BaseSniffTest
      */
     public function dataVariableVariables()
     {
-        return array(
-            array(4),
-            array(5),
-            array(6),
-            array(7),
-            array(8),
-            array(37),
-            array(38),
-        );
+        return [
+            [4],
+            [5],
+            [6],
+            [7],
+            [8],
+            [33],
+            [34],
+            [35],
+            [40],
+            [41],
+            [45],
+            [46],
+        ];
     }
 
 
@@ -85,28 +90,27 @@ class NewUniformVariableSyntaxUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(11),
-            array(12),
-            array(13),
-            array(14),
-            array(15),
+        return [
+            [11],
+            [12],
+            [13],
+            [14],
+            [15],
 
-            array(18),
-            array(19),
-            array(20),
-            array(21),
-            array(22),
-            array(23),
-            array(24),
-            array(25),
-            array(26),
-            array(27),
-            array(28),
-            array(29),
-            array(32),
-            array(42),
-        );
+            [18],
+            [19],
+            [20],
+            [21],
+            [22],
+            [23],
+            [24],
+            [25],
+            [26],
+            [27],
+            [28],
+            [42],
+            [49],
+        ];
     }
 
 

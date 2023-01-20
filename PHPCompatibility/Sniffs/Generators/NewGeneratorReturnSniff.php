@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,9 @@
 namespace PHPCompatibility\Sniffs\Generators;
 
 use PHPCompatibility\Sniff;
-use PHPCompatibility\PHPCSHelper;
-use PHP_CodeSniffer_File as File;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\Conditions;
 
 /**
  * As of PHP 7.0, a `return` statement can be used within a generator for a final expression to be returned.
@@ -27,6 +28,7 @@ use PHP_CodeSniffer_File as File;
  */
 class NewGeneratorReturnSniff extends Sniff
 {
+
     /**
      * Scope conditions within which a yield can exist.
      *
@@ -34,10 +36,10 @@ class NewGeneratorReturnSniff extends Sniff
      *
      * @var array
      */
-    private $validConditions = array(
+    private $validConditions = [
         \T_FUNCTION => \T_FUNCTION,
         \T_CLOSURE  => \T_CLOSURE,
-    );
+    ];
 
 
     /**
@@ -49,34 +51,10 @@ class NewGeneratorReturnSniff extends Sniff
      */
     public function register()
     {
-        $targets = array(
+        return [
             \T_YIELD,
-        );
-
-        /*
-         * The `yield` keyword was introduced in PHP 5.5 with the token T_YIELD.
-         * The `yield from` keyword was introduced in PHP 7.0 and tokenizes as
-         * "T_YIELD T_WHITESPACE T_STRING".
-         *
-         * Pre-PHPCS 3.1.0, the T_YIELD token was not correctly back-filled for PHP < 5.5.
-         * Also, as of PHPCS 3.1.0, the PHPCS tokenizer adds a new T_YIELD_FROM
-         * token.
-         *
-         * So for PHP 5.3-5.4 icw PHPCS < 3.1.0, we need to look for T_STRING with content "yield".
-         * For PHP 5.5+ we need to look for T_YIELD.
-         * For PHPCS 3.1.0+, we also need to look for T_YIELD_FROM.
-         */
-        if (version_compare(\PHP_VERSION_ID, '50500', '<') === true
-            && version_compare(PHPCSHelper::getVersion(), '3.1.0', '<') === true
-        ) {
-            $targets[] = \T_STRING;
-        }
-
-        if (\defined('T_YIELD_FROM')) {
-            $targets[] = \T_YIELD_FROM;
-        }
-
-        return $targets;
+            \T_YIELD_FROM,
+        ];
     }
 
     /**
@@ -84,9 +62,9 @@ class NewGeneratorReturnSniff extends Sniff
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void|int Void or a stack pointer to skip forward.
      */
@@ -98,26 +76,16 @@ class NewGeneratorReturnSniff extends Sniff
 
         $tokens = $phpcsFile->getTokens();
 
-        if ($tokens[$stackPtr]['code'] === \T_STRING
-            && $tokens[$stackPtr]['content'] !== 'yield'
-        ) {
+        $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
+        if ($prevNonEmpty !== false && $tokens[$prevNonEmpty]['code'] === \T_FN_ARROW) {
+            /*
+             * Yield in an arrow function, which can only contain one expression.
+             */
             return;
         }
 
-        if (empty($tokens[$stackPtr]['conditions']) === true) {
-            return;
-        }
-
-        // Walk the condition from inner to outer to see if we can find a valid function/closure scope.
-        $conditions = array_reverse($tokens[$stackPtr]['conditions'], true);
-        foreach ($conditions as $ptr => $type) {
-            if (isset($this->validConditions[$type]) === true) {
-                $function = $ptr;
-                break;
-            }
-        }
-
-        if (isset($function) === false) {
+        $function = Conditions::getLastCondition($phpcsFile, $stackPtr, $this->validConditions);
+        if ($function === false) {
             // Yield outside function scope, fatal error, but not our concern.
             return;
         }
@@ -127,11 +95,7 @@ class NewGeneratorReturnSniff extends Sniff
             return;
         }
 
-        $targets = array(\T_RETURN, \T_CLOSURE, \T_FUNCTION, \T_CLASS);
-        if (\defined('T_ANON_CLASS')) {
-            $targets[] = \T_ANON_CLASS;
-        }
-
+        $targets = [\T_RETURN, \T_CLOSURE, \T_FUNCTION, \T_CLASS, \T_ANON_CLASS];
         $current = $tokens[$function]['scope_opener'];
 
         while (($current = $phpcsFile->findNext($targets, ($current + 1), $tokens[$function]['scope_closer'])) !== false) {

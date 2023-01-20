@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -51,16 +51,18 @@ class RemovedNonCryptoHashUnitTest extends BaseSniffTest
      */
     public function dataNonCryptoHash()
     {
-        return array(
-            array(12, 'hash_hmac'),
-            array(13, 'hash_hmac_file'),
-            array(14, 'hash_pbkdf2'),
-            array(15, 'hash_init'),
-            array(16, 'hash_hmac'),
-            array(17, 'hash_hmac_file'),
-            array(18, 'hash_pbkdf2'),
-            array(19, 'hash_init'),
-        );
+        return [
+            [12, 'hash_hmac'],
+            [13, 'hash_hmac_file'],
+            [14, 'hash_pbkdf2'],
+            [15, 'hash_init'],
+            [16, 'hash_hmac'],
+            [17, 'hash_hmac_file'],
+            [18, 'hash_pbkdf2'],
+            [19, 'hash_init'],
+            [20, 'hash_pbkdf2'],
+            [23, 'hash_init'],
+        ];
     }
 
 

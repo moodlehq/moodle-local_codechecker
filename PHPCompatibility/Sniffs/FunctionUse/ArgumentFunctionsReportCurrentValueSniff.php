@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,9 +11,14 @@
 namespace PHPCompatibility\Sniffs\FunctionUse;
 
 use PHPCompatibility\Sniff;
-use PHPCompatibility\PHPCSHelper;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\BackCompat\BCFile;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\Operators;
+use PHPCSUtils\Utils\PassedParameters;
+use PHPCSUtils\Utils\TextStrings;
 
 /**
  * Functions inspecting function arguments report the current parameter value
@@ -40,12 +45,12 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
      *
      * @var array
      */
-    protected $changedFunctions = array(
+    protected $changedFunctions = [
         'func_get_arg'          => true,
         'func_get_args'         => true,
         'debug_backtrace'       => true,
         'debug_print_backtrace' => true,
-    );
+    ];
 
     /**
      * Tokens to look out for to allow us to skip past nested scoped structures.
@@ -54,32 +59,14 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
      *
      * @var array
      */
-    private $skipPastNested = array(
+    private $skipPastNested = [
         'T_CLASS'      => true,
         'T_ANON_CLASS' => true,
         'T_INTERFACE'  => true,
         'T_TRAIT'      => true,
         'T_FUNCTION'   => true,
         'T_CLOSURE'    => true,
-    );
-
-    /**
-     * List of tokens which when they preceed a T_STRING *within a function* indicate
-     * this is not a call to a PHP native function.
-     *
-     * This list already takes into account that nested scoped structures are being
-     * skipped over, so doesn't check for those again.
-     * Similarly, as constants won't have parentheses, those don't need to be checked
-     * for either.
-     *
-     * @since 9.1.0
-     *
-     * @var array
-     */
-    private $noneFunctionCallIndicators = array(
-        \T_DOUBLE_COLON    => true,
-        \T_OBJECT_OPERATOR => true,
-    );
+    ];
 
     /**
      * The tokens for variable incrementing/decrementing.
@@ -88,24 +75,39 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
      *
      * @var array
      */
-    private $plusPlusMinusMinus = array(
+    private $plusPlusMinusMinus = [
         \T_DEC => true,
         \T_INC => true,
-    );
+    ];
 
     /**
-     * Tokens to ignore when determining the start of a statement.
+     * Tokens to ignore when determining the start of a statement for call to one of the functions.
      *
      * @since 9.1.0
      *
      * @var array
      */
-    private $ignoreForStartOfStatement = array(
+    private $ignoreForStartOfStatement = [
         \T_COMMA,
         \T_DOUBLE_ARROW,
         \T_OPEN_SQUARE_BRACKET,
         \T_OPEN_PARENTHESIS,
-    );
+    ];
+
+    /**
+     * Tokens to ignore when determining the start of a statement for a used variable.
+     *
+     * @since 10.0.0
+     *
+     * @var array
+     */
+    private $ignoreForStartOfStatementVarUse = [
+        \T_COMMA,
+        \T_DOUBLE_ARROW,
+        \T_OPEN_SQUARE_BRACKET,
+        \T_OPEN_PARENTHESIS,
+        \T_OPEN_SHORT_ARRAY,
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -116,10 +118,10 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_FUNCTION,
             \T_CLOSURE,
-        );
+        ];
     }
 
     /**
@@ -127,9 +129,9 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
      *
      * @since 9.1.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token
-     *                                         in the stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token
+     *                                               in the stack passed in $tokens.
      *
      * @return void
      */
@@ -150,13 +152,13 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
         $scopeCloser = $tokens[$stackPtr]['scope_closer'];
 
         // Does the function declaration have parameters ?
-        $params = PHPCSHelper::getMethodParameters($phpcsFile, $stackPtr);
+        $params = FunctionDeclarations::getParameters($phpcsFile, $stackPtr);
         if (empty($params)) {
             // No named arguments found, so no risk of them being changed.
             return;
         }
 
-        $paramNames = array();
+        $paramNames = [];
         foreach ($params as $param) {
             $paramNames[] = $param['name'];
         }
@@ -172,7 +174,7 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
                 continue;
             }
 
-            $foundFunctionName = strtolower($tokens[$i]['content']);
+            $foundFunctionName = \strtolower($tokens[$i]['content']);
 
             if (isset($this->changedFunctions[$foundFunctionName]) === false) {
                 // Not one of the target functions.
@@ -190,7 +192,7 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
 
             $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($i - 1), null, true);
             if ($prev !== false) {
-                if (isset($this->noneFunctionCallIndicators[$tokens[$prev]['code']])) {
+                if (isset(Collections::objectOperators()[$tokens[$prev]['code']])) {
                     continue;
                 }
 
@@ -207,7 +209,7 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
              * Address some special cases.
              */
             if ($foundFunctionName !== 'func_get_args') {
-                $paramOne = $this->getFunctionCallParameter($phpcsFile, $i, 1);
+                $paramOne = PassedParameters::getParameter($phpcsFile, $i, 1);
                 if ($paramOne !== false) {
                     switch ($foundFunctionName) {
                         /*
@@ -270,7 +272,7 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
                         && ($tokens[$maybeFunctionCall]['content'] === 'array_slice'
                         || $tokens[$maybeFunctionCall]['content'] === 'array_splice')
                     ) {
-                        $parentFuncParamTwo = $this->getFunctionCallParameter($phpcsFile, $maybeFunctionCall, 2);
+                        $parentFuncParamTwo = PassedParameters::getParameter($phpcsFile, $maybeFunctionCall, 2);
                         $number             = $phpcsFile->findNext(
                             \T_LNUMBER,
                             $parentFuncParamTwo['start'],
@@ -323,7 +325,9 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
                             $tokens[$afterStackFrame]['bracket_closer']
                         );
 
-                        if ($arrayIndex !== false && $this->stripQuotes($tokens[$arrayIndex]['content']) !== 'args') {
+                        if ($arrayIndex !== false
+                            && TextStrings::stripQuotes($tokens[$arrayIndex]['content']) !== 'args'
+                        ) {
                             continue;
                         }
                     }
@@ -336,7 +340,7 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
              * being assigned to one of the parameters, i.e.:
              * `$param = func_get_args();`.
              */
-            $startOfStatement = PHPCSHelper::findStartOfStatement($phpcsFile, $i, $this->ignoreForStartOfStatement);
+            $startOfStatement = BCFile::findStartOfStatement($phpcsFile, $i, $this->ignoreForStartOfStatement);
 
             /*
              * Ok, so we've found one of the target functions in the right scope.
@@ -350,6 +354,28 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
                     // Skip past nested structures.
                     $j = $tokens[$j]['scope_closer'];
                     continue;
+                }
+
+                // Ignore return, exit and throw statements completely.
+                if ($tokens[$j]['code'] === \T_RETURN
+                    || $tokens[$j]['code'] === \T_EXIT
+                    || $tokens[$j]['code'] === \T_THROW
+                ) {
+                    $j = BCFile::findEndOfStatement($phpcsFile, $j);
+                    continue;
+                }
+
+                // Ignore use of any of the passed parameters in isset() or empty().
+                if ($tokens[$j]['code'] === \T_ISSET
+                    || $tokens[$j]['code'] === \T_EMPTY
+                ) {
+                    $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($j + 1), null, true);
+                    if ($nextNonEmpty !== false
+                        && isset($tokens[$nextNonEmpty]['parenthesis_closer'])
+                    ) {
+                        $j = $tokens[$nextNonEmpty]['parenthesis_closer'];
+                        continue;
+                    }
                 }
 
                 if ($tokens[$j]['code'] !== \T_VARIABLE) {
@@ -373,17 +399,49 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
                     continue;
                 }
 
+                $beforeVar                = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($j - 1), null, true);
+                $startOfVariableStatement = BCFile::findStartOfStatement(
+                    $phpcsFile,
+                    $j,
+                    $this->ignoreForStartOfStatementVarUse
+                );
+
+                /*
+                 * Check if this is only a plain assignment. If so, ignore.
+                 *
+                 * A "plain assignment" for the purposes of this check is defined as:
+                 * - Variable is not nested in parenthesis, i.e. not used in a potential function call.
+                 * - Not preceded by a reference operator.
+                 * - Has an assignment operator before it and none after.
+                 */
+                if (empty($tokens[$j]['nested_parenthesis']) === true
+                    && $beforeVar !== false
+                    && Operators::isReference($phpcsFile, $beforeVar) === false
+                    && $tokens[$startOfVariableStatement]['code'] === \T_VARIABLE
+                ) {
+                    $endOfVariableStatement = $phpcsFile->findNext([\T_SEMICOLON, \T_CLOSE_TAG], ($j + 1));
+                    $lastAssignmentOperator = $phpcsFile->findPrevious(
+                        Tokens::$assignmentTokens,
+                        ($endOfVariableStatement - 1),
+                        $startOfVariableStatement
+                    );
+                    if ($lastAssignmentOperator !== false
+                        && $lastAssignmentOperator < $j
+                    ) {
+                        continue;
+                    }
+                }
+
                 /*
                  * Ok, so we've found a variable which was passed as one of the parameters.
-                 * Now, is this variable being changed, i.e. incremented, decremented or
-                 * assigned something ?
+                 * Now, is this variable being changed, i.e. incremented, decremented, unset
+                 * or assigned something ?
                  */
                 $scanResult = 'warning';
                 if (isset($variableToken) === false) {
                     $variableToken = $j;
                 }
 
-                $beforeVar = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($j - 1), null, true);
                 if ($beforeVar !== false && isset($this->plusPlusMinusMinus[$tokens[$beforeVar]['code']])) {
                     // Variable is being (pre-)incremented/decremented.
                     $scanResult    = 'error';
@@ -402,6 +460,21 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
                     $scanResult    = 'error';
                     $variableToken = $j;
                     break;
+                }
+
+                if (empty($tokens[$j]['nested_parenthesis']) === false) {
+                    $parentheses = $tokens[$j]['nested_parenthesis'];
+                    end($parentheses);
+                    $openParens   = key($parentheses);
+                    $prevNonEmpty = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($openParens - 1), null, true);
+                    if ($prevNonEmpty !== false
+                        && $tokens[$prevNonEmpty]['code'] === \T_UNSET
+                    ) {
+                        // Variable is being unset.
+                        $scanResult    = 'error';
+                        $variableToken = $j;
+                        break;
+                    }
                 }
 
                 if ($tokens[$afterVar]['code'] === \T_OPEN_SQUARE_BRACKET
@@ -434,16 +507,15 @@ class ArgumentFunctionsReportCurrentValueSniff extends Sniff
             }
 
             $error = 'Since PHP 7.0, functions inspecting arguments, like %1$s(), no longer report the original value as passed to a parameter, but will instead provide the current value. The parameter "%2$s" was %4$s on line %3$s.';
-            $data  = array(
+            $data  = [
                 $foundFunctionName,
                 $tokens[$variableToken]['content'],
                 $tokens[$variableToken]['line'],
-            );
+            ];
 
             if ($scanResult === 'error') {
                 $data[] = 'changed';
                 $phpcsFile->addError($error, $i, 'Changed', $data);
-
             } elseif ($scanResult === 'warning') {
                 $data[] = 'used, and possibly changed (by reference),';
                 $phpcsFile->addWarning($error, $i, 'NeedsInspection', $data);

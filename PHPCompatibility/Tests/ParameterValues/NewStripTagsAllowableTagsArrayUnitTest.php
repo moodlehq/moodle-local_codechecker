@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -37,7 +37,7 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
     public function testNewStripTagsAllowableTagsArray($line)
     {
         $file  = $this->sniffFile(__FILE__, '7.3');
-        $error = 'The strip_tags() function did not accept $allowable_tags to be passed in array format in PHP 7.3 and earlier.';
+        $error = 'The strip_tags() function did not accept $allowed_tags to be passed in array format in PHP 7.3 and earlier.';
 
         $this->assertError($file, $line, $error);
     }
@@ -51,14 +51,14 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      */
     public function dataNewStripTagsAllowableTagsArray()
     {
-        return array(
-            array(13),
-            array(16),
-            array(23),
-            array(26),
-            array(33),
-            array(34),
-        );
+        return [
+            [13],
+            [16],
+            [23],
+            [26],
+            [33],
+            [34],
+        ];
     }
 
 
@@ -75,7 +75,7 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
     public function testInvalidStripTagsAllowableTagsArray($line, $paramValue)
     {
         $file  = $this->sniffFile(__FILE__, '7.4');
-        $error = 'When passing strip_tags() the $allowable_tags parameter as an array, the tags should not be enclosed in <> brackets. Found: ' . $paramValue;
+        $error = 'When passing strip_tags() the $allowed_tags parameter as an array, the tags should not be enclosed in <> brackets. Found: ' . $paramValue;
 
         $this->assertWarning($file, $line, $error);
     }
@@ -89,12 +89,12 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      */
     public function dataInvalidStripTagsAllowableTagsArray()
     {
-        return array(
-            array(23, "'<a>'"),
-            array(23, "'<p>'"),
-            array(27, "'<a>'"),
-            array(28, "'<p>'"),
-        );
+        return [
+            [23, "'<a>'"],
+            [23, "'<p>'"],
+            [27, "'<a>'"],
+            [28, "'<p>'"],
+        ];
     }
 
     /**
@@ -121,10 +121,16 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositivesInvalidStripTagsAllowableTagsArray()
     {
-        return array(
-            array(33),
-            array(34),
-        );
+        return [
+            [33],
+            [34],
+            [36],
+            [37],
+            [38],
+            [39],
+            [40],
+            [41],
+        ];
     }
 
     /**
@@ -155,10 +161,10 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array('7.3'),
-            array('7.4'),
-        );
+        return [
+            ['7.3'],
+            ['7.4'],
+        ];
     }
 
 

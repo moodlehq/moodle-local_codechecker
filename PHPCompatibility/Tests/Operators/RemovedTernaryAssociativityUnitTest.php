@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -37,7 +37,7 @@ class RemovedTernaryAssociativityUnitTest extends BaseSniffTest
      *
      * @var array
      */
-    protected $problemLines = array(
+    protected $problemLines = [
         3,
         4,
         5,
@@ -62,7 +62,8 @@ class RemovedTernaryAssociativityUnitTest extends BaseSniffTest
         120,
         123,
         126,
-    );
+        129, // x2.
+    ];
 
 
     /**
@@ -92,9 +93,9 @@ class RemovedTernaryAssociativityUnitTest extends BaseSniffTest
      */
     public function dataRemovedTernaryAssociativity()
     {
-        $cases = array();
+        $cases = [];
         foreach ($this->problemLines as $line) {
-            $cases[] = array($line);
+            $cases[] = [$line];
         }
 
         return $cases;
@@ -109,7 +110,7 @@ class RemovedTernaryAssociativityUnitTest extends BaseSniffTest
     public function testNoFalsePositives()
     {
         $file    = $this->sniffFile(__FILE__, '7.4');
-        $exclude = array_flip($this->problemLines);
+        $exclude = \array_flip($this->problemLines);
 
         for ($line = 1; $line <= $this->totalLines; $line++) {
             if (isset($exclude[$line])) {

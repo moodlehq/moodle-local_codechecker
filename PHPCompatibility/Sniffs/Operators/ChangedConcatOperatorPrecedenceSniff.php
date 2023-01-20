@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,8 +11,11 @@
 namespace PHPCompatibility\Sniffs\Operators;
 
 use PHPCompatibility\Sniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\Operators;
 
 /**
  * Detect code affected by the change in operator precedence of concatenation in PHP 8.0.
@@ -42,7 +45,7 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
      *
      * @var array
      */
-    private $tokensWithLowerPrecedence = array(
+    private $tokensWithLowerPrecedence = [
         'T_BITWISE_AND' => true,
         'T_BITWISE_XOR' => true,
         'T_BITWISE_OR'  => true,
@@ -51,7 +54,7 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
         'T_INLINE_ELSE' => true,
         'T_YIELD_FROM'  => true,
         'T_YIELD'       => true,
-    );
+    ];
 
 
     /**
@@ -63,10 +66,10 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
      */
     public function register()
     {
-        return array(
+        return [
             \T_PLUS,
             \T_MINUS,
-        );
+        ];
     }
 
     /**
@@ -74,9 +77,9 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
      *
      * @since 9.2.0
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -86,7 +89,7 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
             return;
         }
 
-        if ($this->isUnaryPlusMinus($phpcsFile, $stackPtr) === true) {
+        if (Operators::isUnaryPlusMinus($phpcsFile, $stackPtr) === true) {
             return;
         }
 
@@ -100,11 +103,10 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
 
             if ($tokens[$i]['code'] === \T_SEMICOLON
                 || $tokens[$i]['code'] === \T_OPEN_CURLY_BRACKET
-                || $tokens[$i]['code'] === \T_OPEN_TAG
-                || $tokens[$i]['code'] === \T_OPEN_TAG_WITH_ECHO
                 || $tokens[$i]['code'] === \T_COMMA
                 || $tokens[$i]['code'] === \T_COLON
                 || $tokens[$i]['code'] === \T_CASE
+                || isset(Collections::phpOpenTags()[$tokens[$i]['code']]) === true
             ) {
                 // If we reached any of the above tokens, we've reached the end of
                 // the statement without encountering a concatenation operator.
@@ -194,6 +196,6 @@ class ChangedConcatOperatorPrecedenceSniff extends Sniff
             $isError  = true;
         }
 
-        $this->addMessage($phpcsFile, $message, $i, $isError);
+        MessageHelper::addMessage($phpcsFile, $message, $i, $isError);
     }
 }

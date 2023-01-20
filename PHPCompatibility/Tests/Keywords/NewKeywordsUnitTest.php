@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -167,10 +167,10 @@ class NewKeywordsUnitTest extends BaseSniffTest
      */
     public function dataYield()
     {
-        return array(
-            array(33),
-            array(78),
-        );
+        return [
+            [33],
+            [78],
+        ];
     }
 
     /**
@@ -211,10 +211,10 @@ class NewKeywordsUnitTest extends BaseSniffTest
      */
     public function dataYieldFrom()
     {
-        return array(
-            array(75),
-            array(76),
-        );
+        return [
+            [75],
+            [76],
+        ];
     }
 
     /**
@@ -231,6 +231,35 @@ class NewKeywordsUnitTest extends BaseSniffTest
         $file = $this->sniffFile(__FILE__, '5.5');
         $this->assertNoViolation($file, 9);
         $this->assertNoViolation($file, 108);
+    }
+
+    /**
+     * testFinallyNoFalsePositives
+     *
+     * @dataProvider dataFinallyNoFalsePositives
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testFinallyNoFalsePositives($line)
+    {
+        $file = $this->sniffFile(__FILE__, '5.4');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testConstNoFalsePositives()
+     *
+     * @return array
+     */
+    public function dataFinallyNoFalsePositives()
+    {
+        return [
+            [125],
+        ];
     }
 
     /**
@@ -260,12 +289,12 @@ class NewKeywordsUnitTest extends BaseSniffTest
      */
     public function dataConst()
     {
-        return array(
-            array(37),
-            array(44),
-            array(53),
-            array(62),
-        );
+        return [
+            [37],
+            [44],
+            [53],
+            [62],
+        ];
     }
 
 
@@ -293,14 +322,14 @@ class NewKeywordsUnitTest extends BaseSniffTest
      */
     public function dataConstNoFalsePositives()
     {
-        return array(
-            array(40),
-            array(41),
-            array(49),
-            array(50),
-            array(58),
-            array(59),
-        );
+        return [
+            [40],
+            [41],
+            [49],
+            [50],
+            [58],
+            [59],
+        ];
     }
 
 
@@ -380,20 +409,14 @@ class NewKeywordsUnitTest extends BaseSniffTest
      */
     public function testHaltCompiler()
     {
-        if (\PHP_MAJOR_VERSION === 5 && \PHP_MINOR_VERSION === 3) {
-            // PHP 5.3 actually shows the warning.
-            $file = $this->sniffFile(__FILE__, '5.0');
-            $this->assertError($file, 124, '"__halt_compiler" keyword is not present in PHP version 5.0 or earlier');
-        } else {
-            /*
-             * Usage of `__halt_compiler()` cannot be tested on its own token as the compiler
-             * will be halted...
-             * So testing that any violations created *after* the compiler is halted will
-             * not be reported.
-             */
-            $file = $this->sniffFile(__FILE__, '5.2');
-            $this->assertNoViolation($file, 127);
-        }
+        /*
+         * Usage of `__halt_compiler()` cannot be tested on its own token as the compiler
+         * will be halted...
+         * So testing that any violations created *after* the compiler is halted will
+         * not be reported.
+         */
+        $file = $this->sniffFile(__FILE__, '5.2');
+        $this->assertNoViolation($file, 130);
     }
 
 

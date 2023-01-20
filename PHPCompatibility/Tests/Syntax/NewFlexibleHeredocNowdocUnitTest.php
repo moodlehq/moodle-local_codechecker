@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,6 @@
 namespace PHPCompatibility\Tests\Syntax;
 
 use PHPCompatibility\Tests\BaseSniffTest;
-use PHPCompatibility\PHPCSHelper;
 
 /**
  * Test the NewFlexibleHeredocNowdoc sniff.
@@ -40,13 +39,6 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     protected static $php73plus;
 
-    /**
-     * Whether PHPCS < 2.6.0 is detected.
-     *
-     * @var bool
-     */
-    protected static $isLowPHPCS = false;
-
 
     /**
      * Set up skip condition based on used PHP version.
@@ -62,29 +54,12 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
             self::$php73plus = false;
             // When using PHP 7.3+, the closing marker will be misidentified if the
             // body contains the heredoc/nowdoc identifier.
-            if (version_compare(\PHP_VERSION_ID, '70299', '>') === true) {
+            if (\version_compare(\PHP_VERSION_ID, '70299', '>') === true) {
                 self::$php73plus = true;
             }
         }
 
         return self::$php73plus;
-    }
-
-
-    /**
-     * Set up skip condition for low PHPCS versions.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        // When using PHPCS 2.5.1 and lower, the tokenizer has an insurmountable bug
-        // parsing flexible heredoc/nowdocs.
-        if (version_compare(PHPCSHelper::getVersion(), '2.6.0', '<')) {
-            self::$isLowPHPCS = true;
-        }
-
-        parent::setUpBeforeClass();
     }
 
 
@@ -101,12 +76,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function testIndentedHeredocNowdoc($fileNumber, $line, $skipNoViolation = false)
     {
-        if (self::$isLowPHPCS === true) {
-            $this->markTestSkipped('Flexible heredoc/nowdoc can not be detected due to Tokenizer errors in PHPCS < 2.6.0.');
-            return;
-        }
-
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, $fileNumber);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, $fileNumber);
 
         $file = $this->sniffFile($fileName, '7.2');
         $this->assertError($file, $line, 'Heredoc/nowdoc with an indented closing marker is not supported in PHP 7.2 or earlier.');
@@ -126,18 +96,18 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function dataIndentedHeredocNowdoc()
     {
-        $data = array(
-            array(3, 13),
-            array(4, 13),
-            array(5, 15),
-            array(6, 15),
-            array(7, 13),
-        );
+        $data = [
+            [3, 13],
+            [4, 13],
+            [5, 15],
+            [6, 15],
+            [7, 13],
+        ];
 
         if (self::getSetSkipCondition() === true) {
             // PHP 7.3+ will misidentify the closing marker (parse error) when the identifier is in the body.
-            $data[] = array(2, 23, true);
-            $data[] = array(2, 30, true);
+            $data[] = [2, 23, true];
+            $data[] = [2, 30, true];
         }
 
         return $data;
@@ -157,12 +127,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function testCodeAfterHeredocNowdoc($fileNumber, $line, $skipNoViolation = false)
     {
-        if (self::$isLowPHPCS === true) {
-            $this->markTestSkipped('Flexible heredoc/nowdoc can not be detected due to Tokenizer errors in PHPCS < 2.6.0.');
-            return;
-        }
-
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, $fileNumber);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, $fileNumber);
 
         $file = $this->sniffFile($fileName, '7.2');
         $this->assertError($file, $line, 'Having code - other than a semi-colon or new line - after the closing marker of a heredoc/nowdoc is not supported in PHP 7.2 or earlier.');
@@ -182,16 +147,16 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function dataCodeAfterHeredocNowdoc()
     {
-        $data = array(
-            array(8, 15),
-            array(9, 15),
-        );
+        $data = [
+            [8, 15],
+            [9, 15],
+        ];
 
         if (self::getSetSkipCondition() === true) {
             // PHP 7.3+ will misidentify the closing marker (parse error) when the identifier is in the body.
-            $data[] = array(2, 12, true);
-            $data[] = array(2, 18, true);
-            $data[] = array(2, 38, true);
+            $data[] = [2, 12, true];
+            $data[] = [2, 18, true];
+            $data[] = [2, 38, true];
         }
 
         return $data;
@@ -209,7 +174,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function testForbiddenClosingMarkerInBody($line)
     {
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, 2);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, 2);
 
         $file = $this->sniffFile($fileName, '7.3');
         $this->assertError($file, $line, 'The body of a heredoc/nowdoc can not contain the heredoc/nowdoc closing marker as text at the start of a line since PHP 7.3.');
@@ -229,18 +194,18 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function dataForbiddenClosingMarkerInBody()
     {
-        $lines = array(
-            array(12),
-            array(18),
-            array(23),
-            array(30),
-            array(38),
-        );
+        $lines = [
+            [12],
+            [18],
+            [23],
+            [30],
+            [38],
+        ];
 
         if (self::getSetSkipCondition() === false) {
             // PHP < 7.3 can reliably throw errors for all lines in the heredoc/nowdoc containing the identifier.
-            $lines[] = array(40);
-            $lines[] = array(42);
+            $lines[] = [40];
+            $lines[] = [42];
         }
 
         return $lines;
@@ -254,7 +219,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      */
     public function testNoFalsePositives()
     {
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, 1);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, 1);
 
         $file = $this->sniffFile($fileName, '7.2');
         $this->assertNoViolation($file);

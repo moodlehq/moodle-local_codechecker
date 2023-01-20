@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -49,13 +49,13 @@ class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTest
      */
     public function dataForbiddenNegativeBitshift()
     {
-        return array(
-            array(3),
-            array(4),
-            array(5),
-            array(7),
-            array(8),
-        );
+        return [
+            [3],
+            [4],
+            [5],
+            [7],
+            [8],
+        ];
     }
 
 
@@ -83,14 +83,14 @@ class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(10),
-            array(11),
-            array(12),
-            array(13),
-            array(16),
-            array(19),
-        );
+        return [
+            [10],
+            [11],
+            [12],
+            [13],
+            [16],
+            [19],
+        ];
     }
 
 

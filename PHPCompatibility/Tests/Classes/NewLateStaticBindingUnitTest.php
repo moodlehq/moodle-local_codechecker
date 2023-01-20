@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -52,10 +52,15 @@ class NewLateStaticBindingUnitTest extends BaseSniffTest
      */
     public function dataLateStaticBinding()
     {
-        return array(
-            array(8),
-            array(9),
-        );
+        return [
+            [8],
+            [9],
+            [10],
+            [12],
+            [13],
+            [15],
+            [17],
+        ];
     }
 
 
@@ -83,9 +88,9 @@ class NewLateStaticBindingUnitTest extends BaseSniffTest
      */
     public function dataLateStaticBindingOutsideClassScope()
     {
-        return array(
-            array(19),
-        );
+        return [
+            [27],
+        ];
     }
 
 
@@ -113,12 +118,14 @@ class NewLateStaticBindingUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return array(
-            array(7),
-            array(12),
-            array(15),
-            array(16),
-        );
+        return [
+            [4],
+            [6],
+            [7],
+            [20],
+            [23],
+            [24],
+        ];
     }
 
 

@@ -26,10 +26,13 @@ echo myClass::hello();
 echo ${$obj->getName()};
 echo $obj->{$obj->$hello}();
 echo $obj->{myClass::$foo}();
-echo new self::$transport[$cap_string]();
-class fooBar {
+
+// Uh oh, these were false negatives. Reporting them now.
+class fooBar extends Bar{
     function foo() {
+        echo new self::$transport[$cap_string]();
         echo static::$transport[$cap_string]();
+        echo parent::$transport[$cap_string]();
     }
 }
 
@@ -37,6 +40,10 @@ class fooBar {
 echo $  $var['key1']['key2']; // Bad.
 echo $obj  ->   /* comment */ $var['key']; // Bad.
 echo myClass  :: { /* comment */ $var['key']}(); // OK.
+
+// Make sure PHP 8.0+ nullsafe object operator is handled correctly.
+echo $obj?->$var['key'];
+echo $obj?->$var['key']();
 
 // Live coding.
 echo $$var['key'

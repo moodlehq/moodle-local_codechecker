@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -11,7 +11,6 @@
 namespace PHPCompatibility\Tests\Miscellaneous;
 
 use PHPCompatibility\Tests\BaseSniffTest;
-use PHPCompatibility\PHPCSHelper;
 
 /**
  * Test the NewPHPOpenTagEOF sniff.
@@ -33,57 +32,6 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     const TEST_FILE = 'NewPHPOpenTagEOFUnitTest.%d.inc';
 
-
-    /**
-     * Whether or not the sniff can reliably run or if tests should be skipped.
-     *
-     * @var bool
-     */
-    protected static $shouldSkip = false;
-
-
-    /**
-     * Set up skip condition.
-     *
-     * @return void
-     */
-    public static function setUpBeforeClass()
-    {
-        $phpcsVersion  = PHPCSHelper::getVersion();
-        $shortOpenTags = (bool) ini_get('short_open_tag');
-
-        /*
-         * When using PHPCS 2.5.1 or lower combined with PHP 5.3 with the short_open_tag
-         * INI setting set to `On`, we run into a PHPCS Tokenizer issue which will
-         * cause the tests to fail.
-         */
-        if ($shortOpenTags === true
-            && version_compare($phpcsVersion, '2.6.0', '<')
-            && version_compare(\PHP_VERSION_ID, '50400', '<')
-        ) {
-            self::$shouldSkip = true;
-        }
-
-        parent::setUpBeforeClass();
-    }
-
-
-    /**
-     * Set up skip condition.
-     *
-     * @return void
-     */
-    protected function setUp()
-    {
-        if (self::$shouldSkip === true) {
-            $this->markTestSkipped('Tests can not be run on PHP 5.3 with short_open_tag=On in combination with PHPCS < 2.6.0');
-            return;
-        }
-
-        parent::setUp();
-    }
-
-
     /**
      * Test detection of stand alone PHP open tag at end of file.
      *
@@ -96,7 +44,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function testNewPHPOpenTagEOF($fileNumber, $line)
     {
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, $fileNumber);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, $fileNumber);
 
         $file = $this->sniffFile($fileName, '7.3');
         $this->assertError($file, $line, 'A PHP open tag at the end of a file, without trailing newline, was not supported in PHP 7.3 or earlier and would result in a syntax error or be interpreted as a literal string');
@@ -111,12 +59,12 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function dataNewPHPOpenTagEOF()
     {
-        return array(
-            array(4, 1),
-            array(5, 13),
-            array(6, 4),
-            array(7, 6),
-        );
+        return [
+            [4, 1],
+            [5, 13],
+            [6, 4],
+            [7, 6],
+        ];
     }
 
 
@@ -133,7 +81,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function testNoFalsePositivesOnLine($fileNumber, $line)
     {
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, $fileNumber);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, $fileNumber);
 
         $file = $this->sniffFile($fileName, '7.3');
         $this->assertNoViolation($file, $line);
@@ -148,12 +96,12 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositivesOnLine()
     {
-        return array(
-            array(5, 1),
-            array(5, 8),
-            array(6, 1),
-            array(7, 1),
-        );
+        return [
+            [5, 1],
+            [5, 8],
+            [6, 1],
+            [7, 1],
+        ];
     }
 
 
@@ -168,7 +116,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function testNoFalsePositivesOnFile($fileNumber)
     {
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, $fileNumber);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, $fileNumber);
 
         $file = $this->sniffFile($fileName, '7.3');
         $this->assertNoViolation($file);
@@ -183,11 +131,11 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositivesOnFile()
     {
-        return array(
-            array(1),
-            array(2),
-            array(3),
-        );
+        return [
+            [1],
+            [2],
+            [3],
+        ];
     }
 
 
@@ -202,7 +150,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function testNoViolationsInFileOnValidVersion($fileNumber)
     {
-        $fileName = __DIR__ . '/' . sprintf(self::TEST_FILE, $fileNumber);
+        $fileName = __DIR__ . '/' . \sprintf(self::TEST_FILE, $fileNumber);
 
         $file = $this->sniffFile($fileName, '7.4');
         $this->assertNoViolation($file);
@@ -217,19 +165,15 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      */
     public function dataNoViolationsInFileOnValidVersion()
     {
-        $data = array(
-            array(1),
-            array(2),
-            array(3),
-            array(5),
-            array(6),
-            array(7),
-        );
-
-        // In PHPCS 2.x, the `Internal.NoCodeFound` error will come through, even when unit testing.
-        if (version_compare(PHPCSHelper::getVersion(), '3.0.0', '>')) {
-            $data[] = array(4);
-        }
+        $data = [
+            [1],
+            [2],
+            [3],
+            [4],
+            [5],
+            [6],
+            [7],
+        ];
 
         return $data;
     }

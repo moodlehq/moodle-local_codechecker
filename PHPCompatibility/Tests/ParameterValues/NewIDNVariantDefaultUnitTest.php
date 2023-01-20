@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -30,15 +30,15 @@ class NewIDNVariantDefaultUnitTest extends BaseSniffTest
      *
      * @dataProvider dataNewIDNVariantDefault
      *
-     * @param int    $line     Line number where the error should occur.
-     * @param string $function Function name.
+     * @param int    $line         Line number where the error should occur.
+     * @param string $functionName Function name.
      *
      * @return void
      */
-    public function testNewIDNVariantDefault($line, $function)
+    public function testNewIDNVariantDefault($line, $functionName)
     {
         $file  = $this->sniffFile(__FILE__, '7.3-');
-        $error = 'The default value of the ' . $function . '() $variant parameter has changed from INTL_IDNA_VARIANT_2003 to INTL_IDNA_VARIANT_UTS46 in PHP 7.4.';
+        $error = 'The default value of the ' . $functionName . '() $variant parameter has changed from INTL_IDNA_VARIANT_2003 to INTL_IDNA_VARIANT_UTS46 in PHP 7.4.';
 
         $this->assertError($file, $line, $error);
     }
@@ -52,12 +52,14 @@ class NewIDNVariantDefaultUnitTest extends BaseSniffTest
      */
     public function dataNewIDNVariantDefault()
     {
-        return array(
-            array(10, 'idn_to_ascii'),
-            array(11, 'idn_to_ascii'),
-            array(12, 'IDN_to_utf8'),
-            array(13, 'idn_to_utf8'),
-        );
+        return [
+            [10, 'idn_to_ascii'],
+            [11, 'idn_to_ascii'],
+            [12, 'IDN_to_utf8'],
+            [13, 'idn_to_utf8'],
+            [14, 'idn_to_ascii'],
+            [15, 'idn_to_utf8'],
+        ];
     }
 
 
@@ -101,9 +103,9 @@ class NewIDNVariantDefaultUnitTest extends BaseSniffTest
      */
     public function dataNoViolationsInFileOnValidVersion()
     {
-        return array(
-            array('7.1-7.3'),
-            array('7.4-'),
-        );
+        return [
+            ['7.1-7.3'],
+            ['7.4-'],
+        ];
     }
 }

@@ -3,7 +3,7 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
@@ -37,7 +37,10 @@ class RemovedOrphanedParentUnitTest extends BaseSniffTest
     public function testRemovedOrphanedParent($line)
     {
         $file = $this->sniffFile(__FILE__, '7.4');
-        $this->assertError($file, $line, 'Using "parent" inside a class without parent is deprecated since PHP 7.4');
+        $this->assertWarning($file, $line, 'Using "parent" inside a class without parent is deprecated since PHP 7.4');
+
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertError($file, $line, 'Using "parent" inside a class without parent is deprecated since PHP 7.4 and removed since PHP 8.0');
     }
 
     /**
@@ -49,17 +52,17 @@ class RemovedOrphanedParentUnitTest extends BaseSniffTest
      */
     public function dataRemovedOrphanedParent()
     {
-        return array(
-            array(36),
-            array(37),
-            array(38),
-            array(45),
-            array(46),
-            array(47),
-            array(56),
-            array(57),
-            array(58),
-        );
+        return [
+            [36],
+            [37],
+            [38],
+            [45],
+            [46],
+            [47],
+            [56],
+            [57],
+            [58],
+        ];
     }
 
 
@@ -87,14 +90,14 @@ class RemovedOrphanedParentUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        $cases = array();
+        $cases = [];
         // No errors expected on the first 31 lines.
         for ($line = 1; $line <= 31; $line++) {
-            $cases[] = array($line);
+            $cases[] = [$line];
         }
 
         // Add parse error test case.
-        $cases[] = array(67);
+        $cases[] = [67];
 
         return $cases;
     }

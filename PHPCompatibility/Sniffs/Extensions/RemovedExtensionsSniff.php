@@ -3,16 +3,18 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2019 PHPCompatibility Contributors
+ * @copyright 2012-2020 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
 namespace PHPCompatibility\Sniffs\Extensions;
 
-use PHPCompatibility\AbstractRemovedFeatureSniff;
-use PHP_CodeSniffer_File as File;
-use PHP_CodeSniffer_Tokens as Tokens;
+use PHPCompatibility\Sniff;
+use PHPCompatibility\Helpers\ComplexVersionDeprecatedRemovedFeatureTrait;
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\MessageHelper;
 
 /**
  * Detect the use of deprecated and/or removed PHP extensions.
@@ -33,10 +35,13 @@ use PHP_CodeSniffer_Tokens as Tokens;
  * PHP version All
  *
  * @since 5.5
- * @since 7.1.0 Now extends the `AbstractRemovedFeatureSniff` instead of the base `Sniff` class.
+ * @since 7.1.0  Now extends the `AbstractRemovedFeatureSniff` instead of the base `Sniff` class.
+ * @since 10.0.0 Now extends the base `Sniff` class and uses the `ComplexVersionDeprecatedRemovedFeatureTrait`.
  */
-class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
+class RemovedExtensionsSniff extends Sniff
 {
+    use ComplexVersionDeprecatedRemovedFeatureTrait;
+
     /**
      * A list of functions to whitelist, if any.
      *
@@ -66,140 +71,140 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
      *
      * @var array(string => array(string => bool|string|null))
      */
-    protected $removedExtensions = array(
-        'activescript' => array(
+    protected $removedExtensions = [
+        'activescript' => [
             '5.1' => true,
             'alternative' => 'pecl/activescript',
-        ),
-        'cpdf' => array(
+        ],
+        'cpdf' => [
             '5.1' => true,
             'alternative' => 'pecl/pdflib',
-        ),
-        'dbase' => array(
+        ],
+        'dbase' => [
             '5.3' => true,
             'alternative' => null,
-        ),
-        'dbx' => array(
+        ],
+        'dbx' => [
             '5.1' => true,
             'alternative' => 'pecl/dbx',
-        ),
-        'dio' => array(
+        ],
+        'dio' => [
             '5.1' => true,
             'alternative' => 'pecl/dio',
-        ),
-        'ereg' => array(
+        ],
+        'ereg' => [
             '5.3' => false,
             '7.0' => true,
             'alternative' => 'pcre',
-        ),
-        'fam' => array(
+        ],
+        'fam' => [
             '5.1' => true,
             'alternative' => null,
-        ),
-        'fbsql' => array(
+        ],
+        'fbsql' => [
             '5.3' => true,
             'alternative' => null,
-        ),
-        'fdf' => array(
+        ],
+        'fdf' => [
             '5.3' => true,
             'alternative' => 'pecl/fdf',
-        ),
-        'filepro' => array(
+        ],
+        'filepro' => [
             '5.2' => true,
             'alternative' => null,
-        ),
-        'hw_api' => array(
+        ],
+        'hw_api' => [
             '5.2' => true,
             'alternative' => null,
-        ),
-        'ibase' => array(
+        ],
+        'ibase' => [
             '7.4' => true,
             'alternative' => 'pecl/ibase',
-        ),
-        'ingres' => array(
+        ],
+        'ingres' => [
             '5.1' => true,
             'alternative' => 'pecl/ingres',
-        ),
-        'ircg' => array(
+        ],
+        'ircg' => [
             '5.1' => true,
             'alternative' => null,
-        ),
-        'mcrypt' => array(
+        ],
+        'mcrypt' => [
             '7.1' => false,
             '7.2' => true,
             'alternative' => 'openssl (preferred) or pecl/mcrypt once available',
-        ),
-        'mcve' => array(
+        ],
+        'mcve' => [
             '5.1' => true,
             'alternative' => 'pecl/mcve',
-        ),
-        'ming' => array(
+        ],
+        'ming' => [
             '5.3' => true,
             'alternative' => 'pecl/ming',
-        ),
-        'mnogosearch' => array(
+        ],
+        'mnogosearch' => [
             '5.1' => true,
             'alternative' => null,
-        ),
-        'msql' => array(
+        ],
+        'msql' => [
             '5.3' => true,
             'alternative' => null,
-        ),
-        'mssql' => array(
+        ],
+        'mssql' => [
             '7.0' => true,
             'alternative' => null,
-        ),
-        'mysql_' => array(
+        ],
+        'mysql_' => [
             '5.5' => false,
             '7.0' => true,
             'alternative' => 'mysqli',
-        ),
-        'ncurses' => array(
+        ],
+        'ncurses' => [
             '5.3' => true,
             'alternative' => 'pecl/ncurses',
-        ),
-        'oracle' => array(
+        ],
+        'oracle' => [
             '5.1' => true,
             'alternative' => 'oci8 or pdo_oci',
-        ),
-        'ovrimos' => array(
+        ],
+        'ovrimos' => [
             '5.1' => true,
             'alternative' => null,
-        ),
-        'pfpro_' => array(
+        ],
+        'pfpro_' => [
             '5.1' => true,
             'alternative' => null,
-        ),
-        'recode' => array(
+        ],
+        'recode' => [
             '7.4' => true,
             'alternative' => 'iconv or mbstring',
-        ),
-        'sqlite' => array(
+        ],
+        'sqlite' => [
             '5.4' => true,
             'alternative' => null,
-        ),
+        ],
         // Has to be before `sybase` as otherwise it will never match.
-        'sybase_ct' => array(
+        'sybase_ct' => [
             '7.0' => true,
             'alternative' => null,
-        ),
-        'sybase' => array(
+        ],
+        'sybase' => [
             '5.3' => true,
             'alternative' => 'sybase_ct',
-        ),
-        'w32api' => array(
+        ],
+        'w32api' => [
             '5.1' => true,
             'alternative' => 'pecl/ffi',
-        ),
-        'wddx' => array(
+        ],
+        'wddx' => [
             '7.4' => true,
             'alternative' => 'pecl/wddx',
-        ),
-        'yp' => array(
+        ],
+        'yp' => [
             '5.1' => true,
             'alternative' => null,
-        ),
-    );
+        ],
+    ];
 
     /**
      * Returns an array of tokens this test wants to listen for.
@@ -211,9 +216,9 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
     public function register()
     {
         // Handle case-insensitivity of function names.
-        $this->removedExtensions = $this->arrayKeysToLowercase($this->removedExtensions);
+        $this->removedExtensions = \array_change_key_case($this->removedExtensions, \CASE_LOWER);
 
-        return array(\T_STRING);
+        return [\T_STRING];
     }
 
     /**
@@ -221,9 +226,9 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
      *
      * @since 5.5
      *
-     * @param \PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     * @param int                   $stackPtr  The position of the current token in the
-     *                                         stack passed in $tokens.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the current token in the
+     *                                               stack passed in $tokens.
      *
      * @return void
      */
@@ -264,7 +269,7 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
         }
 
         $function   = $tokens[$stackPtr]['content'];
-        $functionLc = strtolower($function);
+        $functionLc = \strtolower($function);
 
         if ($this->isWhiteListed($functionLc) === true) {
             // Function is whitelisted.
@@ -272,10 +277,10 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
         }
 
         foreach ($this->removedExtensions as $extension => $versionList) {
-            if (strpos($functionLc, $extension) === 0) {
-                $itemInfo = array(
+            if (\strpos($functionLc, $extension) === 0) {
+                $itemInfo = [
                     'name'   => $extension,
-                );
+                ];
                 $this->handleFeature($phpcsFile, $stackPtr, $itemInfo);
                 break;
             }
@@ -301,15 +306,15 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
         }
 
         if (\is_string($this->functionWhitelist) === true) {
-            if (strpos($this->functionWhitelist, ',') !== false) {
-                $this->functionWhitelist = explode(',', $this->functionWhitelist);
+            if (\strpos($this->functionWhitelist, ',') !== false) {
+                $this->functionWhitelist = \explode(',', $this->functionWhitelist);
             } else {
                 $this->functionWhitelist = (array) $this->functionWhitelist;
             }
         }
 
         if (\is_array($this->functionWhitelist) === true) {
-            $this->functionWhitelist = array_map('strtolower', $this->functionWhitelist);
+            $this->functionWhitelist = \array_map('strtolower', $this->functionWhitelist);
             return \in_array($content, $this->functionWhitelist, true);
         }
 
@@ -318,29 +323,74 @@ class RemovedExtensionsSniff extends AbstractRemovedFeatureSniff
 
 
     /**
-     * Get the relevant sub-array for a specific item from a multi-dimensional array.
+     * Handle the retrieval of relevant information and - if necessary - throwing of an
+     * error/warning for a matched item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @param array $itemInfo Base information about the item.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $stackPtr  The position of the relevant token in
+     *                                               the stack.
+     * @param array                       $itemInfo  Base information about the item.
      *
-     * @return array Version and other information about the item.
+     * @return void
      */
-    public function getItemArray(array $itemInfo)
+    protected function handleFeature(File $phpcsFile, $stackPtr, array $itemInfo)
     {
-        return $this->removedExtensions[$itemInfo['name']];
+        $itemArray   = $this->removedExtensions[$itemInfo['name']];
+        $versionInfo = $this->getVersionInfo($itemArray);
+        $isError     = null;
+
+        if (empty($versionInfo['removed']) === false
+            && $this->supportsAbove($versionInfo['removed']) === true
+        ) {
+            $isError = true;
+        } elseif (empty($versionInfo['deprecated']) === false
+            && $this->supportsAbove($versionInfo['deprecated']) === true
+        ) {
+            $isError = false;
+
+            // Reset the 'removed' info as it is not relevant for the current notice.
+            $versionInfo['removed'] = '';
+        }
+
+        if (isset($isError) === false) {
+            return;
+        }
+
+        $this->addMessage($phpcsFile, $stackPtr, $isError, $itemInfo, $versionInfo);
     }
 
 
     /**
-     * Get the error message template for this sniff.
+     * Generates the error or warning for this item.
      *
-     * @since 7.1.0
+     * @since 10.0.0
      *
-     * @return string
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $stackPtr    The position of the relevant token in
+     *                                                 the stack.
+     * @param bool                        $isError     Whether this should be an error or a warning.
+     * @param array                       $itemInfo    Base information about the item.
+     * @param string[]                    $versionInfo Array with detail (version) information
+     *                                                 relevant to the item.
+     *
+     * @return void
      */
-    protected function getErrorMsgTemplate()
+    protected function addMessage(File $phpcsFile, $stackPtr, $isError, array $itemInfo, array $versionInfo)
     {
-        return "Extension '%s' is ";
+        // Overrule the default message template.
+        $this->msgTemplate = "Extension '%s' is ";
+
+        $msgInfo = $this->getMessageInfo($itemInfo['name'], $itemInfo['name'], $versionInfo);
+
+        MessageHelper::addMessage(
+            $phpcsFile,
+            $msgInfo['message'],
+            $stackPtr,
+            $isError,
+            $msgInfo['errorcode'],
+            $msgInfo['data']
+        );
     }
 }
