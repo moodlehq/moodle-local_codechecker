@@ -1,3 +1,7 @@
+Changes in version 4.0.3 (20230214) - Valentine's D
+---------------------------------------------------
+- [PR#214](https://github.com/moodlehq/moodle-local_codechecker/pull/214): Update the [moodle-cs](https://github.com/moodlehq/moodle-cs) dependency to [v3.3.2](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.2).
+
 Changes in version 4.0.2 (20230120) - Comp-at-ibility
 -----------------------------------------------------
 - Various small internal changes:
