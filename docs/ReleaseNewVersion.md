@@ -17,16 +17,14 @@ Create a commit with message, and, optionally, anything worth commenting in the 
 Bump to YYYYMMDD (vX.Y.Z) - <<release name, if any>>
 ```
 
-Once the version bump PR has been reviewed and incorporated upstream, then you need to tag the release, that will trigger a new CI build (right now [@ GHA](https://github.com/moodlehq/moodle-local_codechecker/actions)) to run the integration testing.
+Once the version bump PR has been reviewed and incorporated upstream, go to [Github releases](https://github.com/moodlehq/moodle-local_codechecker/releases) and "Draft a new release" with:
 
-Tag `master` branch `HEAD` and push using commands:
+1. Create a new tag `vX.Y.Z` there.
+2. Set the release title to: `Code checker vX.Y.Z - <<release name, if any>>"`
+3. If wanted to, add anything important to the description (historically we use to keep description blank).
+3. Press "Publish release".
 
-```bash
-$ git tag -a vX.Y.Z -m "Code checker vX.Y.Z - <<release name, if any>>"
-$ git push origin vX.Y.Z
-```
-
-Then just go to [Github releases](https://github.com/moodlehq/moodle-local_codechecker/releases) and "Draft a new release" for the just created tag. Then "Publish release" without filling anything and that's all!
+And that's all, the HEAD commit will be tagged, the release created and we are done.
 
 # Moodle plugins directory
 Once the new release is ready, you should add the latest release to the `Moodle plugins directory`.
