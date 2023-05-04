@@ -32,19 +32,15 @@ jobs:
           - php: 8.1
             moodle-branch: master
             database: pgsql
-            plugin-ci: dev-master
           - php: 8.1
             moodle-branch: master
             database: mariadb
-            plugin-ci: dev-master
           - php: 8.1
             moodle-branch: MOODLE_402_STABLE
             database: pgsql
-            plugin-ci: dev-master
           - php: 8.1
             moodle-branch: MOODLE_401_STABLE
             database: pgsql
-            plugin-ci: dev-master
 
           - php: 8.0
             moodle-branch: MOODLE_400_STABLE
@@ -72,6 +68,7 @@ jobs:
           - php: 7.3
             moodle-branch: MOODLE_37_STABLE
             database: pgsql
+            plugin-ci: ^3
 
           # Lowest php versions supported by each branch (with master always being tested twice).
           - php: 8.0
@@ -91,16 +88,20 @@ jobs:
           - php: 7.3
             moodle-branch: MOODLE_400_STABLE
             database: pgsql
+            plugin-ci: ^3
           - php: 7.3
             moodle-branch: MOODLE_311_STABLE
             database: pgsql
+            plugin-ci: ^3
 
           - php: 7.2
             moodle-branch: MOODLE_310_STABLE
             database: pgsql
+            plugin-ci: ^3
           - php: 7.2
             moodle-branch: MOODLE_39_STABLE
             database: pgsql
+            plugin-ci: ^3
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -120,7 +121,7 @@ jobs:
           if [ ${{ matrix.plugin-ci }} ]; then
               composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ${{ matrix.plugin-ci }}
           else
-              composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+              composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
           fi
           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
