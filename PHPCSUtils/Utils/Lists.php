@@ -237,6 +237,7 @@ final class Lists
                     // Partial reset.
                     $start        = null;
                     $lastNonEmpty = null;
+                    $list         = null; // Prevent confusion when short array was used as the key.
                     $reference    = null;
                     break;
 
@@ -245,8 +246,14 @@ final class Lists
                     // Check if this is the end of the list or only a token with the same type as the list closer.
                     if ($tokens[$i]['code'] === $tokens[$closer]['code']) {
                         if ($i !== $closer) {
+                            /*
+                             * Shouldn't be possible anymore now nested brackets are being skipped over,
+                             * but keep it just in case.
+                             */
+                            // @codeCoverageIgnoreStart
                             $lastNonEmpty = $i;
                             break;
+                            // @codeCoverageIgnoreEnd
                         } elseif ($start === null && $lastComma === $opener) {
                             // This is an empty list.
                             break 2;
@@ -302,7 +309,7 @@ final class Lists
 
                     /*
                      * As the top level list has an open/close, we know we don't have a parse error and
-                     * any nested lists will be tokenized correctly, so no need for extra checks here.
+                     * any nested (short) arrays/lists will be tokenized correctly, so no need for extra checks here.
                      */
                     $nestedOpenClose = self::getOpenClose($phpcsFile, $i, true);
                     $list            = $i;
@@ -319,6 +326,25 @@ final class Lists
                 default:
                     if ($start === null) {
                         $start = $i;
+                    }
+
+                    // Skip over everything within all types of brackets which may be used in keys.
+                    if (isset($tokens[$i]['bracket_opener'], $tokens[$i]['bracket_closer'])
+                        && $i === $tokens[$i]['bracket_opener']
+                    ) {
+                        $i = $tokens[$i]['bracket_closer'];
+                    } elseif ($tokens[$i]['code'] === \T_OPEN_PARENTHESIS
+                        && isset($tokens[$i]['parenthesis_closer'])
+                    ) {
+                        $i = $tokens[$i]['parenthesis_closer'];
+                    } elseif (isset($tokens[$i]['scope_condition'], $tokens[$i]['scope_closer'])
+                        && $tokens[$i]['scope_condition'] === $i
+                    ) {
+                        $i = $tokens[$i]['scope_closer'];
+                    } elseif ($tokens[$i]['code'] === \T_ATTRIBUTE
+                        && isset($tokens[$i]['attribute_closer'])
+                    ) {
+                        $i = $tokens[$i]['attribute_closer'];
                     }
 
                     $lastNonEmpty = $i;

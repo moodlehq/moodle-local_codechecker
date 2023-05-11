@@ -96,17 +96,17 @@ final class Variables
      *               The format of the return value is:
      *               ```php
      *               array(
-     *                 'scope'           => string,  // Public, private, or protected.
-     *                 'scope_specified' => boolean, // TRUE if the scope was explicitly specified.
-     *                 'is_static'       => boolean, // TRUE if the static keyword was found.
-     *                 'is_readonly'     => boolean, // TRUE if the readonly keyword was found.
-     *                 'type'            => string,  // The type of the var (empty if no type specified).
-     *                 'type_token'      => integer, // The stack pointer to the start of the type
-     *                                               // or FALSE if there is no type.
-     *                 'type_end_token'  => integer, // The stack pointer to the end of the type
-     *                                               // or FALSE if there is no type.
-     *                 'nullable_type'   => boolean, // TRUE if the type is preceded by the
-     *                                               // nullability operator.
+     *                 'scope'           => string,        // Public, private, or protected.
+     *                 'scope_specified' => boolean,       // TRUE if the scope was explicitly specified.
+     *                 'is_static'       => boolean,       // TRUE if the static keyword was found.
+     *                 'is_readonly'     => boolean,       // TRUE if the readonly keyword was found.
+     *                 'type'            => string,        // The type of the var (empty if no type specified).
+     *                 'type_token'      => integer|false, // The stack pointer to the start of the type
+     *                                                     // or FALSE if there is no type.
+     *                 'type_end_token'  => integer|false, // The stack pointer to the end of the type
+     *                                                     // or FALSE if there is no type.
+     *                 'nullable_type'   => boolean,       // TRUE if the type is preceded by the
+     *                                                     // nullability operator.
      *               );
      *               ```
      *

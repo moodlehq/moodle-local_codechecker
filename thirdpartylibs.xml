@@ -17,7 +17,7 @@
     <library>
         <location>PHPCSUtils</location>
         <name>A suite of utility functions for use with PHP_CodeSniffer</name>
-        <version>1.0.1 (4fd2e30)</version>
+        <version>1.0.5 (0cfef51)</version>
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>

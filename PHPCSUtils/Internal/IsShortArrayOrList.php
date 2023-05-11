@@ -16,6 +16,7 @@ use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\BackCompat\Helper;
 use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Internal\IsShortArrayOrListWithCache;
+use PHPCSUtils\Internal\StableCollections;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Arrays;
 use PHPCSUtils\Utils\Context;
@@ -187,7 +188,7 @@ final class IsShortArrayOrList
     public function __construct(File $phpcsFile, $stackPtr)
     {
         $tokens       = $phpcsFile->getTokens();
-        $openBrackets = Collections::shortArrayListOpenTokensBC();
+        $openBrackets = StableCollections::$shortArrayListOpenTokensBC;
 
         if (isset($tokens[$stackPtr]) === false
             || isset($openBrackets[$tokens[$stackPtr]['code']]) === false
@@ -471,7 +472,7 @@ final class IsShortArrayOrList
              * If we encounter a completely empty item, this must be a short list as arrays cannot contain
              * empty items.
              */
-            if ($item['raw'] === '') {
+            if ($item['clean'] === '') {
                 return self::SHORT_LIST;
             }
 
@@ -612,6 +613,12 @@ final class IsShortArrayOrList
                 if ($i === $this->tokens[$i]['parenthesis_opener']
                     && $this->tokens[$i]['parenthesis_closer'] > $this->closer
                 ) {
+                    $beforeParensOpen = $this->phpcsFile->findPrevious(Tokens::$emptyTokens, ($i - 1), null, true);
+                    if ($this->tokens[$beforeParensOpen]['code'] === \T_LIST) {
+                        // Parse error, mixing long and short list, but that's not our concern.
+                        return self::SHORT_LIST;
+                    }
+
                     // Found parentheses wrapping this set of brackets before finding a outer set of brackets.
                     // This will be a short array.
                     return self::SHORT_ARRAY;

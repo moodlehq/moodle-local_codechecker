@@ -47,13 +47,15 @@ final class PassedParameters
     /**
      * Checks if any parameters have been passed.
      *
-     * - If passed a `T_STRING`, `T_NAME_FULLY_QUALIFIED`, `T_NAME_RELATIVE`, `T_NAME_QUALIFIED`
+     * - If passed a `T_STRING`, `T_NAME_FULLY_QUALIFIED`, `T_NAME_RELATIVE`, `T_NAME_QUALIFIED`,
      *   or `T_VARIABLE` stack pointer, it will treat it as a function call.
      *   If a `T_STRING` or `T_VARIABLE` which is *not* a function call is passed, the behaviour is
      *   undetermined.
      * - If passed a `T_ANON_CLASS` stack pointer, it will accept it as a class instantiation.
      * - If passed a `T_SELF`, `T_STATIC` or `T_PARENT` stack pointer, it will accept it as a
-     *   class instantiation function call when used like `new self()`.
+     *   class instantiation function call when used like `new self()` (with or without parenthesis).
+     *   When these hierarchiecal keywords are not preceded by the `new` keyword, parenthesis
+     *   will be required for the token to be accepted.
      * - If passed a `T_ARRAY` or `T_OPEN_SHORT_ARRAY` stack pointer, it will detect
      *   whether the array has values or is empty.
      *   For purposes of backward-compatibility with older PHPCS versions, `T_OPEN_SQUARE_BRACKET`
@@ -89,9 +91,13 @@ final class PassedParameters
             );
         }
 
+        // Only accept self/static/parent if preceded by `new` or followed by an open parenthesis.
+        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if (isset(Collections::ooHierarchyKeywords()[$tokens[$stackPtr]['code']]) === true) {
             $prev = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($stackPtr - 1), null, true);
-            if ($tokens[$prev]['code'] !== \T_NEW) {
+            if ($tokens[$prev]['code'] !== \T_NEW
+                && ($next !== false && $tokens[$next]['code'] !== \T_OPEN_PARENTHESIS)
+            ) {
                 throw new RuntimeException(
                     'The hasParameters() method expects a function call, array, isset or unset token to be passed.'
                 );
@@ -107,7 +113,6 @@ final class PassedParameters
             );
         }
 
-        $next = $phpcsFile->findNext(Tokens::$emptyTokens, ($stackPtr + 1), null, true);
         if ($next === false) {
             return false;
         }
