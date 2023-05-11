@@ -56,7 +56,7 @@ Instructions to upgrade the PHPCompatibility bundled version:
 
 Current checkout:
 
-  10.0dev (2fb82334)
+  10.0dev (70e4ca24)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

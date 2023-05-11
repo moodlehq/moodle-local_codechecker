@@ -13,7 +13,6 @@ namespace PHPCompatibility\Helpers;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
-use PHPCompatibility\Sniff;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Arrays;
 use PHPCSUtils\Utils\GetTokensAsString;
@@ -24,6 +23,11 @@ use PHPCSUtils\Utils\TextStrings;
  * Trait to help examine the regex parameters in function calls to PCRE functions.
  *
  * Used by the NewPCREModifiersSniff/RemovedPCREModifiersSniff sniffs.
+ *
+ * ---------------------------------------------------------------------------------------------
+ * This trait is only intended for internal use by PHPCompatibility and is not part of the public API.
+ * This also means that it has no promise of backward compatibility. Use at your own risk.
+ * ---------------------------------------------------------------------------------------------
  *
  * @since 10.0.0 Logic split off from the `RemovedPCREModifiersSniff` sniff to this trait.
  */

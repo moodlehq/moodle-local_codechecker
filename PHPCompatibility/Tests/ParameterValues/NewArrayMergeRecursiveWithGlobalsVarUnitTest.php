@@ -3,82 +3,61 @@
  * PHPCompatibility, an external standard for PHP_CodeSniffer.
  *
  * @package   PHPCompatibility
- * @copyright 2012-2022 PHPCompatibility Contributors
+ * @copyright 2012-2021 PHPCompatibility Contributors
  * @license   https://opensource.org/licenses/LGPL-3.0 LGPL3
  * @link      https://github.com/PHPCompatibility/PHPCompatibility
  */
 
-namespace PHPCompatibility\Tests\Classes;
+namespace PHPCompatibility\Tests\ParameterValues;
 
 use PHPCompatibility\Tests\BaseSniffTest;
 
 /**
- * Test the NewFinalClassConstants sniff.
+ * Test the NewArrayMergeRecursiveWithGlobalsVar sniff.
  *
- * @group newFinalClassConstants
- * @group classes
+ * @group newArrayMergeRecursiveWithGlobalsVar
+ * @group parameterValues
  *
- * @covers \PHPCompatibility\Sniffs\Classes\NewFinalClassConstantsSniff
+ * @covers \PHPCompatibility\Sniffs\ParameterValues\NewArrayMergeRecursiveWithGlobalsVarSniff
  *
  * @since 10.0.0
  */
-class NewFinalClassConstantsUnitTest extends BaseSniffTest
+final class NewArrayMergeRecursiveWithGlobalsVarUnitTest extends BaseSniffTest
 {
 
     /**
-     * Test that an error is thrown for class constants declared as final.
+     * Test detecting use of `array_merge_recursive()` with $GLOBALS passed multiple times.
      *
-     * @dataProvider dataFinalClassConstants
+     * @dataProvider dataRecursiveMerge
      *
      * @param int $line The line number.
      *
      * @return void
      */
-    public function testFinalClassConstants($line)
+    public function testRecursiveMerge($line)
     {
         $file = $this->sniffFile(__FILE__, '8.0');
-        $this->assertError($file, $line, 'The final modifier for class constants is not supported in PHP 8.0 or earlier.');
+        $this->assertError($file, $line, 'Recursively merging the $GLOBALS array is not supported prior to PHP 8.1.');
     }
 
     /**
      * Data provider.
      *
-     * @see testFinalClassConstants()
+     * @see testRecursiveMerge()
      *
      * @return array
      */
-    public function dataFinalClassConstants()
+    public function dataRecursiveMerge()
     {
         return [
-            [10],
-            [11],
-            [12],
-            [13],
-            [14],
-            [17],
-            [18],
-
-            [26],
-            [27],
             [28],
-            [31],
-            [32],
-            [35],
-            [36],
-
-            [45],
-            [46],
-            [47],
-            [48],
-            [49],
-            [52],
-            [53],
+            [29],
         ];
     }
 
 
     /**
-     * Verify that there are no false positives for valid code/code errors outside the scope of this sniff.
+     * Test the sniff does not throw false positives.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -101,14 +80,14 @@ class NewFinalClassConstantsUnitTest extends BaseSniffTest
      */
     public function dataNoFalsePositives()
     {
-        return [
-            [3],
-            [7],
-            [23],
-            [42],
-            [62],
-            [66],
-        ];
+        $cases = [];
+
+        // No errors expected on the first 22 lines.
+        for ($line = 1; $line <= 22; $line++) {
+            $cases[] = [$line];
+        }
+
+        return $cases;
     }
 
 
