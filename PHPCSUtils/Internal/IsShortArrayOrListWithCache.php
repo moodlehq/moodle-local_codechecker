@@ -13,7 +13,7 @@ namespace PHPCSUtils\Internal;
 use PHP_CodeSniffer\Files\File;
 use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Internal\IsShortArrayOrList;
-use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Internal\StableCollections;
 
 /**
  * Determination of short array vs short list vs square brackets.
@@ -215,7 +215,7 @@ final class IsShortArrayOrListWithCache
     private function isValidStackPtr()
     {
         return (isset($this->tokens[$this->stackPtr]) === true
-            && isset(Collections::shortArrayTokensBC()[$this->tokens[$this->stackPtr]['code']]) === true);
+            && isset(StableCollections::$shortArrayListTokensBC[$this->tokens[$this->stackPtr]['code']]) === true);
     }
 
     /**

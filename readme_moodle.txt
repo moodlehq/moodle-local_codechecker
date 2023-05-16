@@ -37,7 +37,7 @@ Instructions to upgrade the phpcs bundled version:
 
 Current checkout:
 
-  3.7.1 (1359e176e)
+  3.7.2 (ed8e00df0)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
@@ -56,7 +56,7 @@ Instructions to upgrade the PHPCompatibility bundled version:
 
 Current checkout:
 
-  10.0dev (2fb82334)
+  10.0dev (70e4ca24)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 
@@ -78,7 +78,7 @@ Instructions to upgrade the PHPCSUtils bundled version:
 
 Current checkout:
 
-  1.0.1 (4fd2e30)
+  1.0.5 (0cfef51)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

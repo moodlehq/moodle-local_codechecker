@@ -10,6 +10,7 @@
 
 namespace PHPCSUtils\Tokens;
 
+use PHPCSUtils\BackCompat\Helper;
 use PHPCSUtils\Exceptions\InvalidTokenArray;
 
 /**
@@ -27,11 +28,7 @@ use PHPCSUtils\Exceptions\InvalidTokenArray;
  *                                                                 alternative control structure syntax.
  * @method static array alternativeControlStructureSyntaxClosers() Tokens representing alternative control structure
  *                                                                 syntax closer keywords.
- * @method static array arrayOpenTokensBC()                        Tokens which can open an array
- *                                                                 (PHPCS cross-version compatible).
  * @method static array arrayTokens()                              Tokens which are used to create arrays.
- * @method static array arrayTokensBC()                            Tokens which are used to create arrays
- *                                                                 (PHPCS cross-version compatible).
  * @method static array classModifierKeywords()                    Modifier keywords which can be used for a class
  *                                                                 declaration.
  * @method static array closedScopes()                             List of tokens which represent "closed" scopes.
@@ -41,11 +38,7 @@ use PHPCSUtils\Exceptions\InvalidTokenArray;
  * @method static array functionDeclarationTokens()                Tokens which represent a keyword which starts
  *                                                                 a function declaration.
  * @method static array incrementDecrementOperators()              Increment/decrement operator tokens.
- * @method static array listOpenTokensBC()                         Tokens which can open a list
- *                                                                 (PHPCS cross-version compatible).
  * @method static array listTokens()                               Tokens which are used to create lists.
- * @method static array listTokensBC()                             Tokens which are used to create lists
- *                                                                 (PHPCS cross-version compatible)
  * @method static array namespaceDeclarationClosers()              List of tokens which can end a namespace
  *                                                                 declaration statement.
  * @method static array nameTokens()                               Tokens used for "names", be it namespace, OO,
@@ -61,14 +54,8 @@ use PHPCSUtils\Exceptions\InvalidTokenArray;
  * @method static array phpOpenTags()                              Tokens which open PHP.
  * @method static array propertyModifierKeywords()                 Modifier keywords which can be used for a property
  *                                                                 declaration.
- * @method static array shortArrayListOpenTokensBC()               Tokens which can open a short array or short list
- *                                                                 (PHPCS cross-version compatible).
  * @method static array shortArrayTokens()                         Tokens which are used for short arrays.
- * @method static array shortArrayTokensBC()                       Tokens which are used for short arrays
- *                                                                 (PHPCS cross-version compatible).
  * @method static array shortListTokens()                          Tokens which are used for short lists.
- * @method static array shortListTokensBC()                        Tokens which are used for short lists
- *                                                                 (PHPCS cross-version compatible).
  * @method static array textStringStartTokens()                    Tokens which can start a - potentially multi-line -
  *                                                                 text string.
  */
@@ -112,9 +99,8 @@ final class Collections
     /**
      * Tokens which can open an array (PHPCS cross-version compatible).
      *
-     * Includes `T_OPEN_SQUARE_BRACKET` to allow for handling intermittent tokenizer issues related
-     * to the retokenization to `T_OPEN_SHORT_ARRAY`.
      * Should only be used selectively.
+     * Depending on the PHPCS version, the token array will be expanded in the associated method.
      *
      * @see \PHPCSUtils\Tokens\Collections::arrayTokensBC()      Related method to retrieve tokens used
      *                                                           for arrays (PHPCS cross-version).
@@ -123,12 +109,11 @@ final class Collections
      *
      * @since 1.0.0 Use the {@see Collections::arrayOpenTokensBC()} method for access.
      *
-     * @return array <int|string> => <int|string>
+     * @var array <int|string> => <int|string>
      */
     private static $arrayOpenTokensBC = [
-        \T_ARRAY               => \T_ARRAY,
-        \T_OPEN_SHORT_ARRAY    => \T_OPEN_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET => \T_OPEN_SQUARE_BRACKET,
+        \T_ARRAY            => \T_ARRAY,
+        \T_OPEN_SHORT_ARRAY => \T_OPEN_SHORT_ARRAY,
     ];
 
     /**
@@ -149,30 +134,6 @@ final class Collections
         \T_ARRAY             => \T_ARRAY,
         \T_OPEN_SHORT_ARRAY  => \T_OPEN_SHORT_ARRAY,
         \T_CLOSE_SHORT_ARRAY => \T_CLOSE_SHORT_ARRAY,
-    ];
-
-    /**
-     * Tokens which are used to create arrays (PHPCS cross-version compatible).
-     *
-     * Includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET` to allow for handling
-     * intermittent tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
-     * Should only be used selectively.
-     *
-     * @see \PHPCSUtils\Tokens\Collections::arrayOpenTokensBC()  Related method to retrieve only the "open" tokens
-     *                                                           used for arrays (PHPCS cross-version compatible).
-     * @see \PHPCSUtils\Tokens\Collections::shortArrayTokensBC() Related method to retrieve only tokens used
-     *                                                           for short arrays (PHPCS cross-version compatible).
-     *
-     * @since 1.0.0 Use the {@see Collections::arrayTokensBC()} method for access.
-     *
-     * @var array <int|string> => <int|string>
-     */
-    private static $arrayTokensBC = [
-        \T_ARRAY                => \T_ARRAY,
-        \T_OPEN_SHORT_ARRAY     => \T_OPEN_SHORT_ARRAY,
-        \T_CLOSE_SHORT_ARRAY    => \T_CLOSE_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET  => \T_OPEN_SQUARE_BRACKET,
-        \T_CLOSE_SQUARE_BRACKET => \T_CLOSE_SQUARE_BRACKET,
     ];
 
     /**
@@ -253,7 +214,7 @@ final class Collections
      *
      * @since 1.0.0 Use the {@see Collections::functionDeclarationTokens()} method for access.
      *
-     * @return array <int|string> => <int|string>
+     * @var array <int|string> => <int|string>
      */
     private static $functionDeclarationTokens = [
         \T_FUNCTION => \T_FUNCTION,
@@ -276,9 +237,8 @@ final class Collections
     /**
      * Tokens which can open a list construct (PHPCS cross-version compatible).
      *
-     * Includes `T_OPEN_SQUARE_BRACKET` to allow for handling intermittent tokenizer issues related
-     * to the retokenization to `T_OPEN_SHORT_ARRAY`.
      * Should only be used selectively.
+     * Depending on the PHPCS version, the token array will be expanded in the associated method.
      *
      * @see \PHPCSUtils\Tokens\Collections::listTokensBC()      Related method to retrieve tokens used
      *                                                          for lists (PHPCS cross-version).
@@ -287,12 +247,11 @@ final class Collections
      *
      * @since 1.0.0 Use the {@see Collections::listOpenTokensBC()} method for access.
      *
-     * @return array <int|string> => <int|string>
+     * @var array <int|string> => <int|string>
      */
     private static $listOpenTokensBC = [
-        \T_LIST                => \T_LIST,
-        \T_OPEN_SHORT_ARRAY    => \T_OPEN_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET => \T_OPEN_SQUARE_BRACKET,
+        \T_LIST             => \T_LIST,
+        \T_OPEN_SHORT_ARRAY => \T_OPEN_SHORT_ARRAY,
     ];
 
     /**
@@ -311,28 +270,6 @@ final class Collections
         \T_LIST              => \T_LIST,
         \T_OPEN_SHORT_ARRAY  => \T_OPEN_SHORT_ARRAY,
         \T_CLOSE_SHORT_ARRAY => \T_CLOSE_SHORT_ARRAY,
-    ];
-
-    /**
-     * Tokens which are used to create lists (PHPCS cross-version compatible).
-     *
-     * Includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET` to allow for handling
-     * intermittent tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
-     * Should only be used selectively.
-     *
-     * @see \PHPCSUtils\Tokens\Collections::shortListTokensBC() Related method to retrieve only tokens used
-     *                                                          for short lists (cross-version).
-     *
-     * @since 1.0.0 Use the {@see Collections::listTokensBC()} method for access.
-     *
-     * @var array <int|string> => <int|string>
-     */
-    private static $listTokensBC = [
-        \T_LIST                 => \T_LIST,
-        \T_OPEN_SHORT_ARRAY     => \T_OPEN_SHORT_ARRAY,
-        \T_CLOSE_SHORT_ARRAY    => \T_CLOSE_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET  => \T_OPEN_SQUARE_BRACKET,
-        \T_CLOSE_SQUARE_BRACKET => \T_CLOSE_SQUARE_BRACKET,
     ];
 
     /**
@@ -361,7 +298,7 @@ final class Collections
      *
      * @since 1.0.0 Use the {@see Collections::nameTokens()} method for access.
      *
-     * @return array <int|string> => <int|string>
+     * @var array <int|string> => <int|string>
      */
     private static $nameTokens = [
         \T_STRING               => \T_STRING,
@@ -479,7 +416,7 @@ final class Collections
      *
      * @since 1.0.0 Use the {@see Collections::phpOpenTags()} method for access.
      *
-     * @return array <int|string> => <int|string>
+     * @var array <int|string> => <int|string>
      */
     private static $phpOpenTags = [
         \T_OPEN_TAG           => \T_OPEN_TAG,
@@ -539,17 +476,15 @@ final class Collections
     /**
      * Tokens which can open a short array or short list (PHPCS cross-version compatible).
      *
-     * Includes `T_OPEN_SQUARE_BRACKET` to allow for handling intermittent tokenizer issues related
-     * to the retokenization to `T_OPEN_SHORT_ARRAY`.
      * Should only be used selectively.
+     * Depending on the PHPCS version, the token array will be expanded in the associated method.
      *
      * @since 1.0.0 Use the {@see Collections::shortArrayListOpenTokensBC()} method for access.
      *
-     * @return array <int|string> => <int|string>
+     * @var array <int|string> => <int|string>
      */
     private static $shortArrayListOpenTokensBC = [
-        \T_OPEN_SHORT_ARRAY    => \T_OPEN_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET => \T_OPEN_SQUARE_BRACKET,
+        \T_OPEN_SHORT_ARRAY => \T_OPEN_SHORT_ARRAY,
     ];
 
     /**
@@ -567,27 +502,6 @@ final class Collections
     ];
 
     /**
-     * Tokens which are used for short arrays (PHPCS cross-version compatible).
-     *
-     * Includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET` to allow for handling
-     * intermittent tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
-     * Should only be used selectively.
-     *
-     * @see \PHPCSUtils\Tokens\Collections::arrayTokensBC() Related method to retrieve all tokens used for arrays
-     *                                                      (cross-version).
-     *
-     * @since 1.0.0 Use the {@see Collections::shortArrayTokensBC()} method for access.
-     *
-     * @var array <int|string> => <int|string>
-     */
-    private static $shortArrayTokensBC = [
-        \T_OPEN_SHORT_ARRAY     => \T_OPEN_SHORT_ARRAY,
-        \T_CLOSE_SHORT_ARRAY    => \T_CLOSE_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET  => \T_OPEN_SQUARE_BRACKET,
-        \T_CLOSE_SQUARE_BRACKET => \T_CLOSE_SQUARE_BRACKET,
-    ];
-
-    /**
      * Tokens which are used for short lists.
      *
      * @see \PHPCSUtils\Tokens\Collections::listTokens() Related method to retrieve all tokens used for lists.
@@ -599,27 +513,6 @@ final class Collections
     private static $shortListTokens = [
         \T_OPEN_SHORT_ARRAY  => \T_OPEN_SHORT_ARRAY,
         \T_CLOSE_SHORT_ARRAY => \T_CLOSE_SHORT_ARRAY,
-    ];
-
-    /**
-     * Tokens which are used for short lists (PHPCS cross-version compatible).
-     *
-     * Includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET` to allow for handling
-     * intermittent tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
-     * Should only be used selectively.
-     *
-     * @see \PHPCSUtils\Tokens\Collections::listTokensBC() Related method to retrieve all tokens used for lists
-     *                                                     (cross-version).
-     *
-     * @since 1.0.0 Use the {@see Collections::shortListTokensBC()} method for access.
-     *
-     * @var array <int|string> => <int|string>
-     */
-    private static $shortListTokensBC = [
-        \T_OPEN_SHORT_ARRAY     => \T_OPEN_SHORT_ARRAY,
-        \T_CLOSE_SHORT_ARRAY    => \T_CLOSE_SHORT_ARRAY,
-        \T_OPEN_SQUARE_BRACKET  => \T_OPEN_SQUARE_BRACKET,
-        \T_CLOSE_SQUARE_BRACKET => \T_CLOSE_SQUARE_BRACKET,
     ];
 
     /**
@@ -686,6 +579,61 @@ final class Collections
     }
 
     /**
+     * Tokens which can open an array (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` to allow for
+     * handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @see \PHPCSUtils\Tokens\Collections::arrayTokensBC()      Related method to retrieve tokens used
+     *                                                           for arrays (PHPCS cross-version).
+     * @see \PHPCSUtils\Tokens\Collections::shortArrayTokensBC() Related method to retrieve only tokens used
+     *                                                           for short arrays (PHPCS cross-version).
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function arrayOpenTokensBC()
+    {
+        $tokens = self::$arrayOpenTokensBC;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET] = \T_OPEN_SQUARE_BRACKET;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens which are used to create arrays (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET`
+     * to allow for handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @see \PHPCSUtils\Tokens\Collections::arrayOpenTokensBC()  Related method to retrieve only the "open" tokens
+     *                                                           used for arrays (PHPCS cross-version compatible).
+     * @see \PHPCSUtils\Tokens\Collections::shortArrayTokensBC() Related method to retrieve only tokens used
+     *                                                           for short arrays (PHPCS cross-version compatible).
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function arrayTokensBC()
+    {
+        $tokens = self::$arrayTokens;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET]  = \T_OPEN_SQUARE_BRACKET;
+            $tokens[\T_CLOSE_SQUARE_BRACKET] = \T_CLOSE_SQUARE_BRACKET;
+        }
+
+        return $tokens;
+    }
+
+    /**
      * Tokens which can represent function calls and function-call-like language constructs.
      *
      * @see \PHPCSUtils\Tokens\Collections::parameterPassingTokens() Related method.
@@ -703,6 +651,59 @@ final class Collections
         // Class instantiation only.
         $tokens[\T_ANON_CLASS] = \T_ANON_CLASS;
         $tokens               += self::$ooHierarchyKeywords;
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens which can open a list construct (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` to allow for
+     * handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @see \PHPCSUtils\Tokens\Collections::listTokensBC()      Related method to retrieve tokens used
+     *                                                          for lists (PHPCS cross-version).
+     * @see \PHPCSUtils\Tokens\Collections::shortListTokensBC() Related method to retrieve only tokens used
+     *                                                          for short lists (PHPCS cross-version).
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function listOpenTokensBC()
+    {
+        $tokens = self::$listOpenTokensBC;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET] = \T_OPEN_SQUARE_BRACKET;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens which are used to create lists (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET`
+     * to allow for handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @see \PHPCSUtils\Tokens\Collections::shortListTokensBC() Related method to retrieve only tokens used
+     *                                                          for short lists (cross-version).
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function listTokensBC()
+    {
+        $tokens = self::$listTokens;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET]  = \T_OPEN_SQUARE_BRACKET;
+            $tokens[\T_CLOSE_SQUARE_BRACKET] = \T_CLOSE_SQUARE_BRACKET;
+        }
 
         return $tokens;
     }
@@ -750,7 +751,7 @@ final class Collections
         $tokens[\T_UNSET] = \T_UNSET;
 
         // Array tokens.
-        $tokens += self::$arrayOpenTokensBC;
+        $tokens += self::arrayOpenTokensBC();
 
         return $tokens;
     }
@@ -797,6 +798,80 @@ final class Collections
         $tokens  = self::$returnTypeTokens;
         $tokens += self::$ooHierarchyKeywords;
         $tokens += self::namespacedNameTokens();
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens which can open a short array or short list (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` to allow for
+     * handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function shortArrayListOpenTokensBC()
+    {
+        $tokens = self::$shortArrayListOpenTokensBC;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET] = \T_OPEN_SQUARE_BRACKET;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens which are used for short arrays (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET`
+     * to allow for handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @see \PHPCSUtils\Tokens\Collections::arrayTokensBC() Related method to retrieve all tokens used for arrays
+     *                                                      (cross-version).
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function shortArrayTokensBC()
+    {
+        $tokens = self::$shortArrayTokens;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET]  = \T_OPEN_SQUARE_BRACKET;
+            $tokens[\T_CLOSE_SQUARE_BRACKET] = \T_CLOSE_SQUARE_BRACKET;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens which are used for short lists (PHPCS cross-version compatible).
+     *
+     * For those PHPCS versions which need it, includes `T_OPEN_SQUARE_BRACKET` and `T_CLOSE_SQUARE_BRACKET`
+     * to allow for handling tokenizer issues related to the retokenization to `T_OPEN_SHORT_ARRAY`.
+     * Should only be used selectively.
+     *
+     * @see \PHPCSUtils\Tokens\Collections::listTokensBC() Related method to retrieve all tokens used for lists
+     *                                                     (cross-version).
+     *
+     * @since 1.0.0
+     *
+     * @return array <int|string> => <int|string>
+     */
+    public static function shortListTokensBC()
+    {
+        $tokens = self::$shortListTokens;
+
+        if (\version_compare(Helper::getVersion(), '3.7.1', '<=')) {
+            $tokens[\T_OPEN_SQUARE_BRACKET]  = \T_OPEN_SQUARE_BRACKET;
+            $tokens[\T_CLOSE_SQUARE_BRACKET] = \T_CLOSE_SQUARE_BRACKET;
+        }
 
         return $tokens;
     }
