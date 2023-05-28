@@ -406,9 +406,9 @@ class InlineCommentSniff implements Sniff {
 
         if ($commentText === '') {
             $error = 'Blank comments are not allowed';
-            $fix   = $phpcsFile->addFixableError($error, $stackPtr, 'Empty');
+            $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'Empty');
             if ($fix === true) {
-                $phpcsFile->fixer->replaceToken($stackPtr, '');
+                $phpcsFile->fixer->replaceToken($lastCommentToken, '');
             }
 
             return ($lastCommentToken + 1);

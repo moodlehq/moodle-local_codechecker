@@ -46,7 +46,7 @@ class IncludingFileSniff implements Sniff {
         if ($tokens[$stackptr + 1]['code'] !== T_OPEN_PARENTHESIS) {
             $error = '"%s" must be immediately followed by an open parenthesis';
             $data  = array($tokens[$stackptr]['content']);
-            $file->addError($error, $stackptr, 'BracketsNotRequired', $data);
+            $file->addError($error, $stackptr, 'BracketsRequired', $data);
         }
 
         $incondition = (count($tokens[$stackptr]['conditions']) !== 0) ? true : false;

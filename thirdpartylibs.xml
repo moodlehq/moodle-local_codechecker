@@ -24,7 +24,7 @@
     <library>
         <location>MoodleCS</location>
         <name>Moodle Coding Style</name>
-        <version>v3.3.3 (1dbc536)</version>
+        <version>v3.3.4 (1dbc536)</version>
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>

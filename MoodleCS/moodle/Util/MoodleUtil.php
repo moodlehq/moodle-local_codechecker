@@ -61,7 +61,7 @@ abstract class MoodleUtil {
      */
     public static function setMockedComponentMappings(array $mappings): void {
         if (!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) {
-            throw new \Exception('Not running in a unit test');
+            throw new \Exception('Not running in a unit test'); // @codeCoverageIgnore
         }
 
         self::$mockedComponentMappings = $mappings;
@@ -85,31 +85,14 @@ abstract class MoodleUtil {
         defined('IGNORE_COMPONENT_CACHE') ?: define('IGNORE_COMPONENT_CACHE', 1);
         defined('MOODLE_INTERNAL') ?: define('MOODLE_INTERNAL', 1);
 
-        if (!isset($CFG->dirroot)) { // No defined, let's start from scratch.
-            $CFG = (object) [
-                'dirroot' => $moodleRoot,
-                'libdir' => "${moodleRoot}/lib",
-                'admin' => 'admin',
-            ];
-        }
-
-        // Save current CFG values.
-        $olddirroot = $CFG->dirroot ?? null;
-        $oldlibdir = $CFG->libdir ?? null;
-        $oldadmin = $CFG->admin ?? null;
-
-        if ($CFG->dirroot !== $moodleRoot) { // Different, set the minimum required.
-            $CFG->dirroot = $moodleRoot;
-            $CFG->libdir = $CFG->dirroot . '/lib';
-            $CFG->admin = 'admin';
-        }
+        // Let's define CFG from scratch (it's not defined ever, because moodle-cs is not a Moodle plugin at all
+        $CFG = (object) [
+            'dirroot' => $moodleRoot,
+            'libdir' => "{$moodleRoot}/lib",
+            'admin' => 'admin',
+        ];
 
         require_once($CFG->dirroot . '/lib/classes/component.php'); // Load the class.
-
-        // Restore original CFG values.
-        $CFG->dirroot = $olddirroot ?? null;
-        $CFG->libdir = $oldlibdir ?? null;
-        $CFG->admin = $oldadmin ?? null;
 
         return true;
     }
@@ -225,7 +208,7 @@ abstract class MoodleUtil {
      */
     public static function getMoodleComponent(File $file, $selfPath = true) {
         if (defined('PHPUNIT_TEST') && PHPUNIT_TEST && !empty(self::$mockedComponentMappings)) {
-            $components = self::$mockedComponentMappings;
+            $components = self::$mockedComponentMappings; // @codeCoverageIgnore
         } else {
             // Verify that we are able to find a valid moodle root.
             if (!$moodleRoot = self::getMoodleRoot($file, $selfPath)) {

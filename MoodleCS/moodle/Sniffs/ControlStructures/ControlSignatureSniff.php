@@ -35,7 +35,6 @@ class ControlSignatureSniff extends AbstractPatternSniff {
 
     public function __construct() {
         parent::__construct(true);
-        $this->supportedTokenizers = array('PHP', 'JS');
     }
 
     /** @var array A list of tokenizers this sniff supports. */

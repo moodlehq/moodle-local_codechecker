@@ -6,6 +6,7 @@
 [![Release Date of the Latest Version](https://img.shields.io/github/release-date/moodlehq/moodle-cs.svg?maxAge=1800)](https://github.com/moodlehq/moodle-cs/releases)
 
 [![Unit Tests](https://github.com/moodlehq/moodle-cs/actions/workflows/phpcs.yml/badge.svg)](https://github.com/moodlehq/moodle-cs/actions/workflows/phpcs.yml)
+[![codecov](https://codecov.io/gh/moodlehq/moodle-cs/branch/main/graph/badge.svg?token=Z4I955IU0H)](https://codecov.io/gh/moodlehq/moodle-cs)
 
 [![License](https://poser.pugx.org/moodlehq/moodle-cs/license)](https://github.com/moodlehq/moodle-cs/blob/main/LICENSE)
 [![Total Downloads](https://poser.pugx.org/moodlehq/moodle-cs/downloads)](https://packagist.org/packages/moodlehq/moodle-cs/stats)
