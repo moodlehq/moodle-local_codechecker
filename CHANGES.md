@@ -1,3 +1,14 @@
+Changes in version 4.0.5 (20230528) - Forever in my heart, Tina
+---------------------------------------------------------------
+- Various small internal CI changes:
+  - 402_STABLE support.
+  - [moodle-plugin-ci](https://github.com/moodlehq/moodle-plugin-ci) updated to [v4.0.0](https://github.com/moodlehq/moodle-plugin-ci/releases/tag/4.0.0).
+- Bundled dependencies upgraded:
+    - [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) updated to 3.7.2.
+    - [PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) updated to 10.0dev (70e4ca24).
+    - [PHPCSUtils](https://github.com/PHPCSStandards/PHPCSUtils) updated to 1.0.5.
+    - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.4](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.4).
+
 Changes in version 4.0.4 (20230314) - Forth and back
 ----------------------------------------------------
 - Update the [moodle-cs](https://github.com/moodlehq/moodle-cs) dependency to [v3.3.3](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.3).
