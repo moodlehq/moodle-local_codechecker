@@ -17,10 +17,16 @@ Create a commit with message, and, optionally, anything worth commenting in the 
 Bump to YYYYMMDD (vX.Y.Z) - <<release name, if any>>
 ```
 
-Once the version bump PR has been reviewed and incorporated upstream, go to [Github releases](https://github.com/moodlehq/moodle-local_codechecker/releases) and "Draft a new release" with:
+Once the version bump PR has been reviewed and incorporated upstream, let's tag the release with:
 
-1. Create a new tag `vX.Y.Z` there.
-2. Set the release title to: `Code checker vX.Y.Z - <<release name, if any>>"`
+```
+$ git tag -a vX.Y.Z -m "Code checker vX.Y.Z - <<release name, if any>>"
+$ git push origin vX.Y.Z
+```
+
+Then, go to [Github releases](https://github.com/moodlehq/moodle-local_codechecker/releases) and "Draft a new release" with:
+
+1. The just created and pushed tag.
 3. If wanted to, add anything important to the description (historically we use to keep description blank).
 3. Press "Publish release".
 
