@@ -156,7 +156,12 @@ jobs:
 
       - name: Moodle PHPDoc Checker
         if: ${{ always() }}
-        run: moodle-plugin-ci phpdoc
+        run: |
+          if [ ${{ matrix.plugin-ci }} == "^3" ]; then
+              moodle-plugin-ci phpdoc
+          else
+              moodle-plugin-ci phpdoc --max-warnings 0
+          fi
 
       - name: Validating
         if: ${{ always() }}
