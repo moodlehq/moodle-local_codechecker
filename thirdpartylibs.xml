@@ -28,8 +28,4 @@
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>
-    <library>
-        <location>moodle</location>
-        <name>Alias to Moodle Coding Style (to avoid it being inspected)</name>
-    </library>
 </libraries>
