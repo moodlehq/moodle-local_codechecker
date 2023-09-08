@@ -7,6 +7,11 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ## [Unreleased]
 
+## [v3.3.5] - 2023-08-28
+### Changed
+- Update composer dependencies to current versions, notably PHPCompatibility (0a17f9ed).
+- Enforce the use of `&&` and `||` logical operators, **now erroring** (after a grace period of 1 year) with `and` and `or` uses: `Squiz.Operators.ValidLogicalOperators`
+
 ## [v3.3.4] - 2023-05-28
 ### Changed
 - Update composer dependencies to current versions, notably PHPCompatibility (70e4ca24).
@@ -51,7 +56,8 @@ All features are maintained and no new features have been introduced to either t
 
 All the details about [previous releases] can be found in [local_codechecker](https://github.com/moodlehq/moodle-local_codechecker) own change log.
 
-[Unreleased]: https://github.com/moodlehq/moodle-cs/compare/v3.3.4...main
+[Unreleased]: https://github.com/moodlehq/moodle-cs/compare/v3.3.5...main
+[v3.3.5]: https://github.com/moodlehq/moodle-cs/compare/v3.3.4...v3.3.5
 [v3.3.4]: https://github.com/moodlehq/moodle-cs/compare/v3.3.3...v3.3.4
 [v3.3.3]: https://github.com/moodlehq/moodle-cs/compare/v3.3.2...v3.3.3
 [v3.3.2]: https://github.com/moodlehq/moodle-cs/compare/v3.3.1...v3.3.2
