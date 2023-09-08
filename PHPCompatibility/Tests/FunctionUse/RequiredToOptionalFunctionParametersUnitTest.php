@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionUse;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RequiredToOptionalFunctionParameters sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.3
  */
-class RequiredToOptionalFunctionParametersUnitTest extends BaseSniffTest
+class RequiredToOptionalFunctionParametersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -61,7 +61,7 @@ class RequiredToOptionalFunctionParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRequiredOptionalParameter()
+    public static function dataRequiredOptionalParameter()
     {
         return [
             ['preg_match_all', 'matches', '5.3', [8], '5.4'],
@@ -128,7 +128,7 @@ class RequiredToOptionalFunctionParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

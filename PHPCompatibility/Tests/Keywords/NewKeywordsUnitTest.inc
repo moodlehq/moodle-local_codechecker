@@ -124,6 +124,136 @@ echo __dir__; // Magic constants are also case-insensitive.
 // Prevent false positives on PHP 8.0+ nullsafe property access.
 echo $obj?->finally;
 
+/*
+ * PHP 7.4: arrow functions.
+ */
+// OK: fn, but not an arrow function.
+$a = Foo::fn($param);
+$a = MyClass::FN;
+$a = MyClass::Fn[$a];
+$a = $obj->fn($param);
+$a = $obj?->FN($param);
+$a = MyNS\Sub\Fn($param);
+$a = namespace\fn($param);
+
+class Fn {
+    const FN = 'a';
+
+    public static function fn($param) {}
+
+    public function bar() {
+        $this->fn = 'a';
+    }
+}
+
+// PHP 7.4 arrow functions.
+$nums = array_map(fn($n) => $n * $factor, [1, 2, 3, 4]);
+
+$fn1 = Fn($x) => $x + $y;
+
+$fn = fn($c) => $callable($factory($c), $c);
+
+$result = Collection::from([1, 2])
+    ->map(fn($v) => $v * 2)
+    ->reduce(fn($tmp, $v) => $tmp + $v, 0);
+
+$result = array_map(
+    static fn(int $number) : ?int => $number + 1,
+    $numbers
+);
+
+/*
+ * PHP 8.0: match expressions.
+ */
+// OK: match, but not an match expression.
+$a = Foo::match($param);
+$a = MyClass::match;
+$a = MyClass::match[$a];
+$a = $obj->match($param);
+$a = $obj->match->chain($param);
+$a = $obj?->match;
+$a = MyNS\Sub\match($param);
+$a = namespace\match($param);
+
+class Match {
+    const match = 'a';
+
+    public static function match($param) {}
+
+    public function bar() {
+        $this->match = 'a';
+    }
+}
+
+// PHP 8.0 match expressions.
+$statement = match ($this->lexer->lookahead['type']) {
+    Lexer::T_SELECT => $this->SelectStatement(),
+    Lexer::T_UPDATE => $this->UpdateStatement(),
+    Lexer::T_DELETE => $this->DeleteStatement(),
+    default => $this->syntaxError('SELECT, UPDATE or DELETE'),
+};
+
+echo match (1) {
+    0 => 'Foo',
+    1 => 'Bar',
+    2 => 'Baz',
+};
+
+MATCH ($pressedKey) {
+    Key::RETURN_ => save(),
+    Key::DELETE => delete(),
+};
+
+echo Match ($x) {
+    1, 2 => 'Same for 1 and 2',
+    3, 4 => 'Same for 3 and 4',
+};
+
+$result = match ($x) {
+    foo() => ...,
+    $this->bar() => ..., // bar() isn't called if foo() matched with $x
+    $this->baz => ...,
+    // etc.
+};
+
+$x = match ($y) {
+    default => {
+        // This should work fine
+        (match ($z) { ... })
+    },
+};
+
+// OK: enum, but not an enum declaration.
+$a = Foo::enum($param);
+$a = MyClass::enum;
+$a = MyClass::enum[$a];
+$a = $obj->enum($param);
+$a = $obj->enum->chain($param);
+$a = $obj?->enum;
+$a = MyNS\Sub\enum($param);
+$a = namespace\enum($param);
+
+class Enum {
+    const enum = 'a';
+
+    public static function enum($param) {}
+
+    public function bar() {
+        $this->enum = 'a';
+    }
+}
+
+// PHP 8.1 enum declarations.
+enum SuitA {
+  case Hearts;
+  case Diamonds;
+}
+
+enum SuitB: string implements Colorful {
+  case Clubs = 'C';
+  case Spades = 'S';
+}
+
 __halt_compiler();
 
 bla();

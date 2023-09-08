@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedAssertStringAssertion sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedAssertStringAssertionUnitTest extends BaseSniffTest
+class RemovedAssertStringAssertionUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -52,7 +52,7 @@ class RemovedAssertStringAssertionUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedAssertStringAssertion()
+    public static function dataRemovedAssertStringAssertion()
     {
         return [
             [18],

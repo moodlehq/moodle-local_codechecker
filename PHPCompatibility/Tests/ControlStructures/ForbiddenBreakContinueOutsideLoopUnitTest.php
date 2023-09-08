@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenBreakContinueOutsideLoop sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.7
  */
-class ForbiddenBreakContinueOutsideLoopUnitTest extends BaseSniffTest
+class ForbiddenBreakContinueOutsideLoopUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -51,7 +51,7 @@ class ForbiddenBreakContinueOutsideLoopUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataBreakContinueOutsideLoop()
+    public static function dataBreakContinueOutsideLoop()
     {
         return [
             [116, 'continue'],
@@ -86,7 +86,7 @@ class ForbiddenBreakContinueOutsideLoopUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [8],

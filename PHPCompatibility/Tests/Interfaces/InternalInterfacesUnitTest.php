@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Interfaces;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the InternalInterfaces sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.3
  */
-class InternalInterfacesUnitTest extends BaseSniffTest
+class InternalInterfacesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -39,8 +39,10 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      */
     protected $messages = [
         'Traversable'       => 'The interface Traversable shouldn\'t be implemented directly, implement the Iterator or IteratorAggregate interface instead.',
-        'DateTimeInterface' => 'The interface DateTimeInterface is intended for type hints only and is not implementable.',
+        'DateTimeInterface' => 'The interface DateTimeInterface is intended for type hints only and is not implementable or extendable.',
         'Throwable'         => 'The interface Throwable cannot be implemented directly, extend the Exception class instead.',
+        'UnitEnum'          => 'is intended for type hints only and is not implementable or extendable.',
+        'BackedEnum'        => 'is intended for type hints only and is not implementable or extendable.',
     ];
 
     /**
@@ -57,7 +59,7 @@ class InternalInterfacesUnitTest extends BaseSniffTest
     }
 
     /**
-     * Test InternalInterfaces
+     * Test detection of use of internal interfaces.
      *
      * @dataProvider dataInternalInterfaces
      *
@@ -78,7 +80,7 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataInternalInterfaces()
+    public static function dataInternalInterfaces()
     {
         return [
             ['Traversable', 3],
@@ -93,6 +95,21 @@ class InternalInterfacesUnitTest extends BaseSniffTest
             ['Throwable', 19],
             ['Traversable', 20],
             ['Throwable', 20],
+
+            // Interface extends ...
+            ['DateTimeInterface', 29],
+
+            // Enums.
+            ['Traversable', 34],
+            ['DateTimeInterface', 35],
+            ['Throwable', 36],
+            ['Traversable', 37],
+            ['Throwable', 37],
+
+            ['UnitEnum', 40],
+            ['UnitEnum', 41],
+            ['BackedEnum', 42],
+            ['BackedEnum', 43],
         ];
     }
 
@@ -103,12 +120,12 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      */
     public function testCaseInsensitive()
     {
-        $this->assertError($this->sniffResult, 9, 'The interface DATETIMEINTERFACE is intended for type hints only and is not implementable.');
-        $this->assertError($this->sniffResult, 10, 'The interface datetimeinterface is intended for type hints only and is not implementable.');
+        $this->assertError($this->sniffResult, 9, 'The interface DATETIMEINTERFACE is intended for type hints only and is not implementable or extendable.');
+        $this->assertError($this->sniffResult, 10, 'The interface datetimeinterface is intended for type hints only and is not implementable or extendable.');
     }
 
     /**
-     * testNoFalsePositives
+     * Test the sniff doesn't throw false positives for valid code.
      *
      * @dataProvider dataNoFalsePositives
      *
@@ -128,11 +145,17 @@ class InternalInterfacesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [13],
             [14],
+            [23],
+            [24],
+            [27],
+            [28],
+            [32],
+            [33],
         ];
     }
 

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\TypeCasts;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewTypeCasts sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.0.1
  */
-class NewTypeCastsUnitTest extends BaseSniffTest
+class NewTypeCastsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -61,7 +61,7 @@ class NewTypeCastsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewTypeCasts()
+    public static function dataNewTypeCasts()
     {
         return [
             ['The unset cast', '4.4', [8, 15, 17], '5.0'],
@@ -92,7 +92,7 @@ class NewTypeCastsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

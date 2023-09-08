@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Variables;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewUniformVariableSyntax sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.1.2
  */
-class NewUniformVariableSyntaxUnitTest extends BaseSniffTest
+class NewUniformVariableSyntaxUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewUniformVariableSyntaxUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataVariableVariables()
+    public static function dataVariableVariables()
     {
         return [
             [4],
@@ -88,7 +88,7 @@ class NewUniformVariableSyntaxUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [11],

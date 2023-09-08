@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Lists;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewKeyedList sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewKeyedListUnitTest extends BaseSniffTest
+class NewKeyedListUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewKeyedListUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewKeyedList()
+    public static function dataNewKeyedList()
     {
         return [
             [15], // x3.
@@ -98,7 +98,7 @@ class NewKeyedListUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

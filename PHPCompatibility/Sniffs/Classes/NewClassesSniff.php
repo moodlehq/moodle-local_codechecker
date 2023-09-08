@@ -10,13 +10,16 @@
 
 namespace PHPCompatibility\Sniffs\Classes;
 
-use PHPCompatibility\Sniff;
 use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHPCompatibility\Helpers\ResolveHelper;
+use PHPCompatibility\Helpers\ScannedCode;
+use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\ControlStructures;
 use PHPCSUtils\Utils\FunctionDeclarations;
+use PHPCSUtils\Utils\Scopes;
 use PHPCSUtils\Utils\Variables;
 
 /**
@@ -449,8 +452,9 @@ class NewClassesSniff extends Sniff
             'extension' => 'reflection',
         ],
         'ZipArchive' => [
-            '5.1' => false,
-            '5.2' => true,
+            '5.1'       => false,
+            '5.2'       => true,
+            'extension' => 'zip',
         ],
 
         'Closure' => [
@@ -617,8 +621,9 @@ class NewClassesSniff extends Sniff
             '5.4' => true,
         ],
         'SNMP' => [
-            '5.3' => false,
-            '5.4' => true,
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'snmp',
         ],
         'Transliterator' => [
             '5.3'       => false,
@@ -636,8 +641,9 @@ class NewClassesSniff extends Sniff
             '5.5' => true,
         ],
         'CURLFile' => [
-            '5.4' => false,
-            '5.5' => true,
+            '5.4'       => false,
+            '5.5'       => true,
+            'extension' => 'curl',
         ],
         'DateTimeImmutable' => [
             '5.4' => false,
@@ -690,8 +696,9 @@ class NewClassesSniff extends Sniff
         ],
 
         'GMP' => [
-            '5.5' => false,
-            '5.6' => true,
+            '5.5'       => false,
+            '5.6'       => true,
+            'extension' => 'gmp',
         ],
 
         'IntlChar' => [
@@ -757,35 +764,61 @@ class NewClassesSniff extends Sniff
             '8.0' => true,
         ],
         'PhpToken' => [
-            '7.4' => false,
-            '8.0' => true,
+            '7.4'       => false,
+            '8.0'       => true,
+            'extension' => 'tokenizer',
         ],
         'ReflectionUnionType' => [
-            '7.4' => false,
-            '8.0' => true,
+            '7.4'       => false,
+            '8.0'       => true,
+            'extension' => 'reflection',
         ],
         'WeakMap' => [
             '7.4' => false,
             '8.0' => true,
         ],
         'OCICollection' => [
-            '7.4' => false,
-            '8.0' => true,
+            '7.4'       => false,
+            '8.0'       => true,
+            'extension' => 'oci8',
         ],
         'OCILob' => [
-            '7.4' => false,
-            '8.0' => true,
+            '7.4'       => false,
+            '8.0'       => true,
+            'extension' => 'oci8',
         ],
 
         'IntlDatePatternGenerator' => [
-            '8.0' => false,
-            '8.1' => true,
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'intl',
         ],
         'Fiber' => [
-            '8.0' => false,
-            '8.1' => true,
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'fibers',
+        ],
+        'ReflectionEnum' => [
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionEnumBackedCase' => [
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionEnumUnitCase' => [
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'reflection',
         ],
         'ReflectionFiber' => [
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'reflection',
+        ],
+        'ReflectionIntersectionType' => [
             '8.0'       => false,
             '8.1'       => true,
             'extension' => 'reflection',
@@ -794,6 +827,32 @@ class NewClassesSniff extends Sniff
             '8.0'       => false,
             '8.1'       => true,
             'extension' => 'curl',
+        ],
+
+        'Random\Randomizer' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
+        ],
+        'Random\Engine\Secure' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
+        ],
+        'Random\Engine\Mt19937' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
+        ],
+        'Random\Engine\PcgOneseq128XslRr64' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
+        ],
+        'Random\Engine\Xoshiro256StarStar' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
         ],
     ];
 
@@ -841,8 +900,9 @@ class NewClassesSniff extends Sniff
             'extension' => 'soap',
         ],
         'SQLiteException' => [
-            '4.4' => false,
-            '5.0' => true,
+            '4.4'       => false,
+            '5.0'       => true,
+            'extension' => 'sqlite',
         ],
         'mysqli_sql_exception' => [
             '4.4'       => false,
@@ -932,8 +992,9 @@ class NewClassesSniff extends Sniff
         ],
 
         'SNMPException' => [
-            '5.3' => false,
-            '5.4' => true,
+            '5.3'       => false,
+            '5.4'       => true,
+            'extension' => 'snmp',
         ],
 
         'IntlException' => [
@@ -1012,8 +1073,25 @@ class NewClassesSniff extends Sniff
         ],
 
         'FiberError' => [
-            '8.0' => false,
-            '8.1' => true,
+            '8.0'       => false,
+            '8.1'       => true,
+            'extension' => 'fibers',
+        ],
+
+        'Random\RandomError' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
+        ],
+        'Random\BrokenRandomEngineError' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
+        ],
+        'Random\RandomException' => [
+            '8.1'       => false,
+            '8.2'       => true,
+            'extension' => 'random',
         ],
     ];
 
@@ -1111,13 +1189,13 @@ class NewClassesSniff extends Sniff
         $FQClassName = '';
 
         if ($tokens[$stackPtr]['code'] === \T_NEW) {
-            $FQClassName = $this->getFQClassNameFromNewToken($phpcsFile, $stackPtr);
+            $FQClassName = ResolveHelper::getFQClassNameFromNewToken($phpcsFile, $stackPtr);
 
         } elseif ($tokens[$stackPtr]['code'] === \T_CLASS || $tokens[$stackPtr]['code'] === \T_ANON_CLASS) {
-            $FQClassName = $this->getFQExtendedClassName($phpcsFile, $stackPtr);
+            $FQClassName = ResolveHelper::getFQExtendedClassName($phpcsFile, $stackPtr);
 
         } elseif ($tokens[$stackPtr]['code'] === \T_DOUBLE_COLON) {
-            $FQClassName = $this->getFQClassNameFromDoubleColonToken($phpcsFile, $stackPtr);
+            $FQClassName = ResolveHelper::getFQClassNameFromDoubleColonToken($phpcsFile, $stackPtr);
         }
 
         if ($FQClassName === '') {
@@ -1196,13 +1274,12 @@ class NewClassesSniff extends Sniff
      */
     private function processVariableToken(File $phpcsFile, $stackPtr)
     {
-        try {
-            $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
-        } catch (RuntimeException $e) {
+        if (Scopes::isOOProperty($phpcsFile, $stackPtr) === false) {
             // Not a class property.
             return;
         }
 
+        $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
         if ($properties['type'] === '') {
             return;
         }
@@ -1316,7 +1393,7 @@ class NewClassesSniff extends Sniff
         $versionInfo = $this->getVersionInfo($itemArray);
 
         if (empty($versionInfo['not_in_version'])
-            || $this->supportsBelow($versionInfo['not_in_version']) === false
+            || ScannedCode::shouldRunOnOrBelow($versionInfo['not_in_version']) === false
         ) {
             return;
         }

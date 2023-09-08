@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ReservedFunctionNames sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.2.0
  */
-class ReservedFunctionNamesUnitTest extends BaseSniffTest
+class ReservedFunctionNamesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataReservedFunctionNames()
+    public static function dataReservedFunctionNames()
     {
         return [
             [20, 'method'],
@@ -87,6 +87,13 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
 
             [160, 'function'],
             [161, 'function'],
+
+            [168, 'function'],
+
+            [198, 'function'],
+
+            [207, 'method'],
+            [208, 'method'],
         ];
     }
 
@@ -113,7 +120,7 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [5],
@@ -172,6 +179,18 @@ class ReservedFunctionNamesUnitTest extends BaseSniffTest
 
             [156],
             [157],
+
+            [179],
+
+            [188],
+            [195],
+
+            [203],
+            [204],
+            [205],
+
+            // Live coding/parse error test.
+            [214],
         ];
     }
 

@@ -10,35 +10,38 @@
 
 namespace PHPCompatibility\Util\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase;
 use PHP_CodeSniffer\Config;
-use PHPCompatibility\Helpers\TestVersionTrait;
+use PHPCompatibility\Helpers\ScannedCode;
 use PHPCSUtils\BackCompat\Helper;
-use Yoast\PHPUnitPolyfills\Polyfills\ExpectException;
-use Yoast\PHPUnitPolyfills\Polyfills\ExpectPHPException;
+use ReflectionMethod;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 /**
- * Tests for the TestVersionTrait sniff helper.
+ * Tests for the ScannedCode sniff helper.
  *
  * @group helpers
  *
  * @since 10.0.0
  */
-class TestVersionTraitUnitTest extends TestCase
+final class ScannedCodeUnitTest extends TestCase
 {
-    use ExpectException;
-    use ExpectPHPException;
-    use TestVersionTrait;
 
     /**
      * PHPCS Config object.
      *
      * @var \PHP_CodeSniffer\Config
      */
-    public static $config = null;
+    private static $config;
 
     /**
-     * Sets up a PHPCS Config object for PHPCS 3+.
+     * Reflection object for the ScannedCode::getTestVersion() method.
+     *
+     * @var \ReflectionMethod
+     */
+    private static $reflMethod;
+
+    /**
+     * Sets up a PHPCS Config object and make one of the methods under test accessible.
      *
      * @beforeClass
      *
@@ -47,6 +50,9 @@ class TestVersionTraitUnitTest extends TestCase
     public static function initializeConfig()
     {
         self::$config = new Config();
+
+        self::$reflMethod = new ReflectionMethod('PHPCompatibility\Helpers\ScannedCode', 'getTestVersion');
+        self::$reflMethod->setAccessible(true);
     }
 
     /**
@@ -68,7 +74,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @dataProvider dataGetTestVersion
      *
-     * @covers \PHPCompatibility\Helpers\TestVersionTrait::getTestVersion
+     * @covers \PHPCompatibility\Helpers\ScannedCode::getTestVersion
      *
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
      * @param string $expected    The expected testVersion array.
@@ -81,10 +87,10 @@ class TestVersionTraitUnitTest extends TestCase
             Helper::setConfigData('testVersion', $testVersion, true, self::$config);
         }
 
-        $this->assertSame($expected, $this->getTestVersion());
+        $this->assertSame($expected, self::$reflMethod->invoke(null));
 
         // Verify that the caching of the function results is working correctly.
-        $this->assertSame($expected, $this->getTestVersion());
+        $this->assertSame($expected, self::$reflMethod->invoke(null));
     }
 
     /**
@@ -92,7 +98,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @dataProvider dataGetTestVersion
      *
-     * @covers \PHPCompatibility\Helpers\TestVersionTrait::getTestVersion
+     * @covers \PHPCompatibility\Helpers\ScannedCode::getTestVersion
      *
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
      * @param string $expected    The expected testVersion array.
@@ -105,10 +111,10 @@ class TestVersionTraitUnitTest extends TestCase
             Helper::setConfigData('testversion', $testVersion, true, self::$config);
         }
 
-        $this->assertSame($expected, $this->getTestVersion());
+        $this->assertSame($expected, self::$reflMethod->invoke(null));
 
         // Verify that the caching of the function results is working correctly.
-        $this->assertSame($expected, $this->getTestVersion());
+        $this->assertSame($expected, self::$reflMethod->invoke(null));
     }
 
     /**
@@ -118,7 +124,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @return array
      */
-    public function dataGetTestVersion()
+    public static function dataGetTestVersion()
     {
         return [
             'no_testVersion'                            => [null, [null, null]],
@@ -148,7 +154,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @dataProvider dataGetTestVersionInvalidRange
      *
-     * @covers \PHPCompatibility\Helpers\TestVersionTrait::getTestVersion
+     * @covers \PHPCompatibility\Helpers\ScannedCode::getTestVersion
      *
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
      *
@@ -156,10 +162,10 @@ class TestVersionTraitUnitTest extends TestCase
      */
     public function testGetTestVersionInvalidRange($testVersion)
     {
-        $message = \sprintf('Invalid range in testVersion setting: \'%s\'', $testVersion);
+        $message = \sprintf('Invalid range in provided PHPCompatibility testVersion: \'%s\'', $testVersion);
 
-        $this->expectWarning();
-        $this->expectWarningMessage($message);
+        $this->expectException('PHPCompatibility\Exceptions\InvalidTestVersionRange');
+        $this->expectExceptionMessage($message);
 
         $this->testGetTestVersion($testVersion, [null, null]);
     }
@@ -171,7 +177,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @return array
      */
-    public function dataGetTestVersionInvalidRange()
+    public static function dataGetTestVersionInvalidRange()
     {
         return [
             'mininum_more_than_max'              => ['5.6-5.4'],
@@ -186,7 +192,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @dataProvider dataGetTestVersionInvalidVersion
      *
-     * @covers \PHPCompatibility\Helpers\TestVersionTrait::getTestVersion
+     * @covers \PHPCompatibility\Helpers\ScannedCode::getTestVersion
      *
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
      *
@@ -194,10 +200,10 @@ class TestVersionTraitUnitTest extends TestCase
      */
     public function testGetTestVersionInvalidVersion($testVersion)
     {
-        $message = \sprintf('Invalid testVersion setting: \'%s\'', \trim($testVersion));
+        $message = \sprintf('Invalid PHPCompatibility testVersion provided: \'%s\'', \trim($testVersion));
 
-        $this->expectWarning();
-        $this->expectWarningMessage($message);
+        $this->expectException('PHPCompatibility\Exceptions\InvalidTestVersion');
+        $this->expectExceptionMessage($message);
 
         $this->testGetTestVersion($testVersion, [null, null]);
     }
@@ -209,7 +215,7 @@ class TestVersionTraitUnitTest extends TestCase
      *
      * @return array
      */
-    public function dataGetTestVersionInvalidVersion()
+    public static function dataGetTestVersionInvalidVersion()
     {
         return [
             'not_major_minor_only_major_1'          => ['5'],
@@ -232,35 +238,35 @@ class TestVersionTraitUnitTest extends TestCase
 
 
     /**
-     * Test the supportsAbove() method.
+     * Test the shouldRunOnOrAbove() method.
      *
-     * @dataProvider dataSupportsAbove
+     * @dataProvider dataShouldRunOnOrAbove
      *
-     * @covers \PHPCompatibility\Helpers\TestVersionTrait::supportsAbove
+     * @covers \PHPCompatibility\Helpers\ScannedCode::shouldRunOnOrAbove
      *
      * @param string $phpVersion  The PHP version we want to test.
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
-     * @param string $expected    Expected result.
+     * @param bool   $expected    Expected result.
      *
      * @return void
      */
-    public function testSupportsAbove($phpVersion, $testVersion, $expected)
+    public function testShouldRunOnOrAbove($phpVersion, $testVersion, $expected)
     {
         if (isset($testVersion)) {
             Helper::setConfigData('testVersion', $testVersion, true, self::$config);
         }
 
-        $this->assertSame($expected, $this->supportsAbove($phpVersion));
+        $this->assertSame($expected, ScannedCode::shouldRunOnOrAbove($phpVersion));
     }
 
     /**
      * Data provider.
      *
-     * @see testSupportsAbove()
+     * @see testShouldRunOnOrAbove()
      *
      * @return array
      */
-    public function dataSupportsAbove()
+    public static function dataShouldRunOnOrAbove()
     {
         return [
             'valid_no_testversion_low'           => ['5.0', null, true],
@@ -277,35 +283,35 @@ class TestVersionTraitUnitTest extends TestCase
 
 
     /**
-     * Test the supportsBelow() method.
+     * Test the shouldRunOnOrBelow() method.
      *
-     * @dataProvider dataSupportsBelow
+     * @dataProvider dataShouldRunOnOrBelow
      *
-     * @covers \PHPCompatibility\Helpers\TestVersionTrait::supportsBelow
+     * @covers \PHPCompatibility\Helpers\ScannedCode::shouldRunOnOrBelow
      *
      * @param string $phpVersion  The PHP version we want to test.
      * @param string $testVersion The testVersion as normally set via the command line or ruleset.
-     * @param string $expected    Expected result.
+     * @param bool   $expected    Expected result.
      *
      * @return void
      */
-    public function testSupportsBelow($phpVersion, $testVersion, $expected)
+    public function testShouldRunOnOrBelow($phpVersion, $testVersion, $expected)
     {
         if (isset($testVersion)) {
             Helper::setConfigData('testVersion', $testVersion, true, self::$config);
         }
 
-        $this->assertSame($expected, $this->supportsBelow($phpVersion));
+        $this->assertSame($expected, ScannedCode::shouldRunOnOrBelow($phpVersion));
     }
 
     /**
      * Data provider.
      *
-     * @see testSupportsBelow()
+     * @see testShouldRunOnOrBelow()
      *
      * @return array
      */
-    public function dataSupportsBelow()
+    public static function dataShouldRunOnOrBelow()
     {
         return [
             'invalid_no_testversion_low'         => ['5.0', null, false],

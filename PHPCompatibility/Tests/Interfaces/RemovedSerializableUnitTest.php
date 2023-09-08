@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Interfaces;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedSerializable sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedSerializableUnitTest extends BaseSniffTest
+class RemovedSerializableUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataIsDeprecated()
+    public static function dataIsDeprecated()
     {
         return [
             [89],
@@ -84,7 +84,7 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesDeprecated()
+    public static function dataNoFalsePositivesDeprecated()
     {
         $data = [];
 
@@ -94,9 +94,76 @@ class RemovedSerializableUnitTest extends BaseSniffTest
         }
 
         $data[] = [172];
-        $data[] = [183];
+        $data[] = [179];
+        $data[] = [188];
+        $data[] = [189];
+
+        // Parse error.
+        $data[] = [203];
 
         return $data;
+    }
+
+
+    /**
+     * Test deprecated use of Serializable with enums is flagged.
+     *
+     * @dataProvider dataIsDeprecatedOnEnum
+     *
+     * @param int $line Line number where the warning should occur.
+     *
+     * @return void
+     */
+    public function testIsDeprecatedOnEnum($line)
+    {
+        $file = $this->sniffFile(__FILE__, '8.1-');
+        $this->assertWarning($file, $line, 'The Serializable interface is deprecated since PHP 8.1.');
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testIsDeprecated()
+     *
+     * @return array
+     */
+    public static function dataIsDeprecatedOnEnum()
+    {
+        return [
+            [191],
+            [200],
+        ];
+    }
+
+
+    /**
+     * Test that there are no false positives for enums.
+     *
+     * @dataProvider dataNoFalsePositivesDeprecatedOnEnum
+     *
+     * @param int $line Line number where no error should occur.
+     *
+     * @return void
+     */
+    public function testNoFalsePositivesDeprecatedOnEnum($line)
+    {
+        $file = $this->sniffFile(__FILE__, '8.1-');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testNoFalsePositivesDeprecated()
+     *
+     * @return array
+     */
+    public static function dataNoFalsePositivesDeprecatedOnEnum()
+    {
+        return [
+            [188],
+            [189],
+        ];
     }
 
 
@@ -122,7 +189,7 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRedundantImplementation()
+    public static function dataRedundantImplementation()
     {
         return [
             [39],
@@ -155,7 +222,7 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRedundantExtension()
+    public static function dataRedundantExtension()
     {
         return [
             [78],
@@ -185,7 +252,7 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesRedundant()
+    public static function dataNoFalsePositivesRedundant()
     {
         $data = [];
 
@@ -220,13 +287,14 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataMissingInterface()
+    public static function dataMissingInterface()
     {
         return [
             [78],
             [143],
             [145],
             [150],
+            [180],
         ];
     }
 
@@ -253,7 +321,7 @@ class RemovedSerializableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesMissingInterface()
+    public static function dataNoFalsePositivesMissingInterface()
     {
         return [
             [12],

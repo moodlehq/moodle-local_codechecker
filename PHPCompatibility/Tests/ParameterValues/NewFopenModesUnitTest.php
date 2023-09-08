@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewFopenModes sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewFopenModesUnitTest extends BaseSniffTest
+class NewFopenModesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -60,7 +60,7 @@ class NewFopenModesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataFopenMode()
+    public static function dataFopenMode()
     {
         return [
             [9, 'e', '7.0', '7.1', '7.0.15'],
@@ -94,7 +94,7 @@ class NewFopenModesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

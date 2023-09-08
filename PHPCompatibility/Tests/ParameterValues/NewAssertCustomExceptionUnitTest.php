@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewAssertCustomException sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewAssertCustomExceptionUnitTest extends BaseSniffTest
+class NewAssertCustomExceptionUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -49,7 +49,7 @@ class NewAssertCustomExceptionUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewAssertCustomException()
+    public static function dataNewAssertCustomException()
     {
         return [
             [18],

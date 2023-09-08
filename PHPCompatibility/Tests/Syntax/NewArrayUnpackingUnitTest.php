@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewArrayUnpacking sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.2.0
  */
-class NewArrayUnpackingUnitTest extends BaseSniffTest
+class NewArrayUnpackingUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewArrayUnpackingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewArrayUnpacking()
+    public static function dataNewArrayUnpacking()
     {
         return [
             [11],
@@ -89,7 +89,7 @@ class NewArrayUnpackingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
         for ($line = 1; $line < 7; $line++) {

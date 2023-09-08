@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\InitialValue;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewConstantScalarExpressions sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.2.0
  */
-class NewConstantScalarExpressionsUnitTest extends BaseSniffTest
+class NewConstantScalarExpressionsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -74,7 +74,7 @@ class NewConstantScalarExpressionsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewConstantScalarExpressions()
+    public static function dataNewConstantScalarExpressions()
     {
         return [
             [122, 'const'],
@@ -208,7 +208,7 @@ class NewConstantScalarExpressionsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

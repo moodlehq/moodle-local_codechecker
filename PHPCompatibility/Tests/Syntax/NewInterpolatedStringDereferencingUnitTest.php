@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewInterpolatedStringDereferencing sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewInterpolatedStringDereferencingUnitTest extends BaseSniffTest
+class NewInterpolatedStringDereferencingUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewInterpolatedStringDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataInterpolatedStringDereferencing()
+    public static function dataInterpolatedStringDereferencing()
     {
         return [
             [24],
@@ -80,7 +80,7 @@ class NewInterpolatedStringDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             // No interpolation, no dereferencing.

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\InitialValue;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewHeredoc sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.1.4
  */
-class NewHeredocUnitTest extends BaseSniffTest
+class NewHeredocUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -49,7 +49,7 @@ class NewHeredocUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataHeredocInitialize()
+    public static function dataHeredocInitialize()
     {
         $data = [
             [5, 'static variables'],
@@ -74,10 +74,12 @@ class NewHeredocUnitTest extends BaseSniffTest
             [136, 'default parameter values'],
             [146, 'constants'],
             [156, 'constants'],
+            [164, 'static variables'],
+            [172, 'class properties'],
         ];
 
         if (\PHP_VERSION_ID >= 70300) {
-            $data[] = [165, 'static variables'];
+            $data[] = [192, 'static variables'];
         }
 
         return $data;
@@ -106,7 +108,7 @@ class NewHeredocUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [70],

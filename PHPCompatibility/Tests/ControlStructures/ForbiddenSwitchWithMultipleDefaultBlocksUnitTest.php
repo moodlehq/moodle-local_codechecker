@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenSwitchWithMultipleDefaultBlocks sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class ForbiddenSwitchWithMultipleDefaultBlocksUnitTest extends BaseSniffTest
+class ForbiddenSwitchWithMultipleDefaultBlocksUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class ForbiddenSwitchWithMultipleDefaultBlocksUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenSwitchWithMultipleDefaultBlocks()
+    public static function dataForbiddenSwitchWithMultipleDefaultBlocks()
     {
         return [
             [3],
@@ -83,7 +83,7 @@ class ForbiddenSwitchWithMultipleDefaultBlocksUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [14],

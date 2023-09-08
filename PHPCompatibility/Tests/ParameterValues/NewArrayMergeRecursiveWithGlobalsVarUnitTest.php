@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewArrayMergeRecursiveWithGlobalsVar sniff.
@@ -18,11 +18,12 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group newArrayMergeRecursiveWithGlobalsVar
  * @group parameterValues
  *
+ * @covers \PHPCompatibility\AbstractFunctionCallParameterSniff
  * @covers \PHPCompatibility\Sniffs\ParameterValues\NewArrayMergeRecursiveWithGlobalsVarSniff
  *
  * @since 10.0.0
  */
-final class NewArrayMergeRecursiveWithGlobalsVarUnitTest extends BaseSniffTest
+final class NewArrayMergeRecursiveWithGlobalsVarUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +48,7 @@ final class NewArrayMergeRecursiveWithGlobalsVarUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRecursiveMerge()
+    public static function dataRecursiveMerge()
     {
         return [
             [28],
@@ -78,7 +79,7 @@ final class NewArrayMergeRecursiveWithGlobalsVarUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
 

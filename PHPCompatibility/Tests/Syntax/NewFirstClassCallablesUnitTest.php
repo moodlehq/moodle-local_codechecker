@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewFirstClassCallables sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-final class NewFirstClassCallablesUnitTest extends BaseSniffTest
+final class NewFirstClassCallablesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ final class NewFirstClassCallablesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataFirstClassCallables()
+    public static function dataFirstClassCallables()
     {
         return [
             [26],
@@ -88,7 +88,7 @@ final class NewFirstClassCallablesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Classes;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewClasses sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.5
  */
-class NewClassesUnitTest extends BaseSniffTest
+class NewClassesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -61,7 +61,7 @@ class NewClassesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewClass()
+    public static function dataNewClass()
     {
         return [
             ['ArrayObject', '4.4', [305], '5.0'],
@@ -214,8 +214,17 @@ class NewClassesUnitTest extends BaseSniffTest
             ['Attribute', '7.4', [431, 444], '8.0'],
             ['IntlDatePatternGenerator', '8.0', [433], '8.1'],
             ['Fiber', '8.0', [435, 449], '8.1'],
+            ['ReflectionEnum', '8.0', [470], '8.1'],
+            ['ReflectionEnumBackedCase', '8.0', [471], '8.1'],
+            ['ReflectionEnumUnitCase', '8.0', [472], '8.1'],
             ['ReflectionFiber', '8.0', [436], '8.1'],
+            ['ReflectionIntersectionType', '8.0', [469], '8.1'],
             ['CURLStringFile', '8.0', [438], '8.1'],
+            ['Random\Randomizer', '8.1', [474], '8.2'],
+            ['Random\Engine\Mt19937', '8.1', [475], '8.2'],
+            ['Random\Engine\PcgOneseq128XslRr64', '8.1', [476], '8.2'],
+            ['Random\Engine\Xoshiro256StarStar', '8.1', [477], '8.2'],
+            ['Random\Engine\Secure', '8.1', [479], '8.2'],
 
             ['DATETIME', '5.1', [146], '5.2'],
             ['datetime', '5.1', [147, 320], '5.2'],
@@ -263,6 +272,9 @@ class NewClassesUnitTest extends BaseSniffTest
             ['UnhandledMatchError', '7.4', [428], '8.0'],
             ['ValueError', '7.4', [418, 419], '8.0'],
             ['FiberError', '8.0', [437], '8.1'],
+            ['Random\RandomError', '8.1', [481], '8.2'],
+            ['Random\BrokenRandomEngineError', '8.1', [481], '8.2'],
+            ['Random\RandomException', '8.1', [482], '8.2'],
         ];
     }
 
@@ -289,7 +301,7 @@ class NewClassesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

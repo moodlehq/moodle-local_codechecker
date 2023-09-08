@@ -11,7 +11,8 @@
 namespace PHPCompatibility\Util\Tests\Helpers\TokenGroup;
 
 use PHPCompatibility\Helpers\TokenGroup;
-use PHPCompatibility\Util\Tests\CoreMethodTestFrame;
+use PHPCSUtils\BackCompat\Helper;
+use PHPCSUtils\TestUtils\UtilityMethodTestCase;
 
 /**
  * Tests for the `isNumber()`, `isPositiveNumber()` and `isNegativeNumber()` utility functions.
@@ -21,7 +22,7 @@ use PHPCompatibility\Util\Tests\CoreMethodTestFrame;
  *
  * @since 8.2.0
  */
-final class IsNumberUnitTest extends CoreMethodTestFrame
+final class IsNumberUnitTest extends UtilityMethodTestCase
 {
 
     /**
@@ -33,7 +34,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
      */
     public function testIsNumberInvalidTokenStart()
     {
-        $result = TokenGroup::isNumber(self::$phpcsFile, -1, 10, true);
+        $result = TokenGroup::isNumber(self::$phpcsFile, -1, 10);
         $this->assertFalse($result);
     }
 
@@ -46,7 +47,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
      */
     public function testIsNumberInvalidTokenEnd()
     {
-        $result = TokenGroup::isNumber(self::$phpcsFile, 3, 100000, true);
+        $result = TokenGroup::isNumber(self::$phpcsFile, 3, 100000);
         $this->assertFalse($result);
     }
 
@@ -68,7 +69,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken($commentString, \T_EQUAL) + 1);
         $end   = ($this->getTargetToken($commentString, \T_SEMICOLON) - 1);
 
-        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end, true, $allowFloats);
+        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end, $allowFloats);
         $this->assertSame($isNumber, $result);
     }
 
@@ -91,7 +92,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken($commentString, \T_EQUAL) + 1);
         $end   = ($this->getTargetToken($commentString, \T_SEMICOLON) - 1);
 
-        $result = TokenGroup::isPositiveNumber(self::$phpcsFile, $start, $end, true, $allowFloats);
+        $result = TokenGroup::isPositiveNumber(self::$phpcsFile, $start, $end, $allowFloats);
         $this->assertSame($isPositiveNumber, $result);
     }
 
@@ -115,7 +116,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken($commentString, \T_EQUAL) + 1);
         $end   = ($this->getTargetToken($commentString, \T_SEMICOLON) - 1);
 
-        $result = TokenGroup::isNegativeNumber(self::$phpcsFile, $start, $end, true, $allowFloats);
+        $result = TokenGroup::isNegativeNumber(self::$phpcsFile, $start, $end, $allowFloats);
         $this->assertSame($isNegativeNumber, $result);
     }
 
@@ -124,11 +125,11 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
      *
      * @see testIsNumber()
      *
-     * {@internal Case I13 is tested in separately for its different behaviour on PHP 5 vs 7.}
+     * {@internal Case I13 is tested separately for its different behaviour on PHP 5 vs 7.}
      *
      * @return array
      */
-    public function dataIsNumber()
+    public static function dataIsNumber()
     {
         return [
             'Not a number - array'                                             => ['/* test 1 */', true, false, false, false],
@@ -243,10 +244,12 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
      */
     public function testIsNumberWithHexStringPHP5()
     {
+        Helper::setConfigData('testVersion', '5.5-', true, self::$phpcsFile->config);
+
         $start = ($this->getTargetToken('/* test I13 */', \T_EQUAL) + 1);
         $end   = ($this->getTargetToken('/* test I13 */', \T_SEMICOLON) - 1);
 
-        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end, true);
+        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end);
         $this->assertSame(-13369593, $result);
     }
 
@@ -260,10 +263,12 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
      */
     public function testIsNumberWithHexStringPHP7()
     {
+        Helper::setConfigData('testVersion', '7.1-', true, self::$phpcsFile->config);
+
         $start = ($this->getTargetToken('/* test I13 */', \T_EQUAL) + 1);
         $end   = ($this->getTargetToken('/* test I13 */', \T_SEMICOLON) - 1);
 
-        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end, false);
+        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end);
         $this->assertSame(0, $result);
     }
 
@@ -279,7 +284,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken('/* testHeredocNoEnd */', \T_EQUAL) + 1);
         $end   = $this->getTargetToken('/* testHeredocNoEnd */', \T_START_HEREDOC);
 
-        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end, true);
+        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end);
         $this->assertFalse($result);
     }
 
@@ -295,7 +300,7 @@ final class IsNumberUnitTest extends CoreMethodTestFrame
         $start = ($this->getTargetToken('/* testHeredocNoEnd */', \T_EQUAL) + 1);
         $end   = $this->getTargetToken('/* testHeredocNoEnd */', \T_HEREDOC);
 
-        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end, true);
+        $result = TokenGroup::isNumber(self::$phpcsFile, $start, $end);
         $this->assertFalse($result);
     }
 }

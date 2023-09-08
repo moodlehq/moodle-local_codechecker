@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewDynamicAccessToStatic sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.1.0
  */
-class NewDynamicAccessToStaticUnitTest extends BaseSniffTest
+class NewDynamicAccessToStaticUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewDynamicAccessToStaticUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDynamicAccessToStatic()
+    public static function dataDynamicAccessToStatic()
     {
         return [
             [20],
@@ -91,7 +91,7 @@ class NewDynamicAccessToStaticUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [14],

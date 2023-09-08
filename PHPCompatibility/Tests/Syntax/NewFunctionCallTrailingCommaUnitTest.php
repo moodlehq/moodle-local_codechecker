@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewFunctionCallTrailingComma sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.2.0
  */
-class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
+class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataTrailingComma()
+    public static function dataTrailingComma()
     {
         return [
             [15, 'calls to unset()'],
@@ -99,7 +99,7 @@ class NewFunctionCallTrailingCommaUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

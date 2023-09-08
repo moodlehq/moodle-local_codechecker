@@ -10,6 +10,7 @@
 
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
 
+use PHPCompatibility\Helpers\ScannedCode;
 use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHPCSUtils\Utils\FunctionDeclarations;
@@ -74,7 +75,7 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        if ($this->supportsAbove('7.0') === false) {
+        if (ScannedCode::shouldRunOnOrAbove('7.0') === false || ScannedCode::shouldRunOnOrBelow('7.4') === false) {
             return;
         }
 
@@ -107,10 +108,16 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
         $newConstructorFound = false;
         $oldConstructorFound = false;
         $oldConstructorPos   = -1;
-        while (($nextFunc = $phpcsFile->findNext([\T_FUNCTION, \T_DOC_COMMENT_OPEN_TAG], ($nextFunc + 1), $scopeCloser)) !== false) {
+        while (($nextFunc = $phpcsFile->findNext([\T_FUNCTION, \T_DOC_COMMENT_OPEN_TAG, \T_ATTRIBUTE], ($nextFunc + 1), $scopeCloser)) !== false) {
             // Skip over docblocks.
             if ($tokens[$nextFunc]['code'] === \T_DOC_COMMENT_OPEN_TAG) {
                 $nextFunc = $tokens[$nextFunc]['comment_closer'];
+                continue;
+            }
+
+            // Skip over attributes.
+            if (isset($tokens[$nextFunc]['attribute_closer'])) {
+                $nextFunc = $tokens[$nextFunc]['attribute_closer'];
                 continue;
             }
 
@@ -148,7 +155,7 @@ class RemovedPHP4StyleConstructorsSniff extends Sniff
             $code    = 'Deprecated';
             $isError = false;
 
-            if ($this->supportsAbove('8.0') === true) {
+            if (ScannedCode::shouldRunOnOrAbove('8.0') === true) {
                 $error  .= ' and removed since PHP 8.0';
                 $code    = 'Removed';
                 $isError = true;

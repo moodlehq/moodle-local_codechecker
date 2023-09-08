@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Lists;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewListReferenceAssignment sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewListReferenceAssignmentUnitTest extends BaseSniffTest
+class NewListReferenceAssignmentUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewListReferenceAssignmentUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewListReferenceAssignment()
+    public static function dataNewListReferenceAssignment()
     {
         return [
             [16],
@@ -87,7 +87,7 @@ class NewListReferenceAssignmentUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

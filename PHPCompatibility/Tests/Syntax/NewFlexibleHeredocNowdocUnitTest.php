@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewFlexibleHeredocNowdoc sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
+class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -94,7 +94,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataIndentedHeredocNowdoc()
+    public static function dataIndentedHeredocNowdoc()
     {
         $data = [
             [3, 13],
@@ -145,7 +145,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataCodeAfterHeredocNowdoc()
+    public static function dataCodeAfterHeredocNowdoc()
     {
         $data = [
             [8, 15],
@@ -192,7 +192,7 @@ class NewFlexibleHeredocNowdocUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenClosingMarkerInBody()
+    public static function dataForbiddenClosingMarkerInBody()
     {
         $lines = [
             [12],

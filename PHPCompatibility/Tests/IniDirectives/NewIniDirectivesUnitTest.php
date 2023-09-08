@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\IniDirectives;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewIniDirectives sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.5
  */
-class NewIniDirectivesUnitTest extends BaseSniffTest
+class NewIniDirectivesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -60,7 +60,7 @@ class NewIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewIniDirectives()
+    public static function dataNewIniDirectives()
     {
         return [
             ['auto_globals_jit', '5.0', [83, 84], '4.4'],
@@ -261,14 +261,42 @@ class NewIniDirectivesUnitTest extends BaseSniffTest
             ['opcache.preload', '7.4', [455, 456], '7.3'],
             ['opcache.preload_user', '7.4', [464, 465], '7.3'],
             ['zend.exception_ignore_args', '7.4', [338, 339], '7.3'],
+            ['unserialize_max_depth', '7.4', [555, 556], '7.3'],
+            ['mbstring.regex_retry_limit', '7.4', [558, 559], '7.3'],
 
             ['com.dotnet_version', '8.0', [536, 537], '7.4'],
             ['pm.status_listen', '8.0', [533, 534], '7.4'],
             ['zend.exception_string_param_max_len', '8.0', [530, 531], '7.4'],
 
+            ['opcache.jit', '8.0', [561, 562], '7.4'],
+            ['opcache.jit_buffer_size', '8.0', [564, 565], '7.4'],
+            ['opcache.jit_debug', '8.0', [567, 568], '7.4'],
+            ['opcache.jit_bisect_limit', '8.0', [570, 571], '7.4'],
+            ['opcache.jit_prof_threshold', '8.0', [573, 574], '7.4'],
+            ['opcache.jit_hot_loop', '8.0', [576, 577], '7.4'],
+            ['opcache.jit_hot_func', '8.0', [579, 580], '7.4'],
+            ['opcache.jit_hot_return', '8.0', [582, 583], '7.4'],
+            ['opcache.jit_hot_side_exit', '8.0', [585, 586], '7.4'],
+            ['opcache.jit_blacklist_root_trace', '8.0', [588, 589], '7.4'],
+            ['opcache.jit_blacklist_side_trace', '8.0', [591, 592], '7.4'],
+            ['opcache.jit_max_loop_unrolls', '8.0', [594, 595], '7.4'],
+            ['opcache.jit_max_exit_counters', '8.0', [597, 598], '7.4'],
+            ['opcache.jit_max_root_traces', '8.0', [600, 601], '7.4'],
+            ['opcache.jit_max_side_traces', '8.0', [603, 604], '7.4'],
+            ['opcache.jit_max_recursive_calls', '8.0', [606, 607], '7.4'],
+            ['opcache.jit_max_recursive_returns', '8.0', [609, 610], '7.4'],
+            ['opcache.jit_max_polymorphic_calls', '8.0', [612, 613], '7.4'],
+
             ['fiber.stack_size', '8.1', [539, 540], '8.0'],
             ['mysqli.local_infile_directory', '8.1', [542, 543], '8.0'],
             ['pm.max_spawn_rate', '8.1', [545, 546], '8.0'],
+
+            ['error_log_mode', '8.2', [615, 616], '8.1'],
+            ['oci8.prefetch_lob_size', '8.2', [618, 619], '8.1'],
+
+            ['zend.max_allowed_stack_size', '8.3', [621, 622], '8.2'],
+            ['zend.reserved_stack_size', '8.3', [624, 625], '8.2'],
+            ['opcache.jit_max_trace_length', '8.3', [627, 628], '8.2'],
         ];
     }
 
@@ -309,7 +337,7 @@ class NewIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewIniDirectivesWithAlternative()
+    public static function dataNewIniDirectivesWithAlternative()
     {
         return [
             ['fbsql.batchsize', '5.1', 'fbsql.batchSize', [167, 168], '5.0'],
@@ -340,7 +368,7 @@ class NewIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [2],

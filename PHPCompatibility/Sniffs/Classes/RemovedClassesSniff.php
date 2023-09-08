@@ -10,14 +10,17 @@
 
 namespace PHPCompatibility\Sniffs\Classes;
 
-use PHPCompatibility\Sniff;
 use PHPCompatibility\Helpers\ComplexVersionDeprecatedRemovedFeatureTrait;
+use PHPCompatibility\Helpers\ResolveHelper;
+use PHPCompatibility\Helpers\ScannedCode;
+use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\ControlStructures;
 use PHPCSUtils\Utils\FunctionDeclarations;
 use PHPCSUtils\Utils\MessageHelper;
+use PHPCSUtils\Utils\Scopes;
 use PHPCSUtils\Utils\Variables;
 
 /**
@@ -174,10 +177,12 @@ class RemovedClassesSniff extends Sniff
         'OCI-Collection' => [
             '8.0'         => true,
             'alternative' => 'OCICollection',
+            'extension'   => 'oci8',
         ],
         'OCI-Lob' => [
             '8.0'         => true,
             'alternative' => 'OCILob',
+            'extension'   => 'oci8',
         ],
         */
     ];
@@ -292,13 +297,13 @@ class RemovedClassesSniff extends Sniff
         $FQClassName = '';
 
         if ($tokens[$stackPtr]['code'] === \T_NEW) {
-            $FQClassName = $this->getFQClassNameFromNewToken($phpcsFile, $stackPtr);
+            $FQClassName = ResolveHelper::getFQClassNameFromNewToken($phpcsFile, $stackPtr);
 
         } elseif ($tokens[$stackPtr]['code'] === \T_CLASS || $tokens[$stackPtr]['code'] === \T_ANON_CLASS) {
-            $FQClassName = $this->getFQExtendedClassName($phpcsFile, $stackPtr);
+            $FQClassName = ResolveHelper::getFQExtendedClassName($phpcsFile, $stackPtr);
 
         } elseif ($tokens[$stackPtr]['code'] === \T_DOUBLE_COLON) {
-            $FQClassName = $this->getFQClassNameFromDoubleColonToken($phpcsFile, $stackPtr);
+            $FQClassName = ResolveHelper::getFQClassNameFromDoubleColonToken($phpcsFile, $stackPtr);
         }
 
         if ($FQClassName === '') {
@@ -377,13 +382,12 @@ class RemovedClassesSniff extends Sniff
      */
     private function processVariableToken(File $phpcsFile, $stackPtr)
     {
-        try {
-            $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
-        } catch (RuntimeException $e) {
+        if (Scopes::isOOProperty($phpcsFile, $stackPtr) === false) {
             // Not a class property.
             return;
         }
 
+        $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
         if ($properties['type'] === '') {
             return;
         }
@@ -498,11 +502,11 @@ class RemovedClassesSniff extends Sniff
         $isError     = null;
 
         if (empty($versionInfo['removed']) === false
-            && $this->supportsAbove($versionInfo['removed']) === true
+            && ScannedCode::shouldRunOnOrAbove($versionInfo['removed']) === true
         ) {
             $isError = true;
         } elseif (empty($versionInfo['deprecated']) === false
-            && $this->supportsAbove($versionInfo['deprecated']) === true
+            && ScannedCode::shouldRunOnOrAbove($versionInfo['deprecated']) === true
         ) {
             $isError = false;
 

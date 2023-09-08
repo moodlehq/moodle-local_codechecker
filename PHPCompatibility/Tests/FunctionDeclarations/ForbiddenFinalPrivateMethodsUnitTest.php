@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenFinalPrivateMethods sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class ForbiddenFinalPrivateMethodsUnitTest extends BaseSniffTest
+class ForbiddenFinalPrivateMethodsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class ForbiddenFinalPrivateMethodsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenFinalPrivateMethods()
+    public static function dataForbiddenFinalPrivateMethods()
     {
         return [
             [34],
@@ -84,7 +84,7 @@ class ForbiddenFinalPrivateMethodsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 28 lines.

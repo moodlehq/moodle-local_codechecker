@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\UseDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewGroupUseDeclarations sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
+class NewGroupUseDeclarationsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataGroupUseDeclaration()
+    public static function dataGroupUseDeclaration()
     {
         return [
             [23],
@@ -84,7 +84,7 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataGroupUseTrailingComma()
+    public static function dataGroupUseTrailingComma()
     {
         return [
             [33],
@@ -117,7 +117,7 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesTrailingComma()
+    public static function dataNoFalsePositivesTrailingComma()
     {
         return [
             [23],
@@ -150,7 +150,7 @@ class NewGroupUseDeclarationsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

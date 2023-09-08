@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\MethodUse;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenToStringParameters sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.2.0
  */
-class ForbiddenToStringParametersUnitTest extends BaseSniffTest
+class ForbiddenToStringParametersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class ForbiddenToStringParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenToStringParameters()
+    public static function dataForbiddenToStringParameters()
     {
         return [
             [37],
@@ -85,7 +85,7 @@ class ForbiddenToStringParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 35 lines.

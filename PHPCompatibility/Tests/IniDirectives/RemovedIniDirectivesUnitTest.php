@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\IniDirectives;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedIniDirectives sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.5
  */
-class RemovedIniDirectivesUnitTest extends BaseSniffTest
+class RemovedIniDirectivesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -70,7 +70,7 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDeprecatedRemovedDirectives()
+    public static function dataDeprecatedRemovedDirectives()
     {
         return [
             ['define_syslog_variables', '5.3', '5.4', [3, 4], '5.2'],
@@ -142,7 +142,7 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDeprecatedDirectives()
+    public static function dataDeprecatedDirectives()
     {
         return [
             ['iconv.input_encoding', '5.6', [62, 63], '5.5'],
@@ -161,6 +161,55 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
             ['filter.default', '8.1', [445, 446], '8.0'],
             ['filter.default_options', '8.1', [448, 449], '8.0'],
             ['oci8.old_oci_close_semantics', '8.1', [451, 452], '8.0'],
+        ];
+    }
+
+
+    /**
+     * testDeprecatedWithAlternative
+     *
+     * @dataProvider dataDeprecatedWithAlternative
+     *
+     * @param string $iniName           Name of the ini directive.
+     * @param string $deprecatedIn      The PHP version in which the ini directive was deprecated.
+     * @param string $alternative       An alternative ini directive for the removed directive.
+     * @param array  $lines             The line numbers in the test file which apply to this ini directive.
+     * @param string $okVersion         A PHP version in which the ini directive was still valid.
+     * @param string $deprecatedVersion Optional PHP version to test deprecation message with -
+     *                                  if different from the $deprecatedIn version.
+     *
+     * @return void
+     */
+    public function testDeprecatedWithAlternative($iniName, $deprecatedIn, $alternative, $lines, $okVersion, $deprecatedVersion = null)
+    {
+        $file = $this->sniffFile(__FILE__, $okVersion);
+        foreach ($lines as $line) {
+            $this->assertNoViolation($file, $line);
+        }
+
+        $errorVersion = (isset($deprecatedVersion)) ? $deprecatedVersion : $deprecatedIn;
+        $file         = $this->sniffFile(__FILE__, $errorVersion);
+        $error        = "INI directive '{$iniName}' is deprecated since PHP {$deprecatedIn}; Use '{$alternative}' instead";
+        foreach ($lines as $line) {
+            $this->assertWarning($file, $line, $error);
+        }
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testDeprecatedWithAlternative()
+     *
+     * @return array
+     */
+    public static function dataDeprecatedWithAlternative()
+    {
+        return [
+            ['assert.active', '8.3', 'zend.assertions', [470, 471], '8.2'],
+            ['assert.bail', '8.3', 'zend.assertions', [473, 474], '8.2'],
+            ['assert.callback', '8.3', 'zend.assertions', [476, 477], '8.2'],
+            ['assert.exception', '8.3', 'zend.assertions', [479, 480], '8.2'],
+            ['assert.warning', '8.3', 'zend.assertions', [482, 483], '8.2'],
         ];
     }
 
@@ -201,7 +250,7 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedWithAlternative()
+    public static function dataRemovedWithAlternative()
     {
         return [
             ['fbsql.batchSize', '5.1', 'fbsql.batchsize', [89, 90], '5.0'],
@@ -246,7 +295,7 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedDirectives()
+    public static function dataRemovedDirectives()
     {
         return [
             ['crack.default_dictionary', '5.0', [256, 257], '4.4'],
@@ -364,6 +413,10 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
             ['assert.quiet_eval', '8.0', [427, 428], '7.4'],
 
             ['log_errors_max_len', '8.1', [433, 434], '8.0'],
+            ['mysqlnd.fetch_data_copy', '8.1', [464, 465], '8.0'],
+
+            ['mysqli.reconnect', '8.2', [467, 468], '8.1'],
+            ['opcache.consistency_checks', '8.3', [485, 486], '8.2'],
         ];
     }
 
@@ -390,7 +443,7 @@ class RemovedIniDirectivesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [57],

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewMagicConstantDereferencing sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewMagicConstantDereferencingUnitTest extends BaseSniffTest
+class NewMagicConstantDereferencingUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewMagicConstantDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewMagicConstantDereferencing()
+    public static function dataNewMagicConstantDereferencing()
     {
         return [
             [15],
@@ -84,7 +84,7 @@ class NewMagicConstantDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\InitialValue;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewNewInDefine sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-final class NewNewInDefineUnitTest extends BaseSniffTest
+final class NewNewInDefineUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ final class NewNewInDefineUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewInDefine()
+    public static function dataNewInDefine()
     {
         return [
             [38],
@@ -84,7 +84,7 @@ final class NewNewInDefineUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
         for ($line = 1; $line <= 34; $line++) {

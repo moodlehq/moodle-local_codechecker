@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Classes;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenExtendingFinalPHPClass sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class ForbiddenExtendingFinalPHPClassUnitTest extends BaseSniffTest
+class ForbiddenExtendingFinalPHPClassUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -53,7 +53,7 @@ class ForbiddenExtendingFinalPHPClassUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenExtendingFinalPHPClass()
+    public static function dataForbiddenExtendingFinalPHPClass()
     {
         return [
             ['__PHP_Incomplete_Class', '8.0', 12, '7.4'],
@@ -85,7 +85,7 @@ class ForbiddenExtendingFinalPHPClassUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [5],

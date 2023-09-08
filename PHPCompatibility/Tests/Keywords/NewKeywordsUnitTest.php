@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Keywords;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewKeywords sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.5
  */
-class NewKeywordsUnitTest extends BaseSniffTest
+class NewKeywordsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -165,7 +165,7 @@ class NewKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataYield()
+    public static function dataYield()
     {
         return [
             [33],
@@ -208,7 +208,7 @@ class NewKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataYieldFrom()
+    public static function dataYieldFrom()
     {
         return [
             [75],
@@ -255,7 +255,7 @@ class NewKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataFinallyNoFalsePositives()
+    public static function dataFinallyNoFalsePositives()
     {
         return [
             [125],
@@ -287,7 +287,7 @@ class NewKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataConst()
+    public static function dataConst()
     {
         return [
             [37],
@@ -320,7 +320,7 @@ class NewKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataConstNoFalsePositives()
+    public static function dataConstNoFalsePositives()
     {
         return [
             [40],
@@ -403,6 +403,213 @@ class NewKeywordsUnitTest extends BaseSniffTest
     }
 
     /**
+     * Test arrow functions.
+     *
+     * @dataProvider dataArrowFunction
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testArrowFunction($line)
+    {
+        $file = $this->sniffFile(__FILE__, '7.3');
+        $this->assertError($file, $line, 'The "fn" keyword for arrow functions is not present in PHP version 7.3 or earlier');
+
+        $file = $this->sniffFile(__FILE__, '7.4');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testArrowFunction()
+     *
+     * @return array
+     */
+    public static function dataArrowFunction()
+    {
+        return [
+            [150],
+            [152],
+            [154],
+            [157],
+            [158],
+            [161],
+        ];
+    }
+
+    /**
+     * Test against false positives for the fn keyword for arrow functions.
+     *
+     * @dataProvider dataArrowFunctionNoFalsePositives
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testArrowFunctionNoFalsePositives($line)
+    {
+        $file = $this->sniffFile(__FILE__, '7.4');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testArrowFunctionNoFalsePositives()
+     *
+     * @return array
+     */
+    public static function dataArrowFunctionNoFalsePositives()
+    {
+        $data = [];
+
+        for ($i = 130; $i <= 148; $i++) {
+            $data[] = [$i];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Test match expressions.
+     *
+     * @dataProvider dataMatchExpressions
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testMatchExpressions($line)
+    {
+        $file = $this->sniffFile(__FILE__, '7.4');
+        $this->assertError($file, $line, 'The "match" keyword is not present in PHP version 7.4 or earlier');
+
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testMatchExpressions()
+     *
+     * @return array
+     */
+    public static function dataMatchExpressions()
+    {
+        return [
+            [189],
+            [196],
+            [202],
+            [207],
+            [212],
+            [219],
+            [222],
+        ];
+    }
+
+    /**
+     * Test against false positives for match expressions.
+     *
+     * @dataProvider dataMatchExpressionsNoFalsePositives
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testMatchExpressionsNoFalsePositives($line)
+    {
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testMatchExpressionsNoFalsePositives()
+     *
+     * @return array
+     */
+    public static function dataMatchExpressionsNoFalsePositives()
+    {
+        $data = [];
+
+        for ($i = 168; $i <= 187; $i++) {
+            $data[] = [$i];
+        }
+
+        return $data;
+    }
+
+    /**
+     * Test enums.
+     *
+     * @dataProvider dataEnum
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testEnum($line)
+    {
+        $file = $this->sniffFile(__FILE__, '8.0');
+        $this->assertError($file, $line, 'The "enum" keyword is not present in PHP version 8.0 or earlier');
+
+        $file = $this->sniffFile(__FILE__, '8.1');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testEnum()
+     *
+     * @return array
+     */
+    public static function dataEnum()
+    {
+        return [
+            [247],
+            [252],
+        ];
+    }
+
+    /**
+     * Test against false positives for enums.
+     *
+     * @dataProvider dataEnumNoFalsePositives
+     *
+     * @param int $line The line number.
+     *
+     * @return void
+     */
+    public function testEnumNoFalsePositives($line)
+    {
+        $file = $this->sniffFile(__FILE__, '8.1');
+        $this->assertNoViolation($file, $line);
+    }
+
+    /**
+     * Data provider.
+     *
+     * @see testEnumNoFalsePositives()
+     *
+     * @return array
+     */
+    public static function dataEnumNoFalsePositives()
+    {
+        $data = [];
+
+        for ($i = 225; $i <= 244; $i++) {
+            $data[] = [$i];
+        }
+
+        return $data;
+    }
+
+    /**
      * testHaltCompiler
      *
      * @return void
@@ -416,7 +623,7 @@ class NewKeywordsUnitTest extends BaseSniffTest
          * not be reported.
          */
         $file = $this->sniffFile(__FILE__, '5.2');
-        $this->assertNoViolation($file, 130);
+        $this->assertNoViolation($file, 260);
     }
 
 

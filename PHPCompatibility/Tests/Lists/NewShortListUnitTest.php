@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Lists;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewShortList sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewShortListUnitTest extends BaseSniffTest
+class NewShortListUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewShortListUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataShortList()
+    public static function dataShortList()
     {
         return [
             [17],
@@ -85,7 +85,7 @@ class NewShortListUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

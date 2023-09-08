@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedSplAutoloadRegisterThrowFalse sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedSplAutoloadRegisterThrowFalseUnitTest extends BaseSniffTest
+class RemovedSplAutoloadRegisterThrowFalseUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class RemovedSplAutoloadRegisterThrowFalseUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedSplAutoloadRegisterThrowFalse()
+    public static function dataRemovedSplAutoloadRegisterThrowFalse()
     {
         return [
             [14],

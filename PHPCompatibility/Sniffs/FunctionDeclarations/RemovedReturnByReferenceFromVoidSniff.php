@@ -10,6 +10,7 @@
 
 namespace PHPCompatibility\Sniffs\FunctionDeclarations;
 
+use PHPCompatibility\Helpers\ScannedCode;
 use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
@@ -54,7 +55,7 @@ class RemovedReturnByReferenceFromVoidSniff extends Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        if ($this->supportsAbove('8.1') === false) {
+        if (ScannedCode::shouldRunOnOrAbove('8.1') === false) {
             return;
         }
 
@@ -68,7 +69,7 @@ class RemovedReturnByReferenceFromVoidSniff extends Sniff
 
         $functionProps = FunctionDeclarations::getProperties($phpcsFile, $stackPtr);
 
-        if ($functionProps['return_type'] !== 'void') {
+        if (\strtolower($functionProps['return_type']) !== 'void') {
             // Not a void function.
             return;
         }

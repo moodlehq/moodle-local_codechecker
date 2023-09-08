@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the AbstractPrivateMethods sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @since 9.2.0
  * @since 10.0.0 Moved from `Classes` to `FunctionDeclarations`.
  */
-class AbstractPrivateMethodsUnitTest extends BaseSniffTest
+class AbstractPrivateMethodsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class AbstractPrivateMethodsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenAbstractPrivateMethods()
+    public static function dataForbiddenAbstractPrivateMethods()
     {
         return [
             [28],
@@ -86,7 +86,7 @@ class AbstractPrivateMethodsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewTraitAbstractPrivateMethods()
+    public static function dataNewTraitAbstractPrivateMethods()
     {
         return [
             [42],
@@ -120,7 +120,7 @@ class AbstractPrivateMethodsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 24 lines.

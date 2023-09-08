@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Constants;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewMagicClassConstant sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.1.4
  */
-class NewMagicClassConstantUnitTest extends BaseSniffTest
+class NewMagicClassConstantUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -50,7 +50,7 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewMagicClassConstant()
+    public static function dataNewMagicClassConstant()
     {
         return [
             [6],
@@ -88,7 +88,7 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [
             [4],
@@ -127,7 +127,7 @@ class NewMagicClassConstantUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewMagicClassConstantOnObject()
+    public static function dataNewMagicClassConstantOnObject()
     {
         return [
             [35],

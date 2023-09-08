@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewArrayStringDereferencing sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.1.4
  */
-class NewArrayStringDereferencingUnitTest extends BaseSniffTest
+class NewArrayStringDereferencingUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -55,7 +55,7 @@ class NewArrayStringDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataArrayStringDereferencing()
+    public static function dataArrayStringDereferencing()
     {
         return [
             [4, 'arrays'],
@@ -92,7 +92,7 @@ class NewArrayStringDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataArrayStringDereferencingUsingCurlies()
+    public static function dataArrayStringDereferencingUsingCurlies()
     {
         return [
             [20, 'arrays'],
@@ -128,7 +128,7 @@ class NewArrayStringDereferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [11],

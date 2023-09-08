@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Constants;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewConstantsInTraits sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-final class NewConstantsInTraitsUnitTest extends BaseSniffTest
+final class NewConstantsInTraitsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ final class NewConstantsInTraitsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataConstantInTrait()
+    public static function dataConstantInTrait()
     {
         return [
             [41],
@@ -79,7 +79,7 @@ final class NewConstantsInTraitsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
         for ($line = 1; $line <= 35; $line++) {

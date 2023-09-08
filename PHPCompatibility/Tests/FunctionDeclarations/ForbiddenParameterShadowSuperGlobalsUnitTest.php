@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenParameterShadowSuperGlobals sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.3
  */
-class ForbiddenParameterShadowSuperGlobalsUnitTest extends BaseSniffTest
+class ForbiddenParameterShadowSuperGlobalsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -49,7 +49,7 @@ class ForbiddenParameterShadowSuperGlobalsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataParameterShadowSuperGlobals()
+    public static function dataParameterShadowSuperGlobals()
     {
         return [
             ['$GLOBALS', 4],
@@ -91,7 +91,7 @@ class ForbiddenParameterShadowSuperGlobalsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [15],

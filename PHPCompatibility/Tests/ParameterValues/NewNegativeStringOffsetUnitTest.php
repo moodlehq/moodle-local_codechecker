@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewNegativeStringOffset sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewNegativeStringOffsetUnitTest extends BaseSniffTest
+class NewNegativeStringOffsetUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -54,7 +54,7 @@ class NewNegativeStringOffsetUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNegativeStringOffset()
+    public static function dataNegativeStringOffset()
     {
         return [
             [28, 'offset', 'mb_ereg_search_setpos'],

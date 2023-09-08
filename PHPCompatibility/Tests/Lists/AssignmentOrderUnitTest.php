@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Lists;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the AssignmentOrder sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class AssignmentOrderUnitTest extends BaseSniffTest
+class AssignmentOrderUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class AssignmentOrderUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataAssignmentOrder()
+    public static function dataAssignmentOrder()
     {
         return [
             [17],
@@ -97,7 +97,7 @@ class AssignmentOrderUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

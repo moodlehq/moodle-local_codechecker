@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Keywords;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the CaseSensitiveKeywords sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.1.4
  */
-class CaseSensitiveKeywordsUnitTest extends BaseSniffTest
+class CaseSensitiveKeywordsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class CaseSensitiveKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataCaseSensitiveKeywords()
+    public static function dataCaseSensitiveKeywords()
     {
         return [
             [18, 'self'],
@@ -83,7 +83,7 @@ class CaseSensitiveKeywordsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [10],

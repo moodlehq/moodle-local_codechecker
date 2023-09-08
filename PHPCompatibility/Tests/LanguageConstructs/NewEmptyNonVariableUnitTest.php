@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\LanguageConstructs;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewEmptyNonVariable sniff.
@@ -19,11 +19,11 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group languageConstructs
  *
  * @covers \PHPCompatibility\Sniffs\LanguageConstructs\NewEmptyNonVariableSniff
- * @covers \PHPCompatibility\Sniff::isVariable
+ * @covers \PHPCompatibility\Helpers\TokenGroup::isVariable
  *
  * @since 7.0.4
  */
-class NewEmptyNonVariableUnitTest extends BaseSniffTest
+class NewEmptyNonVariableUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class NewEmptyNonVariableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataEmptyNonVariable()
+    public static function dataEmptyNonVariable()
     {
         return [
             [17],
@@ -103,7 +103,7 @@ class NewEmptyNonVariableUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

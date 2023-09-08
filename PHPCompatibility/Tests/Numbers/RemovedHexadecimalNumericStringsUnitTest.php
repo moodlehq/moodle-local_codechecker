@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Numbers;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedHexadecimalNumericStrings sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @since 7.0.3
  * @since 10.0.0 Split off from the ValidIntegers sniff.
  */
-class RemovedHexadecimalNumericStringsUnitTest extends BaseSniffTest
+class RemovedHexadecimalNumericStringsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -54,7 +54,7 @@ class RemovedHexadecimalNumericStringsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataHexNumericString()
+    public static function dataHexNumericString()
     {
         // phpcs:disable PHPCompatibility.Numbers.RemovedHexadecimalNumericStrings
         return [
@@ -102,7 +102,7 @@ class RemovedHexadecimalNumericStringsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [3],

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenSessionModuleNameUser sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
+class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -61,7 +61,7 @@ class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenSessionModuleNameUser()
+    public static function dataForbiddenSessionModuleNameUser()
     {
         return [
             [16],
@@ -93,7 +93,7 @@ class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
 
@@ -107,6 +107,7 @@ class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
         $cases[] = [26];
         $cases[] = [29];
         $cases[] = [32];
+        $cases[] = [35];
 
         return $cases;
     }
@@ -138,7 +139,7 @@ class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenSessionModuleNameUserInIndentedHeredoc()
+    public static function dataForbiddenSessionModuleNameUserInIndentedHeredoc()
     {
         return [
             [16],
@@ -172,7 +173,7 @@ class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesInIndentedHeredoc()
+    public static function dataNoFalsePositivesInIndentedHeredoc()
     {
         $cases = [];
 
@@ -210,7 +211,7 @@ class ForbiddenSessionModuleNameUserUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataTestFiles()
+    public static function dataTestFiles()
     {
         return [
             [self::TEST_FILE],

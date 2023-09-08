@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\InitialValue;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewConstantArraysUsingDefine sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class NewConstantArraysUsingDefineUnitTest extends BaseSniffTest
+class NewConstantArraysUsingDefineUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewConstantArraysUsingDefineUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataConstantArraysUsingDefine()
+    public static function dataConstantArraysUsingDefine()
     {
         return [
             [3],
@@ -80,7 +80,7 @@ class NewConstantArraysUsingDefineUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [15],

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Operators;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenNegativeBitshift sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTest
+class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataForbiddenNegativeBitshift()
+    public static function dataForbiddenNegativeBitshift()
     {
         return [
             [3],
@@ -81,7 +81,7 @@ class ForbiddenNegativeBitshiftUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [10],

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewNonCapturingCatch sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewNonCapturingCatchUnitTest extends BaseSniffTest
+class NewNonCapturingCatchUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class NewNonCapturingCatchUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewNonCapturingCatch()
+    public static function dataNewNonCapturingCatch()
     {
         return [
             [21],
@@ -81,7 +81,7 @@ class NewNonCapturingCatchUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [8],

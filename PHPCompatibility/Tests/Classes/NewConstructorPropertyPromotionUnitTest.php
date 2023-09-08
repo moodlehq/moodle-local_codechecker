@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Classes;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewConstructorPropertyPromotion sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-final class NewConstructorPropertyPromotionUnitTest extends BaseSniffTest
+final class NewConstructorPropertyPromotionUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ final class NewConstructorPropertyPromotionUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewConstructorPropertyPromotion()
+    public static function dataNewConstructorPropertyPromotion()
     {
         return [
             [32],
@@ -88,7 +88,7 @@ final class NewConstructorPropertyPromotionUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 26 lines.

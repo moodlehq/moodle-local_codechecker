@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\UseDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewUseConstFunction sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.1.4
  */
-class NewUseConstFunctionUnitTest extends BaseSniffTest
+class NewUseConstFunctionUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewUseConstFunctionUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewUseConstFunction()
+    public static function dataNewUseConstFunction()
     {
         return [
             [29],
@@ -80,7 +80,7 @@ class NewUseConstFunctionUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [7],

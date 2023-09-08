@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Operators;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewShortTernary sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class NewShortTernaryUnitTest extends BaseSniffTest
+class NewShortTernaryUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class NewShortTernaryUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataElvisOperator()
+    public static function dataElvisOperator()
     {
         return [
             [8],

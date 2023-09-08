@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Classes;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedClasses sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedClassesUnitTest extends BaseSniffTest
+class RemovedClassesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -61,7 +61,7 @@ class RemovedClassesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedClass()
+    public static function dataRemovedClass()
     {
         return [
             ['HW_API', '5.2', [59], '5.1'],
@@ -122,7 +122,7 @@ class RemovedClassesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         // No errors expected on the first 26 lines.
         $data = [];

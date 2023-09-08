@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Variables;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedPredefinedGlobalVariables sniff.
@@ -24,7 +24,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @since 7.0   RemovedVariablesSniffTest.
  * @since 7.1.3 Merged to one sniff & test.
  */
-class RemovedPredefinedGlobalVariablesUnitTest extends BaseSniffTest
+class RemovedPredefinedGlobalVariablesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -68,7 +68,7 @@ class RemovedPredefinedGlobalVariablesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedGlobalVariables()
+    public static function dataRemovedGlobalVariables()
     {
         return [
             ['HTTP_POST_VARS', '5.3', '5.4', [9, 31, 71, 91], '$_POST', '5.2'],
@@ -114,7 +114,7 @@ class RemovedPredefinedGlobalVariablesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDeprecatedRemovedPHPErrorMsg()
+    public static function dataDeprecatedRemovedPHPErrorMsg()
     {
         return [
             [101],
@@ -151,7 +151,7 @@ class RemovedPredefinedGlobalVariablesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             // Variable names are case-sensitive.

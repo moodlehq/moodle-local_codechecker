@@ -11,6 +11,8 @@
 namespace PHPCompatibility\Sniffs\ParameterValues;
 
 use PHPCompatibility\AbstractFunctionCallParameterSniff;
+use PHPCompatibility\Helpers\ScannedCode;
+use PHPCompatibility\Helpers\TokenGroup;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\BackCompat\BCTokens;
@@ -77,7 +79,7 @@ class RemovedMbStrrposEncodingThirdParamSniff extends AbstractFunctionCallParame
      */
     protected function bowOutEarly()
     {
-        return $this->supportsAbove('5.2') === false;
+        return ScannedCode::shouldRunOnOrAbove('5.2') === false;
     }
 
 
@@ -114,7 +116,7 @@ class RemovedMbStrrposEncodingThirdParamSniff extends AbstractFunctionCallParame
             return;
         }
 
-        if ($this->isNumericCalculation($phpcsFile, $targetParam['start'], $targetParam['end']) === true) {
+        if (TokenGroup::isNumericCalculation($phpcsFile, $targetParam['start'], $targetParam['end']) === true) {
             return;
         }
 
@@ -128,11 +130,11 @@ class RemovedMbStrrposEncodingThirdParamSniff extends AbstractFunctionCallParame
         $isError = false;
         $code    = 'Deprecated';
 
-        if ($this->supportsAbove('8.0') === true) {
+        if (ScannedCode::shouldRunOnOrAbove('8.0') === true) {
             $error  .= ', hard deprecated since PHP 7.4 and removed since PHP 8.0';
             $isError = true;
             $code    = 'Removed';
-        } elseif ($this->supportsAbove('7.4') === true) {
+        } elseif (ScannedCode::shouldRunOnOrAbove('7.4') === true) {
             $error .= ' and hard deprecated since PHP 7.4';
         }
 

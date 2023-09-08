@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Miscellaneous;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewPHPOpenTagEOF sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.3.0
  */
-class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
+class NewPHPOpenTagEOFUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -57,7 +57,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewPHPOpenTagEOF()
+    public static function dataNewPHPOpenTagEOF()
     {
         return [
             [4, 1],
@@ -94,7 +94,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesOnLine()
+    public static function dataNoFalsePositivesOnLine()
     {
         return [
             [5, 1],
@@ -129,7 +129,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesOnFile()
+    public static function dataNoFalsePositivesOnFile()
     {
         return [
             [1],
@@ -163,7 +163,7 @@ class NewPHPOpenTagEOFUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoViolationsInFileOnValidVersion()
+    public static function dataNoViolationsInFileOnValidVersion()
     {
         $data = [
             [1],

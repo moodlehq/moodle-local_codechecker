@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Miscellaneous;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedAlternativePHPTags sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.4
  */
-class RemovedAlternativePHPTagsUnitTest extends BaseSniffTest
+class RemovedAlternativePHPTagsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -86,7 +86,7 @@ class RemovedAlternativePHPTagsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataAlternativePHPTags()
+    public static function dataAlternativePHPTags()
     {
         return [
             ['Script', '<script language="php">', 7],
@@ -130,7 +130,7 @@ class RemovedAlternativePHPTagsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataMaybeASPOpenTag()
+    public static function dataMaybeASPOpenTag()
     {
         return [
             [21, '<% echo $var; %>'],
@@ -163,7 +163,7 @@ class RemovedAlternativePHPTagsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [3],

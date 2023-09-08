@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewForeachExpressionReferencing sniff.
@@ -19,11 +19,11 @@ use PHPCompatibility\Tests\BaseSniffTest;
  * @group controlStructures
  *
  * @covers \PHPCompatibility\Sniffs\ControlStructures\NewForeachExpressionReferencingSniff
- * @covers \PHPCompatibility\Sniff::isVariable
+ * @covers \PHPCompatibility\Helpers\TokenGroup::isVariable
  *
  * @since 9.0.0
  */
-class NewForeachExpressionReferencingUnitTest extends BaseSniffTest
+class NewForeachExpressionReferencingUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class NewForeachExpressionReferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewForeachExpressionReferencing()
+    public static function dataNewForeachExpressionReferencing()
     {
         return [
             [17],
@@ -83,7 +83,7 @@ class NewForeachExpressionReferencingUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

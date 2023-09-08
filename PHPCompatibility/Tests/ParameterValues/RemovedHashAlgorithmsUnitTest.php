@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedHashAlgorithms sniff.
@@ -24,7 +24,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.5
  */
-class RemovedHashAlgorithmsUnitTest extends BaseSniffTest
+class RemovedHashAlgorithmsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -55,7 +55,7 @@ class RemovedHashAlgorithmsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedHashAlgorithms()
+    public static function dataRemovedHashAlgorithms()
     {
         return [
             ['salsa10', '5.4', 13, '5.3'],
@@ -94,7 +94,7 @@ class RemovedHashAlgorithmsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

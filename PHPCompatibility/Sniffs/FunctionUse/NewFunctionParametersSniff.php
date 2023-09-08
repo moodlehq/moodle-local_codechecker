@@ -12,6 +12,7 @@ namespace PHPCompatibility\Sniffs\FunctionUse;
 
 use PHPCompatibility\AbstractFunctionCallParameterSniff;
 use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHPCompatibility\Helpers\ScannedCode;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Utils\PassedParameters;
@@ -723,6 +724,13 @@ class NewFunctionParametersSniff extends AbstractFunctionCallParameterSniff
                 '5.1.2' => true,
             ],
         ],
+        'posix_getrlimit' => [
+            1 => [
+                'name' => 'resource',
+                '8.2'  => false,
+                '8.3'  => true,
+            ],
+        ],
         'pg_escape_bytea' => [
             /*
              * Is in actual fact the first parameter, with a second required param.
@@ -1095,7 +1103,7 @@ class NewFunctionParametersSniff extends AbstractFunctionCallParameterSniff
         $versionInfo = $this->getVersionInfo($itemArray);
 
         if (empty($versionInfo['not_in_version'])
-            || $this->supportsBelow($versionInfo['not_in_version']) === false
+            || ScannedCode::shouldRunOnOrBelow($versionInfo['not_in_version']) === false
         ) {
             return;
         }

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewNestedStaticAccess sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewNestedStaticAccessUnitTest extends BaseSniffTest
+class NewNestedStaticAccessUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -50,7 +50,7 @@ class NewNestedStaticAccessUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNestedStaticAccess()
+    public static function dataNestedStaticAccess()
     {
         return [
             [7],
@@ -95,7 +95,7 @@ class NewNestedStaticAccessUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataClassConstantDereferencing()
+    public static function dataClassConstantDereferencing()
     {
         return [
             [34],
@@ -126,7 +126,7 @@ class NewNestedStaticAccessUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

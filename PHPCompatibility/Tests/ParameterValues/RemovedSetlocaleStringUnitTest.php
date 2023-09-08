@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedSetlocaleString sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class RemovedSetlocaleStringUnitTest extends BaseSniffTest
+class RemovedSetlocaleStringUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -50,7 +50,7 @@ class RemovedSetlocaleStringUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataSetlocaleString()
+    public static function dataSetlocaleString()
     {
         return [
             [9],
@@ -82,7 +82,7 @@ class RemovedSetlocaleStringUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedNamespacedAssert sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class RemovedNamespacedAssertUnitTest extends BaseSniffTest
+class RemovedNamespacedAssertUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -67,7 +67,7 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataIsDeprecated()
+    public static function dataIsDeprecated()
     {
         return [
             [self::TEST_FILE, 22],
@@ -100,7 +100,7 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [self::TEST_FILE, 3],
@@ -110,10 +110,12 @@ class RemovedNamespacedAssertUnitTest extends BaseSniffTest
             [self::TEST_FILE, 18],
             [self::TEST_FILE, 27],
             [self::TEST_FILE, 32],
+            [self::TEST_FILE, 36],
             [self::TEST_FILE_NAMESPACED, 8],
             [self::TEST_FILE_NAMESPACED, 12],
             [self::TEST_FILE_NAMESPACED, 16],
             [self::TEST_FILE_NAMESPACED, 20],
+            [self::TEST_FILE_NAMESPACED, 34],
         ];
     }
 

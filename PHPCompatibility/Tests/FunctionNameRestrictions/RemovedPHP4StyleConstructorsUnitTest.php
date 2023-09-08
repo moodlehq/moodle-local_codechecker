@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedPHP4StyleConstructors sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
+class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -39,7 +39,7 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
         $file = $this->sniffFile(__FILE__, '7.0');
         $this->assertWarning($file, $line, 'Declaration of a PHP4 style class constructor is deprecated since PHP 7.0');
 
-        $file = $this->sniffFile(__FILE__, '8.0');
+        $file = $this->sniffFile(__FILE__, '7.2-');
         $this->assertError($file, $line, 'Declaration of a PHP4 style class constructor is deprecated since PHP 7.0 and removed since PHP 8.0');
     }
 
@@ -50,7 +50,7 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataIsDeprecated()
+    public static function dataIsDeprecated()
     {
         return [
             [3],
@@ -84,7 +84,7 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [9],
@@ -107,9 +107,20 @@ class RemovedPHP4StyleConstructorsUnitTest extends BaseSniffTest
      *
      * @return void
      */
-    public function testNoViolationsInFileOnValidVersion()
+    public function testNoViolationsInFileOnValidVersionPHP5()
     {
         $file = $this->sniffFile(__FILE__, '5.6');
+        $this->assertNoViolation($file);
+    }
+
+    /**
+     * Verify no notices are thrown at all.
+     *
+     * @return void
+     */
+    public function testNoViolationsInFileOnValidVersionPHP8()
+    {
+        $file = $this->sniffFile(__FILE__, '8.0');
         $this->assertNoViolation($file);
     }
 }

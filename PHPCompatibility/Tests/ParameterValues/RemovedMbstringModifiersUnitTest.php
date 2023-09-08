@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedMbstringModifiers sniff.
@@ -23,7 +23,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.5
  */
-class RemovedMbstringModifiersUnitTest extends BaseSniffTest
+class RemovedMbstringModifiersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -54,7 +54,7 @@ class RemovedMbstringModifiersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataMbstringEModifier()
+    public static function dataMbstringEModifier()
     {
         return [
             [14],
@@ -91,7 +91,7 @@ class RemovedMbstringModifiersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

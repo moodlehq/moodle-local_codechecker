@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionNameRestrictions;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedMagicAutoload sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.1.0
  */
-class RemovedMagicAutoloadUnitTest extends BaseSniffTest
+class RemovedMagicAutoloadUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -76,7 +76,7 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedMagicAutoload()
+    public static function dataRemovedMagicAutoload()
     {
         return [
             [3],
@@ -107,7 +107,7 @@ class RemovedMagicAutoloadUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataIsNotAffected()
+    public static function dataIsNotAffected()
     {
         return [
             [self::TEST_FILE, 8],

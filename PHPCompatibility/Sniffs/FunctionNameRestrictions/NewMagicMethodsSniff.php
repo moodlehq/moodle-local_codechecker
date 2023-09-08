@@ -10,10 +10,12 @@
 
 namespace PHPCompatibility\Sniffs\FunctionNameRestrictions;
 
-use PHPCompatibility\Sniff;
 use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHPCompatibility\Helpers\ScannedCode;
+use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Files\File;
-use PHPCSUtils\BackCompat\BCTokens;
+use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\FunctionDeclarations;
 use PHPCSUtils\Utils\ObjectDeclarations;
 use PHPCSUtils\Utils\Scopes;
@@ -140,7 +142,7 @@ class NewMagicMethodsSniff extends Sniff
             return;
         }
 
-        $scopePtr = Scopes::validDirectScope($phpcsFile, $stackPtr, BCTokens::ooScopeTokens());
+        $scopePtr = Scopes::validDirectScope($phpcsFile, $stackPtr, Tokens::$ooScopeTokens);
         if ($scopePtr === false) {
             return;
         }
@@ -163,8 +165,8 @@ class NewMagicMethodsSniff extends Sniff
                         return;
                     }
                 }
-            } else {
-                // Class.
+            } elseif (isset(Collections::ooCanImplement()[$tokens[$scopePtr]['code']]) === true) {
+                // Class or enum.
                 $implementedInterfaces = ObjectDeclarations::findImplementedInterfaceNames($phpcsFile, $scopePtr);
 
                 if (\is_array($implementedInterfaces) === true) {
@@ -204,7 +206,7 @@ class NewMagicMethodsSniff extends Sniff
         $versionInfo = $this->getVersionInfo($itemArray);
 
         if (empty($versionInfo['not_in_version'])
-            || $this->supportsBelow($versionInfo['not_in_version']) === false
+            || ScannedCode::shouldRunOnOrBelow($versionInfo['not_in_version']) === false
         ) {
             return;
         }

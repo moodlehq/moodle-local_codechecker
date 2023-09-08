@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\InitialValue;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewNewInInitializers sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-final class NewNewInInitializersUnitTest extends BaseSniffTest
+final class NewNewInInitializersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -63,7 +63,7 @@ final class NewNewInInitializersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewInInitializer()
+    public static function dataNewInInitializer()
     {
         return [
             [38, 'const'],
@@ -121,7 +121,7 @@ final class NewNewInInitializersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
         for ($line = 1; $line <= 32; $line++) {

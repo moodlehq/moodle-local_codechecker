@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Classes;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewReadonlyClasses sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-final class NewReadonlyClassesUnitTest extends BaseSniffTest
+final class NewReadonlyClassesUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ final class NewReadonlyClassesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataReadonlyClass()
+    public static function dataReadonlyClass()
     {
         return [
             [21],
@@ -85,7 +85,7 @@ final class NewReadonlyClassesUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
         for ($line = 1; $line <= 17; $line++) {

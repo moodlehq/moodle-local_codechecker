@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ForbiddenBreakContinueVariableArguments sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.5
  */
-class ForbiddenBreakContinueVariableArgumentsUnitTest extends BaseSniffTest
+class ForbiddenBreakContinueVariableArgumentsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -62,7 +62,7 @@ class ForbiddenBreakContinueVariableArgumentsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataBreakAndContinueVariableArgument()
+    public static function dataBreakAndContinueVariableArgument()
     {
         $data = [
             [53, self::ERROR_TYPE_VARIABLE],
@@ -115,7 +115,7 @@ class ForbiddenBreakContinueVariableArgumentsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [8],

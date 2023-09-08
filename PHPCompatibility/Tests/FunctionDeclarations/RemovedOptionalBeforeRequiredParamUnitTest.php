@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedOptionalBeforeRequiredParam sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedOptionalBeforeRequiredParamUnitTest extends BaseSniffTest
+class RemovedOptionalBeforeRequiredParamUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class RemovedOptionalBeforeRequiredParamUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedOptionalBeforeRequiredParam()
+    public static function dataRemovedOptionalBeforeRequiredParam()
     {
         return [
             [13], // Warning x 2.
@@ -83,7 +83,7 @@ class RemovedOptionalBeforeRequiredParamUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 9 lines.

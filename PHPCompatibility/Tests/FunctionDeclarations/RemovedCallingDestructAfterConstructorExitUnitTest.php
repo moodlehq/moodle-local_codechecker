@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedCallingDestructAfterConstructorExit sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedCallingDestructAfterConstructorExitUnitTest extends BaseSniffTest
+class RemovedCallingDestructAfterConstructorExitUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -55,7 +55,7 @@ class RemovedCallingDestructAfterConstructorExitUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedCallingDestructAfterConstructorExit()
+    public static function dataRemovedCallingDestructAfterConstructorExit()
     {
         return [
             [33, 'exit'],
@@ -90,7 +90,7 @@ class RemovedCallingDestructAfterConstructorExitUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 26 lines.

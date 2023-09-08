@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionUse;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewNamedParameters sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewNamedParametersUnitTest extends BaseSniffTest
+class NewNamedParametersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -48,7 +48,7 @@ class NewNamedParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewNamedParameters()
+    public static function dataNewNamedParameters()
     {
         return [
             [17, 'start_index'],
@@ -139,7 +139,7 @@ class NewNamedParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

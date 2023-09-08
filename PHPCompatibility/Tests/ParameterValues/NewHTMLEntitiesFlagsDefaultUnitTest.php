@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewHTMLEntitiesFlagsDefault sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class NewHTMLEntitiesFlagsDefaultUnitTest extends BaseSniffTest
+class NewHTMLEntitiesFlagsDefaultUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -51,7 +51,7 @@ class NewHTMLEntitiesFlagsDefaultUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewHTMLEntitiesFlagsDefault()
+    public static function dataNewHTMLEntitiesFlagsDefault()
     {
         return [
             [11, 'htmlentities'],
@@ -101,7 +101,7 @@ class NewHTMLEntitiesFlagsDefaultUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoViolationsInFileOnValidVersion()
+    public static function dataNoViolationsInFileOnValidVersion()
     {
         return [
             ['5.6-8.0'],

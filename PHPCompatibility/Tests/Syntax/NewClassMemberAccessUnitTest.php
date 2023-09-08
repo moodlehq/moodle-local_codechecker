@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Syntax;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewClassMemberAccess sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.2.0
  */
-class NewClassMemberAccessUnitTest extends BaseSniffTest
+class NewClassMemberAccessUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -54,7 +54,7 @@ class NewClassMemberAccessUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewClassMemberAccess()
+    public static function dataNewClassMemberAccess()
     {
         return [
             [41],
@@ -107,7 +107,7 @@ class NewClassMemberAccessUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewClassMemberAccessUsingCurlies()
+    public static function dataNewClassMemberAccessUsingCurlies()
     {
         return [
             [111],
@@ -139,7 +139,7 @@ class NewClassMemberAccessUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataCloneClassMemberAccess()
+    public static function dataCloneClassMemberAccess()
     {
         return [
             [101],

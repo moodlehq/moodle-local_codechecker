@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewListInForeach sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.0.0
  */
-class NewListInForeachUnitTest extends BaseSniffTest
+class NewListInForeachUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewListInForeachUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewListInForeach()
+    public static function dataNewListInForeach()
     {
         return [
             [14],
@@ -82,7 +82,7 @@ class NewListInForeachUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

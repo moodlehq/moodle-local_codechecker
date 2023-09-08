@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedPCREModifiers sniff.
@@ -24,7 +24,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 5.6
  */
-class RemovedPCREModifiersUnitTest extends BaseSniffTest
+class RemovedPCREModifiersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -53,7 +53,7 @@ class RemovedPCREModifiersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDeprecatedEModifier()
+    public static function dataDeprecatedEModifier()
     {
         return [
             // Function preg_replace().
@@ -144,7 +144,7 @@ class RemovedPCREModifiersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             // No or only valid modifiers.

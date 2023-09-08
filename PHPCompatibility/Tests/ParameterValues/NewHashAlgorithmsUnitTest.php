@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewHashAlgorithms sniff.
@@ -24,7 +24,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.7
  */
-class NewHashAlgorithmsUnitTest extends BaseSniffTest
+class NewHashAlgorithmsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -55,7 +55,7 @@ class NewHashAlgorithmsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewHashAlgorithms()
+    public static function dataNewHashAlgorithms()
     {
         return [
             ['md2', '5.2', 13, '5.3'],
@@ -110,7 +110,7 @@ class NewHashAlgorithmsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

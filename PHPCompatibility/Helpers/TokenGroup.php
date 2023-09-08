@@ -12,6 +12,7 @@ namespace PHPCompatibility\Helpers;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCompatibility\Helpers\ScannedCode;
 use PHPCSUtils\Utils\TextStrings;
 
 /**
@@ -38,27 +39,22 @@ final class TokenGroup
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
-     * @param int                         $start        Start of the snippet (inclusive), i.e. this
-     *                                                  token will be examined as part of the
-     *                                                  snippet.
-     * @param int                         $end          End of the snippet (inclusive), i.e. this
-     *                                                  token will be examined as part of the
-     *                                                  snippet.
-     * @param bool                        $supportsPHP5 Whether the `testVersion` set indicated that PHP < 7.0
-     *                                                  needs to be supported.
-     *                                                  This is used to determine how to handle hexidecimal
-     *                                                  numeric strings, which were supported in PHP 5.x,
-     *                                                  but no longer supported in PHP 7.0+.
-     * @param bool                        $allowFloats  Whether to only consider integers, or also floats.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $start       Start of the snippet (inclusive), i.e. this
+     *                                                 token will be examined as part of the
+     *                                                 snippet.
+     * @param int                         $end         End of the snippet (inclusive), i.e. this
+     *                                                 token will be examined as part of the
+     *                                                 snippet.
+     * @param bool                        $allowFloats Whether to only consider integers, or also floats.
      *
      * @return bool True if PHP would evaluate the snippet as a positive number.
      *              False if not or if it could not be reliably determined
      *              (variable or calculations and such).
      */
-    public static function isPositiveNumber(File $phpcsFile, $start, $end, $supportsPHP5, $allowFloats = false)
+    public static function isPositiveNumber(File $phpcsFile, $start, $end, $allowFloats = false)
     {
-        $number = self::isNumber($phpcsFile, $start, $end, $supportsPHP5, $allowFloats);
+        $number = self::isNumber($phpcsFile, $start, $end, $allowFloats);
 
         if ($number === false) {
             return false;
@@ -78,27 +74,22 @@ final class TokenGroup
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
-     * @param int                         $start        Start of the snippet (inclusive), i.e. this
-     *                                                  token will be examined as part of the
-     *                                                  snippet.
-     * @param int                         $end          End of the snippet (inclusive), i.e. this
-     *                                                  token will be examined as part of the
-     *                                                  snippet.
-     * @param bool                        $supportsPHP5 Whether the `testVersion` set indicated that PHP < 7.0
-     *                                                  needs to be supported.
-     *                                                  This is used to determine how to handle hexidecimal
-     *                                                  numeric strings, which were supported in PHP 5.x,
-     *                                                  but no longer supported in PHP 7.0+.
-     * @param bool                        $allowFloats  Whether to only consider integers, or also floats.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $start       Start of the snippet (inclusive), i.e. this
+     *                                                 token will be examined as part of the
+     *                                                 snippet.
+     * @param int                         $end         End of the snippet (inclusive), i.e. this
+     *                                                 token will be examined as part of the
+     *                                                 snippet.
+     * @param bool                        $allowFloats Whether to only consider integers, or also floats.
      *
      * @return bool True if PHP would evaluate the snippet as a negative number.
      *              False if not or if it could not be reliably determined
      *              (variable or calculations and such).
      */
-    public static function isNegativeNumber(File $phpcsFile, $start, $end, $supportsPHP5, $allowFloats = false)
+    public static function isNegativeNumber(File $phpcsFile, $start, $end, $allowFloats = false)
     {
-        $number = self::isNumber($phpcsFile, $start, $end, $supportsPHP5, $allowFloats);
+        $number = self::isNumber($phpcsFile, $start, $end, $allowFloats);
 
         if ($number === false) {
             return false;
@@ -121,19 +112,14 @@ final class TokenGroup
      *
      * @since 8.2.0
      *
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile    The file being scanned.
-     * @param int                         $start        Start of the snippet (inclusive), i.e. this
-     *                                                  token will be examined as part of the
-     *                                                  snippet.
-     * @param int                         $end          End of the snippet (inclusive), i.e. this
-     *                                                  token will be examined as part of the
-     *                                                  snippet.
-     * @param bool                        $supportsPHP5 Whether the `testVersion` set indicated that PHP < 7.0
-     *                                                  needs to be supported.
-     *                                                  This is used to determine how to handle hexidecimal
-     *                                                  numeric strings, which were supported in PHP 5.x,
-     *                                                  but no longer supported in PHP 7.0+.
-     * @param bool                        $allowFloats  Whether to only consider integers, or also floats.
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being scanned.
+     * @param int                         $start       Start of the snippet (inclusive), i.e. this
+     *                                                 token will be examined as part of the
+     *                                                 snippet.
+     * @param int                         $end         End of the snippet (inclusive), i.e. this
+     *                                                 token will be examined as part of the
+     *                                                 snippet.
+     * @param bool                        $allowFloats Whether to only consider integers, or also floats.
      *
      * @return int|float|bool The number found if PHP would evaluate the snippet as a number.
      *                        The return type will be int if $allowFloats is false, if
@@ -142,7 +128,7 @@ final class TokenGroup
      *                        number or if it could not be reliably determined
      *                        (variable or calculations and such).
      */
-    public static function isNumber(File $phpcsFile, $start, $end, $supportsPHP5, $allowFloats = false)
+    public static function isNumber(File $phpcsFile, $start, $end, $allowFloats = false)
     {
         $stringTokens = Tokens::$heredocTokens + Tokens::$stringTokens;
 
@@ -260,7 +246,7 @@ final class TokenGroup
             // Allow for different behaviour for hex numeric strings between PHP 5 vs PHP 7.
             if ($intString === 1 && \trim($intMatch[0]) === '0'
                 && \preg_match('`^\s*(0x[A-Fa-f0-9]+)`', $stringContent, $hexNumberString) === 1
-                && $supportsPHP5 === true
+                && ScannedCode::shouldRunOnOrBelow('5.6') === true
             ) {
                 // The filter extension still allows for hex numeric strings in PHP 7, so
                 // use that to get the numeric value if possible.
@@ -289,5 +275,167 @@ final class TokenGroup
         }
 
         return $content;
+    }
+
+    /**
+     * Determine whether the tokens between $start and $end together form a numberic calculation
+     * as recognized by PHP.
+     *
+     * The outcome of this function is reliable for `true`, `false` should be regarded as "undetermined".
+     *
+     * Mainly intended for examining variable assignments, function call parameters, array values
+     * where the start and end of the snippet to examine is very clear.
+     *
+     * @since 9.0.0
+     * @since 10.0.0 This method is now static.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
+     * @param int                         $start     Start of the snippet (inclusive), i.e. this
+     *                                               token will be examined as part of the
+     *                                               snippet.
+     * @param int                         $end       End of the snippet (inclusive), i.e. this
+     *                                               token will be examined as part of the
+     *                                               snippet.
+     *
+     * @return bool
+     */
+    public static function isNumericCalculation(File $phpcsFile, $start, $end)
+    {
+        $arithmeticTokens = Tokens::$arithmeticTokens;
+
+        $skipTokens   = Tokens::$emptyTokens;
+        $skipTokens[] = \T_MINUS;
+        $skipTokens[] = \T_PLUS;
+
+        // Find the first arithmetic operator, but skip past +/- signs before numbers.
+        $nextNonEmpty = ($start - 1);
+        do {
+            $nextNonEmpty       = $phpcsFile->findNext($skipTokens, ($nextNonEmpty + 1), ($end + 1), true);
+            $arithmeticOperator = $phpcsFile->findNext($arithmeticTokens, ($nextNonEmpty + 1), ($end + 1));
+        } while ($nextNonEmpty !== false && $arithmeticOperator !== false && $nextNonEmpty === $arithmeticOperator);
+
+        if ($arithmeticOperator === false) {
+            return false;
+        }
+
+        $tokens      = $phpcsFile->getTokens();
+        $subsetStart = $start;
+        $subsetEnd   = ($arithmeticOperator - 1);
+
+        while (self::isNumber($phpcsFile, $subsetStart, $subsetEnd, true) !== false
+            && isset($tokens[($arithmeticOperator + 1)]) === true
+        ) {
+            $subsetStart  = ($arithmeticOperator + 1);
+            $nextNonEmpty = $arithmeticOperator;
+            do {
+                $nextNonEmpty       = $phpcsFile->findNext($skipTokens, ($nextNonEmpty + 1), ($end + 1), true);
+                $arithmeticOperator = $phpcsFile->findNext($arithmeticTokens, ($nextNonEmpty + 1), ($end + 1));
+            } while ($nextNonEmpty !== false && $arithmeticOperator !== false && $nextNonEmpty === $arithmeticOperator);
+
+            if ($arithmeticOperator === false) {
+                // Last calculation operator already reached.
+                if (self::isNumber($phpcsFile, $subsetStart, $end, true) !== false) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            $subsetEnd = ($arithmeticOperator - 1);
+        }
+
+        return false;
+    }
+
+    /**
+     * Determine whether the tokens between $start and $end could together represent a variable.
+     *
+     * @since 9.0.0
+     * @since 10.0.0 This method is now static.
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile          The file being scanned.
+     * @param int                         $start              Starting point stack pointer. Inclusive.
+     *                                                        I.e. this token should be taken into
+     *                                                        account.
+     * @param int                         $end                End point stack pointer. Exclusive.
+     *                                                        I.e. this token should not be taken
+     *                                                        into account.
+     * @param int                         $targetNestingLevel The nesting level the variable should be at.
+     *
+     * @return bool
+     */
+    public static function isVariable(File $phpcsFile, $start, $end, $targetNestingLevel)
+    {
+        static $disallowedTokens, $bracketTokens;
+
+        // Create the token arrays only once.
+        if (isset($disallowedTokens, $bracketTokens) === false) {
+            $disallowedTokens  = [
+                \T_OPEN_PARENTHESIS => \T_OPEN_PARENTHESIS,
+                \T_STRING_CONCAT    => \T_STRING_CONCAT,
+            ];
+            $disallowedTokens += Tokens::$assignmentTokens;
+            $disallowedTokens += Tokens::$equalityTokens;
+            $disallowedTokens += Tokens::$comparisonTokens;
+            $disallowedTokens += Tokens::$operators;
+            $disallowedTokens += Tokens::$booleanOperators;
+            $disallowedTokens += Tokens::$castTokens;
+
+            /*
+             * List of brackets which can be part of a variable variable.
+             *
+             * Key is the open bracket token, value the close bracket token.
+             */
+            $bracketTokens = [
+                \T_OPEN_CURLY_BRACKET  => \T_CLOSE_CURLY_BRACKET,
+                \T_OPEN_SQUARE_BRACKET => \T_CLOSE_SQUARE_BRACKET,
+            ];
+        }
+
+        $tokens = $phpcsFile->getTokens();
+
+        // If no variable at all was found, then it's definitely a no-no.
+        $hasVariable = $phpcsFile->findNext(\T_VARIABLE, $start, $end);
+        if ($hasVariable === false) {
+            return false;
+        }
+
+        // Check if the variable found is at the right level. Deeper levels are always an error.
+        if (isset($tokens[$hasVariable]['nested_parenthesis'])
+            && \count($tokens[$hasVariable]['nested_parenthesis']) !== $targetNestingLevel
+        ) {
+                return false;
+        }
+
+        // Ok, so the first variable is at the right level, now are there any
+        // disallowed tokens within the empty() ?
+        $hasBadToken = $phpcsFile->findNext($disallowedTokens, $start, $end);
+        if ($hasBadToken === false) {
+            return true;
+        }
+
+        // If there are also bracket tokens, the disallowed token might be part of a variable
+        // variable, but if there are no bracket tokens, we know we have an error.
+        $hasBrackets = $phpcsFile->findNext($bracketTokens, $start, $end);
+        if ($hasBrackets === false) {
+            return false;
+        }
+
+        // Ok, we have both a disallowed token as well as brackets, so we need to walk
+        // the tokens of the variable variable.
+        for ($i = $start; $i < $end; $i++) {
+            // If this is a bracket token, skip to the end of the bracketed expression.
+            if (isset($bracketTokens[$tokens[$i]['code']], $tokens[$i]['bracket_closer'])) {
+                $i = $tokens[$i]['bracket_closer'];
+                continue;
+            }
+
+            // If it's a disallowed token, not within brackets, we have an error.
+            if (isset($disallowedTokens[$tokens[$i]['code']])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

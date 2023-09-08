@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ControlStructures;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the DiscouragedSwitchContinue sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.2.0
  */
-class DiscouragedSwitchContinueUnitTest extends BaseSniffTest
+class DiscouragedSwitchContinueUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class DiscouragedSwitchContinueUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDiscouragedSwitchContinue()
+    public static function dataDiscouragedSwitchContinue()
     {
         $data = [
             [16],
@@ -105,7 +105,7 @@ class DiscouragedSwitchContinueUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [6],

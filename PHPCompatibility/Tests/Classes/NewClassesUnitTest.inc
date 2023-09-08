@@ -465,3 +465,21 @@ class IntersectionTypes {
     public function paramType(\ReflectionClassConstant&\ReflectionNamedType $param) {}
     public function returnType($param) : \FFI\CData&\FFI\CType {}
 }
+
+$type = new ReflectionIntersectionType();
+$type = new ReflectionEnum();
+$type = new ReflectionEnumBackedCase();
+$type = new ReflectionEnumUnitCase();
+
+class MyRandom extends \Random\Randomizer {
+    protected Random\Engine\Mt19937 $propertyA;
+    protected Random\Engine\PcgOneseq128XslRr64 $propertyB;
+    protected Random\Engine\Xoshiro256StarStar $propertyC;
+
+    public function foo(): \Random\Engine\Secure {
+        try {
+        } catch( Random\RandomError | Random\BrokenRandomEngineError ) {
+        } catch( Random\RandomException $e ) {
+        }
+    }
+}

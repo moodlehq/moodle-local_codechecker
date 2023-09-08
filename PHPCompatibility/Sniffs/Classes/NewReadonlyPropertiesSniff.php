@@ -12,6 +12,7 @@ namespace PHPCompatibility\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
+use PHPCompatibility\Helpers\ScannedCode;
 use PHPCompatibility\Sniff;
 use PHPCSUtils\Utils\FunctionDeclarations;
 use PHPCSUtils\Utils\Scopes;
@@ -59,7 +60,7 @@ final class NewReadonlyPropertiesSniff extends Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        if ($this->supportsBelow('8.0') === false) {
+        if (ScannedCode::shouldRunOnOrBelow('8.0') === false) {
             return;
         }
 
@@ -67,13 +68,12 @@ final class NewReadonlyPropertiesSniff extends Sniff
         $error  = 'Readonly properties are not supported in PHP 8.0 or earlier. Property %s was declared as readonly.';
 
         if ($tokens[$stackPtr]['code'] === \T_VARIABLE) {
-            try {
-                $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
-            } catch (RuntimeException $e) {
+            if (Scopes::isOOProperty($phpcsFile, $stackPtr) === false) {
                 // Not a class property.
                 return;
             }
 
+            $properties = Variables::getMemberProperties($phpcsFile, $stackPtr);
             if ($properties['is_readonly'] === false) {
                 // Not a readonly property.
                 return;

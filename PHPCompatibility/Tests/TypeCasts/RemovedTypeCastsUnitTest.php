@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\TypeCasts;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedTypeCasts sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 8.0.1
  */
-class RemovedTypeCastsUnitTest extends BaseSniffTest
+class RemovedTypeCastsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -72,7 +72,7 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDeprecatedRemovedTypeCastWithAlternative()
+    public static function dataDeprecatedRemovedTypeCastWithAlternative()
     {
         return [
             ['The unset cast', '7.2', '8.0', 'unset()', [8, 11, 12], '7.1'],
@@ -103,7 +103,7 @@ class RemovedTypeCastsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

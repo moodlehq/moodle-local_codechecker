@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionDeclarations;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewExceptionsFromToString sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.2.0
  */
-class NewExceptionsFromToStringUnitTest extends BaseSniffTest
+class NewExceptionsFromToStringUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewExceptionsFromToStringUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewExceptionsFromToString()
+    public static function dataNewExceptionsFromToString()
     {
         return [
             [39],
@@ -85,7 +85,7 @@ class NewExceptionsFromToStringUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 34 lines.

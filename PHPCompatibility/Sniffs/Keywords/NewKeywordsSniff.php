@@ -10,8 +10,9 @@
 
 namespace PHPCompatibility\Sniffs\Keywords;
 
-use PHPCompatibility\Sniff;
 use PHPCompatibility\Helpers\ComplexVersionNewFeatureTrait;
+use PHPCompatibility\Helpers\ScannedCode;
+use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\Tokens\Collections;
@@ -147,6 +148,21 @@ class NewKeywordsSniff extends Sniff
             '5.5'         => true,
             'description' => '"finally" keyword (in exception handling)',
         ],
+        'T_FN' => [
+            '7.3'         => false,
+            '7.4'         => true,
+            'description' => 'The "fn" keyword for arrow functions',
+        ],
+        'T_MATCH' => [
+            '7.4'         => false,
+            '8.0'         => true,
+            'description' => 'The "match" keyword',
+        ],
+        'T_ENUM' => [
+            '8.0'         => false,
+            '8.1'         => true,
+            'description' => 'The "enum" keyword',
+        ],
     ];
 
     /**
@@ -269,6 +285,8 @@ class NewKeywordsSniff extends Sniff
         // of PHP where the name was not reserved, unless we explicitly check for
         // them.
         if (($nextToken === false
+                || $tokenType === 'T_FN' // Open parenthesis is expected after "fn" keyword.
+                || $tokenType === 'T_MATCH' // ... and after the "match" keyword.
                 || $tokens[$nextToken]['type'] !== 'T_OPEN_PARENTHESIS')
             && ($prevToken === false
                 || $tokens[$prevToken]['type'] !== 'T_CLASS'
@@ -330,7 +348,7 @@ class NewKeywordsSniff extends Sniff
         $versionInfo = $this->getVersionInfo($itemArray);
 
         if (empty($versionInfo['not_in_version'])
-            || $this->supportsBelow($versionInfo['not_in_version']) === false
+            || ScannedCode::shouldRunOnOrBelow($versionInfo['not_in_version']) === false
         ) {
             return;
         }

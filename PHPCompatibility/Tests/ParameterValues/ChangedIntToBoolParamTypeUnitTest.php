@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ChangedIntToBoolParamType sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class ChangedIntToBoolParamTypeUnitTest extends BaseSniffTest
+class ChangedIntToBoolParamTypeUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -52,7 +52,7 @@ class ChangedIntToBoolParamTypeUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataChangedIntToBoolParamType()
+    public static function dataChangedIntToBoolParamType()
     {
         return [
             [21, '8.0', '$auto_release', 'sem_get'],
@@ -89,7 +89,7 @@ class ChangedIntToBoolParamTypeUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

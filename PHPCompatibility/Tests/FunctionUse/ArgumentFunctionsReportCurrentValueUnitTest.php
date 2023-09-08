@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionUse;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the ArgumentFunctionsReportCurrentValue sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.1.0
  */
-class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTest
+class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -49,7 +49,7 @@ class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataValueChanged()
+    public static function dataValueChanged()
     {
         return [
             [84, 'func_get_arg', '$x'],
@@ -98,7 +98,7 @@ class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNeedsInspection()
+    public static function dataNeedsInspection()
     {
         return [
             [101, 'func_get_arg', '$c'],
@@ -132,7 +132,7 @@ class ArgumentFunctionsReportCurrentValueUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 81 lines.

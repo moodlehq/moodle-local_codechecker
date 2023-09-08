@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\Classes;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedOrphanedParent sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.2.0
  */
-class RemovedOrphanedParentUnitTest extends BaseSniffTest
+class RemovedOrphanedParentUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -50,7 +50,7 @@ class RemovedOrphanedParentUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedOrphanedParentInClass()
+    public static function dataRemovedOrphanedParentInClass()
     {
         return [
             [35],
@@ -107,7 +107,7 @@ class RemovedOrphanedParentUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedOrphanedParentInInterface()
+    public static function dataRemovedOrphanedParentInInterface()
     {
         return [
             [80],
@@ -140,7 +140,7 @@ class RemovedOrphanedParentUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 31 lines.

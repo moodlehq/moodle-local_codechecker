@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewIDNVariantDefault sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.3.0
  */
-class NewIDNVariantDefaultUnitTest extends BaseSniffTest
+class NewIDNVariantDefaultUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -50,7 +50,7 @@ class NewIDNVariantDefaultUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewIDNVariantDefault()
+    public static function dataNewIDNVariantDefault()
     {
         return [
             [10, 'idn_to_ascii'],
@@ -101,7 +101,7 @@ class NewIDNVariantDefaultUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoViolationsInFileOnValidVersion()
+    public static function dataNoViolationsInFileOnValidVersion()
     {
         return [
             ['7.1-7.3'],

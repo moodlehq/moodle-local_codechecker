@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\FunctionUse;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewFunctionParameters sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 7.0.0
  */
-class NewFunctionParametersUnitTest extends BaseSniffTest
+class NewFunctionParametersUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -61,7 +61,7 @@ class NewFunctionParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataInvalidParameter()
+    public static function dataInvalidParameter()
     {
         return [
             ['array_filter', 'mode', '5.5', [11], '5.6'],
@@ -166,6 +166,7 @@ class NewFunctionParametersUnitTest extends BaseSniffTest
             ['openssl_verify', 'algorithm', '5.1', [63], '5.2'],
             ['parse_ini_file', 'scanner_mode', '5.2', [64], '5.3'],
             ['parse_url', 'component', '5.1.1', [65, 147], '5.2', '5.1'],
+            ['posix_getrlimit', 'resource', '8.2', [150], '8.3'],
             ['pg_escape_bytea', 'connection', '5.1', [123], '5.2'],
             ['pg_escape_string', 'connection', '5.1', [124], '5.2'],
             ['pg_fetch_all', 'mode', '7.0', [99], '7.1'],
@@ -236,7 +237,7 @@ class NewFunctionParametersUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             [4],

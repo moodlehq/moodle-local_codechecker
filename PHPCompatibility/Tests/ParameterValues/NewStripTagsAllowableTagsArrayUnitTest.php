@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewStripTagsAllowableTagsArray sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.3.0
  */
-class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
+class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -49,7 +49,7 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNewStripTagsAllowableTagsArray()
+    public static function dataNewStripTagsAllowableTagsArray()
     {
         return [
             [13],
@@ -87,7 +87,7 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataInvalidStripTagsAllowableTagsArray()
+    public static function dataInvalidStripTagsAllowableTagsArray()
     {
         return [
             [23, "'<a>'"],
@@ -119,7 +119,7 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositivesInvalidStripTagsAllowableTagsArray()
+    public static function dataNoFalsePositivesInvalidStripTagsAllowableTagsArray()
     {
         return [
             [33],
@@ -159,7 +159,7 @@ class NewStripTagsAllowableTagsArrayUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         return [
             ['7.3'],

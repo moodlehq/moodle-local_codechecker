@@ -10,8 +10,10 @@
 
 namespace PHPCompatibility\Sniffs\Constants;
 
-use PHPCompatibility\Sniff;
 use PHPCompatibility\Helpers\ComplexVersionDeprecatedRemovedFeatureTrait;
+use PHPCompatibility\Helpers\MiscHelper;
+use PHPCompatibility\Helpers\ScannedCode;
+use PHPCompatibility\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHPCSUtils\Utils\MessageHelper;
 
@@ -903,7 +905,8 @@ class RemovedConstantsSniff extends Sniff
 
         // Disabled since PHP 5.3.0 due to thread safety issues.
         'FILEINFO_COMPRESS' => [
-            '5.3' => true,
+            '5.3'       => true,
+            'extension' => 'fileinfo',
         ],
 
         'NCURSES_COLOR_BLACK' => [
@@ -1862,22 +1865,28 @@ class RemovedConstantsSniff extends Sniff
         ],
 
         'CURLOPT_CLOSEPOLICY' => [
-            '5.6' => true,
+            '5.6'       => true,
+            'extension' => 'curl',
         ],
         'CURLCLOSEPOLICY_LEAST_RECENTLY_USED' => [
-            '5.6' => true,
+            '5.6'       => true,
+            'extension' => 'curl',
         ],
         'CURLCLOSEPOLICY_LEAST_TRAFFIC' => [
-            '5.6' => true,
+            '5.6'       => true,
+            'extension' => 'curl',
         ],
         'CURLCLOSEPOLICY_SLOWEST' => [
-            '5.6' => true,
+            '5.6'       => true,
+            'extension' => 'curl',
         ],
         'CURLCLOSEPOLICY_CALLBACK' => [
-            '5.6' => true,
+            '5.6'       => true,
+            'extension' => 'curl',
         ],
         'CURLCLOSEPOLICY_OLDEST' => [
-            '5.6' => true,
+            '5.6'       => true,
+            'extension' => 'curl',
         ],
 
         'MYSQL_CLIENT_COMPRESS' => [
@@ -1916,13 +1925,16 @@ class RemovedConstantsSniff extends Sniff
             'extension' => 'mysql',
         ],
         'PGSQL_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT' => [
-            '7.0' => true,
+            '7.0'       => true,
+            'extension' => 'pgsql',
         ],
         'T_CHARACTER' => [
-            '7.0' => true,
+            '7.0'       => true,
+            'extension' => 'tokenizer',
         ],
         'T_BAD_CHARACTER' => [
-            '7.0' => true,
+            '7.0'       => true,
+            'extension' => 'tokenizer',
         ],
         'MSSQL_ASSOC' => [
             '7.0'       => true,
@@ -1974,8 +1986,9 @@ class RemovedConstantsSniff extends Sniff
         ],
 
         'INTL_IDNA_VARIANT_2003' => [
-            '7.2' => false,
-            '8.0' => true,
+            '7.2'       => false,
+            '8.0'       => true,
+            'extension' => 'intl',
         ],
 
         'MCRYPT_MODE_ECB' => [
@@ -2252,19 +2265,25 @@ class RemovedConstantsSniff extends Sniff
             '7.3' => true,
         ],
         'FILTER_FLAG_SCHEME_REQUIRED' => [
-            '7.3' => false,
+            '7.3'       => false,
+            '8.0'       => true,
+            'extension' => 'filter',
         ],
         'FILTER_FLAG_HOST_REQUIRED' => [
-            '7.3' => false,
+            '7.3'       => false,
+            '8.0'       => true,
+            'extension' => 'filter',
         ],
 
         'CURLPIPE_HTTP1' => [
-            '7.4' => false,
+            '7.4'       => false,
+            'extension' => 'curl',
         ],
         'FILTER_SANITIZE_MAGIC_QUOTES' => [
             '7.4'         => false,
             '8.0'         => true,
             'alternative' => 'FILTER_SANITIZE_ADD_SLASHES',
+            'extension'   => 'filter',
         ],
         'IBASE_BKP_CONVERT' => [
             '7.4'       => true,
@@ -2519,23 +2538,37 @@ class RemovedConstantsSniff extends Sniff
             '8.0' => true,
         ],
         'ENCHANT_MYSPELL' => [
-            '8.0' => false,
+            '8.0'       => false,
+            'extension' => 'enchant',
         ],
         'ENCHANT_ISPELL' => [
-            '8.0' => false,
+            '8.0'       => false,
+            'extension' => 'enchant',
+        ],
+        'INPUT_REQUEST' => [
+            '8.0'       => true,
+            'extension' => 'filter',
+        ],
+        'INPUT_SESSION' => [
+            '8.0'       => true,
+            'extension' => 'filter',
         ],
         'MB_OVERLOAD_MAIL' => [
-            '8.0' => true,
+            '8.0'       => true,
+            'extension' => 'mbstring',
         ],
         'MB_OVERLOAD_STRING' => [
-            '8.0' => true,
+            '8.0'       => true,
+            'extension' => 'mbstring',
         ],
         'MB_OVERLOAD_REGEX' => [
-            '8.0' => true,
+            '8.0'       => true,
+            'extension' => 'mbstring',
         ],
         'PG_VERSION_STR' => [
             '8.0'         => false,
             'alternative' => 'PG_VERSION',
+            'extension'   => 'pgsql',
         ],
 
         'FILE_BINARY' => [
@@ -2589,6 +2622,36 @@ class RemovedConstantsSniff extends Sniff
             '8.1'       => false,
             'extension' => 'mysqli',
         ],
+
+        'MYSQLI_IS_MARIADB' => [
+            '8.2'       => false,
+            'extension' => 'mysqli',
+        ],
+
+        'ASSERT_ACTIVE' => [
+            '8.3' => false,
+        ],
+        'ASSERT_BAIL' => [
+            '8.3' => false,
+        ],
+        'ASSERT_CALLBACK' => [
+            '8.3' => false,
+        ],
+        'ASSERT_EXCEPTION' => [
+            '8.3' => false,
+        ],
+        'ASSERT_WARNING' => [
+            '8.3' => false,
+        ],
+        'U_MULTIPLE_DECIMAL_SEPERATORS' => [
+            '8.3'         => false,
+            'alternative' => 'U_MULTIPLE_DECIMAL_SEPARATORS',
+            'extension'   => 'intl',
+        ],
+        'MT_RAND_PHP' => [
+            '8.3'       => false,
+            'extension' => 'random',
+        ],
     ];
 
 
@@ -2625,7 +2688,7 @@ class RemovedConstantsSniff extends Sniff
             return;
         }
 
-        if ($this->isUseOfGlobalConstant($phpcsFile, $stackPtr) === false) {
+        if (MiscHelper::isUseOfGlobalConstant($phpcsFile, $stackPtr) === false) {
             return;
         }
 
@@ -2656,11 +2719,11 @@ class RemovedConstantsSniff extends Sniff
         $isError     = null;
 
         if (empty($versionInfo['removed']) === false
-            && $this->supportsAbove($versionInfo['removed']) === true
+            && ScannedCode::shouldRunOnOrAbove($versionInfo['removed']) === true
         ) {
             $isError = true;
         } elseif (empty($versionInfo['deprecated']) === false
-            && $this->supportsAbove($versionInfo['deprecated']) === true
+            && ScannedCode::shouldRunOnOrAbove($versionInfo['deprecated']) === true
         ) {
             $isError = false;
 

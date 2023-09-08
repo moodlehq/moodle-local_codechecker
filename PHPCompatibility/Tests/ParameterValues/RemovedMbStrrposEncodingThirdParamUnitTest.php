@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedMbStrrposEncodingThirdParam sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.3.0
  */
-class RemovedMbStrrposEncodingThirdParamUnitTest extends BaseSniffTest
+class RemovedMbStrrposEncodingThirdParamUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -56,7 +56,7 @@ class RemovedMbStrrposEncodingThirdParamUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedMbStrrposEncodingThirdParam()
+    public static function dataRemovedMbStrrposEncodingThirdParam()
     {
         return [
             [22],
@@ -89,7 +89,7 @@ class RemovedMbStrrposEncodingThirdParamUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $data = [];
 

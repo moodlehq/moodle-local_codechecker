@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\ParameterValues;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the RemovedMbCheckEncodingNoArgs sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 10.0.0
  */
-class RemovedMbCheckEncodingNoArgsUnitTest extends BaseSniffTest
+class RemovedMbCheckEncodingNoArgsUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class RemovedMbCheckEncodingNoArgsUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataRemovedMbCheckEncodingNoArgs()
+    public static function dataRemovedMbCheckEncodingNoArgs()
     {
         return [
             [12],

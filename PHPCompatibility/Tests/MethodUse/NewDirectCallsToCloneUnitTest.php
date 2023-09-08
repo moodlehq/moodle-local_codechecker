@@ -10,7 +10,7 @@
 
 namespace PHPCompatibility\Tests\MethodUse;
 
-use PHPCompatibility\Tests\BaseSniffTest;
+use PHPCompatibility\Tests\BaseSniffTestCase;
 
 /**
  * Test the NewDirectCallsToClone sniff.
@@ -22,7 +22,7 @@ use PHPCompatibility\Tests\BaseSniffTest;
  *
  * @since 9.1.0
  */
-class NewDirectCallsToCloneUnitTest extends BaseSniffTest
+class NewDirectCallsToCloneUnitTest extends BaseSniffTestCase
 {
 
     /**
@@ -47,7 +47,7 @@ class NewDirectCallsToCloneUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataDirectCallToClone()
+    public static function dataDirectCallToClone()
     {
         return [
             [33],
@@ -79,7 +79,7 @@ class NewDirectCallsToCloneUnitTest extends BaseSniffTest
      *
      * @return array
      */
-    public function dataNoFalsePositives()
+    public static function dataNoFalsePositives()
     {
         $cases = [];
         // No errors expected on the first 29 lines.
