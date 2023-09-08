@@ -208,7 +208,7 @@ final class Namespaces
     }
 
     /**
-     * Determine the namespace an arbitrary token lives in.
+     * Find the stack pointer to the namespace declaration applicable for an arbitrary token.
      *
      * Take note:
      * 1. When a namespace declaration token or a token which is part of the namespace

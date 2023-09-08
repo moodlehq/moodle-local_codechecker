@@ -133,7 +133,7 @@ final class SpacesFixer
         }
 
         $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($ptrA + 1), null, true);
-        if ($nextNonEmpty < $ptrB) {
+        if ($nextNonEmpty !== false && $nextNonEmpty < $ptrB) {
             throw new RuntimeException(
                 'The $stackPtr and the $secondPtr token must be adjacent tokens separated only'
                     . ' by whitespace and/or comments'

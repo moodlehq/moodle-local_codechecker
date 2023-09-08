@@ -148,8 +148,8 @@ final class FunctionDeclarations
      * - Defensive coding against incorrect calls to this method.
      * - More efficient checking whether a function has a body.
      * - Support for PHP 8.0 identifier name tokens in return types, cross-version PHP & PHPCS.
-     * - Support for constructor property promotion with the PHP 8.1 readonly keyword without explicit visibility.
      * - Support for the PHP 8.2 `true` type.
+     * - The results of this function call are cached during a PHPCS run for faster response times.
      *
      * @see \PHP_CodeSniffer\Files\File::getMethodProperties()   Original source.
      * @see \PHPCSUtils\BackCompat\BCFile::getMethodProperties() Cross-version compatible version of the original.
@@ -191,6 +191,10 @@ final class FunctionDeclarations
             || isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === false
         ) {
             throw new RuntimeException('$stackPtr must be of type T_FUNCTION or T_CLOSURE or an arrow function');
+        }
+
+        if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {
+            return Cache::get($phpcsFile, __METHOD__, $stackPtr);
         }
 
         if ($tokens[$stackPtr]['code'] === \T_FUNCTION) {
@@ -292,7 +296,7 @@ final class FunctionDeclarations
             $returnType = '?' . $returnType;
         }
 
-        return [
+        $returnValue = [
             'scope'                 => $scope,
             'scope_specified'       => $scopeSpecified,
             'return_type'           => $returnType,
@@ -304,6 +308,9 @@ final class FunctionDeclarations
             'is_static'             => $isStatic,
             'has_body'              => $hasBody,
         ];
+
+        Cache::set($phpcsFile, __METHOD__, $stackPtr, $returnValue);
+        return $returnValue;
     }
 
     /**

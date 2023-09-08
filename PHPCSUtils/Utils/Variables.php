@@ -13,6 +13,7 @@ namespace PHPCSUtils\Utils;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Scopes;
 use PHPCSUtils\Utils\TextStrings;
@@ -82,6 +83,7 @@ final class Variables
      * - Defensive coding against incorrect calls to this method.
      * - Support PHP 8.0 identifier name tokens in property types, cross-version PHP & PHPCS.
      * - Support for the PHP 8.2 `true` type.
+     * - The results of this function call are cached during a PHPCS run for faster response times.
      *
      * @see \PHP_CodeSniffer\Files\File::getMemberProperties()   Original source.
      * @see \PHPCSUtils\BackCompat\BCFile::getMemberProperties() Cross-version compatible version of the original.
@@ -125,6 +127,10 @@ final class Variables
 
         if (Scopes::isOOProperty($phpcsFile, $stackPtr) === false) {
             throw new RuntimeException('$stackPtr is not a class member var');
+        }
+
+        if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {
+            return Cache::get($phpcsFile, __METHOD__, $stackPtr);
         }
 
         $valid = Collections::propertyModifierKeywords() + Tokens::$emptyTokens;
@@ -210,7 +216,7 @@ final class Variables
             }
         }
 
-        return [
+        $returnValue = [
             'scope'           => $scope,
             'scope_specified' => $scopeSpecified,
             'is_static'       => $isStatic,
@@ -220,6 +226,9 @@ final class Variables
             'type_end_token'  => $typeEndToken,
             'nullable_type'   => $nullableType,
         ];
+
+        Cache::set($phpcsFile, __METHOD__, $stackPtr, $returnValue);
+        return $returnValue;
     }
 
     /**

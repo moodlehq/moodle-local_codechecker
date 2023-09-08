@@ -209,6 +209,7 @@ final class ControlStructures
      *                 'type_end_token' => integer, // The stack pointer to the end of the type declaration.
      *               )
      *               ```
+     *               In case of an invalid catch structure, the array may be empty.
      *
      * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified `$stackPtr` is not of
      *                                                      type `T_CATCH` or doesn't exist.
@@ -243,12 +244,14 @@ final class ControlStructures
             }
 
             if (isset(Collections::namespacedNameTokens()[$tokens[$i]['code']]) === false) {
-                // Add the current exception to the result array.
-                $exceptions[] = [
-                    'type'           => $foundName,
-                    'type_token'     => $firstToken,
-                    'type_end_token' => $lastToken,
-                ];
+                // Add the current exception to the result array if one was found.
+                if ($foundName !== '') {
+                    $exceptions[] = [
+                        'type'           => $foundName,
+                        'type_token'     => $firstToken,
+                        'type_end_token' => $lastToken,
+                    ];
+                }
 
                 if ($tokens[$i]['code'] === \T_BITWISE_OR) {
                     // Multi-catch. Reset and continue.

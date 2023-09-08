@@ -78,7 +78,7 @@ Instructions to upgrade the PHPCSUtils bundled version:
 
 Current checkout:
 
-  1.0.5 (0cfef51)
+  1.0.8 (69465ca)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

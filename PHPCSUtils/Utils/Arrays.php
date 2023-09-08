@@ -39,6 +39,7 @@ final class Arrays
         \T_OPEN_SHORT_ARRAY => \T_OPEN_SHORT_ARRAY,
 
         // Inline function, control structures and other things to skip over.
+        \T_LIST             => \T_LIST,
         \T_FN               => \T_FN,
         \T_MATCH            => \T_MATCH,
         \T_ATTRIBUTE        => \T_ATTRIBUTE,
@@ -205,6 +206,14 @@ final class Arrays
                 && isset($tokens[$doubleArrow]['attribute_closer'])
             ) {
                 $doubleArrow = $tokens[$doubleArrow]['attribute_closer'];
+                continue;
+            }
+
+            // Skip over potentially keyed long lists.
+            if ($tokens[$doubleArrow]['code'] === \T_LIST
+                && isset($tokens[$doubleArrow]['parenthesis_closer'])
+            ) {
+                $doubleArrow = $tokens[$doubleArrow]['parenthesis_closer'];
                 continue;
             }
 

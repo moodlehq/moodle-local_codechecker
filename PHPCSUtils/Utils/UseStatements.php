@@ -199,6 +199,10 @@ final class UseStatements
             throw new RuntimeException('$stackPtr must be an import use statement');
         }
 
+        if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {
+            return Cache::get($phpcsFile, __METHOD__, $stackPtr);
+        }
+
         $statements = [
             'name'     => [],
             'function' => [],
@@ -208,11 +212,8 @@ final class UseStatements
         $endOfStatement = $phpcsFile->findNext([\T_SEMICOLON, \T_CLOSE_TAG], ($stackPtr + 1));
         if ($endOfStatement === false) {
             // Live coding or parse error.
+            Cache::set($phpcsFile, __METHOD__, $stackPtr, $statements);
             return $statements;
-        }
-
-        if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {
-            return Cache::get($phpcsFile, __METHOD__, $stackPtr);
         }
 
         ++$endOfStatement;

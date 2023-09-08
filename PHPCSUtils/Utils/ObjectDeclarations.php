@@ -136,7 +136,6 @@ final class ObjectDeclarations
      *   - Handling of PHPCS annotations.
      *   - Handling of unorthodox docblock placement.
      * - Defensive coding against incorrect calls to this method.
-     * - Support for PHP 8.2 readonly classes.
      * - Additional `'abstract_token'`, `'final_token'`, and `'readonly_token'` indexes in the return array.
      *
      * @see \PHP_CodeSniffer\Files\File::getClassProperties()   Original source.
