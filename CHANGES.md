@@ -1,9 +1,18 @@
+Changes in version 4.0.6 (20230908) - Composing our lifes
+---------------------------------------------------------
+- Various small internal CI changes:
+  - PHP 8.2 support.
+- Bundled dependencies updated:
+  - [PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) updated to 10.0dev (0a17f9ed).
+  - [PHPCSUtils](https://github.com/PHPCSStandards/PHPCSUtils) updated to 1.0.8.
+  - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.5](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.5).
+
 Changes in version 4.0.5 (20230528) - Forever in my heart, Tina
 ---------------------------------------------------------------
 - Various small internal CI changes:
   - 402_STABLE support.
   - [moodle-plugin-ci](https://github.com/moodlehq/moodle-plugin-ci) updated to [v4.0.0](https://github.com/moodlehq/moodle-plugin-ci/releases/tag/4.0.0).
-- Bundled dependencies upgraded:
+- Bundled dependencies updated:
     - [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) updated to 3.7.2.
     - [PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) updated to 10.0dev (70e4ca24).
     - [PHPCSUtils](https://github.com/PHPCSStandards/PHPCSUtils) updated to 1.0.5.
