@@ -67,6 +67,20 @@ Local modifications (only allowed if there is a PR upstream backing it):
 
 ===== ===== ===== ===== ===== ===== =====
 
+Instructions to upgrade the PHPCSExtra bundled version:
+- Drop a checkout of https://github.com/PHPCSStandards/PHPCSExtra
+  within the "PHPCSExtra" directory of the local_codechecker plugin. Always
+  removing all the previous content.
+- Don't delete anything. 100% complete drop.
+- Update the details in thirdpartylibs.xml
+- Update the details in this readme
+
+Current checkout:
+
+  1.1.2 (746c319)
+
+===== ===== ===== ===== ===== ===== =====
+
 Instructions to upgrade the PHPCSUtils bundled version:
 
 - Drop a checkout of the PHPCSUtils dir of https://github.com/PHPCSStandards/PHPCSUtils

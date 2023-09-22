@@ -1,0 +1,33 @@
+<?php
+// Short array, not short list.
+$var = [1,2,3];
+
+// Array access, not short list.
+$var[1];
+
+list($a) = $array;
+list($a) = $array;
+list($a, list($b, $c, $d)) = $array;
+list($a, list($b, $c, $d)) = $array;
+list($a[], list($a[], $a[], $a[],),) = $array;
+list(
+    $a,
+    list(
+        $b,
+        $c,
+        $d,
+    ),
+) = $array;
+
+// Test for a specific tokenizer issue which still exists in PHPCS 3.7.1 (fixed in 3.7.2).
+if ( true )
+    list( $a ) = [ 'hi' ];
+return $a ?? '';
+
+// Short list in short array.
+$array = [
+    'key' => list($a, $b) = $args,
+];
+
+// Intentional parse error. This has to be the last test in the file.
+[ $a, $b

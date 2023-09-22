@@ -15,6 +15,13 @@
         <licenseversion>3</licenseversion>
     </library>
     <library>
+        <location>PHPCSExtra</location>
+        <name>A collection of code standards for use with PHP_CodeSniffer</name>
+        <version>1.1.2 (746c319)</version>
+        <license>GPL</license>
+        <licenseversion>3</licenseversion>
+    </library>
+    <library>
         <location>PHPCSUtils</location>
         <name>A suite of utility functions for use with PHP_CodeSniffer</name>
         <version>1.0.8 (69465ca)</version>
