@@ -18,6 +18,7 @@ namespace MoodleHQ\MoodleCS\moodle\Util;
 
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Exceptions\DeepExitException;
+use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\DummyFile;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Ruleset;
@@ -369,5 +370,101 @@ abstract class MoodleUtil {
         // Still not found, bad luck, cannot calculate moodle root.
         self::$moodleRoot = null;
         return self::$moodleRoot;
+    }
+
+    /**
+     * Whether this file is a unit test file.
+     *
+     * This does not include test fixtures, generators, or behat files.
+     *
+     * Any file which is not correctly named will be ignored.
+     *
+     * @param File $phpcsFile 
+     * @return bool 
+     */
+    public static function isUnitTest(File $phpcsFile): bool
+    {
+        // If the file isn't under tests directory, nothing to check.
+        if (stripos($phpcsFile->getFilename(), '/tests/') === false) {
+            return false;
+        }
+
+        // If the file is in a fixture directory, ignore it.
+        if (stripos($phpcsFile->getFilename(), '/tests/fixtures/') !== false) {
+            return false;
+        }
+
+        // If the file is in a generator directory, ignore it.
+        if (stripos($phpcsFile->getFilename(), '/tests/generator/') !== false) {
+            return false;
+        }
+
+        // If the file is in a behat directory, ignore it.
+        if (stripos($phpcsFile->getFilename(), '/tests/behat/') !== false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Whether we are running PHPUnit.
+     *
+     * @return bool
+     * @codeCoverageIgnore
+     */
+    public static function isUnitTestRunning(): bool
+    {
+        // Detect if we are running PHPUnit.
+        return defined('PHPUNIT_TEST') && PHPUNIT_TEST;
+    }
+
+    /**
+     * Whether the file belongs to a version of Moodle meeting the specifeid minimum version.
+     *
+     * If a version could not be determined, null is returned.
+     *
+     * @param File $phpcsFile The file to check
+     * @param int The minimum version to check against as a 2, or 3 digit number.
+     * @return null|bool
+     */
+    public static function meetsMinimumMoodleVersion(
+        File $phpcsFile,
+        int $version
+    ): ?bool
+    {
+        $moodleBranch = self::getMoodleBranch($phpcsFile);
+        if (!isset($moodleBranch)) {
+            // We cannot determine the moodle branch, so we cannot determine if the version is met.
+            return null;
+        }
+
+        return ($moodleBranch >= $version);
+    }
+
+    /**
+     * Find the pointer to a method in a class.
+     *
+     * @param File $phpcsFile
+     * @param int $classPtr
+     * @param string $methodName
+     * @return null|int
+     */
+    public static function findClassMethodPointer(
+        File $phpcsFile,
+        int $classPtr,
+        string $methodName
+    ): ?int
+    {
+        $mStart = $classPtr;
+        $tokens = $phpcsFile->getTokens();
+        while ($mStart = $phpcsFile->findNext(T_FUNCTION, $mStart + 1, $tokens[$classPtr]['scope_closer'])) {
+            $method = $phpcsFile->getDeclarationName($mStart);
+            if ($method === $methodName) {
+                return $mStart;
+            }
+        }
+
+        return null;
     }
 }

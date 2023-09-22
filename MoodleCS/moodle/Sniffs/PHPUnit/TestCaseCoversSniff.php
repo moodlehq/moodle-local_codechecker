@@ -22,6 +22,7 @@ use MoodleHQ\MoodleCS\moodle\Util\MoodleUtil;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Utils\ObjectDeclarations;
 
 /**
  * Checks that a test file has the @coversxxx annotations properly defined.
@@ -46,14 +47,18 @@ class TestCaseCoversSniff implements Sniff {
      * @param int $pointer The position in the stack.
      */
     public function process(File $file, $pointer) {
-
         // Before starting any check, let's look for various things.
 
-        // Get the moodle branch being analysed.
-        $moodleBranch = MoodleUtil::getMoodleBranch($file);
+        // If we aren't checking Moodle 4.0dev (400) and up, nothing to check.
+        // Make and exception for codechecker phpunit tests, so they are run always.
+        if (!MoodleUtil::meetsMinimumMoodleVersion($file, 400) && !MoodleUtil::isUnitTestRunning()) {
+            return; // @codeCoverageIgnore
+        }
 
-        // Detect if we are running PHPUnit.
-        $runningPHPUnit = defined('PHPUNIT_TEST') && PHPUNIT_TEST;
+        // If the file is not a unit test file, nothing to check.
+        if (!MoodleUtil::isUnitTest($file) && !MoodleUtil::isUnitTestRunning()) {
+            return; // @codeCoverageIgnore
+        }
 
         // We have all we need from core, let's start processing the file.
 
@@ -70,27 +75,15 @@ class TestCaseCoversSniff implements Sniff {
             return; // @codeCoverageIgnore
         }
 
-        // If we aren't checking Moodle 4.0dev (400) and up, nothing to check.
-        // Make and exception for codechecker phpunit tests, so they are run always.
-        if (isset($moodleBranch) && $moodleBranch < 400 && !$runningPHPUnit) {
-            return; // @codeCoverageIgnore
-        }
-
-        // If the file isn't under tests directory, nothing to check.
-        if (stripos($file->getFilename(), '/tests/') === false) {
-            return; // @codeCoverageIgnore
-        }
-
-        // If the file isn't called, _test.php, nothing to check.
-        // Make an exception for codechecker own phpunit fixtures here, allowing any name for them.
-        $fileName = basename($file->getFilename());
-        if (substr($fileName, -9) !== '_test.php' && !$runningPHPUnit) {
-            return; // @codeCoverageIgnore
-        }
-
         // Iterate over all the classes (hopefully only one, but that's not this sniff problem).
         $cStart = $pointer;
         while ($cStart = $file->findNext(T_CLASS, $cStart + 1)) {
+            $classInfo = ObjectDeclarations::getClassProperties($file, $cStart);
+            if ($classInfo['is_abstract']) {
+                // Abstract classes are not tested.
+                // Coverage information belongs to the concrete classes that extend them.
+                continue;
+            }
             $class = $file->getDeclarationName($cStart);
             $classCovers = false; // To control when the class has a @covers tag.
             $classCoversNothing = false; // To control when the class has a @coversNothing tag.
