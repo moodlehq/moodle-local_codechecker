@@ -60,7 +60,7 @@ class local_codechecker_form extends moodleform {
         $mform->setType('path', PARAM_RAW);
         $mform->addRule('path', null, 'required', null, 'client');
 
-        $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), array('size' => '48'));
+        $mform->addElement('text', 'exclude', get_string('exclude', 'local_codechecker'), ['size' => '48']);
         $mform->setType('exclude', PARAM_NOTAGS);
         $mform->setDefault('exclude', '');
 
@@ -94,8 +94,8 @@ function local_codechecker_pretty_path($file) {
 function local_codesniffer_get_ignores($extraignorelist = '') {
     global $CFG;
 
-    $files = array(); // XML files to be processed.
-    $paths = array(); // Absolute paths to be excluded.
+    $files = []; // XML files to be processed.
+    $paths = []; // Absolute paths to be excluded.
 
     $files['core'] = $CFG->libdir . DIRECTORY_SEPARATOR . '/thirdpartylibs.xml'; // This one always exists.
 
@@ -149,7 +149,7 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
 
     // Changed in PHP_CodeSniffer 1.4.4 and upwards, so we apply the
     // same here: Paths go to keys and mark all them as 'absolute'.
-    $finalpaths = array();
+    $finalpaths = [];
     foreach ($paths as $pattern) {
         $finalpaths[$pattern] = 'absolute';
     }
@@ -219,7 +219,7 @@ function local_codechecker_get_line_of_code($line, $prettypath) {
  * @return string The path with all directory separators changed to DIRECTORY_SEPARATOR.
  */
 function local_codechecker_clean_path($path) {
-    return str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $path);
+    return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
 }
 
 /**
@@ -332,7 +332,7 @@ function local_codechecker_check_other_file($file, $xml) {
 
     // Certain files are permitted lines of any length because they are
     // Auto-generated.
-    $allowanylength = in_array(basename($file), array('install.xml')) ||
+    $allowanylength = in_array(basename($file), ['install.xml']) ||
         substr($file, -4, 4) === '.csv';
     // We allow CRLF line endings in .csv tests/fixtures files (see #203).
     $allowcrlf = substr($file, -4, 4) === '.csv' &&
@@ -391,7 +391,7 @@ function local_codechecker_check_other_file($file, $xml) {
  * @param array $ignores list of paths (substring matching, asterisk as wild-char that must be ignored).
  */
 function local_codechecker_check_other_files($path, $xml, $ignores) {
-    $files = array();
+    $files = [];
     local_codechecker_find_other_files($files, $path, $ignores);
     foreach ($files as $file) {
         local_codechecker_check_other_file($file, $xml);
@@ -414,5 +414,5 @@ function local_codechecker_count_problems($xml) {
         $errors += $file['errors'];
         $warnings += $file['warnings'];
     }
-    return array($errors, $warnings);
+    return [$errors, $warnings];
 }

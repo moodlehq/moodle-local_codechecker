@@ -26,10 +26,10 @@ class local_codechecker_renderer extends plugin_renderer_base {
     private $showstandard;
 
     /** @var array string replaces used to clean up the input line for display. */
-    protected $replaces = array(
+    protected $replaces = [
         "\t" => '<span>&#x25b6;</span>',
         ' '  => '<span>&#183;</span>',
-    );
+    ];
 
     /**
      * Display the start of the list of the files checked.
@@ -52,10 +52,10 @@ class local_codechecker_renderer extends plugin_renderer_base {
         if ($numproblems) {
             return html_writer::tag('li', html_writer::link(new moodle_url('#file' . $fileindex),
                     get_string('filesummary', 'local_codechecker',
-                        array('path' => s($prettypath), 'count' => $numproblems))),
-                    array('class' => 'fail'));
+                        ['path' => s($prettypath), 'count' => $numproblems])),
+                    ['class' => 'fail']);
         } else {
-            return html_writer::tag('li', s($prettypath), array('class' => 'good'));
+            return html_writer::tag('li', s($prettypath), ['class' => 'good']);
         }
     }
 
@@ -71,10 +71,10 @@ class local_codechecker_renderer extends plugin_renderer_base {
         $output = html_writer::end_tag('ul');
         if ($summary) {
             $output .= html_writer::tag('h2', get_string('summary', 'local_codechecker',
-                    $summary), array('class' => $type));
+                    $summary), ['class' => $type]);
         } else {
             $output .= html_writer::tag('h2', get_string('success', 'local_codechecker'),
-                    array('class' => 'good'));
+                    ['class' => 'good']);
         }
         return $output;
     }
@@ -105,7 +105,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
         $grandtype = '';
         if ($numerrors + $numwarnings > 0) {
             $grandsummary = get_string('numerrorswarnings', 'local_codechecker',
-                    array('errors' => $numerrors, 'warnings' => $numwarnings));
+                    ['errors' => $numerrors, 'warnings' => $numwarnings]);
             if ($numerrors) {
                 $grandtype = 'fail error';
             } else {
@@ -116,11 +116,11 @@ class local_codechecker_renderer extends plugin_renderer_base {
         // Output begins.
         $output = '';
 
-        $output .= html_writer::start_tag('div', array('class' => 'local_codechecker_results'));
+        $output .= html_writer::start_tag('div', ['class' => 'local_codechecker_results']);
 
         // Sort the file by path.
         $files = $xml->xpath('file');
-        $sortedfiles = array();
+        $sortedfiles = [];
         foreach ($files as $fileinxml) {
             $sortedfiles[local_codechecker_pretty_path($fileinxml['name'])] = $fileinxml;
         }
@@ -138,7 +138,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
 
             $summary = '';
             if ($fileinxml['errors'] + $fileinxml['warnings'] > 0) {
-                $numerrwarn = (object) array('errors' => "{$fileinxml['errors']}", 'warnings' => "{$fileinxml['warnings']}");
+                $numerrwarn = (object) ['errors' => "{$fileinxml['errors']}", 'warnings' => "{$fileinxml['warnings']}"];
                 $summary = get_string('numerrorswarnings', 'local_codechecker', $numerrwarn);
             }
 
@@ -173,10 +173,10 @@ class local_codechecker_renderer extends plugin_renderer_base {
      */
     public function problems($fileindex, $fileinxml, $prettypath) {
         $output = html_writer::start_tag('div',
-                array('class' => 'resultfile', 'id' => 'file' . $fileindex));
+                ['class' => 'resultfile', 'id' => 'file' . $fileindex]);
         $output .= html_writer::tag('h3', html_writer::link(
-                new moodle_url('/local/codechecker/', array('path' => $prettypath)),
-                s($prettypath), array('title' => get_string('recheckfile', 'local_codechecker'))));
+                new moodle_url('/local/codechecker/', ['path' => $prettypath]),
+                s($prettypath), ['title' => get_string('recheckfile', 'local_codechecker')]));
         $output .= html_writer::start_tag('ul');
 
         foreach ($fileinxml->xpath('error|warning') as $problem) {
@@ -210,7 +210,7 @@ class local_codechecker_renderer extends plugin_renderer_base {
                     array_values($this->replaces),
                     s(local_codechecker_get_line_of_code($line, $prettypath))
                     ))),
-                array('class' => 'sourcecode')
+                ['class' => 'sourcecode']
             );
             $lastfileandline = $prettypath . '#@#' . $line;
         }
@@ -219,8 +219,8 @@ class local_codechecker_renderer extends plugin_renderer_base {
         if ($this->showstandard) {
             $problem = (string) $problem . ' (' . $problem['source'] . ')';
         }
-        $info = html_writer::tag('div', s($problem), array('class' => 'info ' . $sourceclass));
+        $info = html_writer::tag('div', s($problem), ['class' => 'info ' . $sourceclass]);
 
-        return $code .  html_writer::tag('li', $info, array('class' => 'fail ' . $level));
+        return $code .  html_writer::tag('li', $info, ['class' => 'fail ' . $level]);
     }
 }

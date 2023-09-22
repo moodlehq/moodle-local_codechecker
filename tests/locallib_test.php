@@ -29,7 +29,7 @@ class locallib_test extends \basic_testcase {
     /**
      * Data provider for test_local_codechecker_find_other_files()
      */
-    public function local_codechecker_find_other_files_provider() {
+    public static function local_codechecker_find_other_files_provider(): array {
         $defaultextensions = ['txt', 'html', 'csv'];
         return [
             'one wrong file' => [
@@ -107,7 +107,7 @@ class locallib_test extends \basic_testcase {
      * @param string[] $matches list of substring-matching strings expected to be in the results.
      * @param string[] $nomatches list of substring-matching strings not expected to be in the results.
      *
-     * @dataProvider local_codechecker_find_other_files_provider()
+     * @dataProvider local_codechecker_find_other_files_provider
      * @covers ::local_codechecker_find_other_files
      */
     public function test_local_codechecker_find_other_files(string $path, array $ignores,

@@ -41,8 +41,8 @@ require_once($CFG->dirroot . '/local/codechecker/locallib.php');
 
 // Get the command-line options.
 list($options, $unrecognized) = cli_get_params(
-    array('help' => false, 'interactive' => false, 'exclude' => ''),
-    array('h' => 'help', 'i' => 'interactive', 'e' => 'exclude'));
+    ['help' => false, 'interactive' => false, 'exclude' => ''],
+    ['h' => 'help', 'i' => 'interactive', 'e' => 'exclude']);
 
 if (count($unrecognized) != 1) {
     $options['help'] = true;

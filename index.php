@@ -42,7 +42,7 @@ $exclude = optional_param('exclude', '', PARAM_NOTAGS);
 $includewarnings = optional_param('includewarnings', true, PARAM_BOOL);
 $showstandard = optional_param('showstandard', false, PARAM_BOOL);
 
-$pageparams = array();
+$pageparams = [];
 if ($pathlist) {
     $pageparams['path'] = $pathlist;
 }
