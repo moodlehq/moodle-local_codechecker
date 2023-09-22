@@ -1,3 +1,10 @@
+Changes in version 4.0.8 (20230923) - Few hours later
+-----------------------------------------------------
+- Bundled dependencies updated:
+  - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.8](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.8).
+  - [PHPCSExtra](https://github.com/PHPCSStandards/PHPCSExtra) updated to [1.1.2](https://github.com/PHPCSStandards/PHPCSExtra/releases/tag/1.1.2). It was missing in the previous release!
+
+
 Changes in version 4.0.7 (20230922) - Day after Saint Matthew here!
 -------------------------------------------------------------------
 - Bundled dependencies updated:
