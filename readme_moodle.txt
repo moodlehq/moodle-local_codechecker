@@ -13,7 +13,7 @@ Instructions to upgrade the moodle-cs bundled version:
 
 Current checkout:
 
-  3.3.7 (163c65d)
+  3.3.8 (ff540d2)
 
 Local modifications (only allowed if there is a PR upstream backing it):
 

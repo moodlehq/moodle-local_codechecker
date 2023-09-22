@@ -193,6 +193,24 @@ class TestCaseProviderSniff implements Sniff {
             );
         }
 
+        if (substr($methodName, -2) === '()') {
+            $fix = $file->addFixableWarning(
+                'Data provider should not end with "()". "%s" provided.',
+                $pointer + 2,
+                'dataProviderSyntaxMethodnameContainsParenthesis',
+                [
+                    $methodName,
+                ]
+            );
+
+            $methodName = substr($methodName, 0, -2);
+            if ($fix) {
+                $file->fixer->beginChangeset();
+                $file->fixer->replaceToken($pointer + 2, $methodName);
+                $file->fixer->endChangeset();
+            }
+        }
+
         // Find the method itself.
         $classPointer = $file->findPrevious(T_CLASS, $pointer - 1);
         $providerPointer = MoodleUtil::findClassMethodPointer($file, $classPointer, $methodName);

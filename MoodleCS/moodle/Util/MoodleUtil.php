@@ -384,6 +384,11 @@ abstract class MoodleUtil {
      */
     public static function isUnitTest(File $phpcsFile): bool
     {
+        // If the file isn't called, _test.php, nothing to check.
+        if (stripos(basename($phpcsFile->getFilename()), '_test.php') === false) {
+            return false;
+        }
+
         // If the file isn't under tests directory, nothing to check.
         if (stripos($phpcsFile->getFilename(), '/tests/') === false) {
             return false;
