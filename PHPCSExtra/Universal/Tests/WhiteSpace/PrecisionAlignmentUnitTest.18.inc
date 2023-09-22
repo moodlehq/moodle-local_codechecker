@@ -1,5 +1,0 @@
-<?php
-
-    /*
-       * phpcs:disable Standard.Category.Sniff -- Bad, but will only be reported when PHPCS is run with --ignore-annotations.
-     */
