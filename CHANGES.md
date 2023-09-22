@@ -1,3 +1,8 @@
+Changes in version 4.0.7 (20230922) - Day after Saint Matthew here!
+-------------------------------------------------------------------
+- Bundled dependencies updated:
+  - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.7](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.7).
+
 Changes in version 4.0.6 (20230908) - Composing our lifes
 ---------------------------------------------------------
 - Various small internal CI changes:
