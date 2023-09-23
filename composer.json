@@ -1,0 +1,21 @@
+{
+    "name": "moodlehq/local_codechecker",
+    "description": "A Moodle local plugin providing a simple web UI to run the MoodleCS standard checks with PHP_CodeSniffer.",
+    "keywords": ["moodle", "phpcs", "coding style", "local plugin", "moodle-cs", "codesniffer"],
+    "license": "GPL-3.0-or-later",
+    "require": {
+        "php": ">=7.4",
+        "moodlehq/moodle-cs": "^3.3.8",
+        "phpcompatibility/php-compatibility": "dev-develop#0a17f9ed"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

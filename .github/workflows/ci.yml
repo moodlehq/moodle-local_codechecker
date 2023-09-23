@@ -66,11 +66,6 @@ jobs:
             moodle-branch: MOODLE_38_STABLE
             database: pgsql
 
-          - php: 7.3
-            moodle-branch: MOODLE_37_STABLE
-            database: pgsql
-            plugin-ci: ^3
-
           # Lowest php versions supported by each branch (with master always being tested twice).
           - php: 8.0
             moodle-branch: master
@@ -85,24 +80,6 @@ jobs:
           - php: 7.4
             moodle-branch: MOODLE_401_STABLE
             database: pgsql
-
-          - php: 7.3
-            moodle-branch: MOODLE_400_STABLE
-            database: pgsql
-            plugin-ci: ^3
-          - php: 7.3
-            moodle-branch: MOODLE_311_STABLE
-            database: pgsql
-            plugin-ci: ^3
-
-          - php: 7.2
-            moodle-branch: MOODLE_310_STABLE
-            database: pgsql
-            plugin-ci: ^3
-          - php: 7.2
-            moodle-branch: MOODLE_39_STABLE
-            database: pgsql
-            plugin-ci: ^3
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
