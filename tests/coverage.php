@@ -37,10 +37,7 @@ return new class extends phpunit_coverage_info {
 
     /** @var array The list of folders relative to the plugin root to exclude from coverage generation. */
     protected $excludelistfolders = [
-        'MoodleCS',
-        'moodle',
-        'PHPCompatibility',
-        'phpcs',
+        'vendor',
     ];
 
     /** @var array The list of files relative to the plugin root to exclude from coverage generation. */

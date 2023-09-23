@@ -1,101 +1,41 @@
-Instructions to upgrade the moodle-cs bundled version:
+Since version 5.0 of this plugin we have stopped
+to manually copy all the tools needed manually
+and, instead, we are installing them via `composer`.
 
-- Drop a checkout of https://github.com/moodlehq/moodle-cs.git
-  within the "MoodleCS" directory of the plugin. Always removing
-  all the previous contents before copying.
-- Also, remove not needed stuff, like:
-  - All dot (.*) files and directories (git, travis...).
-  - Any composer.* and vendor files.
-  - All .xml and .dist files.
-  - The moodle/Tests directory
-- Update the details in thirdpartylibs.xml
-- Update the details in this readme
+Also, note that, with version 5.0 we have raised
+PHP requirements to PHP 7.4 (it was 7.0 previously).
+That implies that the min. Moodle supported version
+is Moodle 3.8.3 (really old).
 
-Current checkout:
+The tools needed for this to run are (you can also
+see the 'composer.json` file for details):
 
-  3.3.8 (ff540d2)
+- moodlehq/moodle-cs, that installs:
+  - squizlabs/php_codesniffer
+  - phpcompatibility/php-compatibility
+  - phpcsstandards/phpcsextra
+  - phpcsstandards/phpcsutils
+- phpcompatibility/php-compatibility (dev version)
 
-Local modifications (only allowed if there is a PR upstream backing it):
+Special mention to the last package (phpcompatibility)
+because, as far as we are using a `dev` version and not
+a released one, we have to require it explicitly.
 
-  - None, right now.
+Once we switch to released versions, that explicit requirement
+can be removed, because the `moodle-cs` tool already
+includes it too.
 
-===== ===== ===== ===== ===== ===== =====
+To update any component:
 
-Instructions to upgrade the phpcs bundled version:
+1. Remove the .lock file, the vendor directory.
+2. Run `composer clearcache` (to clear composer caches).
+3. Switch to the lowest PHP version supported by the Moodle version required.
+4. Run `composer install` (to install everything).a
+5. Update `thirdpartylibs.xml` to annotate the new versions of the tools.
+6. Commit changes with details about the tools updated.
+7. Test, test, test.
+8. Optionally, release.
 
-- Drop a checkout of https://github.com/squizlabs/PHP_CodeSniffer.git
-  within the "phpcs" directory of the plugin. Always removing
-  all the previous contents before copying, but the CodeSniffer.conf
-  file that is needed to autodetect the PHPCompatibility standard.
-- Also, remove not needed stuff, like:
-  - All dot (.*) files and directories (git, travis...).
-  - Any composer.* and vendor files.
-  - All .ini, .xsd, .neon and .dist files.
-  - The scripts, tests and vendor directories.
-- Update the details in thirdpartylibs.xml
-- Update the details in this readme
-
-Current checkout:
-
-  3.7.2 (ed8e00df0)
-
-Local modifications (only allowed if there is a PR upstream backing it):
-
-  - None, right now.
-
-===== ===== ===== ===== ===== ===== =====
-
-Instructions to upgrade the PHPCompatibility bundled version:
-
-- Drop a checkout of the PHPCompatibility dir of https://github.com/PHPCompatibility/PHPCompatibility
-  within the "PHPCompatibility" directory of the local_codechecker plugin. Always
-  removing all the previous contents.
-- Don't delete anything. 100% complete drop.
-- Update the details in thirdpartylibs.xml
-- Update the details in this readme
-
-Current checkout:
-
-  10.0dev (0a17f9ed)
-
-Local modifications (only allowed if there is a PR upstream backing it):
-
-  - Added PHPCSAliases.php to base dir to provide phpcs 2/3 compatibility. Needed
-    because still there are a number of old class names within the standard. This
-    doesn't have any upstream PR, because the file is there, just we had not needed
-    it before the jump to phpcs 3.
-
-===== ===== ===== ===== ===== ===== =====
-
-Instructions to upgrade the PHPCSExtra bundled version:
-- Drop a checkout of https://github.com/PHPCSStandards/PHPCSExtra
-  within the "PHPCSExtra" directory of the local_codechecker plugin. Always
-  removing all the previous content.
-- Don't delete anything. 100% complete drop.
-- Update the details in thirdpartylibs.xml
-- Update the details in this readme
-
-Current checkout:
-
-  1.1.2 (746c319)
-
-===== ===== ===== ===== ===== ===== =====
-
-Instructions to upgrade the PHPCSUtils bundled version:
-
-- Drop a checkout of the PHPCSUtils dir of https://github.com/PHPCSStandards/PHPCSUtils
-  within the "PHPCSUtils" directory of the local_codechecker plugin. Always
-  removing all the previous contents.
-- Don't delete anything. 100% complete drop.
-- Update the details in thirdpartylibs.xml
-- Update the details in this readme
-
-Current checkout:
-
-  1.0.8 (69465ca)
-
-Local modifications (only allowed if there is a PR upstream backing it):
-
-  - None, right now.
-
-===== ===== ===== ===== ===== ===== =====
+At some point we may want to make the process above automated, so every time
+that a new moodle-cs package is released, everything above (1-8) happens automatically.
+See (last point of) https://github.com/moodlehq/moodle-local_codechecker/issues/114
