@@ -76,6 +76,32 @@ class local_codechecker_form extends moodleform {
 }
 
 /**
+ * Auto load all the tools that codechecker needs.
+ *
+ * @return bool true on success, false with problems.
+ */
+function autoload_tools(): bool {
+    $vendordir = '';
+    $phpcsdir = '';
+    // Verify that we have the vendor directory at hand (it contains all the tools).
+    if (is_dir(__DIR__ . '/vendor') &&
+            file_exists(__DIR__ . '/vendor/autoload.php')) {
+        $vendordir = __DIR__ . '/vendor';
+    } else {
+        return false;
+    }
+    // Verify that the vendor dir has phpcs installed.
+    if (is_dir($vendordir . '/squizlabs/php_codesniffer') &&
+            file_exists($vendordir . '/squizlabs/php_codesniffer/autoload.php')) {
+        $phpcsdir = $vendordir . '/squizlabs/php_codesniffer';
+    } else {
+        return false;
+    }
+    require_once($phpcsdir . '/autoload.php');
+    return true;
+}
+
+/**
  * Convert a full path name to a relative one, for output.
  * @param string $file a full path name of a file.
  * @return string the prettied up path name.

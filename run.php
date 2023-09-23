@@ -27,22 +27,20 @@ define('CLI_SCRIPT', true);
 require(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 
-// PHP_Codesniffer autoloading.
-if (is_file(__DIR__ . '/phpcs/autoload.php') === true) {
-    include_once(__DIR__ . '/phpcs/autoload.php');
-} else {
-    include_once('PHP/CodeSniffer/autoload.php');
-}
-// PHPCompatibility autoloading.
-require_once('PHPCSAliases.php');
-
 // Own stuff (TODO: Some day all these will be moved to classes).
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
+
+// Auto load all the (vendor installed) tools we are going to need.
+if (!autoload_tools()) {
+    throw new coding_exception('Unable to find the "vendor" directory within the plugin. Please, install the plugin again.');
+}
 
 // Get the command-line options.
 list($options, $unrecognized) = cli_get_params(
     ['help' => false, 'interactive' => false, 'exclude' => ''],
-    ['h' => 'help', 'i' => 'interactive', 'e' => 'exclude']);
+    ['h' => 'help',
+    'i' => 'interactive',
+    'e' => 'exclude', ]);
 
 if (count($unrecognized) != 1) {
     $options['help'] = true;
