@@ -1,3 +1,0 @@
-# The generic_files_linendings test is checking for crlf line endings and warns about them.
-# This must be specified as a .gitattribute to prevent git updating it to be LF on commit.
-/moodle/Tests/fixtures/generic_files_lineendings.php eol=crlf

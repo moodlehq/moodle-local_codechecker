@@ -23,6 +23,9 @@
         <!-- Moodle already defines its own line length, so remove this from the PSR-12 standard -->
         <exclude name="Generic.Files.LineLength.TooLong"/>
 
+        <!-- Moodle doesn't mandate (nor support) namespaces everywhere, so remove this for now -->
+        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+
         <!-- Moodle has its own custom sniff for side effects  -->
         <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
 
