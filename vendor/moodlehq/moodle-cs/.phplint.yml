@@ -1,0 +1,5 @@
+path: ./
+exclude:
+  - vendor
+  - moodle/Tests/fixtures
+  - moodle/Tests/Sniffs/Namespaces/fixtures

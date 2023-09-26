@@ -25,17 +25,13 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-// PHP_Codesniffer autoloading.
-if (is_file(__DIR__ . '/phpcs/autoload.php') === true) {
-    include_once(__DIR__ . '/phpcs/autoload.php');
-} else {
-    include_once('PHP/CodeSniffer/autoload.php');
-}
-// PHPCompatibility autoloading.
-require_once('PHPCSAliases.php');
-
 // Own stuff (TODO: Some day all these will be moved to classes).
 require_once($CFG->dirroot . '/local/codechecker/locallib.php');
+
+// Auto load all the (vendor installed) tools we are going to need.
+if (!autoload_tools()) {
+    throw new coding_exception('Unable to find the "vendor" directory within the plugin. Please, install the plugin again.');
+}
 
 $pathlist = optional_param('path', '', PARAM_RAW);
 $exclude = optional_param('exclude', '', PARAM_NOTAGS);
