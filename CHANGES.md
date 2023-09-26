@@ -1,3 +1,14 @@
+Changes in version 5.0.0 (20230926) - Cinque, this is cinque!
+-------------------------------------------------------------
+- IMPORTANT - New (raised) requirements:
+  - PHP 7.4 and up supported (previously PHP 7.0 and up).
+  - Moodle v3.8.3 and up supported (previously Moodle v3.7.0).
+- Changed the process to build the plugin. Until now it was a tedious process, manually copying all the dependencies within the plugin (`PHP_CodeSniffer`, `PHPCompatibility`, `PHPCSExtra`, `PHPCSUtil` and `moodle-cs`). Now all the dependencies are managed via Composer and the plugin comes with the `vendor` directory ready to be used.
+- This change has been applied for improving the release process, and towards 100% automating it, now that the plugin is just a Web/CLI wrapper over all the tools listed above.
+- The old 4.x series will not receive more updates (unless absolutely needed).
+- Bundled dependencies updated:
+  - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.9](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.9).
+
 Changes in version 4.0.8 (20230923) - Few hours later
 -----------------------------------------------------
 - Bundled dependencies updated:
