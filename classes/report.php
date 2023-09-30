@@ -36,7 +36,6 @@ namespace local_codechecker;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report extends \PHP_CodeSniffer\Reports\Xml {
-
     /**
      * Generate a partial report for a single processed file.
      *
@@ -58,7 +57,7 @@ class report extends \PHP_CodeSniffer\Reports\Xml {
         }
 
         // Here we are, with a file with 0 errors and warnings.
-        $out = new \XMLWriter;
+        $out = new \XMLWriter();
         $out->openMemory();
         $out->setIndent(true);
 
@@ -71,6 +70,5 @@ class report extends \PHP_CodeSniffer\Reports\Xml {
         echo $out->flush();
 
         return true;
-
     }
 }
