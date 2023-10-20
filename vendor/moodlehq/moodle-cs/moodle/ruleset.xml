@@ -110,6 +110,11 @@
     -->
     <rule ref="moodle.PHPUnit.TestCaseProvider"/>
 
+    <!--
+        Tests should have a return type. The default return type should be void.
+    -->
+    <rule ref="moodle.PHPUnit.TestReturnType"/>
+
     <!-- Disable this exact error unless it's approved -->
     <rule ref="moodle.Commenting.InlineComment.SpacingAfter">
         <severity>0</severity>
@@ -123,5 +128,10 @@
 
     <!-- Let's add the complete PHPCompatibility standard -->
     <rule ref="PHPCompatibility" />
+
+    <!--
+        Detect duplicate array keys. This is useful for unit test providers in particular.
+    -->
+    <rule ref="Universal.Arrays.DuplicateArrayKey"/>
 
 </ruleset>

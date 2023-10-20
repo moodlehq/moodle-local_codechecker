@@ -18,11 +18,9 @@ namespace MoodleHQ\MoodleCS\moodle\Util;
 
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Exceptions\DeepExitException;
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\DummyFile;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Ruleset;
-use PHP_CodeSniffer\Tokenizers\PHP;
 
 // phpcs:disable moodle.NamingConventions
 
@@ -422,6 +420,35 @@ abstract class MoodleUtil {
     {
         // Detect if we are running PHPUnit.
         return defined('PHPUNIT_TEST') && PHPUNIT_TEST;
+    }
+
+    /**
+     * Whether the class is a unit test case class.
+     *
+     * @param File $file
+     * @param int $classPtr
+     * @return bool
+     */
+    public static function isUnitTestCaseClass(
+        File $file,
+        int $classPtr
+    ): bool {
+        $tokens = $file->getTokens();
+        $class = $file->getDeclarationName($classPtr);
+
+        // Only if the class is extending something.
+        // TODO: We could add a list of valid classes once we have a class-map available.
+        if (!$file->findNext(T_EXTENDS, $classPtr + 1, $tokens[$classPtr]['scope_opener'])) {
+            return false;
+        }
+
+        // Ignore non ended "_test|_testcase" classes.
+        if (substr($class, -5) !== '_test' && substr($class, -9) != '_testcase') {
+            return false;
+        }
+
+        // This is a class, which extends another class, and whose name ends in _test.
+        return true;
     }
 
     /**

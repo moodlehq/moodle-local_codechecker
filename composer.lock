@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "58cae4c2ddbeacb3ed22b072ffaf089a",
+    "content-hash": "1f240b14e4e06c4a29dfe747bfe9fbb1",
     "packages": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -86,16 +86,16 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.3.9",
+            "version": "v3.3.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "5503396df563cbe3244b67625246664ba5b663f1"
+                "reference": "13192ea4f0e7ac0c94571a6c7e33948db740f1ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/5503396df563cbe3244b67625246664ba5b663f1",
-                "reference": "5503396df563cbe3244b67625246664ba5b663f1",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/13192ea4f0e7ac0c94571a6c7e33948db740f1ab",
+                "reference": "13192ea4f0e7ac0c94571a6c7e33948db740f1ab",
                 "shasum": ""
             },
             "require": {
@@ -146,7 +146,7 @@
                 "source": "https://github.com/moodlehq/moodle-cs",
                 "wiki": "https://github.com/moodlehq/moodle-cs/wiki"
             },
-            "time": "2023-09-26T14:48:47+00:00"
+            "time": "2023-10-20T07:20:45+00:00"
         },
         {
             "name": "phpcompatibility/php-compatibility",
