@@ -1,3 +1,9 @@
+Changes in version 5.0.1 (20231020) - Daddy's birthday
+------------------------------------------------------
+- Added `MOODLE_403_STABLE` tests.
+- Bundled dependencies updated:
+  - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.10](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.10).
+
 Changes in version 5.0.0 (20230926) - Cinque, this is cinque!
 -------------------------------------------------------------
 - IMPORTANT - New (raised) requirements:
