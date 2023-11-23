@@ -70,10 +70,10 @@ jobs:
             database: pgsql
 
           # Lowest php versions supported by each branch (with master always being tested twice).
-          - php: 8.0
+          - php: 8.1
             moodle-branch: master
             database: pgsql
-          - php: 8.0
+          - php: 8.1
             moodle-branch: master
             database: mariadb
           - php: 8.0
