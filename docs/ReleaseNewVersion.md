@@ -44,7 +44,7 @@ Once the new release is ready, you should add the latest release to the `Moodle 
   1. In the `Version release name`, copy the hyphen and the release name from the `Release notes` header.
   2. In the `Release notes` field we put the contents of the `README.md` file, with the contents of the `CHANGES.md` current release inserted after the GHA badge.
   3. In the `Supported software` fill both the supported Moodle and PHP versions.
-  4. In the `Version control information` set the `VCS Branch` to `master`.
+  4. In the `Version control information` set the `VCS Branch` to `main`.
   5.  Click `Add a new version` (it can take a while too).
 
 That's pretty much it. The new version is publicly available.

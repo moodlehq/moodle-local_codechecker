@@ -127,7 +127,7 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
 
     // With MDL-42148, for 2.6 and upwards, the general 'thirdpartylibs.xml' file
     // has been split so any plugin with dependencies can have its own. In order to
-    // keep master compatibility with older branches we are doing some
+    // keep main compatibility with older branches we are doing some
     // conditional coding here.
     if (file_exists($CFG->dirroot . '/' . $CFG->admin . '/' . 'thirdpartylibs.php')) {
         // New behavior, distributed XML files, let's look for them.

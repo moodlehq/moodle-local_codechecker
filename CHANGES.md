@@ -117,7 +117,7 @@ Changes in version 3.0.3 (20211130) - Cyber releasing
 -----------------------------------------------------
 - Various internal changes and improvements:
     - Own conformance with new [PHPUnit naming rules](https://docs.moodle.org/dev/PHPUnit_integration#Actual_.28Moodle_3.11_and_up.29).
-    - New [MoodleUtil](https://github.com/moodlehq/moodle-local_codechecker/blob/master/moodle/Util/MoodleUtil.php) class to be able to detect Moodle dir root, branch and components (calculated or imported) within code checker. This new awareness will help improving various sniffs.
+    - New [MoodleUtil](https://github.com/moodlehq/moodle-local_codechecker/blob/main/moodle/Util/MoodleUtil.php) class to be able to detect Moodle dir root, branch and components (calculated or imported) within code checker. This new awareness will help improving various sniffs.
     - Drop some Moodle own &lt; 3.7 testing. Code checker continues supporting Moodle 3.4 and up.
     - Improvements to the base test case, now able to automatically verify `phpcbf` fixes.
     - Bye, bye to Travis for self-tests. Now relying only on GHA.
