@@ -20,8 +20,15 @@
         Affects all major branches since Moodle 3.9.
 
         Require a comma after the last element in a multi-line array, but prevent in a single-line array definition
+
+        TODO: Enable this back and remove our copied Sniff below once PHPCSExtra v1.2.0 is released.
+    <rule ref="NormalizedArrays.Arrays.CommaAfterLast">
+        <exclude name="NormalizedArrays.Arrays.CommaAfterLast.MissingMultiLineCloserSameLine" />
+    </rule>
     -->
-    <rule ref="NormalizedArrays.Arrays.CommaAfterLast"/>
+    <rule ref="moodle.Arrays.CommaAfterLast">
+        <exclude name="moodle.Arrays.CommaAfterLast.MissingMultiLineCloserSameLine" />
+    </rule>
 
     <rule ref="Generic.Classes.DuplicateClassName"/>
     <rule ref="Generic.Classes.OpeningBraceSameLine"/>
