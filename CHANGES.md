@@ -1,3 +1,11 @@
+Changes in version 5.0.2 (20231129) - Mainly main
+-------------------------------------------------
+- This repository has moved its default branch [from "master" to "main"](https://github.com/moodlehq/moodle-local_codechecker/issues/225).
+- Tests updated to suit Moodle 4.4dev requirements.
+- Bundled dependencies updated:
+  - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.11](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.11).
+
+
 Changes in version 5.0.1 (20231020) - Daddy's birthday
 ------------------------------------------------------
 - Added `MOODLE_403_STABLE` tests.
