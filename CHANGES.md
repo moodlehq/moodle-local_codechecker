@@ -1,10 +1,18 @@
+Changes in version 5.0.3 (20231219) - Bumping bumps
+---------------------------------------------------
+- Bundled dependencies updated:
+  - PHP CodeSniffer updated to 3.8.0.
+  - PHP Compatibility updated to 306cd263.
+  - PHPCS Extra updated to 1.2.1.
+  - PHPCS Utils updated to 1.0.9.
+  - Moodle CS updated to v3.3.12.
+
 Changes in version 5.0.2 (20231129) - Mainly main
 -------------------------------------------------
 - This repository has moved its default branch [from "master" to "main"](https://github.com/moodlehq/moodle-local_codechecker/issues/225).
 - Tests updated to suit Moodle 4.4dev requirements.
 - Bundled dependencies updated:
   - [moodle-cs](https://github.com/moodlehq/moodle-cs) updated to [v3.3.11](https://github.com/moodlehq/moodle-cs/releases/tag/v3.3.11).
-
 
 Changes in version 5.0.1 (20231020) - Daddy's birthday
 ------------------------------------------------------
