@@ -38,7 +38,7 @@ class NewConstantsSniff extends Sniff
      *
      * @since 8.1.0
      *
-     * @var array(string => array(string => bool))
+     * @var array<string, array<string, bool|string>>
      */
     protected $newConstants = [
         'E_STRICT' => [
@@ -7705,6 +7705,342 @@ class NewConstantsSniff extends Sniff
             '8.2'       => true,
             'extension' => 'sockets',
         ],
+
+        'CURLINFO_CAPATH' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLINFO_CAINFO' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_MIME_OPTIONS' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLMIMEOPT_FORMESCAPE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_WS_OPTIONS' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLWS_RAW_MODE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_SSH_HOSTKEYFUNCTION' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_PROTOCOLS_STR' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_REDIR_PROTOCOLS_STR' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_CA_CACHE_TIMEOUT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLOPT_QUICK_EXIT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLKHMATCH_OK' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLKHMATCH_MISMATCH' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLKHMATCH_MISSING' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'CURLKHMATCH_LAST' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'curl',
+        ],
+        'MIXED_NUMBERS' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'intl',
+        ],
+        'HIDDEN_OVERLAY' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'intl',
+        ],
+        'OPENSSL_CMS_OLDMIMETYPE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'openssl',
+        ],
+        'PKCS7_NOOLDMIMETYPE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'openssl',
+        ],
+        'SIGINFO' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pcntl',
+        ],
+        'PDO_ODBC_TYPE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pdo_odbc',
+        ],
+        'PGSQL_TRACE_SUPPRESS_TIMESTAMPS' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_TRACE_REGRESS_MODE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_ERRORS_SQLSTATE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_PIPELINE_SYNC' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_PIPELINE_ON' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_PIPELINE_OFF' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_PIPELINE_ABORTED' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_SHOW_CONTEXT_NEVER' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_SHOW_CONTEXT_ERRORS' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'PGSQL_SHOW_CONTEXT_ALWAYS' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'pgsql',
+        ],
+        'POSIX_SC_ARG_MAX' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_SC_PAGESIZE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_SC_NPROCESSORS_CONF' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_SC_NPROCESSORS_ONLN' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_LINK_MAX' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_MAX_CANON' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_MAX_INPUT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_NAME_MAX' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_PATH_MAX' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_PIPE_BUF' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_CHOWN_RESTRICTED' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_NO_TRUNC' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_ALLOC_SIZE_MIN' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'POSIX_PC_SYMLINK_MAX' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'posix',
+        ],
+        'SO_ATTACH_REUSEPORT_CBPF' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SO_DETACH_FILTER' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SO_DETACH_BPF' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'TCP_QUICKACK' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_DONTFRAG' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_MTU_DISCOVER' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_PMTUDISC_DO' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_PMTUDISC_DONT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_PMTUDISC_WANT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_PMTUDISC_PROBE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_PMTUDISC_INTERFACE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_PMTUDISC_OMIT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'AF_DIVERT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SOL_UDPLITE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'UDPLITE_RECV_CSCOV' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'UDPLITE_SEND_CSCOV' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SO_RERROR' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SO_ZEROIZE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SO_SPLICE' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'TCP_REPAIR' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'SO_REUSEPORT_LB' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
+        'IP_BIND_ADDRESS_NO_PORT' => [
+            '8.2'       => false,
+            '8.3'       => true,
+            'extension' => 'sockets',
+        ],
     ];
 
 
@@ -7713,7 +8049,7 @@ class NewConstantsSniff extends Sniff
      *
      * @since 8.1.0
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {

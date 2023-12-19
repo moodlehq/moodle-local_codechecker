@@ -3,35 +3,35 @@
     <library>
         <location>vendor/squizlabs/php_codesniffer</location>
         <name>PHP_CodeSniffer</name>
-        <version>3.7.2 (ed8e00df0)</version>
+        <version>3.8.0</version>
         <license>BSD</license>
         <licenseversion>3-Clause</licenseversion>
     </library>
     <library>
         <location>vendor/phpcompatibility/php-compatibility</location>
         <name>PHP Compatibility Coding Standard</name>
-        <version>10.0dev (0a17f9ed)</version>
+        <version>10.0dev (306cd263)</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>
     <library>
         <location>vendor/phpcsstandards/phpcsextra</location>
         <name>A collection of code standards for use with PHP_CodeSniffer</name>
-        <version>1.1.2 (746c319)</version>
+        <version>1.2.1</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>
     <library>
         <location>vendor/phpcsstandards/phpcsutils</location>
         <name>A suite of utility functions for use with PHP_CodeSniffer</name>
-        <version>1.0.8 (69465ca)</version>
+        <version>1.0.9</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>
     <library>
         <location>vendor/moodlehq/moodle-cs</location>
         <name>Moodle Coding Style</name>
-        <version>v3.3.8 (ff540d2)</version>
+        <version>v3.3.12</version>
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>
