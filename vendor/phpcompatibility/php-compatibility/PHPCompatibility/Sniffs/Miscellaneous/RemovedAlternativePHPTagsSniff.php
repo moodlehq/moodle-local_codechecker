@@ -45,11 +45,11 @@ class RemovedAlternativePHPTagsSniff extends Sniff
      *
      * @since 7.0.4
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
-        if (\version_compare(\PHP_VERSION_ID, '70000', '<') === true) {
+        if (\PHP_VERSION_ID < 70000) {
             // phpcs:ignore PHPCompatibility.IniDirectives.RemovedIniDirectives.asp_tagsRemoved
             $this->aspTags = (bool) \ini_get('asp_tags');
         }

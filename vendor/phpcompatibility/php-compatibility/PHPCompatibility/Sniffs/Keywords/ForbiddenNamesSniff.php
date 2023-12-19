@@ -45,7 +45,7 @@ class ForbiddenNamesSniff extends Sniff
      *
      * @since 5.5
      *
-     * @var array(string => string)
+     * @var array<string, string>
      */
     protected $invalidNames = [
         'abstract'      => '5.0',
@@ -133,7 +133,7 @@ class ForbiddenNamesSniff extends Sniff
      * @since 7.0.8
      * @since 10.0.0 Moved from the ForbiddenNamesAsDeclared sniff to this sniff.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $otherForbiddenNames = [
         'null'     => '7.0',
@@ -159,7 +159,7 @@ class ForbiddenNamesSniff extends Sniff
      * @since 7.0.8
      * @since 10.0.0 Moved from the ForbiddenNamesAsDeclared sniff to this sniff.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $softReservedNames = [
         'resource' => '7.0',
@@ -179,7 +179,7 @@ class ForbiddenNamesSniff extends Sniff
      * @since 7.0.8
      * @since 10.0.0 Moved from the ForbiddenNamesAsDeclared sniff to this sniff.
      *
-     * @var array
+     * @var array<string, string>
      */
     private $allOtherForbiddenNames = [];
 
@@ -188,7 +188,7 @@ class ForbiddenNamesSniff extends Sniff
      *
      * @since 7.0.1
      *
-     * @var array(string => string)
+     * @var array<string, true>
      */
     protected $validUseNames = [
         'const'    => true,
@@ -200,7 +200,7 @@ class ForbiddenNamesSniff extends Sniff
      *
      * @since 7.1.4
      *
-     * @var array
+     * @var array<int|string, int|string>
      */
     private $allowedModifiers = [];
 
@@ -209,7 +209,7 @@ class ForbiddenNamesSniff extends Sniff
      *
      * @since 5.5
      *
-     * @var array
+     * @var array<int|string>
      */
     protected $targetedTokens = [
         \T_NAMESPACE,
@@ -229,7 +229,7 @@ class ForbiddenNamesSniff extends Sniff
      *
      * @since 5.5
      *
-     * @return array
+     * @return array<int|string>
      */
     public function register()
     {
@@ -432,6 +432,9 @@ class ForbiddenNamesSniff extends Sniff
          * Deal with PHP 8 relaxing the rules.
          * "The namespace declaration will accept any name, including isolated reserved keywords.
          *  The only restriction is that the namespace name cannot start with a `namespace` segment"
+         *
+         * Note: keywords which didn't become reserved prior to PHP 8.0 should never be flagged
+         * when used in namespace names, as they are not problematic in PHP < 8.0.
          */
         $nextContentLC = \strtolower($tokens[$next]['content']);
         if (ScannedCode::shouldRunOnOrBelow('7.4') === false
@@ -464,14 +467,57 @@ class ForbiddenNamesSniff extends Sniff
                 }
 
                 foreach ($parts as $part) {
-                    $this->checkName($phpcsFile, $i, $part);
-                    $this->checkOtherName($phpcsFile, $i, $part, 'namespace declaration');
+                    if ($this->isKeywordReservedPriorToPHP8($part) === true) {
+                        $this->checkName($phpcsFile, $i, $part);
+                        $this->checkOtherName($phpcsFile, $i, $part, 'namespace declaration');
+                    }
                 }
             } else {
-                $this->checkName($phpcsFile, $i, $tokens[$i]['content']);
-                $this->checkOtherName($phpcsFile, $i, $tokens[$i]['content'], 'namespace declaration');
+                if ($this->isKeywordReservedPriorToPHP8($tokens[$i]['content']) === true) {
+                    $this->checkName($phpcsFile, $i, $tokens[$i]['content']);
+                    $this->checkOtherName($phpcsFile, $i, $tokens[$i]['content'], 'namespace declaration');
+                }
             }
         }
+    }
+
+    /**
+     * Check if a keyword was marked as reserved prior to PHP 8.0.
+     *
+     * Helper method for the `processNamespaceDeclaration()` method.
+     *
+     * Keywords which didn't become reserved prior to PHP 8.0 should never be flagged
+     * when used in namespace names, as they are not problematic in PHP < 8.0.
+     *
+     * @param string $name The name to check.
+     *
+     * @return bool
+     */
+    private function isKeywordReservedPriorToPHP8($name)
+    {
+        $nameLC = \strtolower($name);
+
+        if (isset($this->invalidNames[$nameLC]) === true
+            && $this->invalidNames[$nameLC] !== 'all'
+            && \version_compare($this->invalidNames[$nameLC], '8.0', '>=')
+        ) {
+            return false;
+        }
+
+        if (isset($this->softReservedNames[$nameLC]) === true
+            && \version_compare($this->softReservedNames[$nameLC], '8.0', '>=')
+        ) {
+            return false;
+        }
+
+        if (isset($this->otherForbiddenNames[$nameLC]) === true
+            && isset($this->softReservedNames[$nameLC]) === false
+            && \version_compare($this->otherForbiddenNames[$nameLC], '8.0', '>=')
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -518,18 +564,12 @@ class ForbiddenNamesSniff extends Sniff
      */
     protected function processFunctionDeclaration(File $phpcsFile, $stackPtr)
     {
-        /*
-         * Deal with PHP 7 relaxing the rules.
-         * "As of PHP 7.0.0 these keywords are allowed as property, constant, and method names
-         * of classes, interfaces and traits."
-         */
-        if (Scopes::isOOMethod($phpcsFile, $stackPtr) === true
-            && ScannedCode::shouldRunOnOrBelow('5.6') === false
-        ) {
+        $name = FunctionDeclarations::getName($phpcsFile, $stackPtr);
+        if (empty($name)) {
             return;
         }
 
-        $name = FunctionDeclarations::getName($phpcsFile, $stackPtr);
+        $nameLC = \strtolower($name);
 
         /*
          * Deal with `readonly` being a reserved keyword, but still being allowed
@@ -538,7 +578,27 @@ class ForbiddenNamesSniff extends Sniff
          * @link https://github.com/php/php-src/pull/7468 (PHP 8.1)
          * @link https://github.com/php/php-src/pull/9512 (PHP 8.2 follow-up)
          */
-        if (\strtolower($name) === 'readonly') {
+        if ($nameLC === 'readonly') {
+            return;
+        }
+
+        if (isset($this->invalidNames[$nameLC]) === false) {
+            return;
+        }
+
+        /*
+         * Deal with PHP 7 relaxing the rules.
+         * "As of PHP 7.0.0 these keywords are allowed as property, constant, and method names
+         * of classes, interfaces and traits."
+         *
+         * Note: keywords which didn't become reserved prior to PHP 7.0 should never be flagged
+         * when used as method names, as they are not problematic in PHP < 7.0.
+         */
+        if (Scopes::isOOMethod($phpcsFile, $stackPtr) === true
+            && (ScannedCode::shouldRunOnOrBelow('5.6') === false
+                || ($this->invalidNames[$nameLC] !== 'all'
+                && \version_compare($this->invalidNames[$nameLC], '7.0', '>=')))
+        ) {
             return;
         }
 
@@ -575,10 +635,15 @@ class ForbiddenNamesSniff extends Sniff
          * Deal with PHP 7 relaxing the rules.
          * "As of PHP 7.0.0 these keywords are allowed as property, constant, and method names
          * of classes, interfaces and traits, except that class may not be used as constant name."
+         *
+         * Note: keywords which didn't become reserved prior to PHP 7.0 should never be flagged
+         * when used as OO constant names, as they are not problematic in PHP < 7.0.
          */
         if ($nameLc !== 'class'
             && Scopes::isOOConstant($phpcsFile, $stackPtr) === true
-            && ScannedCode::shouldRunOnOrBelow('5.6') === false
+            && (ScannedCode::shouldRunOnOrBelow('5.6') === false
+                || ($this->invalidNames[$nameLc] !== 'all'
+                && \version_compare($this->invalidNames[$nameLc], '7.0', '>=')))
         ) {
             return;
         }

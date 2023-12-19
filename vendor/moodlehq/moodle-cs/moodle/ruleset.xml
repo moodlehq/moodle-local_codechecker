@@ -20,14 +20,9 @@
         Affects all major branches since Moodle 3.9.
 
         Require a comma after the last element in a multi-line array, but prevent in a single-line array definition
-
-        TODO: Enable this back and remove our copied Sniff below once PHPCSExtra v1.2.0 is released.
+    -->
     <rule ref="NormalizedArrays.Arrays.CommaAfterLast">
         <exclude name="NormalizedArrays.Arrays.CommaAfterLast.MissingMultiLineCloserSameLine" />
-    </rule>
-    -->
-    <rule ref="moodle.Arrays.CommaAfterLast">
-        <exclude name="moodle.Arrays.CommaAfterLast.MissingMultiLineCloserSameLine" />
     </rule>
 
     <rule ref="Generic.Classes.DuplicateClassName"/>
@@ -107,21 +102,6 @@
 
     <rule ref="Zend.Files.ClosingTag"/>
 
-    <!--
-        Detect issues with Unit Test dataProviders:
-        - private providers
-        - providers which do not exist
-        - providers whose name is prefixed with _test
-        - incorrect casing of dataProvider
-        - dataProviders which do not return an array or Iterable
-    -->
-    <rule ref="moodle.PHPUnit.TestCaseProvider"/>
-
-    <!--
-        Tests should have a return type. The default return type should be void.
-    -->
-    <rule ref="moodle.PHPUnit.TestReturnType"/>
-
     <!-- Disable this exact error unless it's approved -->
     <rule ref="moodle.Commenting.InlineComment.SpacingAfter">
         <severity>0</severity>
@@ -131,7 +111,6 @@
         Namespace statements, and class imports (use statements) should not use a leading backslash.
     -->
     <rule ref="PSR12.Files.ImportStatement.LeadingSlash"/>
-    <rule ref="moodle.Namespaces.NamespaceStatement"/>
 
     <!-- Let's add the complete PHPCompatibility standard -->
     <rule ref="PHPCompatibility" />
