@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\Squiz\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the FunctionOpeningBraceSpace sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\FunctionOpeningBraceSpaceSniff
+ */
 class FunctionOpeningBraceSpaceUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class FunctionOpeningBraceSpaceUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='FunctionOpeningBraceSpaceUnitTest.inc')
+    public function getErrorList($testFile='')
     {
         switch ($testFile) {
         case 'FunctionOpeningBraceSpaceUnitTest.inc':

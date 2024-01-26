@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\Generic\Tests\PHP;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the LowerCaseConstant sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\LowerCaseConstantSniff
+ */
 class LowerCaseConstantUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class LowerCaseConstantUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='LowerCaseConstantUnitTest.inc')
+    public function getErrorList($testFile='')
     {
         switch ($testFile) {
         case 'LowerCaseConstantUnitTest.inc':

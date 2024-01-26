@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\Squiz\Tests\Commenting;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the DocCommentAlignment sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\DocCommentAlignmentSniff
+ */
 class DocCommentAlignmentUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class DocCommentAlignmentUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='DocCommentAlignmentUnitTest.inc')
+    public function getErrorList($testFile='')
     {
         $errors = [
             3  => 1,

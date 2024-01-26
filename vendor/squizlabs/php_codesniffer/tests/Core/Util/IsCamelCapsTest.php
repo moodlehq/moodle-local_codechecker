@@ -7,11 +7,16 @@
  * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
-namespace PHP_CodeSniffer\Tests\Core;
+namespace PHP_CodeSniffer\Tests\Core\Util;
 
 use PHP_CodeSniffer\Util\Common;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Tests for the \PHP_CodeSniffer\Util\Common::isCamelCaps method.
+ *
+ * @covers \PHP_CodeSniffer\Util\Common::isCamelCaps
+ */
 class IsCamelCapsTest extends TestCase
 {
 

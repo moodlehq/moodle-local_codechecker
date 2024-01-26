@@ -3,7 +3,7 @@
     <library>
         <location>vendor/squizlabs/php_codesniffer</location>
         <name>PHP_CodeSniffer</name>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
         <license>BSD</license>
         <licenseversion>3-Clause</licenseversion>
     </library>
@@ -31,7 +31,7 @@
     <library>
         <location>vendor/moodlehq/moodle-cs</location>
         <name>Moodle Coding Style</name>
-        <version>v3.3.12</version>
+        <version>v3.3.14</version>
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>

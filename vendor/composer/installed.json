@@ -83,37 +83,38 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.3.12",
-            "version_normalized": "3.3.12.0",
+            "version": "v3.3.14",
+            "version_normalized": "3.3.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "9e3dcb07bfb3d0642f74e15253a5b44388782425"
+                "reference": "7e12e69578d5bcd3440f83b5936187227231a9ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/9e3dcb07bfb3d0642f74e15253a5b44388782425",
-                "reference": "9e3dcb07bfb3d0642f74e15253a5b44388782425",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/7e12e69578d5bcd3440f83b5936187227231a9ab",
+                "reference": "7e12e69578d5bcd3440f83b5936187227231a9ab",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
                 "phpcompatibility/php-compatibility": "dev-develop#306cd263",
                 "phpcsstandards/phpcsextra": "^1.2.1",
-                "squizlabs/php_codesniffer": "^3.8.0"
+                "squizlabs/php_codesniffer": "^3.8.1"
             },
             "replace": {
                 "moodlehq/moodle-local_codechecker": "3.1.0"
             },
             "require-dev": {
                 "mikey179/vfsstream": "^1.6",
+                "nikic/php-parser": "^4.18",
                 "overtrue/phplint": "^3.4.0 | ^9.0.4",
                 "phpmd/phpmd": "^2.11",
                 "phpunit/phpunit": "^9.6",
                 "sebastian/phpcpd": "^6.0",
                 "thor-juhasz/phpunit-coverage-check": "^0.3.0"
             },
-            "time": "2023-12-19T15:30:23+00:00",
+            "time": "2024-01-26T15:37:12+00:00",
             "type": "phpcodesniffer-standard",
             "installation-source": "dist",
             "autoload": {
@@ -404,17 +405,17 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.8.0",
-            "version_normalized": "3.8.0.0",
+            "version": "3.8.1",
+            "version_normalized": "3.8.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "5805f7a4e4958dbb5e944ef1e6edae0a303765e7"
+                "reference": "14f5fff1e64118595db5408e946f3a22c75807f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/5805f7a4e4958dbb5e944ef1e6edae0a303765e7",
-                "reference": "5805f7a4e4958dbb5e944ef1e6edae0a303765e7",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/14f5fff1e64118595db5408e946f3a22c75807f7",
+                "reference": "14f5fff1e64118595db5408e946f3a22c75807f7",
                 "shasum": ""
             },
             "require": {
@@ -424,12 +425,12 @@
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
             },
-            "time": "2023-12-08T12:32:31+00:00",
+            "time": "2024-01-11T20:47:48+00:00",
             "bin": [
-                "bin/phpcs",
-                "bin/phpcbf"
+                "bin/phpcbf",
+                "bin/phpcs"
             ],
             "type": "library",
             "extra": {

@@ -29,6 +29,15 @@ abstract class AbstractMethodUnitTest extends TestCase
     protected static $fileExtension = 'inc';
 
     /**
+     * The tab width setting to use when tokenizing the file.
+     *
+     * This allows for test case files to use a different tab width than the default.
+     *
+     * @var integer
+     */
+    protected static $tabWidth = 4;
+
+    /**
      * The \PHP_CodeSniffer\Files\File object containing the parsed contents of the test case file.
      *
      * @var \PHP_CodeSniffer\Files\File
@@ -63,7 +72,10 @@ abstract class AbstractMethodUnitTest extends TestCase
         self::setStaticConfigProperty('configData', ['report_width' => 80]);
         self::setStaticConfigProperty('configDataFile', '');
 
-        $config  = new Config();
+        $config = new Config();
+        // Also set a tab-width to enable testing tab-replaced vs `orig_content`.
+        $config->tabWidth = static::$tabWidth;
+
         $ruleset = new Ruleset($config);
 
         // Default to a file with the same name as the test class. Extension is property based.
@@ -177,6 +189,30 @@ abstract class AbstractMethodUnitTest extends TestCase
         return $target;
 
     }//end getTargetToken()
+
+
+    /**
+     * Helper method to tell PHPUnit to expect a PHPCS RuntimeException in a PHPUnit cross-version
+     * compatible manner.
+     *
+     * @param string $message The expected exception message.
+     *
+     * @return void
+     */
+    public function expectRunTimeException($message)
+    {
+        $exception = 'PHP_CodeSniffer\Exceptions\RuntimeException';
+
+        if (method_exists($this, 'expectException') === true) {
+            // PHPUnit 5+.
+            $this->expectException($exception);
+            $this->expectExceptionMessage($message);
+        } else {
+            // PHPUnit 4.
+            $this->setExpectedException($exception, $message);
+        }
+
+    }//end expectRunTimeException()
 
 
 }//end class

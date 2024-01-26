@@ -209,7 +209,7 @@ class TestCaseCoversSniff implements Sniff {
                 }
 
                 // Advance until the end of the method, if possible, to find the next one quicker.
-                $mStart = $tokens[$mStart]['scope_closer'] ?? $pointer + 1;
+                $mStart = $tokens[$mStart]['scope_closer'] ?? $mStart + 1;
             }
         }
     }

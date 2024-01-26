@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\MySource\Tests\Objects;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the AssignThis sniff.
+ *
+ * @covers PHP_CodeSniffer\Standards\MySource\Sniffs\Objects\AssignThisSniff
+ */
 class AssignThisUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class AssignThisUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='AssignThisUnitTest.js')
+    public function getErrorList($testFile='')
     {
         if ($testFile !== 'AssignThisUnitTest.js') {
             return [];

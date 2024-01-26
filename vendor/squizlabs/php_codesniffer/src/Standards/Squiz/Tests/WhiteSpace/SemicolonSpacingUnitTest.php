@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\Squiz\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the SemicolonSpacing sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\SemicolonSpacingSniff
+ */
 class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='SemicolonSpacingUnitTest.inc')
+    public function getErrorList($testFile='')
     {
         switch ($testFile) {
         case 'SemicolonSpacingUnitTest.inc':

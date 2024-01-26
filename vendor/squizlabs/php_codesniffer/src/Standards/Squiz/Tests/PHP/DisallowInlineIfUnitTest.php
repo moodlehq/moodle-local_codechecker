@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\Squiz\Tests\PHP;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the DisallowObEndFlush sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\DisallowInlineIfSniff
+ */
 class DisallowInlineIfUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class DisallowInlineIfUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='DisallowInlineIfUnitTest.inc')
+    public function getErrorList($testFile='')
     {
         switch ($testFile) {
         case 'DisallowInlineIfUnitTest.inc':

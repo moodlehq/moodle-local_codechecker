@@ -11,6 +11,11 @@ namespace PHP_CodeSniffer\Standards\Generic\Tests\WhiteSpace;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
+/**
+ * Unit test class for the IncrementDecrementSpacing sniff.
+ *
+ * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\IncrementDecrementSpacingSniff
+ */
 class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest
 {
 
@@ -25,7 +30,7 @@ class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest
      *
      * @return array<int, int>
      */
-    public function getErrorList($testFile='IncrementDecrementSpacingUnitTest.inc')
+    public function getErrorList($testFile='')
     {
         $errors = [
             5  => 1,
