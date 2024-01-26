@@ -1,3 +1,10 @@
+Changes in version 5.0.4 (20230126) - Depend-a-bot
+--------------------------------------------------
+- First steps towards managing dependencies automatically with Dependabot.
+- Bundled dependencies updated:
+  - Moodle CS updated to v3.3.14.
+  - PHP CodeSniffer updated to 3.8.1.
+
 Changes in version 5.0.3 (20231219) - Bumping bumps
 ---------------------------------------------------
 - Bundled dependencies updated:
