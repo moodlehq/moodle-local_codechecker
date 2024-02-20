@@ -86,16 +86,16 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.3.14",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "7e12e69578d5bcd3440f83b5936187227231a9ab"
+                "reference": "3a95fd8402231bfbac4e55301ed151518f2043c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/7e12e69578d5bcd3440f83b5936187227231a9ab",
-                "reference": "7e12e69578d5bcd3440f83b5936187227231a9ab",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/3a95fd8402231bfbac4e55301ed151518f2043c3",
+                "reference": "3a95fd8402231bfbac4e55301ed151518f2043c3",
                 "shasum": ""
             },
             "require": {
@@ -150,7 +150,7 @@
                 "source": "https://github.com/moodlehq/moodle-cs",
                 "wiki": "https://github.com/moodlehq/moodle-cs/wiki"
             },
-            "time": "2024-01-26T15:37:12+00:00"
+            "time": "2024-02-15T18:18:01+00:00"
         },
         {
             "name": "phpcompatibility/php-compatibility",
@@ -168,8 +168,8 @@
             },
             "require": {
                 "php": ">=5.4",
-                "phpcsstandards/phpcsutils": "^1.0.5",
-                "squizlabs/php_codesniffer": "^3.7.1"
+                "phpcsstandards/phpcsutils": "^1.0.9",
+                "squizlabs/php_codesniffer": "^3.8.0"
             },
             "replace": {
                 "wimg/php-compatibility": "*"
@@ -226,7 +226,21 @@
                 "security": "https://github.com/PHPCompatibility/PHPCompatibility/security/policy",
                 "source": "https://github.com/PHPCompatibility/PHPCompatibility"
             },
-            "time": "2023-12-04T17:28:03+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/PHPCompatibility",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/jrfnl",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/php_codesniffer",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2024-02-12T16:57:44+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",
@@ -396,16 +410,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.8.1",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "14f5fff1e64118595db5408e946f3a22c75807f7"
+                "reference": "d63cee4890a8afaf86a22e51ad4d97c91dd4579b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/14f5fff1e64118595db5408e946f3a22c75807f7",
-                "reference": "14f5fff1e64118595db5408e946f3a22c75807f7",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/d63cee4890a8afaf86a22e51ad4d97c91dd4579b",
+                "reference": "d63cee4890a8afaf86a22e51ad4d97c91dd4579b",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +486,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-01-11T20:47:48+00:00"
+            "time": "2024-02-16T15:06:51+00:00"
         }
     ],
     "packages-dev": [],
