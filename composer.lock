@@ -86,23 +86,25 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.3.15",
+            "version": "v3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "3a95fd8402231bfbac4e55301ed151518f2043c3"
+                "reference": "3966e9f1e1acdf0f11e2c8c49e5c718f9a8ff54a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/3a95fd8402231bfbac4e55301ed151518f2043c3",
-                "reference": "3a95fd8402231bfbac4e55301ed151518f2043c3",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/3966e9f1e1acdf0f11e2c8c49e5c718f9a8ff54a",
+                "reference": "3966e9f1e1acdf0f11e2c8c49e5c718f9a8ff54a",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
-                "phpcompatibility/php-compatibility": "dev-develop#306cd263",
+                "ext-json": "*",
+                "php": ">=7.4.0",
+                "phpcompatibility/php-compatibility": "dev-develop#e5cd2e24",
                 "phpcsstandards/phpcsextra": "^1.2.1",
-                "squizlabs/php_codesniffer": "^3.8.1"
+                "squizlabs/php_codesniffer": "^3.9.0"
             },
             "replace": {
                 "moodlehq/moodle-local_codechecker": "3.1.0"
@@ -150,7 +152,7 @@
                 "source": "https://github.com/moodlehq/moodle-cs",
                 "wiki": "https://github.com/moodlehq/moodle-cs/wiki"
             },
-            "time": "2024-02-15T18:18:01+00:00"
+            "time": "2024-03-08T14:34:16+00:00"
         },
         {
             "name": "phpcompatibility/php-compatibility",
@@ -240,7 +242,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-02-12T16:57:44+00:00"
+            "time": "2024-03-04T04:23:13+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",
