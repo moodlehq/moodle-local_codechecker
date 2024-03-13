@@ -29,12 +29,13 @@ jobs:
       matrix:
         include:
           # Highest php versions supported by each branch (with main always being tested twice).
-          - php: 8.2
+          - php: 8.3
             moodle-branch: main
             database: pgsql
-          - php: 8.2
+          - php: 8.3
             moodle-branch: main
             database: mariadb
+
           - php: 8.2
             moodle-branch: MOODLE_403_STABLE
             database: pgsql
@@ -76,6 +77,7 @@ jobs:
           - php: 8.1
             moodle-branch: main
             database: mariadb
+
           - php: 8.0
             moodle-branch: MOODLE_403_STABLE
             database: pgsql
