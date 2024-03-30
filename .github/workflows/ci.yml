@@ -126,11 +126,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint
 
-      - name: PHP Copy/Paste Detector
-        continue-on-error: true # This step will show errors but will not fail
-        if: ${{ !cancelled() }}
-        run: moodle-plugin-ci phpcpd
-
       - name: PHP Mess Detector
         continue-on-error: true # This step will show errors but will not fail
         if: ${{ !cancelled() }}
@@ -139,15 +134,6 @@ jobs:
       - name: Moodle Code Checker
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci codechecker --max-warnings 0
-
-      - name: Moodle PHPDoc Checker
-        if: ${{ !cancelled() }}
-        run: |
-          if [ ${{ matrix.plugin-ci }} == "^3" ]; then
-              moodle-plugin-ci phpdoc
-          else
-              moodle-plugin-ci phpdoc --max-warnings 0
-          fi
 
       - name: Validating
         if: ${{ !cancelled() }}

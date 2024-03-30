@@ -36,27 +36,27 @@ Example:
   php run.php local/codechecker';
 $string['error_find'] = 'Folder search failed';
 $string['exclude'] = 'Exclude';
-$string['other_eol'] = 'Whitespace at end of line';
-$string['other_tab'] = 'Tab character not permitted';
-$string['other_toolong'] = 'Line longer than maximum 180 characters';
-$string['other_ratherlong'] = 'Line longer than recommended 132 characters';
-$string['other_crlf'] = 'Windows (CRLF) line ending instead of just LF (reporting only first occurrence)';
-$string['other_missinglf'] = 'Missing LF at end of file (use exactly one)';
-$string['other_extralfs'] = 'Extra blank line(s) at end of file (use exactly one)';
 $string['filesfound'] = 'Files found: {$a}';
 $string['filesummary'] = '{$a->path} - {$a->count}';
+$string['includewarnings'] = 'Include warnings';
 $string['info'] = '<p>Checks code against some aspects of the {$a->link}.</p>
 <p>Enter a path relative to the Moodle code root, for example: {$a->path}.</p>
 <p>You can enter either a specific PHP file, or to a folder to check all the files it contains.
 Multiple entries are supported (files or folders), one per line.</p>
 <p>To exclude files, a comma separated list of substr matching paths can be used, for example: {$a->excludeexample}. Asterisks are allowed as wildchars at any place.</p>';
-$string['includewarnings'] = 'Include warnings';
 $string['invalidpath'] = 'Invalid path {$a}';
 $string['moodlecodingguidelines'] = 'Moodle coding guidelines';
 $string['numerrorswarnings'] = '{$a->errors} error(s) and {$a->warnings} warning(s)';
+$string['other_crlf'] = 'Windows (CRLF) line ending instead of just LF (reporting only first occurrence)';
+$string['other_eol'] = 'Whitespace at end of line';
+$string['other_extralfs'] = 'Extra blank line(s) at end of file (use exactly one)';
+$string['other_missinglf'] = 'Missing LF at end of file (use exactly one)';
+$string['other_ratherlong'] = 'Line longer than recommended 132 characters';
+$string['other_tab'] = 'Tab character not permitted';
+$string['other_toolong'] = 'Line longer than maximum 180 characters';
 $string['path'] = 'Path(s) to check';
-$string['privacy:metadata'] = 'The Code checker plugin does not store any personal data.';
 $string['pluginname'] = 'Code checker';
+$string['privacy:metadata'] = 'The Code checker plugin does not store any personal data.';
 $string['recheckfile'] = 'Re-check just this file';
 $string['showstandard'] = 'Display phpcs standard associated with a problem';
 $string['success'] = 'Well done!';
