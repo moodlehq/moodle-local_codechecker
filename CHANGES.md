@@ -1,4 +1,12 @@
-Changes in version 5.0.4 (20230126) - Depend-a-bot
+Changes in version 5.0.5 (20240410) - Fools plus 9
+--------------------------------------------------
+- Bundled dependencies updated:
+  - Moodle CS v3.4.6
+  - PHP Compatibility e5cd2e24
+  - PHP CodeSniffer 3.9.1
+  - PHPCS Utils 1.0.10
+
+Changes in version 5.0.4 (20240126) - Depend-a-bot
 --------------------------------------------------
 - First steps towards managing dependencies automatically with Dependabot.
 - Bundled dependencies updated:
