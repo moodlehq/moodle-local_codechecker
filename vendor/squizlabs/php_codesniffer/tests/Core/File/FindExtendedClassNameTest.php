@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
  *
  * @covers \PHP_CodeSniffer\Files\File::findExtendedClassName
  */
-class FindExtendedClassNameTest extends AbstractMethodUnitTest
+final class FindExtendedClassNameTest extends AbstractMethodUnitTest
 {
 
 
@@ -74,7 +74,7 @@ class FindExtendedClassNameTest extends AbstractMethodUnitTest
      *
      * @return array<string, array<string, string|false>>
      */
-    public function dataExtendedClass()
+    public static function dataExtendedClass()
     {
         return [
             'class does not extend'                                       => [

@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Verifies that inline comments conform to their coding standards.
@@ -20,9 +21,8 @@
  * Based on {@see PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\InlineCommentSniff}
  * with some customizations to suit our very personal rules.
  *
- * @package    local_codechecker
- * @copyright  2012 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2012 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
@@ -35,14 +35,12 @@
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Commenting;
 
-// phpcs:disable moodle.NamingConventions
-
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
-class InlineCommentSniff implements Sniff {
-
+class InlineCommentSniff implements Sniff
+{
     /**
      * A list of tokenizers this sniff supports.
      *
@@ -64,9 +62,7 @@ class InlineCommentSniff implements Sniff {
             T_COMMENT,
             T_DOC_COMMENT_OPEN_TAG,
         ];
-
-    }//end register()
-
+    }
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -111,18 +107,32 @@ class InlineCommentSniff implements Sniff {
                 T_REQUIRE_ONCE,
             ];
 
+            if ($tokens[$nextToken]['code'] === T_ATTRIBUTE) {
+                // If the next token is an attribute, find the next non-attribute token.
+                // Note: It is possible for the next token to be another attribute, so we need to loop.
+                do {
+                    $token = $tokens[$nextToken];
+                    $nextToken = $phpcsFile->findNext(
+                        Tokens::$emptyTokens,
+                        ($token['attribute_closer'] + 1),
+                        null,
+                        true
+                    );
+                } while ($tokens[$nextToken]['code'] === T_ATTRIBUTE);
+            }
+
             if (in_array($tokens[$nextToken]['code'], $ignore, true) === true) {
                 return;
             }
 
             // Allow phpdoc block before "return new class extends" expressions,
             // we use those anon classes in places like coverage.php files.
-            if ($this->is_return_new_class_extends($phpcsFile, $stackPtr)) {
+            if ($this->isReturnNewClassExtends($phpcsFile, $stackPtr)) {
                 return;
             }
 
             // Allow phpdoc before define() token (see CONTRIB-4150).
-            if ($tokens[$nextToken]['code'] == T_STRING and $tokens[$nextToken]['content'] == 'define') {
+            if ($tokens[$nextToken]['code'] == T_STRING && $tokens[$nextToken]['content'] == 'define') {
                 return;
             }
 
@@ -134,10 +144,11 @@ class InlineCommentSniff implements Sniff {
                 $ignore[]  = T_STRING;
                 $ignore[]  = T_OBJECT_OPERATOR;
                 $nextToken = $phpcsFile->findNext($ignore, ($nextToken + 1), null, true);
-                if ($tokens[$nextToken]['code'] === T_FUNCTION
-                    || $tokens[$nextToken]['code'] === T_CLOSURE
-                    || $tokens[$nextToken]['code'] === T_OBJECT
-                    || $tokens[$nextToken]['code'] === T_PROTOTYPE
+                if (
+                    $tokens[$nextToken]['code'] === T_FUNCTION ||
+                    $tokens[$nextToken]['code'] === T_CLOSURE ||
+                    $tokens[$nextToken]['code'] === T_OBJECT ||
+                    $tokens[$nextToken]['code'] === T_PROTOTYPE
                 ) {
                     return;
                 }
@@ -162,8 +173,10 @@ class InlineCommentSniff implements Sniff {
                 true
             );
             // Is it a @var tag in the comment?
-            if ($tokens[$nextToken]['code'] === T_DOC_COMMENT_TAG &&
-                    $tokens[$nextToken]['content'] == '@var') {
+            if (
+                $tokens[$nextToken]['code'] === T_DOC_COMMENT_TAG &&
+                $tokens[$nextToken]['content'] == '@var'
+            ) {
                 $nextToken = $phpcsFile->findNext(
                     T_DOC_COMMENT_WHITESPACE,
                     ($nextToken + 1),
@@ -207,10 +220,10 @@ class InlineCommentSniff implements Sniff {
                             if (!$nextToken) {
                                 // Not valid type-hinting, specialised error.
                                 $error = 'Inline doc block type-hinting for \'%s\' does not match next list() variables';
-                                $data = array($foundvar);
+                                $data = [$foundvar];
                                 $phpcsFile->addError($error, $stackPtr, 'TypeHintingList', $data);
                             }
-                        } else if ($tokens[$nextToken]['code'] === T_FOREACH) {
+                        } elseif ($tokens[$nextToken]['code'] === T_FOREACH) {
                             // Let's look within the foreach if the variable appear after the 'as' token.
                             $astoken = $phpcsFile->findNext(
                                 T_AS,
@@ -223,13 +236,13 @@ class InlineCommentSniff implements Sniff {
                             if ($tokens[$variabletoken]['content'] !== $foundvar) {
                                 // Not valid type-hinting, specialised error.
                                 $error = 'Inline doc block type-hinting for \'%s\' does not match next foreach() as variable';
-                                $data = array($foundvar, $tokens[$nextToken]['content']);
+                                $data = [$foundvar, $tokens[$nextToken]['content']];
                                 $phpcsFile->addError($error, $stackPtr, 'TypeHintingForeach', $data);
                             }
-                        } else if ($tokens[$nextToken]['content'] !== $foundvar) {
+                        } elseif ($tokens[$nextToken]['content'] !== $foundvar) {
                             // Not valid type-hinting, specialised error.
                             $error = 'Inline doc block type-hinting for \'%s\' does not match next code line \'%s...\'';
-                            $data = array($foundvar, $tokens[$nextToken]['content']);
+                            $data = [$foundvar, $tokens[$nextToken]['content']];
                             $phpcsFile->addError($error, $stackPtr, 'TypeHintingMatch', $data);
                         }
                         return; // Have finished.
@@ -241,7 +254,7 @@ class InlineCommentSniff implements Sniff {
                 $error = 'Inline doc block comments are not allowed; use "// Comment." instead';
                 $phpcsFile->addError($error, $stackPtr, 'DocBlock');
             }
-        }//end if
+        }
 
         if ($tokens[$stackPtr]['content'][0] === '#') {
             $error = 'Perl-style comments are not allowed; use "// Comment." instead';
@@ -261,8 +274,9 @@ class InlineCommentSniff implements Sniff {
             }
 
             // Special case for JS files.
-            if ($tokens[$previousContent]['code'] === T_COMMA
-                || $tokens[$previousContent]['code'] === T_SEMICOLON
+            if (
+                $tokens[$previousContent]['code'] === T_COMMA ||
+                $tokens[$previousContent]['code'] === T_SEMICOLON
             ) {
                 $lastContent = $phpcsFile->findPrevious(T_WHITESPACE, ($previousContent - 1), null, true);
                 if ($tokens[$lastContent]['code'] === T_CLOSE_CURLY_BRACKET) {
@@ -287,14 +301,14 @@ class InlineCommentSniff implements Sniff {
                 $error = 'Comment separators are not allowed to contain other chars buy hyphens (-). Found: (%s)';
                 // Basic clean dupes for notification.
                 $wrongcharsfound = implode(array_keys(array_flip(preg_split('//', $wrongcharsfound, -1, PREG_SPLIT_NO_EMPTY))));
-                $data = array($wrongcharsfound);
+                $data = [$wrongcharsfound];
                 $phpcsFile->addWarning($error, $stackPtr, 'IncorrectCommentSeparator', $data);
             }
             // Verify length between 20 and 120.
             $hyphencount = strlen($matches[1] . $matches[2] . $matches[3]);
-            if ($hyphencount < 20 or $hyphencount > 120) {
+            if ($hyphencount < 20 || $hyphencount > 120) {
                 $error = 'Comment separators length must contain 20-120 chars, %s found';
-                $phpcsFile->addWarning($error, $stackPtr, 'WrongCommentSeparatorLength', array($hyphencount));
+                $phpcsFile->addWarning($error, $stackPtr, 'WrongCommentSeparatorLength', [$hyphencount]);
             }
             // Verify it's the first token in the line.
             $prevToken = $phpcsFile->findPrevious(
@@ -303,9 +317,9 @@ class InlineCommentSniff implements Sniff {
                 null,
                 true
             );
-            if (!empty($prevToken) and $tokens[$prevToken]['line'] == $tokens[$stackPtr]['line']) {
+            if (!empty($prevToken) && $tokens[$prevToken]['line'] == $tokens[$stackPtr]['line']) {
                 $error = 'Comment separators must be the unique text in the line, code found before';
-                $phpcsFile->addWarning($error, $stackPtr, 'WrongCommentCodeFoundBefore', array());
+                $phpcsFile->addWarning($error, $stackPtr, 'WrongCommentCodeFoundBefore', []);
             }
             // Don't want to continue processing the comment separator.
             return;
@@ -335,7 +349,7 @@ class InlineCommentSniff implements Sniff {
 
             $commentTokens[] = $nextComment;
             $lastComment     = $nextComment;
-        }//end while
+        }
 
         $commentText = '';
         foreach ($commentTokens as $lastCommentToken) {
@@ -346,7 +360,7 @@ class InlineCommentSniff implements Sniff {
 
             if ($slashCount > 2) {
                 $error = '%s slashes comments are not allowed; use "// Comment." instead';
-                $data = array($slashCount);
+                $data = [$slashCount];
                 $phpcsFile->addError($error, $lastCommentToken, 'WrongStyle', $data);
             }
 
@@ -379,14 +393,14 @@ class InlineCommentSniff implements Sniff {
                     $comment,
                 ];
                 $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'TabBefore', $data);
-            } else if ($spaceCount === 0) {
+            } elseif ($spaceCount === 0) {
                 $error = 'No space found before comment text; expected "// %s" but found "%s"';
                 $data  = [
                     substr($comment, $slashCount),
                     $comment,
                 ];
                 $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'NoSpaceBefore', $data);
-            } else if ($spaceCount > 1) {
+            } elseif ($spaceCount > 1) {
                 $error = 'Expected 1 space before comment text but found %s; use block comment if you need indentation';
                 $data  = [
                     $spaceCount,
@@ -394,15 +408,15 @@ class InlineCommentSniff implements Sniff {
                     $comment,
                 ];
                 $fix   = $phpcsFile->addFixableError($error, $lastCommentToken, 'SpacingBefore', $data);
-            }//end if
+            }
 
             if ($fix === true) {
-                $newComment = '// '.ltrim($tokens[$lastCommentToken]['content'], "/\t ");
+                $newComment = '// ' . ltrim($tokens[$lastCommentToken]['content'], "/\t ");
                 $phpcsFile->fixer->replaceToken($lastCommentToken, $newComment);
             }
 
             $commentText .= trim(substr($tokens[$lastCommentToken]['content'], $slashCount));
-        }//end foreach
+        }
 
         if ($commentText === '') {
             $error = 'Blank comments are not allowed';
@@ -440,7 +454,7 @@ class InlineCommentSniff implements Sniff {
                 $error = 'Inline comments must end in %s';
                 $ender = '';
                 foreach ($acceptedClosers as $closerName => $symbol) {
-                    $ender .= ' '.$closerName.',';
+                    $ender .= ' ' . $closerName . ',';
                 }
 
                 $ender = trim($ender, ' ,');
@@ -486,8 +500,11 @@ class InlineCommentSniff implements Sniff {
                 $type         = end($conditions);
                 $conditionPtr = key($conditions);
 
-                if (($type === T_FUNCTION || $type === T_CLOSURE)
-                    && $tokens[$conditionPtr]['scope_closer'] === $next
+                if (
+                    (
+                        $type === T_FUNCTION ||
+                        $type === T_CLOSURE
+                    ) && $tokens[$conditionPtr]['scope_closer'] === $next
                 ) {
                     $errorCode = 'SpacingAfterAtFunctionEnd';
                 }
@@ -498,7 +515,7 @@ class InlineCommentSniff implements Sniff {
                     if ($tokens[$i]['code'] !== T_WHITESPACE) {
                         return ($lastCommentToken + 1);
                     }
-                } else if ($tokens[$i]['line'] > ($tokens[$lastCommentToken]['line'] + 1)) {
+                } elseif ($tokens[$i]['line'] > ($tokens[$lastCommentToken]['line'] + 1)) {
                     break;
                 }
             }
@@ -517,11 +534,10 @@ class InlineCommentSniff implements Sniff {
 
                 $phpcsFile->fixer->endChangeset();
             }
-        }//end if
+        }
 
         return ($lastCommentToken + 1);
-
-    }//end process()
+    }
 
     /**
      * This looks if there is a valid "return new class extends" expression allowed to have phpdoc block.
@@ -530,7 +546,7 @@ class InlineCommentSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if is an allowed to have phpdoc block return new class code.
      */
-    protected function is_return_new_class_extends(File $file, $pointer) {
+    protected function isReturnNewClassExtends(File $file, $pointer) {
 
         $ignoredtokens = Tokens::$emptyTokens;
 
@@ -562,6 +578,5 @@ class InlineCommentSniff implements Sniff {
 
         // Found a valid "return new class extends" expression, phpdoc block allowed.
         return true;
-    }// end is_return_new_class_extends()
-
-}//end class
+    }
+}

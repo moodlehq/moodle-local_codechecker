@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,14 +13,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that lines are no more than 180 chars, ideally 132.
  *
- * @package    local_codechecker
  * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Files;
@@ -28,8 +28,8 @@ use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff as GenericLin
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class LineLengthSniff extends GenericLineLengthSniff {
-
+class LineLengthSniff extends GenericLineLengthSniff
+{
     public function __construct() {
         $this->lineLimit = 132;
         $this->absoluteLineLimit = 180;
@@ -37,8 +37,7 @@ class LineLengthSniff extends GenericLineLengthSniff {
 
     public function process(File $file, $stackptr) {
         // Lang files are allowed to have long lines.
-        if (strpos($file->getFilename(),
-                DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR) !== false) {
+        if (strpos($file->getFilename(), DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR) !== false) {
             return;
         }
         parent::process($file, $stackptr);

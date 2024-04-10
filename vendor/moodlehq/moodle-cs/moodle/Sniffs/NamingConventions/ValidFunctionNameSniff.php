@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * moodle_sniffs_namingconventions_validfunctionnamesniff.
@@ -20,23 +21,20 @@
  * Ensures method names are correct depending on whether they are public
  * or private, and that functions are named correctly.
  *
- * @package    local_codechecker
  * @copyright  2009 Nicolas Connault
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\NamingConventions;
-
-// phpcs:disable moodle.NamingConventions
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
 use PHP_CodeSniffer\Util\Tokens;
 
-class ValidFunctionNameSniff extends AbstractScopeSniff {
-
+class ValidFunctionNameSniff extends AbstractScopeSniff
+{
     /** @var array A list of all PHP magic methods. */
-    private $magicmethods = array(
+    private $magicmethods = [
         'construct',
         'destruct',
         'call',
@@ -54,14 +52,14 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
         'set_state',
         'clone',
         'debuginfo',
-    );
+    ];
 
     /** @var array A list of all PHP magic functions. */
-    private $magicfunctions = array(
-        'autoload'
-    );
+    private $magicfunctions = [
+        'autoload',
+    ];
 
-    private $permittedmethods = array(
+    private $permittedmethods = [
         'setUp',
         'tearDown', // Used by simpletest.
         'setUpBeforeClass',
@@ -71,13 +69,13 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
         'offsetUnset', // Defined by the PHP ArrayAccess interface.
         'tearDownAfterClass',
         'jsonSerialize',
-    );
+    ];
 
     /**
      * Constructs a moodle_sniffs_namingconventions_validfunctionnamesniff.
      */
     public function __construct() {
-        parent::__construct(Tokens::$ooScopeTokens, array(T_FUNCTION), true);
+        parent::__construct(Tokens::$ooScopeTokens, [T_FUNCTION], true);
     }
 
     /**
@@ -89,8 +87,7 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
      *
      * @return void
      */
-    protected function processTokenWithinScope(File $phpcsfile,
-            $stackptr, $currscope) {
+    protected function processTokenWithinScope(File $phpcsfile, $stackptr, $currscope) {
         $classname  = $phpcsfile->getDeclarationName($currscope);
         $methodname = $phpcsfile->getDeclarationName($stackptr);
 
@@ -112,12 +109,13 @@ class ValidFunctionNameSniff extends AbstractScopeSniff {
         $scopespecified = $methodprops['scope_specified'];
 
         // Only lower-case accepted.
-        if (preg_match('/[A-Z]+/', $methodname) &&
-                !in_array($methodname, $this->permittedmethods)) {
-
+        if (
+            preg_match('/[A-Z]+/', $methodname) &&
+            !in_array($methodname, $this->permittedmethods)
+        ) {
             if ($scopespecified === true) {
                 $error = ucfirst($scope) . ' method name "' . $classname . '::' .
-                        $methodname .'" must be in lower-case letters only';
+                    $methodname . '" must be in lower-case letters only';
             } else {
                 $error = 'method name "' . $classname . '::' . $methodname .
                         '" must be in lower-case letters only';

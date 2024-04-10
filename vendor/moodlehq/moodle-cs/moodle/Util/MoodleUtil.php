@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace MoodleHQ\MoodleCS\moodle\Util;
 
@@ -22,17 +23,14 @@ use PHP_CodeSniffer\Files\DummyFile;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Ruleset;
 
-// phpcs:disable moodle.NamingConventions
-
 /**
  * Various utility methods specific to Moodle stuff.
  *
- * @package    local_codechecker
- * @copyright  2021 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2021 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class MoodleUtil {
-
+abstract class MoodleUtil
+{
     /**
      * @var string Absolute path, cached, containing moodle root detected directory.
      */
@@ -51,12 +49,18 @@ abstract class MoodleUtil {
     /** @var array A list of mocked component mappings for use in unit tests */
     protected static $mockedComponentMappings = [];
 
+    /** @var array A cached list of APIs */
+    protected static $apis = [];
+
+    /** @var array A list of mocked API mappings for use in unit tests */
+    protected static $mockedApisList = [];
+
     /**
      * Mock component mappings for unit tests.
      *
      * @param array $mappings List of file path => component mappings
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public static function setMockedComponentMappings(array $mappings): void {
         if (!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) {
@@ -64,6 +68,20 @@ abstract class MoodleUtil {
         }
 
         self::$mockedComponentMappings = $mappings;
+    }
+
+    /**
+     * Mock API mappings for unit tests.
+     *
+     * @param array $mappings
+     * @throws \Exception
+     */
+    public static function setMockedApiMappings(array $mappings): void {
+        if (!defined('PHPUNIT_TEST') || !PHPUNIT_TEST) {
+            throw new \Exception('Not running in a unit test'); // @codeCoverageIgnore
+        }
+
+        self::$mockedApisList = $mappings;
     }
 
     /**
@@ -102,7 +120,7 @@ abstract class MoodleUtil {
      * @param string $moodleRoot Full path to a valid moodle.root
      * @return array Associative array of components as keys and paths as values or null if not found.
      */
-    protected static function calculateAllComponents(string $moodleRoot) {
+    protected static function calculateAllComponents(string $moodleRoot): ?array {
         // If we have calculated the components already, straight return them.
         if (!empty(self::$moodleComponents)) {
             return self::$moodleComponents;
@@ -119,7 +137,9 @@ abstract class MoodleUtil {
         if ($componentsFile = Config::getConfigData('moodleComponentsListPath')) {
             if (!is_readable($componentsFile)) {
                 throw new DeepExitException(
-                    "ERROR: Incorrect 'moodleComponentsListPath' config/runtime option. File not found: '$componentsFile'", 3);
+                    "ERROR: Incorrect 'moodleComponentsListPath' config/runtime option. File not found: '$componentsFile'",
+                    3
+                );
             }
             // Go processing the file.
             $handle = fopen($componentsFile, "r");
@@ -205,7 +225,7 @@ abstract class MoodleUtil {
      *
      * @return string|null a valid moodle component for the file or null if not found.
      */
-    public static function getMoodleComponent(File $file, $selfPath = true) {
+    public static function getMoodleComponent(File $file, $selfPath = true): ?string {
         if (defined('PHPUNIT_TEST') && PHPUNIT_TEST && !empty(self::$mockedComponentMappings)) {
             $components = self::$mockedComponentMappings; // @codeCoverageIgnore
         } else {
@@ -222,14 +242,17 @@ abstract class MoodleUtil {
             }
         }
 
+        $filepath = MoodleUtil::getStandardisedFilename($file);
         // Let's find the first component that matches the file path.
         foreach ($components as $component => $componentPath) {
             // Only components with path.
             if (empty($componentPath)) {
                 continue;
             }
+
             // Look for component paths matching the file path.
-            if (strpos($file->path, $componentPath . '/') === 0) {
+            $componentPath = str_replace('\\', '/', $componentPath . DIRECTORY_SEPARATOR);
+            if (strpos($filepath, $componentPath) === 0) {
                 // First match found should be the better one always. We are done.
                 return $component;
             }
@@ -237,6 +260,50 @@ abstract class MoodleUtil {
 
         // Not found.
         return null;
+    }
+
+    /**
+     * Get the list of Moodle APIs.
+     *
+     * @param File $file
+     * @param bool $selfPath
+     * @return null|array
+     */
+    public static function getMoodleApis(File $file, bool $selfPath = true): ?array {
+        if (defined('PHPUNIT_TEST') && PHPUNIT_TEST && !empty(self::$mockedApisList)) {
+            return array_keys(self::$mockedApisList); // @codeCoverageIgnore
+        }
+
+        if (empty(self::$apis)) {
+            // Verify that we are able to find a valid moodle root.
+            if ($moodleRoot = self::getMoodleRoot($file, $selfPath)) {
+                // APIs are located in lib/apis.json.
+                $apisFile = $moodleRoot . '/lib/apis.json';
+
+                if (is_readable($apisFile)) {
+                    $data = json_decode(file_get_contents($apisFile), true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        self::$apis = $data;
+                    }
+                }
+            }
+
+            if (empty(self::$apis)) {
+                // If there is no apis.json file, we can't load the current APIs.
+                // Load the version from the release of 4.2 when the file was introduced.
+                // TODO Remove after min requirement is >= Moodle 4.2 #115.
+                $apisFile = __DIR__ . '/apis.json';
+
+                $data = json_decode(file_get_contents($apisFile), true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    return null; // @codeCoverageIgnore
+                }
+
+                self::$apis = $data;
+            }
+        }
+
+        return array_keys(self::$apis);
     }
 
     /**
@@ -252,7 +319,7 @@ abstract class MoodleUtil {
      *
      * @return int|null the numeric branch in moodle root version.php or null if not found
      */
-    public static function getMoodleBranch(File $file = null, bool $selfPath = true) {
+    public static function getMoodleBranch(?File $file = null, bool $selfPath = true): ?int {
 
         // Return already calculated value if available.
         if (self::$moodleBranch !== false) {
@@ -264,13 +331,17 @@ abstract class MoodleUtil {
             // Verify it's integer value and <= 9999 (4 digits max).
             if (filter_var($branch, FILTER_VALIDATE_INT) === false) {
                 throw new DeepExitException(
-                    "ERROR: Incorrect 'moodleBranch' config/runtime option. Value in not an integer: '$branch'", 3);
+                    "ERROR: Incorrect 'moodleBranch' config/runtime option. Value in not an integer: '$branch'",
+                    3
+                );
             }
             if ($branch > 9999) {
                 throw new DeepExitException(
-                    "ERROR: Incorrect 'moodleBranch' config/runtime option. Value must be 4 digit max.: '$branch'", 3);
+                    "ERROR: Incorrect 'moodleBranch' config/runtime option. Value must be 4 digit max.: '$branch'",
+                    3
+                );
             }
-            self::$moodleBranch = (int)$branch;
+            self::$moodleBranch = $branch;
             return self::$moodleBranch;
         }
 
@@ -288,7 +359,7 @@ abstract class MoodleUtil {
                 // Find the $branch value.
                 if ($valueToken = $versionFile->findNext(T_CONSTANT_ENCAPSED_STRING, $varToken)) {
                     $branch = trim($versionFile->getTokens()[$valueToken]['content'], "\"'");
-                    self::$moodleBranch = (int)$branch;
+                    self::$moodleBranch = $branch;
                     return self::$moodleBranch;
                 }
             }
@@ -313,7 +384,7 @@ abstract class MoodleUtil {
      *
      * @return string|null the full path to moodle root or null if not found.
      */
-    public static function getMoodleRoot(File $file = null, bool $selfPath = true) {
+    public static function getMoodleRoot(?File $file = null, bool $selfPath = true): ?string {
         // Return already calculated value if available.
         if (self::$moodleRoot !== false) {
             return self::$moodleRoot;
@@ -324,12 +395,16 @@ abstract class MoodleUtil {
             // Verify the path is exists and is readable.
             if (!is_dir($path) || !is_readable($path)) {
                 throw new DeepExitException(
-                    "ERROR: Incorrect 'moodleRoot' config/runtime option. Directory does not exist or is not readable: '$path'", 3);
+                    "ERROR: Incorrect 'moodleRoot' config/runtime option. Directory does not exist or is not readable: '$path'",
+                    3
+                );
             }
             // Verify the path has version.php and config-dist.php files. Very basic, but effective check.
             if (!is_readable($path . '/version.php') || !is_readable($path . '/config-dist.php')) {
                 throw new DeepExitException(
-                    "ERROR: Incorrect 'moodleRoot' config/runtime option. Directory is not a valid moodle root: '$path'", 3);
+                    "ERROR: Incorrect 'moodleRoot' config/runtime option. Directory is not a valid moodle root: '$path'",
+                    3
+                );
             }
             self::$moodleRoot = $path;
             return self::$moodleRoot;
@@ -371,39 +446,63 @@ abstract class MoodleUtil {
     }
 
     /**
+     * Whether this file is a lang file.
+     *
+     * @param File $phpcsFile
+     * @return bool
+     */
+    public static function isLangFile(File $phpcsFile): bool
+    {
+        $filename = MoodleUtil::getStandardisedFilename($phpcsFile);
+        // If the file is not under a /lang/[a-zA-Z0-9_-]+/ directory, nothing to check.
+        // (note that we are using that regex because it's what PARAM_LANG does).
+        if (preg_match('~/lang/[a-zA-Z0-9_-]+/~', $filename) === 0) {
+            return false;
+        }
+
+        // If the file is not a PHP file, nothing to check.
+        if (substr($filename, -4) !== '.php') {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Whether this file is a unit test file.
      *
      * This does not include test fixtures, generators, or behat files.
      *
      * Any file which is not correctly named will be ignored.
      *
-     * @param File $phpcsFile 
-     * @return bool 
+     * @param File $phpcsFile
+     * @return bool
      */
     public static function isUnitTest(File $phpcsFile): bool
     {
+        $filename = MoodleUtil::getStandardisedFilename($phpcsFile);
         // If the file isn't called, _test.php, nothing to check.
         if (stripos(basename($phpcsFile->getFilename()), '_test.php') === false) {
             return false;
         }
 
         // If the file isn't under tests directory, nothing to check.
-        if (stripos($phpcsFile->getFilename(), '/tests/') === false) {
+        if (stripos($filename, '/tests/') === false) {
             return false;
         }
 
         // If the file is in a fixture directory, ignore it.
-        if (stripos($phpcsFile->getFilename(), '/tests/fixtures/') !== false) {
+        if (stripos($filename, '/tests/fixtures/') !== false) {
             return false;
         }
 
         // If the file is in a generator directory, ignore it.
-        if (stripos($phpcsFile->getFilename(), '/tests/generator/') !== false) {
+        if (stripos($filename, '/tests/generator/') !== false) {
             return false;
         }
 
         // If the file is in a behat directory, ignore it.
-        if (stripos($phpcsFile->getFilename(), '/tests/behat/') !== false) {
+        if (stripos($filename, '/tests/behat/') !== false) {
             return false;
         }
 
@@ -463,8 +562,7 @@ abstract class MoodleUtil {
     public static function meetsMinimumMoodleVersion(
         File $phpcsFile,
         int $version
-    ): ?bool
-    {
+    ): ?bool {
         $moodleBranch = self::getMoodleBranch($phpcsFile);
         if (!isset($moodleBranch)) {
             // We cannot determine the moodle branch, so we cannot determine if the version is met.
@@ -486,8 +584,7 @@ abstract class MoodleUtil {
         File $phpcsFile,
         int $classPtr,
         string $methodName
-    ): ?int
-    {
+    ): ?int {
         $mStart = $classPtr;
         $tokens = $phpcsFile->getTokens();
         while ($mStart = $phpcsFile->findNext(T_FUNCTION, $mStart + 1, $tokens[$classPtr]['scope_closer'])) {
@@ -498,5 +595,33 @@ abstract class MoodleUtil {
         }
 
         return null;
+    }
+
+    /**
+     * Get all tokens relating to a particular line.
+     *
+     * @param File $phpcsFile
+     * @param int $line
+     * @return array
+     */
+    public static function getTokensOnLine(
+        File $phpcsFile,
+        int $line
+    ): array {
+        return array_filter(
+            $phpcsFile->getTokens(),
+            fn($token) => $token['line'] === $line,
+            ARRAY_FILTER_USE_BOTH
+        );
+    }
+
+    /**
+     * Get the standardised filename for the file.
+     *
+     * @param File @phpcsFile
+     * @return string
+     */
+    public static function getStandardisedFilename(File $phpcsFile): string {
+        return str_replace('\\', '/', $phpcsFile->getFilename());
     }
 }

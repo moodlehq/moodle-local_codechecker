@@ -27,8 +27,6 @@
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Commenting;
 
-// phpcs:disable moodle.NamingConventions
-
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -57,7 +55,7 @@ class TodoCommentSniff implements Sniff
     /**
      * Returns an array of tokens this Sniff wants to listen for.
      *
-     * @return array<int|string>
+     * @return int[]|string[]
      */
     public function register(): array {
         return [T_COMMENT, T_DOC_COMMENT_TAG];

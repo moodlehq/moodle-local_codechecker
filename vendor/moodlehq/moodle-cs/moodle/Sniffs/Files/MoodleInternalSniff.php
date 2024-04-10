@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,32 +13,30 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that each file contains the standard MOODLE_INTERNAL check or
  * a config.php inclusion.
  *
- * @package    local_codechecker
  * @copyright  2016 Dan Poltawski <dan@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Files;
-
-// phpcs:disable moodle.NamingConventions
 
 use MoodleHQ\MoodleCS\moodle\Util\MoodleUtil;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
-class MoodleInternalSniff implements Sniff {
+class MoodleInternalSniff implements Sniff
+{
     /**
      * Register for open tag (only process once per file).
      */
     public function register() {
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
     }
 
     /**
@@ -79,13 +78,13 @@ class MoodleInternalSniff implements Sniff {
         }
 
         // Find where real code is and check from there.
-        $pointer = $this->get_position_of_relevant_code($file, $pointer);
+        $pointer = $this->getPositionOfRelevantCode($file, $pointer);
         if (!$pointer) {
             // The file only contains non-relevant (and non side-effects) code. We are done.
             return;
         }
 
-        if ($this->is_config_php_incluson($file, $pointer)) {
+        if ($this->isConfigPhpInclusion($file, $pointer)) {
             // We are requiring config.php. This file is good, hurrah!
             return;
         }
@@ -95,46 +94,60 @@ class MoodleInternalSniff implements Sniff {
         $sideEffectsPointer = $pointer;
 
         // OK, we've got to the first bit of relevant code. It must be the MOODLE_INTERNAL check.
-        if ($this->is_moodle_internal_or_die_check($file, $pointer)) {
+        if ($this->isMoodleInternalOrDieCheck($file, $pointer)) {
             $hasMoodleInternal = true;
             // Let's look for side effects after the check.
             $sideEffectsPointer = $file->findNext(T_SEMICOLON, $pointer) + 1;
-
-        } else if ($this->is_if_not_moodle_internal_die_check($file, $pointer)) {
+        } elseif ($this->isIfNotMoodleInternalDieCheck($file, $pointer)) {
             $hasMoodleInternal = true;
             $isOldMoodleInternal = true;
             // Let's look for side effects after the check.
             $sideEffectsPointer = $file->getTokens()[$pointer]['scope_closer'] + 1;
         }
 
-        $hasSideEffects = $this->code_changes_global_state($file, $sideEffectsPointer, ($file->numTokens - 1));
-        $hasMultipleArtifacts = ($this->count_artifacts($file) > 1);
+        $hasSideEffects = $this->codeChangesGlobalState($file, $sideEffectsPointer, ($file->numTokens - 1));
+        $hasMultipleArtifacts = ($this->countArtifacts($file) > 1);
 
         // Missing MOODLE_INTERNAL and having side effects, error.
         if (!$hasMoodleInternal && $hasSideEffects) {
-            $file->addError('Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.',
-                $pointer, 'MoodleInternalGlobalState');
+            $file->addError(
+                'Expected MOODLE_INTERNAL check or config.php inclusion. Change in global state detected.',
+                $pointer,
+                'MoodleInternalGlobalState'
+            );
             return;
         }
 
         // Missing MOODLE_INTERNAL, not having side effects, but having multiple artifacts, warning.
         if (!$hasMoodleInternal && !$hasSideEffects && $hasMultipleArtifacts) {
-            $file->addWarning('Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.',
-                $pointer, 'MoodleInternalMultipleArtifacts');
+            $file->addWarning(
+                'Expected MOODLE_INTERNAL check or config.php inclusion. Multiple artifacts detected.',
+                $pointer,
+                'MoodleInternalMultipleArtifacts'
+            );
             return;
         }
 
         // Having MOODLE_INTERNAL, not having side effects and not having multiple artifacts, error.
-        if ($hasMoodleInternal && !$hasSideEffects && !$hasMultipleArtifacts) {
-            $file->addWarning('Unexpected MOODLE_INTERNAL check. No side effects or multiple artifacts detected.',
-                $pointer, 'MoodleInternalNotNeeded');
+        if (
+            $hasMoodleInternal &&
+            !$hasSideEffects && !$hasMultipleArtifacts
+        ) {
+            $file->addWarning(
+                'Unexpected MOODLE_INTERNAL check. No side effects or multiple artifacts detected.',
+                $pointer,
+                'MoodleInternalNotNeeded'
+            );
             return;
         }
 
         // Having old MOODLE_INTERNAL check, warn.
         if ($hasMoodleInternal && $isOldMoodleInternal) {
-            $file->addWarning('Old MOODLE_INTERNAL check detected. Replace it by "defined(\'MOODLE_INTERNAL\') || die();"',
-                $pointer, 'MoodleInternalOld');
+            $file->addWarning(
+                'Old MOODLE_INTERNAL check detected. Replace it by "defined(\'MOODLE_INTERNAL\') || die();"',
+                $pointer,
+                'MoodleInternalOld'
+            );
             return;
         }
     }
@@ -147,7 +160,7 @@ class MoodleInternalSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return int position in stack of relevant code.
      */
-    protected function get_position_of_relevant_code(File $file, $pointer) {
+    protected function getPositionOfRelevantCode(File $file, $pointer) {
         // Advance through tokens until we find some real code.
         $tokens = $file->getTokens();
         $relevantcodefound = false;
@@ -159,13 +172,16 @@ class MoodleInternalSniff implements Sniff {
             if ($tokens[$pointer]['code'] === T_NAMESPACE || $tokens[$pointer]['code'] === T_USE) {
                 // Namespace definitions are allowed before anything else, jump to end of namspace statement.
                 $pointer = $file->findEndOfStatement($pointer + 1, T_COMMA);
-            } else if ($tokens[$pointer]['code'] === T_STRING && $tokens[$pointer]['content'] == 'define') {
+            } elseif ($tokens[$pointer]['code'] === T_STRING && $tokens[$pointer]['content'] == 'define') {
                 // Some things like AJAX_SCRIPT NO_MOODLE_COOKIES need to be defined before config inclusion.
                 // Jump to end of define().
                 $pointer = $file->findEndOfStatement($pointer + 1);
-            } else if ($tokens[$pointer]['code'] === T_DECLARE && $tokens[$pointer]['content'] == 'declare') {
+            } elseif ($tokens[$pointer]['code'] === T_DECLARE && $tokens[$pointer]['content'] == 'declare') {
                 // Declare statements must be at start of file.
                 $pointer = $file->findEndOfStatement($pointer + 1);
+            } elseif ($tokens[$pointer]['code'] === T_ATTRIBUTE) {
+                // Attribute statements may exist before code. Skip them.
+                $pointer = $tokens[$pointer]['attribute_closer'] + 1;
             } else {
                 $relevantcodefound = true;
             }
@@ -183,23 +199,25 @@ class MoodleInternalSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if is a moodle internal statement
      */
-    protected function is_moodle_internal_or_die_check(File $file, $pointer) {
+    protected function isMoodleInternalOrDieCheck(File $file, $pointer) {
         $tokens = $file->getTokens();
-        if ($tokens[$pointer]['code'] !== T_STRING or $tokens[$pointer]['content'] !== 'defined') {
+        if ($tokens[$pointer]['code'] !== T_STRING || $tokens[$pointer]['content'] !== 'defined') {
             return false;
         }
 
         $ignoredtokens = array_merge(Tokens::$emptyTokens, Tokens::$bracketTokens);
 
         $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
-        if ($tokens[$pointer]['code'] !== T_CONSTANT_ENCAPSED_STRING or
-            $tokens[$pointer]['content'] !== "'MOODLE_INTERNAL'") {
+        if (
+            $tokens[$pointer]['code'] !== T_CONSTANT_ENCAPSED_STRING ||
+            $tokens[$pointer]['content'] !== "'MOODLE_INTERNAL'"
+        ) {
             return false;
         }
 
         $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
 
-        if ($tokens[$pointer]['code'] !== T_BOOLEAN_OR and $tokens[$pointer]['code'] !== T_LOGICAL_OR) {
+        if ($tokens[$pointer]['code'] !== T_BOOLEAN_OR && $tokens[$pointer]['code'] !== T_LOGICAL_OR) {
             return false;
         }
 
@@ -218,10 +236,13 @@ class MoodleInternalSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if is a config.php inclusion.
      */
-    protected function is_config_php_incluson(File $file, $pointer) {
+    protected function isConfigPhpInclusion(File $file, $pointer) {
         $tokens = $file->getTokens();
 
-        if ($tokens[$pointer]['code'] !== T_REQUIRE and $tokens[$pointer]['code'] !== T_REQUIRE_ONCE) {
+        if (
+            $tokens[$pointer]['code'] !== T_REQUIRE &&
+            $tokens[$pointer]['code'] !== T_REQUIRE_ONCE
+        ) {
             return false;
         }
 
@@ -245,11 +266,11 @@ class MoodleInternalSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if is a moodle internal statement
      */
-    protected function is_if_not_moodle_internal_die_check(File $file, $pointer) {
+    protected function isIfNotMoodleInternalDieCheck(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         // Detect 'if'.
-        if ($tokens[$pointer]['code'] !== T_IF ) {
+        if ($tokens[$pointer]['code'] !== T_IF) {
             return false;
         }
 
@@ -263,14 +284,16 @@ class MoodleInternalSniff implements Sniff {
 
         // Detect 'defined'.
         $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
-        if ($tokens[$pointer]['code'] !== T_STRING or $tokens[$pointer]['content'] !== 'defined') {
+        if ($tokens[$pointer]['code'] !== T_STRING || $tokens[$pointer]['content'] !== 'defined') {
             return false;
         }
 
         // Detect 'MOODLE_INTERNAL'.
         $pointer = $file->findNext($ignoredtokens, $pointer + 1, null, true);
-        if ($tokens[$pointer]['code'] !== T_CONSTANT_ENCAPSED_STRING or
-            $tokens[$pointer]['content'] !== "'MOODLE_INTERNAL'") {
+        if (
+            $tokens[$pointer]['code'] !== T_CONSTANT_ENCAPSED_STRING ||
+            $tokens[$pointer]['content'] !== "'MOODLE_INTERNAL'"
+        ) {
             return false;
         }
 
@@ -290,14 +313,13 @@ class MoodleInternalSniff implements Sniff {
      *
      * @return int the number of classes, interfaces and traits in the file.
      */
-    private function count_artifacts(File $file) {
+    private function countArtifacts(File $file) {
         $position = 0;
         $counter = 0;
         while ($position !== false) {
-            if ($position = $file->findNext([T_CLASS, T_INTERFACE, T_TRAIT], ($position + 1))) {
+            if ($position = $file->findNext([T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], ($position + 1))) {
                 $counter++;
             }
-
         }
         return $counter;
     }
@@ -311,12 +333,17 @@ class MoodleInternalSniff implements Sniff {
      * @param File $file The file being scanned.
      * @param int $start The token to start searching from.
      * @param int $end The token to search to.
-     * @param array $tokens The stack of tokens that make up the file.
-     * @return true if side effect is detected in the code.
+     * @return bool true if side effect is detected in the code.
      */
-    private function code_changes_global_state(File $file, $start, $end) {
+    private function codeChangesGlobalState(File $file, $start, $end) {
         $tokens = $file->getTokens();
-        $symbols = [T_CLASS => T_CLASS, T_INTERFACE => T_INTERFACE, T_TRAIT => T_TRAIT, T_FUNCTION => T_FUNCTION];
+        $symbols = [
+            T_CLASS => T_CLASS,
+            T_INTERFACE => T_INTERFACE,
+            T_TRAIT => T_TRAIT,
+            T_FUNCTION => T_FUNCTION,
+            T_ENUM => T_ENUM,
+        ];
         $conditions = [T_IF => T_IF, T_ELSE   => T_ELSE, T_ELSEIF => T_ELSEIF];
 
         for ($i = $start; $i <= $end; $i++) {
@@ -373,10 +400,9 @@ class MoodleInternalSniff implements Sniff {
             if (isset($symbols[$tokens[$i]['code']]) === true && isset($tokens[$i]['scope_closer']) === true) {
                 $i = $tokens[$i]['scope_closer'];
                 continue;
-            } else if ($tokens[$i]['code'] === T_STRING && strtolower($tokens[$i]['content']) === 'define') {
+            } elseif ($tokens[$i]['code'] === T_STRING && strtolower($tokens[$i]['content']) === 'define') {
                 $prev = $file->findPrevious(T_WHITESPACE, ($i - 1), null, true);
                 if ($tokens[$prev]['code'] !== T_OBJECT_OPERATOR) {
-
                     $semicolon = $file->findNext(T_SEMICOLON, ($i + 1));
                     if ($semicolon !== false) {
                         $i = $semicolon;
@@ -395,7 +421,7 @@ class MoodleInternalSniff implements Sniff {
                     continue;
                 }
 
-                if ($this->code_changes_global_state($file, ($tokens[$i]['scope_opener'] + 1), ($tokens[$i]['scope_closer'] - 1))) {
+                if ($this->codeChangesGlobalState($file, ($tokens[$i]['scope_opener'] + 1), ($tokens[$i]['scope_closer'] - 1))) {
                     return true;
                 }
 

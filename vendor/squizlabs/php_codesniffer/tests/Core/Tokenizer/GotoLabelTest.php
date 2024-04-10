@@ -9,9 +9,7 @@
 
 namespace PHP_CodeSniffer\Tests\Core\Tokenizer;
 
-use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
-
-class GotoLabelTest extends AbstractMethodUnitTest
+final class GotoLabelTest extends AbstractTokenizerTestCase
 {
 
 
@@ -28,7 +26,7 @@ class GotoLabelTest extends AbstractMethodUnitTest
      */
     public function testGotoStatement($testMarker, $testContent)
     {
-        $tokens = self::$phpcsFile->getTokens();
+        $tokens = $this->phpcsFile->getTokens();
 
         $label = $this->getTargetToken($testMarker, T_STRING);
 
@@ -43,18 +41,18 @@ class GotoLabelTest extends AbstractMethodUnitTest
      *
      * @see testGotoStatement()
      *
-     * @return array
+     * @return array<string, array<string, string>>
      */
-    public function dataGotoStatement()
+    public static function dataGotoStatement()
     {
         return [
-            [
-                '/* testGotoStatement */',
-                'marker',
+            'label for goto statement'                              => [
+                'testMarker'  => '/* testGotoStatement */',
+                'testContent' => 'marker',
             ],
-            [
-                '/* testGotoStatementInLoop */',
-                'end',
+            'label for goto statement in loop, keyword capitalized' => [
+                'testMarker'  => '/* testGotoStatementInLoop */',
+                'testContent' => 'end',
             ],
         ];
 
@@ -74,7 +72,7 @@ class GotoLabelTest extends AbstractMethodUnitTest
      */
     public function testGotoDeclaration($testMarker, $testContent)
     {
-        $tokens = self::$phpcsFile->getTokens();
+        $tokens = $this->phpcsFile->getTokens();
 
         $label = $this->getTargetToken($testMarker, T_GOTO_LABEL);
 
@@ -89,18 +87,18 @@ class GotoLabelTest extends AbstractMethodUnitTest
      *
      * @see testGotoDeclaration()
      *
-     * @return array
+     * @return array<string, array<string, string>>
      */
-    public function dataGotoDeclaration()
+    public static function dataGotoDeclaration()
     {
         return [
-            [
-                '/* testGotoDeclaration */',
-                'marker:',
+            'label in goto declaration - marker' => [
+                'testMarker'  => '/* testGotoDeclaration */',
+                'testContent' => 'marker:',
             ],
-            [
-                '/* testGotoDeclarationOutsideLoop */',
-                'end:',
+            'label in goto declaration - end'    => [
+                'testMarker'  => '/* testGotoDeclarationOutsideLoop */',
+                'testContent' => 'end:',
             ],
         ];
 
@@ -120,11 +118,12 @@ class GotoLabelTest extends AbstractMethodUnitTest
      */
     public function testNotAGotoDeclaration($testMarker, $testContent)
     {
-        $tokens = self::$phpcsFile->getTokens();
-        $target = $this->getTargetToken($testMarker, [T_GOTO_LABEL, T_STRING], $testContent);
+        $tokens     = $this->phpcsFile->getTokens();
+        $target     = $this->getTargetToken($testMarker, [T_GOTO_LABEL, T_STRING], $testContent);
+        $tokenArray = $tokens[$target];
 
-        $this->assertSame(T_STRING, $tokens[$target]['code']);
-        $this->assertSame('T_STRING', $tokens[$target]['type']);
+        $this->assertSame(T_STRING, $tokenArray['code'], 'Token tokenized as '.$tokenArray['type'].', not T_STRING (code)');
+        $this->assertSame('T_STRING', $tokenArray['type'], 'Token tokenized as '.$tokenArray['type'].', not T_STRING (type)');
 
     }//end testNotAGotoDeclaration()
 
@@ -134,38 +133,38 @@ class GotoLabelTest extends AbstractMethodUnitTest
      *
      * @see testNotAGotoDeclaration()
      *
-     * @return array
+     * @return array<string, array<string, string>>
      */
-    public function dataNotAGotoDeclaration()
+    public static function dataNotAGotoDeclaration()
     {
         return [
-            [
-                '/* testNotGotoDeclarationGlobalConstant */',
-                'CONSTANT',
+            'not goto label - global constant followed by switch-case colon'     => [
+                'testMarker'  => '/* testNotGotoDeclarationGlobalConstant */',
+                'testContent' => 'CONSTANT',
             ],
-            [
-                '/* testNotGotoDeclarationNamespacedConstant */',
-                'CONSTANT',
+            'not goto label - namespaced constant followed by switch-case colon' => [
+                'testMarker'  => '/* testNotGotoDeclarationNamespacedConstant */',
+                'testContent' => 'CONSTANT',
             ],
-            [
-                '/* testNotGotoDeclarationClassConstant */',
-                'CONSTANT',
+            'not goto label - class constant followed by switch-case colon'      => [
+                'testMarker'  => '/* testNotGotoDeclarationClassConstant */',
+                'testContent' => 'CONSTANT',
             ],
-            [
-                '/* testNotGotoDeclarationClassProperty */',
-                'property',
+            'not goto label - class property use followed by switch-case colon'  => [
+                'testMarker'  => '/* testNotGotoDeclarationClassProperty */',
+                'testContent' => 'property',
             ],
-            [
-                '/* testNotGotoDeclarationGlobalConstantInTernary */',
-                'CONST_A',
+            'not goto label - global constant followed by ternary else'          => [
+                'testMarker'  => '/* testNotGotoDeclarationGlobalConstantInTernary */',
+                'testContent' => 'CONST_A',
             ],
-            [
-                '/* testNotGotoDeclarationGlobalConstantInTernary */',
-                'CONST_B',
+            'not goto label - global constant after ternary else'                => [
+                'testMarker'  => '/* testNotGotoDeclarationGlobalConstantInTernary */',
+                'testContent' => 'CONST_B',
             ],
-            [
-                '/* testNotGotoDeclarationEnumWithType */',
-                'Suit',
+            'not goto label - name of backed enum'                               => [
+                'testMarker'  => '/* testNotGotoDeclarationEnumWithType */',
+                'testContent' => 'Suit',
             ],
         ];
 

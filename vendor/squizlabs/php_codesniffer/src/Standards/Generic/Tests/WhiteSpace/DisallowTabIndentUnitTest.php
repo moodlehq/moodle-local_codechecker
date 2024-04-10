@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\DisallowTabIndentSniff
  */
-class DisallowTabIndentUnitTest extends AbstractSniffUnitTest
+final class DisallowTabIndentUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -103,7 +103,7 @@ class DisallowTabIndentUnitTest extends AbstractSniffUnitTest
             ];
 
         case 'DisallowTabIndentUnitTest.3.inc':
-            if (\PHP_VERSION_ID >= 70300) {
+            if (PHP_VERSION_ID >= 70300) {
                 return [
                     7  => 1,
                     13 => 1,

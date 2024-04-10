@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
  *
  * @covers \PHP_CodeSniffer\Files\File::findImplementedInterfaceNames
  */
-class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
+final class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
 {
 
 
@@ -73,7 +73,7 @@ class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
      *
      * @return array<string, array<string, string|array<string>>>
      */
-    public function dataImplementedInterface()
+    public static function dataImplementedInterface()
     {
         return [
             'interface declaration, no implements'                               => [
@@ -86,7 +86,9 @@ class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
             ],
             'class implements single interface, unqualified'                     => [
                 'identifier' => '/* testClassImplementsSingle */',
-                'expected'   => ['testFIINInterface'],
+                'expected'   => [
+                    'testFIINInterface',
+                ],
             ],
             'class implements multiple interfaces'                               => [
                 'identifier' => '/* testClassImplementsMultiple */',
@@ -97,11 +99,15 @@ class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
             ],
             'class implements single interface, fully qualified'                 => [
                 'identifier' => '/* testImplementsFullyQualified */',
-                'expected'   => ['\PHP_CodeSniffer\Tests\Core\File\testFIINInterface'],
+                'expected'   => [
+                    '\PHP_CodeSniffer\Tests\Core\File\testFIINInterface',
+                ],
             ],
             'class implements single interface, partially qualified'             => [
                 'identifier' => '/* testImplementsPartiallyQualified */',
-                'expected'   => ['Core\File\RelativeInterface'],
+                'expected'   => [
+                    'Core\File\RelativeInterface',
+                ],
             ],
             'class extends and implements'                                       => [
                 'identifier' => '/* testClassThatExtendsAndImplements */',
@@ -123,7 +129,9 @@ class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
             ],
             'enum implements single interface, unqualified'                      => [
                 'identifier' => '/* testEnumImplementsSingle */',
-                'expected'   => ['Colorful'],
+                'expected'   => [
+                    'Colorful',
+                ],
             ],
             'enum implements multiple interfaces, unqualified + fully qualified' => [
                 'identifier' => '/* testBackedEnumImplementsMulti */',
@@ -134,7 +142,9 @@ class FindImplementedInterfaceNamesTest extends AbstractMethodUnitTest
             ],
             'anon class implements single interface, unqualified'                => [
                 'identifier' => '/* testAnonClassImplementsSingle */',
-                'expected'   => ['testFIINInterface'],
+                'expected'   => [
+                    'testFIINInterface',
+                ],
             ],
             'parse error - implements keyword, but no interface name'            => [
                 'identifier' => '/* testMissingImplementsName */',

@@ -19,7 +19,7 @@ use ReflectionMethod;
  *
  * @covers \PHP_CodeSniffer\Filters\GitStaged
  */
-class GitStagedTest extends AbstractFilterTestCase
+final class GitStagedTest extends AbstractFilterTestCase
 {
 
 
@@ -112,14 +112,18 @@ class GitStagedTest extends AbstractFilterTestCase
 
             'single file marked as git modified - file in root dir'                => [
                 'inputPaths'      => $fakeFileList,
-                'outputGitStaged' => ['autoload.php'],
+                'outputGitStaged' => [
+                    'autoload.php',
+                ],
                 'expectedOutput'  => [
                     $basedir.'/autoload.php',
                 ],
             ],
             'single file marked as git modified - file in sub dir'                 => [
                 'inputPaths'      => $fakeFileList,
-                'outputGitStaged' => ['src/Standards/Generic/Sniffs/Classes/DuplicateClassNameSniff.php'],
+                'outputGitStaged' => [
+                    'src/Standards/Generic/Sniffs/Classes/DuplicateClassNameSniff.php',
+                ],
                 'expectedOutput'  => [
                     $basedir.'/src',
                     $basedir.'/src/Standards',
@@ -171,8 +175,8 @@ class GitStagedTest extends AbstractFilterTestCase
                     '.yamllint.yml',
                     'autoload.php',
                     'src/Standards/Squiz/Sniffs/WhiteSpace/OperatorSpacingSniff.php',
-                    'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.inc',
-                    'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.inc.fixed',
+                    'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.1.inc',
+                    'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.1.inc.fixed',
                     'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.js',
                     'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.js.fixed',
                     'src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.php',
@@ -187,7 +191,7 @@ class GitStagedTest extends AbstractFilterTestCase
                     $basedir.'/src/Standards/Squiz/Sniffs/WhiteSpace/OperatorSpacingSniff.php',
                     $basedir.'/src/Standards/Squiz/Tests',
                     $basedir.'/src/Standards/Squiz/Tests/WhiteSpace',
-                    $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.inc',
+                    $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.1.inc',
                     $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.js',
                     $basedir.'/src/Standards/Squiz/Tests/WhiteSpace/OperatorSpacingUnitTest.php',
                 ],
@@ -211,6 +215,10 @@ class GitStagedTest extends AbstractFilterTestCase
      */
     public function testExecAlwaysReturnsArray($cmd, $expected)
     {
+        if (is_dir(__DIR__.'/../../../.git') === false) {
+            $this->markTestSkipped('Not a git repository');
+        }
+
         $fakeDI = new RecursiveArrayIterator(self::getFakeFileList());
         $filter = new GitStaged($fakeDI, '/', self::$config, self::$ruleset);
 

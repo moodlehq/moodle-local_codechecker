@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that the include_once is used in conditional situations, and
@@ -22,22 +23,20 @@
  *
  * Based on {@link PEAR_Sniffs_Files_IncludingFileSniff}.
  *
- * @package    local_codechecker
  * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHP;
-
-// phpcs:disable moodle.NamingConventions
 
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 
-class IncludingFileSniff implements Sniff {
+class IncludingFileSniff implements Sniff
+{
     public function register() {
-        return array(T_INCLUDE_ONCE, T_REQUIRE_ONCE, T_REQUIRE, T_INCLUDE);
+        return [T_INCLUDE_ONCE, T_REQUIRE_ONCE, T_REQUIRE, T_INCLUDE];
     }
 
     public function process(File $file, $stackptr) {
@@ -45,7 +44,7 @@ class IncludingFileSniff implements Sniff {
 
         if ($tokens[$stackptr + 1]['code'] !== T_OPEN_PARENTHESIS) {
             $error = '"%s" must be immediately followed by an open parenthesis';
-            $data  = array($tokens[$stackptr]['content']);
+            $data  = [$tokens[$stackptr]['content']];
             $file->addError($error, $stackptr, 'BracketsRequired', $data);
         }
 
@@ -65,8 +64,7 @@ class IncludingFileSniff implements Sniff {
         // Check to see if they are assigning the return value of this
         // including call. If they are then they are probably checking it, so
         // it's conditional.
-        $previous = $file->findPrevious(Tokens::$emptyTokens,
-                ($stackptr - 1), null, true);
+        $previous = $file->findPrevious(Tokens::$emptyTokens, ($stackptr - 1), null, true);
         if (in_array($tokens[$previous]['code'], Tokens::$assignmentTokens)) {
             // The have assigned the return value to it, so its conditional.
             $incondition = true;
@@ -79,7 +77,7 @@ class IncludingFileSniff implements Sniff {
                 $error  = 'File is being unconditionally included; ';
                 $error .= 'use "require_once" instead';
                 $file->addError($error, $stackptr, 'UseRequireOnce');
-            } else if ($tokentype === T_INCLUDE) {
+            } elseif ($tokentype === T_INCLUDE) {
                 $error  = 'File is being unconditionally included; ';
                 $error .= 'use "require" instead';
                 $file->addError($error, $stackptr, 'UseRequire');

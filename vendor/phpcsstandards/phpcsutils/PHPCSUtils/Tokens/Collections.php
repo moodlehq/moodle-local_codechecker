@@ -10,7 +10,6 @@
 
 namespace PHPCSUtils\Tokens;
 
-use PHPCSUtils\BackCompat\Helper;
 use PHPCSUtils\Exceptions\InvalidTokenArray;
 
 /**
@@ -447,7 +446,7 @@ final class Collections
      * @var array<int|string, int|string>
      */
     private static $propertyTypeTokens = [
-        \T_CALLABLE          => \T_CALLABLE,
+        \T_CALLABLE          => \T_CALLABLE, // Not allowed in PHP, but in this list to allow for (flagging) code errors.
         \T_SELF              => \T_SELF,
         \T_PARENT            => \T_PARENT,
         \T_FALSE             => \T_FALSE,

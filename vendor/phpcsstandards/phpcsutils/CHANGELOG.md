@@ -9,6 +9,34 @@ This projects adheres to [Keep a CHANGELOG](https://keepachangelog.com/) and use
 
 _Nothing yet._
 
+## [1.0.10] - 2024-03-18
+
+### Changed
+
+#### Other
+
+* Dropped support for [PHP_CodeSniffer] < 3.9.0. [#561]
+    Please ensure you run `composer update phpcsstandards/phpcsutils --with-dependencies` to benefit from this.
+* Various housekeeping and documentation improvements.
+
+### Deprecated
+
+#### Utils
+
+* `NamingConventions::AZ_UPPER` constant. [#563]
+* `NamingConventions::AZ_LOWER` constant. [#563]
+
+### Fixed
+
+#### PHPCS BackCompat
+
+* `BackCompat\Helper::getEncoding()`: PHP 8.4 deprecation notice. [#568]
+* `BackCompat\Helper::ignoreAnnotations()`: PHP 8.4 deprecation notice. [#568]
+
+[#561]: https://github.com/PHPCSStandards/PHPCSUtils/pull/561
+[#563]: https://github.com/PHPCSStandards/PHPCSUtils/pull/563
+[#568]: https://github.com/PHPCSStandards/PHPCSUtils/pull/568
+
 
 ## [1.0.9] - 2023-12-08
 
@@ -956,6 +984,7 @@ This initial alpha release contains the following utility classes:
 
 
 [Unreleased]:   https://github.com/PHPCSStandards/PHPCSUtils/compare/stable...HEAD
+[1.0.10]:       https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.9...1.0.10
 [1.0.9]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.8...1.0.9
 [1.0.8]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.7...1.0.8
 [1.0.7]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.6...1.0.7

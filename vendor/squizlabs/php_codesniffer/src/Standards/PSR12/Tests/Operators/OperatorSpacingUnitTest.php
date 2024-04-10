@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\PSR12\Sniffs\Operators\OperatorSpacingSniff
  */
-class OperatorSpacingUnitTest extends AbstractSniffUnitTest
+final class OperatorSpacingUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -26,32 +26,39 @@ class OperatorSpacingUnitTest extends AbstractSniffUnitTest
      * The key of the array should represent the line number and the value
      * should represent the number of errors that should occur on that line.
      *
+     * @param string $testFile The name of the file being tested.
+     *
      * @return array<int, int>
      */
-    public function getErrorList()
+    public function getErrorList($testFile='')
     {
-        return [
-            2  => 1,
-            3  => 2,
-            4  => 1,
-            5  => 2,
-            6  => 4,
-            9  => 3,
-            10 => 2,
-            11 => 3,
-            13 => 3,
-            14 => 2,
-            18 => 1,
-            20 => 1,
-            22 => 2,
-            23 => 2,
-            26 => 1,
-            37 => 4,
-            39 => 1,
-            40 => 1,
-            44 => 2,
-            47 => 2,
-        ];
+        switch ($testFile) {
+        case 'OperatorSpacingUnitTest.1.inc':
+            return [
+                2  => 1,
+                3  => 2,
+                4  => 1,
+                5  => 2,
+                6  => 4,
+                9  => 3,
+                10 => 2,
+                11 => 3,
+                13 => 3,
+                14 => 2,
+                18 => 1,
+                20 => 1,
+                22 => 2,
+                23 => 2,
+                26 => 1,
+                37 => 4,
+                39 => 1,
+                40 => 1,
+                44 => 2,
+                47 => 2,
+            ];
+        default:
+            return [];
+        }//end switch
 
     }//end getErrorList()
 

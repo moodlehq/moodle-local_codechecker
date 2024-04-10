@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,25 +13,22 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Sniff to detect people using global $PAGE and $OUTPUT in renderers, or global $PAGE in blocks.
  *
- * @package    local_codechecker
  * @copyright  2020 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHP;
 
-// phpcs:disable moodle.NamingConventions
-
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
 use PHP_CodeSniffer\Files\File;
 
-class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
-
+class ForbiddenGlobalUseSniff extends AbstractVariableSniff
+{
     /**
      * @var array list of problems to detect. Each element is an array with three keys:
      *      classtype        - this is a human-readable description of this type of class, used in error messages.
@@ -67,7 +65,7 @@ class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
         $tokens  = $phpcsFile->getTokens();
         $varName = ltrim($tokens[$stackPtr]['content'], '$');
 
-        $this->check_variable_usage($varName, $phpcsFile, $stackPtr);
+        $this->checkVariableUsage($varName, $phpcsFile, $stackPtr);
     }
 
     /**
@@ -78,7 +76,7 @@ class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
 
         if (preg_match_all('|[^\\\]\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)|', $tokens[$stackPtr]['content'], $matches) !== 0) {
             foreach ($matches[1] as $varName) {
-                $this->check_variable_usage($varName, $phpcsFile, $stackPtr);
+                $this->checkVariableUsage($varName, $phpcsFile, $stackPtr);
             }
         }
     }
@@ -90,9 +88,9 @@ class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
      * @param File $phpcsFile The PHP_CodeSniffer file where this token was found.
      * @param int $stackPtr The position where the token was found.
      */
-    protected function check_variable_usage($varname, File $phpcsFile, $stackPtr) {
+    protected function checkVariableUsage($varname, File $phpcsFile, $stackPtr) {
         foreach ($this->forbiddencombinations as $forbiddencombination) {
-            $this->check_one_combination($varname, $forbiddencombination, $phpcsFile, $stackPtr);
+            $this->checkOneCombination($varname, $forbiddencombination, $phpcsFile, $stackPtr);
         }
     }
 
@@ -106,8 +104,12 @@ class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
      * @param File $phpcsFile The PHP_CodeSniffer file where this token was found.
      * @param int $stackPtr  The position where the token was found.
      */
-    protected function check_one_combination($varname, $forbiddencombination,
-            File $phpcsFile, $stackPtr) {
+    protected function checkOneCombination(
+        $varname,
+        $forbiddencombination,
+        File $phpcsFile,
+        $stackPtr
+    ) {
         $tokens  = $phpcsFile->getTokens();
 
         if (!in_array($varname, $forbiddencombination['variables'])) {
@@ -127,9 +129,12 @@ class ForbiddenGlobalUseSniff extends AbstractVariableSniff {
 
             // If the classname matches, report the error.
             if (preg_match($forbiddencombination['classnamepattern'], $classname)) {
-                $phpcsFile->addError('global $' . $varname . ' cannot be used in ' .
-                        $forbiddencombination['classtype'] . '. Use $this->' . strtolower($varname) . '.',
-                        $stackPtr, 'BadGlobal');
+                $phpcsFile->addError(
+                    'global $' . $varname . ' cannot be used in ' .
+                    $forbiddencombination['classtype'] . '. Use $this->' . strtolower($varname) . '.',
+                    $stackPtr,
+                    'BadGlobal'
+                );
                 return;
             }
         }

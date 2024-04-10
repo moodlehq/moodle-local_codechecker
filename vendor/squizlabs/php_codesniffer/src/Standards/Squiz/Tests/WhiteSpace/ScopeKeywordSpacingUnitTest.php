@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ScopeKeywordSpacingSniff
  */
-class ScopeKeywordSpacingUnitTest extends AbstractSniffUnitTest
+final class ScopeKeywordSpacingUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -56,6 +56,8 @@ class ScopeKeywordSpacingUnitTest extends AbstractSniffUnitTest
                 134 => 2,
                 138 => 2,
                 140 => 3,
+                145 => 1,
+                149 => 1,
             ];
 
         case 'ScopeKeywordSpacingUnitTest.3.inc':

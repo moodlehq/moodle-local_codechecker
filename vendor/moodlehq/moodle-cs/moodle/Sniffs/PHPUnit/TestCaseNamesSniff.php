@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,26 +13,23 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that a test file has a class name matching the file name.
  *
- * @package    local_codechecker
  * @copyright  2021 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHPUnit;
-
-// phpcs:disable moodle.NamingConventions
 
 use MoodleHQ\MoodleCS\moodle\Util\MoodleUtil;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class TestCaseNamesSniff implements Sniff {
-
+class TestCaseNamesSniff implements Sniff
+{
     /**
      * List of classes that have been found during checking.
      *
@@ -50,7 +48,7 @@ class TestCaseNamesSniff implements Sniff {
      * Register for open tag (only process once per file).
      */
     public function register() {
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
     }
 
     /**
@@ -153,15 +151,23 @@ class TestCaseNamesSniff implements Sniff {
 
         // Error if the found classname is "strange" (not "_test|_testcase" ended).
         if (substr($class, -5) !== '_test' && substr($class, -9) != '_testcase') {
-            $file->addError('PHPUnit irregular testcase name found: %s (_test/_testcase ended expected)', $cStart,
-                'Irregular', [$class]);
+            $file->addError(
+                'PHPUnit irregular testcase name found: %s (_test/_testcase ended expected)',
+                $cStart,
+                'Irregular',
+                [$class]
+            );
         }
 
         // Check if the file name and the class name match, warn if not.
         $baseName = pathinfo($fileName, PATHINFO_FILENAME);
         if ($baseName !== $class) {
-            $fix = $file->addFixableWarning('PHPUnit testcase name "%s" does not match file name "%s"', $cStart,
-                'NoMatch', [$class, $baseName]);
+            $fix = $file->addFixableWarning(
+                'PHPUnit testcase name "%s" does not match file name "%s"',
+                $cStart,
+                'NoMatch',
+                [$class, $baseName]
+            );
 
             if ($fix === true) {
                 if ($cNameToken = $file->findNext(T_STRING, $cStart + 1, $tokens[$cStart]['scope_opener'])) {
@@ -175,8 +181,12 @@ class TestCaseNamesSniff implements Sniff {
         if (isset($this->foundClasses[$fdqnClass])) {
             // Already found, this is a dupe class name, error!
             foreach ($this->foundClasses[$fdqnClass] as $exists) {
-                $file->addError('PHPUnit testcase "%s" already exists at "%s" line %s', $cStart,
-                    'DuplicateExists', [$fdqnClass, $exists['file'], $exists['line']]);
+                $file->addError(
+                    'PHPUnit testcase "%s" already exists at "%s" line %s',
+                    $cStart,
+                    'DuplicateExists',
+                    [$fdqnClass, $exists['file'], $exists['line']]
+                );
             }
         } else {
             // Create the empty element.
@@ -193,9 +203,13 @@ class TestCaseNamesSniff implements Sniff {
         if (isset($this->proposedClasses[$fdqnClass])) {
             // Already found, this is a dupe class name, error!
             foreach ($this->proposedClasses[$fdqnClass] as $exists) {
-                $file->addError('PHPUnit testcase "%s" already proposed for "%s" line %s. You ' .
-                    'may want to change the testcase name (file and class)', $cStart,
-                    'ProposedExists', [$fdqnClass, $exists['file'], $exists['line']]);
+                $file->addError(
+                    'PHPUnit testcase "%s" already proposed for "%s" line %s. You ' .
+                    'may want to change the testcase name (file and class)',
+                    $cStart,
+                    'ProposedExists',
+                    [$fdqnClass, $exists['file'], $exists['line']]
+                );
             }
         }
 
@@ -206,8 +220,12 @@ class TestCaseNamesSniff implements Sniff {
         if ($namespace && $moodleComponent) {
             // Verify that the namespace declared in the class matches the namespace expected for the file.
             if (strpos($namespace . '\\', $moodleComponent . '\\') !== 0) {
-                $file->addError('PHPUnit class namespace "%s" does not match expected file namespace "%s"', $nsStart,
-                    'UnexpectedNS', [$namespace, $moodleComponent]);
+                $file->addError(
+                    'PHPUnit class namespace "%s" does not match expected file namespace "%s"',
+                    $nsStart,
+                    'UnexpectedNS',
+                    [$namespace, $moodleComponent]
+                );
             }
 
             // Verify that level2 and down match the directory structure under tests. Soft warn if not (till we fix all).
@@ -215,36 +233,48 @@ class TestCaseNamesSniff implements Sniff {
             if ($bspos !== false) { // Only if there are level2 and down namespace.
                 $relns = str_replace('\\', '/', substr(trim($namespace, ' \\'), $bspos + 1));
 
+                $filename = MoodleUtil::getStandardisedFilename($file);
                 // Calculate the relative path under tests directory.
-                $dirpos = strripos(trim(dirname($file->getFilename()), ' /') . '/', '/tests/');
-                $reldir = str_replace('\\', '/', substr(trim(dirname($file->getFilename()), ' /'), $dirpos + 7));
+                $dirpos = strripos(trim(dirname($filename), ' /') . '/', '/tests/');
+                $reldir = str_replace('\\', '/', substr(trim(dirname($filename), ' /'), $dirpos + 7));
 
                 // Warning if the relative namespace does not match the relative directory.
                 if ($reldir !== $relns) {
-                    $file->addWarning('PHPUnit class "%s", with namespace "%s", currently located at "tests/%s" directory, '.
-                        'does not match its expected location at "tests/%s"', $nsStart,
-                        'UnexpectedLevel2NS', [$fdqnClass, $namespace, $reldir, $relns]);
+                    $file->addWarning(
+                        'PHPUnit class "%s", with namespace "%s", currently located at "tests/%s" directory, ' .
+                        'does not match its expected location at "tests/%s"',
+                        $nsStart,
+                        'UnexpectedLevel2NS',
+                        [$fdqnClass, $namespace, $reldir, $relns]
+                    );
                 }
 
                 // TODO: When we have APIs (https://docs.moodle.org/dev/Core_APIs) somewhere at hand (in core)
                 // let's add here an error when incorrect ones are used. See MDL-71096 about it.
             }
-
         }
 
         if (!$namespace && $moodleComponent) {
-            $file->addWarning('PHPUnit class "%s" does not have any namespace. It is recommended to add it to the "%s" ' .
-                'namespace, using more levels if needed, in order to match the code being tested', $cStart,
-                'MissingNS', [$fdqnClass, $moodleComponent]);
+            $file->addWarning(
+                'PHPUnit class "%s" does not have any namespace. It is recommended to add it to the "%s" ' .
+                'namespace, using more levels if needed, in order to match the code being tested',
+                $cStart,
+                'MissingNS',
+                [$fdqnClass, $moodleComponent]
+            );
 
             // Check if the proposed class has been already proposed (this is useful when running against a lot of files).
             $fdqnProposed = $moodleComponent . '\\' . $fdqnClass;
             if (isset($this->proposedClasses[$fdqnProposed])) {
                 // Already found, this is a dupe class name, error!
                 foreach ($this->proposedClasses[$fdqnProposed] as $exists) {
-                    $file->addError('Proposed PHPUnit testcase "%s" already proposed for "%s" line %s. You ' .
-                        'may want to change the testcase name (file and class)', $cStart,
-                        'DuplicateProposed', [$fdqnProposed, $exists['file'], $exists['line']]);
+                    $file->addError(
+                        'Proposed PHPUnit testcase "%s" already proposed for "%s" line %s. You ' .
+                        'may want to change the testcase name (file and class)',
+                        $cStart,
+                        'DuplicateProposed',
+                        [$fdqnProposed, $exists['file'], $exists['line']]
+                    );
                 }
             } else {
                 // Create the empty element.
@@ -261,9 +291,13 @@ class TestCaseNamesSniff implements Sniff {
             if (isset($this->foundClasses[$fdqnProposed])) {
                 // Already found, this is a dupe class name, error!
                 foreach ($this->foundClasses[$fdqnProposed] as $exists) {
-                    $file->addError('Proposed PHPUnit testcase "%s" already exists at "%s" line %s. You ' .
-                        'may want to change the testcase name (file and class)', $cStart,
-                        'ExistsProposed', [$fdqnProposed, $exists['file'], $exists['line']]);
+                    $file->addError(
+                        'Proposed PHPUnit testcase "%s" already exists at "%s" line %s. You ' .
+                        'may want to change the testcase name (file and class)',
+                        $cStart,
+                        'ExistsProposed',
+                        [$fdqnProposed, $exists['file'], $exists['line']]
+                    );
                 }
             }
         }

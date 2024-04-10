@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,11 +13,9 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHP;
-
-// phpcs:disable moodle.NamingConventions
 
 use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DeprecatedFunctionsSniff as GenericDeprecatedFunctionsSniff;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -42,12 +41,11 @@ use PHP_CodeSniffer\Files\File;
  * (because unit tests DO NOT parse the ruleset.xml details, like
  * properties, excludes... and other info).
  *
- * @package    local_codechecker
  * @copyright  2021 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff {
-
+class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff
+{
     /**
      * If true, an error will be thrown; otherwise a warning.
      *
@@ -84,7 +82,7 @@ class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff {
      * @todo: This method can be removed once/if this PR accepted:
      *        https://github.com/squizlabs/PHP_CodeSniffer/pull/3295
      */
-    protected function addError($phpcsFile, $stackPtr, $function, $pattern=null) {
+    protected function addError($phpcsFile, $stackPtr, $function, $pattern = null) {
         $data  = [$function];
         $error = 'Function %s() has been deprecated';
         $type  = 'Deprecated';
@@ -93,8 +91,9 @@ class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff {
             $pattern = strtolower($function);
         }
 
-        if ($this->forbiddenFunctions[$pattern] !== null
-            && $this->forbiddenFunctions[$pattern] !== 'null'
+        if (
+            $this->forbiddenFunctions[$pattern] !== null &&
+            $this->forbiddenFunctions[$pattern] !== 'null'
         ) {
             $type  .= 'WithAlternative';
             $data[] = $this->forbiddenFunctions[$pattern];
@@ -106,6 +105,5 @@ class DeprecatedFunctionsSniff extends GenericDeprecatedFunctionsSniff {
         } else {
             $phpcsFile->addWarning($error, $stackPtr, $type, $data);
         }
-
-    }//end addError()
+    }
 }

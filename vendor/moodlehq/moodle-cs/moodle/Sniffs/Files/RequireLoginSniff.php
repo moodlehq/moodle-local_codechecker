@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,14 +13,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that each file contains necessary login checks.
  *
- * @package    local_codechecker
  * @copyright  2016 Dan Poltawski <dan@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Files;
@@ -27,14 +27,15 @@ namespace MoodleHQ\MoodleCS\moodle\Sniffs\Files;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class RequireLoginSniff implements Sniff {
+class RequireLoginSniff implements Sniff
+{
     public $loginfunctions = ['require_login', 'require_course_login', 'require_admin', 'admin_externalpage_setup'];
     public $ignorewhendefined = ['NO_MOODLE_COOKIES', 'CLI_SCRIPT', 'ABORT_AFTER_CONFIG'];
     /**
      * Register for open tag (only process once per file).
      */
     public function register() {
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
     }
 
     /**
@@ -50,22 +51,25 @@ class RequireLoginSniff implements Sniff {
             return; // @codeCoverageIgnore
         }
 
-        $pointer = $this->get_config_inclusion_position($file, $pointer);
+        $pointer = $this->getConfigInclusionPosition($file, $pointer);
         if ($pointer === false) {
             // Config.php not included form file.
             return;
         }
 
         // OK, we've got a config.php.
-        if ($this->should_skip_login_checks($file, $pointer)) {
+        if ($this->shouldSkipLoginChecks($file, $pointer)) {
             // Login function check not necessary.
             return;
         }
 
-        if (!$this->is_login_function_present($file, $pointer)) {
+        if (!$this->isLoginFunctionPresent($file, $pointer)) {
             $loginfunctionsstr = implode(', ', $this->loginfunctions);
-            $file->addWarning("Expected login check ($loginfunctionsstr) following config inclusion. None found.",
-                $pointer, 'Missing');
+            $file->addWarning(
+                "Expected login check ($loginfunctionsstr) following config inclusion. None found.",
+                $pointer,
+                'Missing'
+            );
         }
     }
 
@@ -76,7 +80,7 @@ class RequireLoginSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return int|false the position in the file or false if no require statement found.
      */
-    protected function get_config_inclusion_position(File $file, $pointer) {
+    protected function getConfigInclusionPosition(File $file, $pointer) {
         for ($i = $pointer; $i < $file->numTokens; $i++) {
             $i = $file->findNext([T_REQUIRE, T_REQUIRE_ONCE], $i);
             if ($i === false) {
@@ -84,7 +88,7 @@ class RequireLoginSniff implements Sniff {
                 return false;
             }
 
-            if ($this->is_a_config_php_incluson($file, $i)) {
+            if ($this->isConfigPhpInclusion($file, $i)) {
                 // Found config.php.
                 return $i;
             }
@@ -99,7 +103,7 @@ class RequireLoginSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if it is a config inclusion
      */
-    protected function is_a_config_php_incluson(File $file, $pointer) {
+    protected function isConfigPhpInclusion(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         // It's a require() or require_once() statement. Is it require(config.php)?
@@ -119,11 +123,10 @@ class RequireLoginSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if the checks should be skipped
      */
-    protected function should_skip_login_checks(File $file, $pointer) {
+    protected function shouldSkipLoginChecks(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         for ($i = $pointer; $i > 0; $i--) {
-
             $i = $file->findPrevious(T_STRING, $i);
             if ($i === false) {
                 // We've got to the start. A login function must be necessary.
@@ -154,7 +157,7 @@ class RequireLoginSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return bool true if the current point in stack is a login function.
      */
-    protected function is_a_login_function(File $file, $pointer) {
+    protected function isLginFunction(File $file, $pointer) {
         $tokens = $file->getTokens();
 
         if (in_array($tokens[$pointer]['content'], $this->loginfunctions)) {
@@ -171,14 +174,14 @@ class RequireLoginSniff implements Sniff {
      * @param int $pointer The position in the stack.
      * @return true if login function is present.
      */
-    protected function is_login_function_present(File $file, $pointer) {
+    protected function isLoginFunctionPresent(File $file, $pointer) {
         for ($i = $pointer; $i < $file->numTokens; $i++) {
             $i = $file->findNext(T_STRING, $i);
             if ($i === false) {
                 return false;
             }
 
-            if ($this->is_a_login_function($file, $i)) {
+            if ($this->isLginFunction($file, $i)) {
                 return true;
             }
 
@@ -188,6 +191,5 @@ class RequireLoginSniff implements Sniff {
                 return false;
             }
         }
-
     }
 }

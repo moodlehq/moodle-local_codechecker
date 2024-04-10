@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,25 +13,22 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Inspect some strings that may lead to incorrect uses of Moodle/PHP APIs.
  *
- * @package    local_codechecker
- * @copyright  2014 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2014 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Strings;
 
-// phpcs:disable moodle.NamingConventions
-
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class ForbiddenStringsSniff implements Sniff {
-
+class ForbiddenStringsSniff implements Sniff
+{
     /**
      * Returns an array of tokens this test wants to listen for.
      *
@@ -38,7 +36,7 @@ class ForbiddenStringsSniff implements Sniff {
      */
     public function register() {
         // We are going to handle strings here.
-        return array(T_CONSTANT_ENCAPSED_STRING);
+        return [T_CONSTANT_ENCAPSED_STRING];
     }
 
     /**
@@ -51,9 +49,9 @@ class ForbiddenStringsSniff implements Sniff {
      */
     public function process(File $phpcsFile, $stackPtr) {
         // Delegate the processing to specialised methods.
-        $this->process_sql_as_keyword($phpcsFile, $stackPtr);
-        $this->process_regexp_separator_e($phpcsFile, $stackPtr);
-        $this->process_string_with_backticks($phpcsFile, $stackPtr);
+        $this->processSqlAsKeyword($phpcsFile, $stackPtr);
+        $this->processRegexpSeparatorE($phpcsFile, $stackPtr);
+        $this->processStringWithBackticks($phpcsFile, $stackPtr);
     }
 
     /**
@@ -64,7 +62,7 @@ class ForbiddenStringsSniff implements Sniff {
      *
      * @return void
      */
-    protected function process_sql_as_keyword(File $phpcsFile, $stackPtr) {
+    protected function processSqlAsKeyword(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], "'\"");
@@ -82,7 +80,7 @@ class ForbiddenStringsSniff implements Sniff {
      *
      * @return void
      */
-    protected function process_regexp_separator_e(File $phpcsFile, $stackPtr) {
+    protected function processRegexpSeparatorE(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], " '\"\t\n");
@@ -113,28 +111,21 @@ class ForbiddenStringsSniff implements Sniff {
      *
      * @return void
      */
-    protected function process_string_with_backticks(File $phpcsFile, $stackPtr) {
+    protected function processStringWithBackticks(File $phpcsFile, $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $token = $tokens[$stackPtr];
         $text = trim($token['content'], "'\"");
         if (strpos($text, '`') !== false) { //phpcs:ignore moodle.Strings.ForbiddenStrings.Found
-
             // Exception. lang strings ending with _desc or _help can
             // contain backticks as they are correct Markdown formatting.
             // Look for previous string.
-            $prevString = $phpcsFile->findPrevious(
-                T_CONSTANT_ENCAPSED_STRING,
-                ($stackPtr - 1));
+            $prevString = $phpcsFile->findPrevious(T_CONSTANT_ENCAPSED_STRING, ($stackPtr - 1));
             if ($prevString) {
                 $prevtext = trim($tokens[$prevString]['content'], "'\"");
                 // Verify it matches _desc|_help.
                 if (preg_match('/(_desc|_help)$/', $prevtext)) {
                     // Verify it's an $string array element.
-                    $prevToken = $phpcsFile->findPrevious(
-                        T_OPEN_SQUARE_BRACKET,
-                        ($prevString - 1),
-                        null,
-                        true);
+                    $prevToken = $phpcsFile->findPrevious(T_OPEN_SQUARE_BRACKET, ($prevString - 1), null, true);
                     if ($prevToken) {
                         if ($tokens[$prevToken]['code'] === T_VARIABLE && $tokens[$prevToken]['content'] === '$string') {
                             // Confirmed we are in a valid lang string using Markdown, skip any warning.

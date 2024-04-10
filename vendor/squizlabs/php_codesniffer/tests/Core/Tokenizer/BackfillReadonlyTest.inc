@@ -130,13 +130,26 @@ class ReadonlyWithDisjunctiveNormalForm
     public function __construct(
         /* testReadonlyConstructorPropertyPromotionWithDNF */
         private readonly (B&C)|A $b1,
-        /* testReadonlyConstructorPropertyPromotionWithDNFAndRefence */
+        /* testReadonlyConstructorPropertyPromotionWithDNFAndReference */
         readonly (B&C)|A &$b2,
     ) {}
 
     /* testReadonlyUsedAsMethodNameWithDNFParam */
     public function readonly (A&B $param): void {}
 }
+
+/* testReadonlyAnonClassWithParens */
+$anon = new readonly class() {};
+
+/* testReadonlyAnonClassWithoutParens */
+$anon = new Readonly class {};
+
+/* testReadonlyAnonClassWithCommentsAndWhitespace */
+$anon = new
+// comment
+READONLY
+// phpcs:ignore Stnd.Cat.Sniff
+class {};
 
 /* testParseErrorLiveCoding */
 // This must be the last test in the file.

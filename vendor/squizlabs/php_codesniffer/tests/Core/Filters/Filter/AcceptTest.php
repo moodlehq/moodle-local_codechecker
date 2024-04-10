@@ -10,9 +10,9 @@
 
 namespace PHP_CodeSniffer\Tests\Core\Filters\Filter;
 
-use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Filters\Filter;
 use PHP_CodeSniffer\Ruleset;
+use PHP_CodeSniffer\Tests\ConfigDouble;
 use PHP_CodeSniffer\Tests\Core\Filters\AbstractFilterTestCase;
 use RecursiveArrayIterator;
 
@@ -21,7 +21,7 @@ use RecursiveArrayIterator;
  *
  * @covers \PHP_CodeSniffer\Filters\Filter
  */
-class AcceptTest extends AbstractFilterTestCase
+final class AcceptTest extends AbstractFilterTestCase
 {
 
 
@@ -35,7 +35,7 @@ class AcceptTest extends AbstractFilterTestCase
     public static function initializeConfigAndRuleset()
     {
         $standard      = __DIR__.'/'.basename(__FILE__, '.php').'.xml';
-        self::$config  = new Config(["--standard=$standard", '--ignore=*/somethingelse/*', '--report-width=80']);
+        self::$config  = new ConfigDouble(["--standard=$standard", '--ignore=*/somethingelse/*']);
         self::$ruleset = new Ruleset(self::$config);
 
     }//end initializeConfigAndRuleset()

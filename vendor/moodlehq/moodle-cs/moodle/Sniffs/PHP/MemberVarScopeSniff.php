@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,32 +13,28 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Verifies that class members have scope modifiers. Created by sam marshall,
  * based on a sniff by Greg Sherwood and Marc McIntyre.
  *
- * @package   local_codechecker
  * @author    Greg Sherwood <gsherwood@squiz.net>
  * @author    Marc McIntyre <mmcintyre@squiz.net>
  * @author    sam marshall <s.marshall@open.ac.uk>
  * @copyright 2006 Squiz Pty Ltd (ABN 77 084 670 600)
  * @copyright 2011 The Open University
- * @license   http://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
+ * @license   https://matrix.squiz.net/developer/tools/php_cs/licence BSD Licence
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHP;
-
-// phpcs:disable moodle.NamingConventions
 
 use PHP_CodeSniffer\Sniffs\AbstractVariableSniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 
-class MemberVarScopeSniff
-        extends AbstractVariableSniff {
-
+class MemberVarScopeSniff extends AbstractVariableSniff
+{
     /**
      * Processes the function tokens within the class.
      *
@@ -54,7 +51,7 @@ class MemberVarScopeSniff
 
         if ($modifier === false || $modifier < $semicolon) {
             $error = 'Scope modifier not specified for member variable "%s"';
-            $data  = array($tokens[$stackptr]['content']);
+            $data  = [$tokens[$stackptr]['content']];
             $file->addError($error, $stackptr, 'Missing', $data);
         }
     }
