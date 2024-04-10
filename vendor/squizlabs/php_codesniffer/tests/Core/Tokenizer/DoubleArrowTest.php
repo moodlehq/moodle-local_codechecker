@@ -11,9 +11,7 @@
 
 namespace PHP_CodeSniffer\Tests\Core\Tokenizer;
 
-use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
-
-class DoubleArrowTest extends AbstractMethodUnitTest
+final class DoubleArrowTest extends AbstractTokenizerTestCase
 {
 
 
@@ -29,7 +27,7 @@ class DoubleArrowTest extends AbstractMethodUnitTest
      */
     public function testDoubleArrow($testMarker)
     {
-        $tokens = self::$phpcsFile->getTokens();
+        $tokens = $this->phpcsFile->getTokens();
 
         $token      = $this->getTargetToken($testMarker, [T_DOUBLE_ARROW, T_MATCH_ARROW, T_FN_ARROW]);
         $tokenArray = $tokens[$token];
@@ -45,9 +43,9 @@ class DoubleArrowTest extends AbstractMethodUnitTest
      *
      * @see testDoubleArrow()
      *
-     * @return array
+     * @return array<string, array<string>>
      */
-    public function dataDoubleArrow()
+    public static function dataDoubleArrow()
     {
         return [
             'simple_long_array'                          => ['/* testLongArrayArrowSimple */'],
@@ -114,7 +112,7 @@ class DoubleArrowTest extends AbstractMethodUnitTest
      */
     public function testMatchArrow($testMarker)
     {
-        $tokens = self::$phpcsFile->getTokens();
+        $tokens = $this->phpcsFile->getTokens();
 
         $token      = $this->getTargetToken($testMarker, [T_DOUBLE_ARROW, T_MATCH_ARROW, T_FN_ARROW]);
         $tokenArray = $tokens[$token];
@@ -130,9 +128,9 @@ class DoubleArrowTest extends AbstractMethodUnitTest
      *
      * @see testMatchArrow()
      *
-     * @return array
+     * @return array<string, array<string>>
      */
-    public function dataMatchArrow()
+    public static function dataMatchArrow()
     {
         return [
             'single_case'                             => ['/* testMatchArrowSimpleSingleCase */'],
@@ -201,7 +199,7 @@ class DoubleArrowTest extends AbstractMethodUnitTest
      */
     public function testFnArrow($testMarker)
     {
-        $tokens = self::$phpcsFile->getTokens();
+        $tokens = $this->phpcsFile->getTokens();
 
         $token      = $this->getTargetToken($testMarker, [T_DOUBLE_ARROW, T_MATCH_ARROW, T_FN_ARROW]);
         $tokenArray = $tokens[$token];
@@ -217,9 +215,9 @@ class DoubleArrowTest extends AbstractMethodUnitTest
      *
      * @see testFnArrow()
      *
-     * @return array
+     * @return array<string, array<string>>
      */
-    public function dataFnArrow()
+    public static function dataFnArrow()
     {
         return [
             'simple_fn'                             => ['/* testFnArrowSimple */'],

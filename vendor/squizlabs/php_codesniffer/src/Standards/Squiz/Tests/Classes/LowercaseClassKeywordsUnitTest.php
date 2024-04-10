@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Squiz\Sniffs\Classes\LowercaseClassKeywordsSniff
  */
-class LowercaseClassKeywordsUnitTest extends AbstractSniffUnitTest
+final class LowercaseClassKeywordsUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -40,6 +40,7 @@ class LowercaseClassKeywordsUnitTest extends AbstractSniffUnitTest
             10 => 1,
             11 => 1,
             14 => 1,
+            16 => 1,
         ];
 
         return $errors;

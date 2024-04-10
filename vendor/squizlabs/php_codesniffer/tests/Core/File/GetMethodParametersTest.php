@@ -18,7 +18,7 @@ use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
  *
  * @covers \PHP_CodeSniffer\Files\File::getMethodParameters
  */
-class GetMethodParametersTest extends AbstractMethodUnitTest
+final class GetMethodParametersTest extends AbstractMethodUnitTest
 {
 
 
@@ -143,11 +143,15 @@ class GetMethodParametersTest extends AbstractMethodUnitTest
     public static function dataNoParams()
     {
         return [
-            'FunctionNoParams'   => ['/* testFunctionNoParams */'],
-            'ClosureNoParams'    => ['/* testClosureNoParams */'],
+            'FunctionNoParams'   => [
+                'commentString' => '/* testFunctionNoParams */',
+            ],
+            'ClosureNoParams'    => [
+                'commentString' => '/* testClosureNoParams */',
+            ],
             'ClosureUseNoParams' => [
-                '/* testClosureUseNoParams */',
-                T_USE,
+                'commentString'   => '/* testClosureUseNoParams */',
+                'targetTokenType' => T_USE,
             ],
         ];
 

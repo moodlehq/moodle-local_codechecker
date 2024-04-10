@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
  *
  * @covers \PHP_CodeSniffer\Files\File::getClassProperties
  */
-class GetClassPropertiesTest extends AbstractMethodUnitTest
+final class GetClassPropertiesTest extends AbstractMethodUnitTest
 {
 
 
@@ -47,20 +47,20 @@ class GetClassPropertiesTest extends AbstractMethodUnitTest
      *
      * @return array<string, array<string, string|int>>
      */
-    public function dataNotAClassException()
+    public static function dataNotAClassException()
     {
         return [
             'interface'  => [
                 'testMarker' => '/* testNotAClass */',
-                'tokenType'  => \T_INTERFACE,
+                'tokenType'  => T_INTERFACE,
             ],
             'anon-class' => [
                 'testMarker' => '/* testAnonClass */',
-                'tokenType'  => \T_ANON_CLASS,
+                'tokenType'  => T_ANON_CLASS,
             ],
             'enum'       => [
                 'testMarker' => '/* testEnum */',
-                'tokenType'  => \T_ENUM,
+                'tokenType'  => T_ENUM,
             ],
         ];
 
@@ -79,7 +79,7 @@ class GetClassPropertiesTest extends AbstractMethodUnitTest
      */
     public function testGetClassProperties($testMarker, $expected)
     {
-        $class  = $this->getTargetToken($testMarker, \T_CLASS);
+        $class  = $this->getTargetToken($testMarker, T_CLASS);
         $result = self::$phpcsFile->getClassProperties($class);
         $this->assertSame($expected, $result);
 
@@ -93,7 +93,7 @@ class GetClassPropertiesTest extends AbstractMethodUnitTest
      *
      * @return array<string, array<string, string|array<string, bool|int>>>
      */
-    public function dataGetClassProperties()
+    public static function dataGetClassProperties()
     {
         return [
             'no-properties'               => [

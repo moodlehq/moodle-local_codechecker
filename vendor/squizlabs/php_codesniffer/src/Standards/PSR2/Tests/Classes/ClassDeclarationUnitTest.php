@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\PSR2\Sniffs\Classes\ClassDeclarationSniff
  */
-class ClassDeclarationUnitTest extends AbstractSniffUnitTest
+final class ClassDeclarationUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -71,6 +71,11 @@ class ClassDeclarationUnitTest extends AbstractSniffUnitTest
             244 => 1,
             248 => 1,
             258 => 1,
+            263 => 1,
+            268 => 1,
+            273 => 1,
+            276 => 1,
+            282 => 1,
         ];
 
     }//end getErrorList()

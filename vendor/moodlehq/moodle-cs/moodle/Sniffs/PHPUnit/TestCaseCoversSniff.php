@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,11 +13,9 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHPUnit;
-
-// phpcs:disable moodle.NamingConventions
 
 use MoodleHQ\MoodleCS\moodle\Util\MoodleUtil;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -27,17 +26,16 @@ use PHPCSUtils\Utils\ObjectDeclarations;
 /**
  * Checks that a test file has the @coversxxx annotations properly defined.
  *
- * @package    local_codechecker
  * @copyright  2022 onwards Eloy Lafuente (stronk7) {@link https://stronk7.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class TestCaseCoversSniff implements Sniff {
-
+class TestCaseCoversSniff implements Sniff
+{
     /**
      * Register for open tag (only process once per file).
      */
     public function register() {
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
     }
 
     /**
@@ -131,10 +129,18 @@ class TestCaseCoversSniff implements Sniff {
 
             // Both @covers and @coversNothing, that's a mistake. 2 errors.
             if ($classCovers && $classCoversNothing) {
-                $file->addError('Class %s has both @covers and @coversNothing tags, good contradiction',
-                    $classCovers, 'ContradictoryClass', [$class]);
-                $file->addError('Class %s has both @covers and @coversNothing tags, good contradiction',
-                    $classCoversNothing, 'ContradictoryClass', [$class]);
+                $file->addError(
+                    'Class %s has both @covers and @coversNothing tags, good contradiction',
+                    $classCovers,
+                    'ContradictoryClass',
+                    [$class]
+                );
+                $file->addError(
+                    'Class %s has both @covers and @coversNothing tags, good contradiction',
+                    $classCoversNothing,
+                    'ContradictoryClass',
+                    [$class]
+                );
             }
 
             // Iterate over all the methods in the class.
@@ -172,8 +178,12 @@ class TestCaseCoversSniff implements Sniff {
                                     break;
                                 case '@coversDefaultClass':
                                     // Not allowed in methods.
-                                    $file->addError('Method %s() has @coversDefaultClass tag, only allowed in classes',
-                                        $docPointer, 'DefaultClassNotAllowed', [$method]);
+                                    $file->addError(
+                                        'Method %s() has @coversDefaultClass tag, only allowed in classes',
+                                        $docPointer,
+                                        'DefaultClassNotAllowed',
+                                        [$method]
+                                    );
                                     break;
                             }
                         }
@@ -182,30 +192,54 @@ class TestCaseCoversSniff implements Sniff {
 
                 // No @covers or @coversNothing at any level, that's a missing one.
                 if (!$classCovers && !$classCoversNothing && !$methodCovers && !$methodCoversNothing) {
-                    $file->addWarning('Test method %s() is missing any coverage information, own or at class level',
-                        $mStart, 'Missing', [$method]);
+                    $file->addWarning(
+                        'Test method %s() is missing any coverage information, own or at class level',
+                        $mStart,
+                        'Missing',
+                        [$method]
+                    );
                 }
 
                 // Both @covers and @coversNothing, that's a mistake. 2 errors.
                 if ($methodCovers && $methodCoversNothing) {
-                    $file->addError('Method %s() has both @covers and @coversNothing tags, good contradiction',
-                        $methodCovers, 'ContradictoryMethod', [$method]);
-                    $file->addError('Method %s() has both @covers and @coversNothing tags, good contradiction',
-                        $methodCoversNothing, 'ContradictoryMethod', [$method]);
+                    $file->addError(
+                        'Method %s() has both @covers and @coversNothing tags, good contradiction',
+                        $methodCovers,
+                        'ContradictoryMethod',
+                        [$method]
+                    );
+                    $file->addError(
+                        'Method %s() has both @covers and @coversNothing tags, good contradiction',
+                        $methodCoversNothing,
+                        'ContradictoryMethod',
+                        [$method]
+                    );
                 }
 
                 // Found @coversNothing at class, and @covers at method, strange. Warning.
                 if ($classCoversNothing && $methodCovers) {
-                    $file->addWarning('Class %s has @coversNothing, but there are methods covering stuff',
-                        $classCoversNothing, 'ContradictoryMixed', [$class]);
-                    $file->addWarning('Test method %s() is covering stuff, but class has @coversNothing',
-                        $methodCovers, 'ContradictoryMixed', [$method]);
+                    $file->addWarning(
+                        'Class %s has @coversNothing, but there are methods covering stuff',
+                        $classCoversNothing,
+                        'ContradictoryMixed',
+                        [$class]
+                    );
+                    $file->addWarning(
+                        'Test method %s() is covering stuff, but class has @coversNothing',
+                        $methodCovers,
+                        'ContradictoryMixed',
+                        [$method]
+                    );
                 }
 
                 // Found @coversNothing at class and method, redundant. Warning.
                 if ($classCoversNothing && $methodCoversNothing) {
-                    $file->addWarning('Test method %s() has @coversNothing, but class also has it, redundant',
-                        $methodCoversNothing, 'Redundant', [$method]);
+                    $file->addWarning(
+                        'Test method %s() has @coversNothing, but class also has it, redundant',
+                        $methodCoversNothing,
+                        'Redundant',
+                        [$method]
+                    );
                 }
 
                 // Advance until the end of the method, if possible, to find the next one quicker.
@@ -228,19 +262,31 @@ class TestCaseCoversSniff implements Sniff {
 
         if ($tag === '@coversNothing') {
             // Check that there isn't whitespace and string.
-            if ($tokens[$pointer + 1]['code'] === T_DOC_COMMENT_WHITESPACE &&
-                    $tokens[$pointer + 2]['code'] === T_DOC_COMMENT_STRING) {
-                $file->addError('Wrong %s annotation, it must be empty',
-                    $pointer, 'NotEmpty', [$tag]);
+            if (
+                $tokens[$pointer + 1]['code'] === T_DOC_COMMENT_WHITESPACE &&
+                $tokens[$pointer + 2]['code'] === T_DOC_COMMENT_STRING
+            ) {
+                $file->addError(
+                    'Wrong %s annotation, it must be empty',
+                    $pointer,
+                    'NotEmpty',
+                    [$tag]
+                );
             }
         }
 
         if ($tag === '@covers' || $tag === '@coversDefaultClass') {
             // Check that there is whitespace and string.
-            if ($tokens[$pointer + 1]['code'] !== T_DOC_COMMENT_WHITESPACE ||
-                    $tokens[$pointer + 2]['code'] !== T_DOC_COMMENT_STRING) {
-                $file->addError('Wrong %s annotation, it must contain some value',
-                    $pointer, 'Empty', [$tag]);
+            if (
+                $tokens[$pointer + 1]['code'] !== T_DOC_COMMENT_WHITESPACE ||
+                $tokens[$pointer + 2]['code'] !== T_DOC_COMMENT_STRING
+            ) {
+                $file->addError(
+                    'Wrong %s annotation, it must contain some value',
+                    $pointer,
+                    'Empty',
+                    [$tag]
+                );
                 // No value, nothing else to check.
                 return;
             }
@@ -249,22 +295,36 @@ class TestCaseCoversSniff implements Sniff {
         if ($tag === '@coversDefaultClass') {
             // Check that value begins with \ (FQCN).
             if (strpos($tokens[$pointer + 2]['content'], '\\') !== 0) {
-                $file->addError('Wrong %s annotation, it must be FQCN (\\ prefixed)',
-                    $pointer, 'NoFQCN', [$tag]);
+                $file->addError(
+                    'Wrong %s annotation, it must be FQCN (\\ prefixed)',
+                    $pointer,
+                    'NoFQCN',
+                    [$tag]
+                );
             }
             // Check that value does not contain :: (method).
             if (strpos($tokens[$pointer + 2]['content'], '::') !== false) {
-                $file->addError('Wrong %s annotation, cannot point to a method (contains ::)',
-                    $pointer, 'WrongMethod', [$tag]);
+                $file->addError(
+                    'Wrong %s annotation, cannot point to a method (contains ::)',
+                    $pointer,
+                    'WrongMethod',
+                    [$tag]
+                );
             }
         }
 
         if ($tag === '@covers') {
             // Check value begins with \ (FQCN) or :: (method).
-            if (strpos($tokens[$pointer + 2]['content'], '\\') !== 0 &&
-                    strpos($tokens[$pointer + 2]['content'], '::') !== 0) {
-                $file->addError('Wrong %s annotation, it must be FQCN (\\ prefixed) or point to method (:: prefixed)',
-                    $pointer, 'NoFQCNOrMethod', [$tag]);
+            if (
+                strpos($tokens[$pointer + 2]['content'], '\\') !== 0 &&
+                strpos($tokens[$pointer + 2]['content'], '::') !== 0
+            ) {
+                $file->addError(
+                    'Wrong %s annotation, it must be FQCN (\\ prefixed) or point to method (:: prefixed)',
+                    $pointer,
+                    'NoFQCNOrMethod',
+                    [$tag]
+                );
             }
         }
     }

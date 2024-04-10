@@ -112,6 +112,10 @@
     -->
     <rule ref="PSR12.Files.ImportStatement.LeadingSlash"/>
 
+    <!-- PSR12 function return types (whitespace handling) -->
+    <rule ref="PSR12.Functions.ReturnTypeDeclaration"/>
+    <rule ref="PSR12.Functions.NullableTypeDeclaration"/>
+
     <!-- Let's add the complete PHPCompatibility standard -->
     <rule ref="PHPCompatibility" />
 

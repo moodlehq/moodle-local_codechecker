@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,26 +13,24 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that each file contains the standard GPL comment.
  *
- * @package    local_codechecker
  * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Files;
-
-// phpcs:disable moodle.NamingConventions
 
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 
-class BoilerplateCommentSniff implements Sniff {
-    protected static $comment = array(
+class BoilerplateCommentSniff implements Sniff
+{
+    protected static $comment = [
         "// This file is part of",
         "//",
         "// Moodle is free software: you can redistribute it and/or modify",
@@ -46,9 +45,9 @@ class BoilerplateCommentSniff implements Sniff {
         "//",
         "// You should have received a copy of the GNU General Public License",
         "// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.",
-    );
+    ];
     public function register() {
-        return array(T_OPEN_TAG);
+        return [T_OPEN_TAG];
     }
 
     public function process(File $file, $stackptr) {
@@ -75,7 +74,7 @@ class BoilerplateCommentSniff implements Sniff {
         // Note that the opening PHP tag includes one newline.
         $numnewlines = 0;
         for ($i = $stackptr + 1; $i <= $stackptr + 5; ++$i) {
-            if ($tokens[$i]['code'] == T_WHITESPACE && $tokens[$i]['content'] == "\n") {
+            if (isset($tokens[$i]) && $tokens[$i]['code'] == T_WHITESPACE && $tokens[$i]['content'] == "\n") {
                 $numnewlines++;
             } else {
                 break;
@@ -83,8 +82,11 @@ class BoilerplateCommentSniff implements Sniff {
         }
 
         if ($numnewlines > 0) {
-            $file->addError('The opening <?php tag must be followed by exactly one newline.',
-                $stackptr + 1, 'WrongWhitespace');
+            $file->addError(
+                'The opening <?php tag must be followed by exactly one newline.',
+                $stackptr + 1,
+                'WrongWhitespace'
+            );
             return;
         }
         $offset = $stackptr + $numnewlines + 1;
@@ -105,11 +107,16 @@ class BoilerplateCommentSniff implements Sniff {
                 '/^' . preg_quote($line, '/') . '/'
             );
 
-            if ($tokens[$tokenptr]['code'] != T_COMMENT ||
-                    !preg_match($regex, $tokens[$tokenptr]['content'])) {
-
-                $file->addError('Line %s of the opening comment must start "%s".',
-                        $tokenptr, 'WrongLine', array($lineindex + 1, $line));
+            if (
+                $tokens[$tokenptr]['code'] != T_COMMENT ||
+                !preg_match($regex, $tokens[$tokenptr]['content'])
+            ) {
+                $file->addError(
+                    'Line %s of the opening comment must start "%s".',
+                    $tokenptr,
+                    'WrongLine',
+                    [$lineindex + 1, $line]
+                );
             }
         }
     }

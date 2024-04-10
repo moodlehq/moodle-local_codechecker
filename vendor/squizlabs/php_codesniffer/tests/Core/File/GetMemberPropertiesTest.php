@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Core\AbstractMethodUnitTest;
  *
  * @covers \PHP_CodeSniffer\Files\File::getMemberProperties
  */
-class GetMemberPropertiesTest extends AbstractMethodUnitTest
+final class GetMemberPropertiesTest extends AbstractMethodUnitTest
 {
 
 
@@ -60,7 +60,7 @@ class GetMemberPropertiesTest extends AbstractMethodUnitTest
      *
      * @return array<string, array<string|array<string, string|int|bool>>>
      */
-    public function dataGetMemberProperties()
+    public static function dataGetMemberProperties()
     {
         return [
             'var-modifier'                                                 => [
@@ -1106,7 +1106,7 @@ class GetMemberPropertiesTest extends AbstractMethodUnitTest
      *
      * @return array<string, array<string>>
      */
-    public function dataNotClassProperty()
+    public static function dataNotClassProperty()
     {
         return [
             'method parameter'                                       => ['/* testMethodParam */'],

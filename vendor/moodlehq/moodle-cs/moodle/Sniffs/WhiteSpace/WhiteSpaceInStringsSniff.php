@@ -1,5 +1,6 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,14 +13,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Checks that each string does not have extra whitespace at end of line
  *
- * @package    local_codechecker
  * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\WhiteSpace;
@@ -27,20 +27,20 @@ namespace MoodleHQ\MoodleCS\moodle\Sniffs\WhiteSpace;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
-class WhiteSpaceInStringsSniff implements Sniff {
-
+class WhiteSpaceInStringsSniff implements Sniff
+{
     /**
      * Returns an array of tokens this test wants to listen for.
      *
      * @return array
      */
     public function register() {
-        return array(
-        T_CONSTANT_ENCAPSED_STRING,
-        T_DOUBLE_QUOTED_STRING,
-        T_HEREDOC,
-        T_WHITESPACE
-        );
+        return [
+            T_CONSTANT_ENCAPSED_STRING,
+            T_DOUBLE_QUOTED_STRING,
+            T_HEREDOC,
+            T_WHITESPACE,
+        ];
     }
 
     /**

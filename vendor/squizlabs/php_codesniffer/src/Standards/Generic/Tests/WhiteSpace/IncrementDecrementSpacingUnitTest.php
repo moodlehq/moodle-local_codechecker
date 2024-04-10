@@ -16,7 +16,7 @@ use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
  *
  * @covers \PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\IncrementDecrementSpacingSniff
  */
-class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest
+final class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest
 {
 
 
@@ -53,6 +53,8 @@ class IncrementDecrementSpacingUnitTest extends AbstractSniffUnitTest
             $errors[31] = 1;
             $errors[34] = 1;
             $errors[37] = 1;
+            $errors[40] = 1;
+            $errors[42] = 1;
 
             return $errors;
 

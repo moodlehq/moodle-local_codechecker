@@ -22,7 +22,8 @@ Feature: Codechecker UI works as expected
       | local/codechecker/tests/                           | Files found: 11                    | Invalid path   |
       | local/codechecker/tests/locallib_test.php          | Well done!                         | Invalid path   |
       | local/codechecker/tests/fixtures/behat/problem.php | Files found: 1                     | Invalid path   |
-      | local/codechecker/tests/fixtures/behat/problem.php | Total: 2 error(s) and 1 warning(s) | Well done!     |
+      | local/codechecker/tests/fixtures/behat/problem.php | Total: 5 error(s) and 1 warning(s) | Well done!     |
+      | local/codechecker/tests/fixtures/behat/problem.php | Missing docblock for file problem  | Well done!     |
       | local/codechecker/tests/fixtures/behat/problem.php | Inline comments must end           | Well done!     |
       | local/codechecker/tests/fixtures/behat/problem.php | Expected MOODLE_INTERNAL check     | Well done!     |
 

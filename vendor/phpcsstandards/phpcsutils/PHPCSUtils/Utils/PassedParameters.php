@@ -170,7 +170,7 @@ final class PassedParameters
      *                                                  Efficiency tweak for when this has already been established,
      *                                                  Use with EXTREME care.
      *
-     * @return array<int, array<string, int|string>>
+     * @return array<int|string, array<string, int|string>>
      *               A multi-dimentional array with information on each parameter/array item.
      *               The information gathered about each parameter/array item is in the following format:
      *               ```php
@@ -367,7 +367,7 @@ final class PassedParameters
      * @param int                         $stackPtr    The position of function call name,
      *                                                 language construct or array open token.
      * @param int                         $paramOffset The 1-based index position of the parameter to retrieve.
-     * @param string|string[]             $paramNames  Optional. Either the name of the target parameter
+     * @param string|array<string>        $paramNames  Optional. Either the name of the target parameter
      *                                                 to retrieve as a string or an array of names for the
      *                                                 same target parameter.
      *                                                 Only relevant for function calls.
@@ -453,17 +453,17 @@ final class PassedParameters
      *
      * @since 1.0.0
      *
-     * @param array<int, array<string, int|string>> $parameters  The output of a previous call to
-     *                                                           {@see PassedParameters::getParameters()}.
-     * @param int                                   $paramOffset The 1-based index position of the parameter
-     *                                                           to retrieve.
-     * @param string|string[]                       $paramNames  Either the name of the target parameter to retrieve
-     *                                                           as a string or an array of names for the same target
-     *                                                           parameter.
-     *                                                           An array of names is supported to allow for functions
-     *                                                           for which the parameter names have undergone name
-     *                                                           changes over time.
-     *                                                           The name will take precedence over the offset.
+     * @param array<int|string, array<string, int|string>> $parameters  The output of a previous call to
+     *                                                                  {@see PassedParameters::getParameters()}.
+     * @param int                                          $paramOffset The 1-based index position of the parameter
+     *                                                                  to retrieve.
+     * @param string|array<string>                         $paramNames  Either the name of the target parameter to retrieve
+     *                                                                  as a string or an array of names for the same target
+     *                                                                  parameter.
+     *                                                                  An array of names is supported to allow for functions
+     *                                                                  for which the parameter names have undergone name
+     *                                                                  changes over time.
+     *                                                                  The name will take precedence over the offset.
      *
      * @return array<string, int|string>|false Array with information on the parameter at the specified offset,
      *                                         or with the specified name.
