@@ -17,6 +17,7 @@
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\Commenting;
 
+use MoodleHQ\MoodleCS\moodle\Util\Attributes;
 use MoodleHQ\MoodleCS\moodle\Util\Docblocks;
 use MoodleHQ\MoodleCS\moodle\Util\MoodleUtil;
 use MoodleHQ\MoodleCS\moodle\Util\TokenUtil;
@@ -183,6 +184,17 @@ class MissingDocblockSniff implements Sniff
 
         foreach ($missingDocblocks as $typePtr => $extendsOrImplements) {
             $token = $tokens[$typePtr];
+            if ($extendsOrImplements) {
+                $attributes = Attributes::getAttributePointers($phpcsFile, $typePtr);
+                foreach ($attributes as $attributePtr) {
+                    $attribute = Attributes::getAttributeProperties($phpcsFile, $attributePtr);
+                    if ($attribute['attribute_name'] === '\Override') {
+                        // Skip methods that are marked as overrides.
+                        continue 2;
+                    }
+                }
+            }
+
             $objectName = TokenUtil::getObjectName($phpcsFile, $typePtr);
             $objectType = TokenUtil::getObjectType($phpcsFile, $typePtr);
 
@@ -195,8 +207,6 @@ class MissingDocblockSniff implements Sniff
                         [$objectType, $objectName]
                     );
                 }
-            } elseif ($extendsOrImplements) {
-                $phpcsFile->addWarning('Missing docblock for %s %s', $typePtr, 'Missing', [$objectType, $objectName]);
             } else {
                 $phpcsFile->addError('Missing docblock for %s %s', $typePtr, 'Missing', [$objectType, $objectName]);
             }

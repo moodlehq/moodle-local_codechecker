@@ -1188,6 +1188,136 @@ final class GetMethodPropertiesTest extends AbstractMethodUnitTest
 
 
     /**
+     * Verify recognition of PHP 8.2 DNF return type declaration.
+     *
+     * @return void
+     */
+    public function testPHP82DNFType()
+    {
+        // Offsets are relative to the T_FUNCTION token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => 'bool|(Foo&Bar)|string',
+            'return_type_token'     => 8,
+            'return_type_end_token' => 16,
+            'nullable_return_type'  => false,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testPHP82DNFType()
+
+
+    /**
+     * Verify recognition of PHP 8.2 DNF return type declaration on an abstract method.
+     *
+     * @return void
+     */
+    public function testPHP82DNFTypeAbstractMethod()
+    {
+        // Offsets are relative to the T_FUNCTION token.
+        $expected = [
+            'scope'                 => 'protected',
+            'scope_specified'       => true,
+            'return_type'           => 'float|(Foo&Bar)',
+            'return_type_token'     => 8,
+            'return_type_end_token' => 14,
+            'nullable_return_type'  => false,
+            'is_abstract'           => true,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => false,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testPHP82DNFTypeAbstractMethod()
+
+
+    /**
+     * Verify recognition of PHP 8.2 DNF return type declaration with illegal nullability.
+     *
+     * @return void
+     */
+    public function testPHP82DNFTypeIllegalNullable()
+    {
+        // Offsets are relative to the T_FUNCTION token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => '?(A&\Pck\B)|bool',
+            'return_type_token'     => 8,
+            'return_type_end_token' => 17,
+            'nullable_return_type'  => true,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testPHP82DNFTypeIllegalNullable()
+
+
+    /**
+     * Verify recognition of PHP 8.2 DNF return type declaration on a closure.
+     *
+     * @return void
+     */
+    public function testPHP82DNFTypeClosure()
+    {
+        // Offsets are relative to the T_CLOSURE token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => 'object|(namespace\Foo&Countable)',
+            'return_type_token'     => 6,
+            'return_type_end_token' => 14,
+            'nullable_return_type'  => false,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testPHP82DNFTypeClosure()
+
+
+    /**
+     * Verify recognition of PHP 8.2 DNF return type declaration on an arrow function.
+     *
+     * @return void
+     */
+    public function testPHP82DNFTypeFn()
+    {
+        // Offsets are relative to the T_FN token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => 'null|(Partially\Qualified&Traversable)|void',
+            'return_type_token'     => 6,
+            'return_type_end_token' => 16,
+            'nullable_return_type'  => false,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testPHP82DNFTypeFn()
+
+
+    /**
      * Test for incorrect tokenization of array return type declarations in PHPCS < 2.8.0.
      *
      * @link https://github.com/squizlabs/PHP_CodeSniffer/pull/1264
@@ -1295,6 +1425,111 @@ final class GetMethodPropertiesTest extends AbstractMethodUnitTest
         $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
 
     }//end testFunctionDeclarationNestedInTernaryPHPCS2975()
+
+
+    /**
+     * Test handling of closure declarations with a use variable import without a return type declaration.
+     *
+     * @return void
+     */
+    public function testClosureWithUseNoReturnType()
+    {
+        // Offsets are relative to the T_CLOSURE token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => '',
+            'return_type_token'     => false,
+            'return_type_end_token' => false,
+            'nullable_return_type'  => false,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testClosureWithUseNoReturnType()
+
+
+    /**
+     * Test handling of closure declarations with an illegal use variable for a property import (not allowed in PHP)
+     * without a return type declaration.
+     *
+     * @return void
+     */
+    public function testClosureWithUseNoReturnTypeIllegalUseProp()
+    {
+        // Offsets are relative to the T_CLOSURE token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => '',
+            'return_type_token'     => false,
+            'return_type_end_token' => false,
+            'nullable_return_type'  => false,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testClosureWithUseNoReturnTypeIllegalUseProp()
+
+
+    /**
+     * Test handling of closure declarations with a use variable import with a return type declaration.
+     *
+     * @return void
+     */
+    public function testClosureWithUseWithReturnType()
+    {
+        // Offsets are relative to the T_CLOSURE token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => 'Type',
+            'return_type_token'     => 14,
+            'return_type_end_token' => 14,
+            'nullable_return_type'  => false,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testClosureWithUseWithReturnType()
+
+
+    /**
+     * Test handling of closure declarations with a use variable import with a return type declaration.
+     *
+     * @return void
+     */
+    public function testClosureWithUseMultiParamWithReturnType()
+    {
+        // Offsets are relative to the T_CLOSURE token.
+        $expected = [
+            'scope'                 => 'public',
+            'scope_specified'       => false,
+            'return_type'           => '?array',
+            'return_type_token'     => 32,
+            'return_type_end_token' => 32,
+            'nullable_return_type'  => true,
+            'is_abstract'           => false,
+            'is_final'              => false,
+            'is_static'             => false,
+            'has_body'              => true,
+        ];
+
+        $this->getMethodPropertiesTestHelper('/* '.__FUNCTION__.' */', $expected);
+
+    }//end testClosureWithUseMultiParamWithReturnType()
 
 
     /**

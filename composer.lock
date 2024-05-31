@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a04f685b76dc383abef9d8fd22fb316f",
+    "content-hash": "557c6dacc8e1efaa1f0ff81060ceddb6",
     "packages": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -86,25 +86,25 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.4.6",
+            "version": "v3.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "02a279ecbd9431172e8eeee5385d4f6ec57c957b"
+                "reference": "4f1bc63551da69675d9f5d17efbf35a458ca3da8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/02a279ecbd9431172e8eeee5385d4f6ec57c957b",
-                "reference": "02a279ecbd9431172e8eeee5385d4f6ec57c957b",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/4f1bc63551da69675d9f5d17efbf35a458ca3da8",
+                "reference": "4f1bc63551da69675d9f5d17efbf35a458ca3da8",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
                 "ext-json": "*",
                 "php": ">=7.4.0",
-                "phpcompatibility/php-compatibility": "dev-develop#e5cd2e24",
+                "phpcompatibility/php-compatibility": "dev-develop#96072c30",
                 "phpcsstandards/phpcsextra": "^1.2.1",
-                "squizlabs/php_codesniffer": "^3.9.0"
+                "squizlabs/php_codesniffer": "^3.10.1"
             },
             "replace": {
                 "moodlehq/moodle-local_codechecker": "3.1.0"
@@ -152,7 +152,7 @@
                 "source": "https://github.com/moodlehq/moodle-cs",
                 "wiki": "https://github.com/moodlehq/moodle-cs/wiki"
             },
-            "time": "2024-04-03T07:22:20+00:00"
+            "time": "2024-05-31T16:28:39+00:00"
         },
         {
             "name": "phpcompatibility/php-compatibility",
@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCompatibility/PHPCompatibility.git",
-                "reference": "e5cd2e24"
+                "reference": "96072c30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/e5cd2e24",
-                "reference": "e5cd2e24",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/96072c30",
+                "reference": "96072c30",
                 "shasum": ""
             },
             "require": {
@@ -242,7 +242,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-04-08T09:51:59+00:00"
+            "time": "2024-04-30T23:24:59+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",
@@ -324,22 +324,22 @@
         },
         {
             "name": "phpcsstandards/phpcsutils",
-            "version": "1.0.10",
+            "version": "1.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHPCSUtils.git",
-                "reference": "51609a5b89f928e0c463d6df80eb38eff1eaf544"
+                "reference": "87b233b00daf83fb70f40c9a28692be017ea7c6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSUtils/zipball/51609a5b89f928e0c463d6df80eb38eff1eaf544",
-                "reference": "51609a5b89f928e0c463d6df80eb38eff1eaf544",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSUtils/zipball/87b233b00daf83fb70f40c9a28692be017ea7c6c",
+                "reference": "87b233b00daf83fb70f40c9a28692be017ea7c6c",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1 || ^0.5 || ^0.6.2 || ^0.7 || ^1.0",
                 "php": ">=5.4",
-                "squizlabs/php_codesniffer": "^3.9.0 || 4.0.x-dev@dev"
+                "squizlabs/php_codesniffer": "^3.10.0 || 4.0.x-dev@dev"
             },
             "require-dev": {
                 "ext-filter": "*",
@@ -408,20 +408,20 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-03-17T23:44:50+00:00"
+            "time": "2024-05-20T13:34:27+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.9.1",
+            "version": "3.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "267a4405fff1d9c847134db3a3c92f1ab7f77909"
+                "reference": "8f90f7a53ce271935282967f53d0894f8f1ff877"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/267a4405fff1d9c847134db3a3c92f1ab7f77909",
-                "reference": "267a4405fff1d9c847134db3a3c92f1ab7f77909",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/8f90f7a53ce271935282967f53d0894f8f1ff877",
+                "reference": "8f90f7a53ce271935282967f53d0894f8f1ff877",
                 "shasum": ""
             },
             "require": {
@@ -488,7 +488,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-03-31T21:03:09+00:00"
+            "time": "2024-05-22T21:24:41+00:00"
         }
     ],
     "packages-dev": [],

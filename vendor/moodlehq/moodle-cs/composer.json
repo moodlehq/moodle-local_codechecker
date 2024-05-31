@@ -25,9 +25,9 @@
         "php": ">=7.4.0",
         "ext-json": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
-        "squizlabs/php_codesniffer": "^3.9.0",
+        "squizlabs/php_codesniffer": "^3.10.1",
         "phpcsstandards/phpcsextra": "^1.2.1",
-        "phpcompatibility/php-compatibility": "dev-develop#e5cd2e24"
+        "phpcompatibility/php-compatibility": "dev-develop#96072c30"
     },
     "config": {
         "allow-plugins": {
