@@ -32,12 +32,9 @@ To update any component:
 3. Switch to the lowest PHP version supported by the Moodle version required.
 4. Run `composer install` (to install everything).a
 5. Update `thirdpartylibs.xml` to annotate the new versions of the tools.
-6. Remove `vendor/moodlehq/moodle-cs/moodle/Tests`. Note that this step
-   will be removed once https://github.com/moodlehq/moodle-cs/pull/69
-   is released and we update to that version.
-7. Commit changes with details about the tools updated.
-8. Test, test, test.
-9. Optionally, release.
+6. Commit changes with details about the tools updated.
+7. Test, test, test.
+8. Optionally, release.
 
 At some point we may want to make the process above automated, so every time
 that a new moodle-cs package is released, everything above (1-8) happens automatically.

@@ -5,8 +5,8 @@
     "license": "GPL-3.0-or-later",
     "require": {
         "php": ">=7.4",
-        "moodlehq/moodle-cs": "^v3.4.6",
-        "phpcompatibility/php-compatibility": "dev-develop#e5cd2e24"
+        "moodlehq/moodle-cs": "^v3.4.7",
+        "phpcompatibility/php-compatibility": "dev-develop#96072c30"
     },
     "config": {
         "platform": {

@@ -282,3 +282,37 @@ readonly
     class ReadonlyClassWithComment
     {
     }
+
+// Safeguard against fixer conflict when there are namespace relative interface names in extends.
+interface FooBar extends namespace\BarFoo
+{
+}
+
+// Safeguard against fixer conflict when there are namespace relative interface names in a multi-line implements.
+class BarFoo implements
+    namespace\BarFoo
+{
+}
+
+// Safeguard that the sniff ignores comments between interface names in a multiline implements.
+class ClassWithMultiLineImplementsAndIgnoreAnnotation implements
+    SomeInterface,
+    // phpcs:disable Stnd.Cat.Sniff -- For reasons.
+
+    \AnotherInterface
+{
+}
+
+class ClassWithMultiLineImplementsAndComment implements
+    SomeInterface,
+    // Comment.
+
+AnotherInterface
+{
+}
+
+class ClassWithMultiLineImplementsAndCommentOnSameLineAsInterfaceName implements
+    SomeInterface,
+    /* Comment. */ AnotherInterface
+{
+}

@@ -1,16 +1,17 @@
-PHP_CodeSniffer
-=====================================================
+# PHP_CodeSniffer
 
 <div aria-hidden="true">
 
 [![Latest Stable Version](http://poser.pugx.org/phpcsstandards/php_codesniffer/v)](https://github.com/PHPCSStandards/PHP_CodeSniffer/releases)
 [![Validate](https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/validate.yml/badge.svg?branch=master)](https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/validate.yml)
-[![Test](https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/test.yml)
+[![Test](https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/test.yml/badge.svg?branch=master)][GHA-test]
 [![Coverage Status](https://coveralls.io/repos/github/PHPCSStandards/PHP_CodeSniffer/badge.svg?branch=master)](https://coveralls.io/github/PHPCSStandards/PHP_CodeSniffer?branch=master)
 [![License](http://poser.pugx.org/phpcsstandards/php_codesniffer/license)](https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt)
 
 ![Minimum PHP Version](https://img.shields.io/packagist/php-v/squizlabs/php_codesniffer.svg?maxAge=3600)
-[![Tested on PHP 5.4 to 8.3](https://img.shields.io/badge/tested%20on-PHP%205.4%20|%205.5%20|%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3-brightgreen.svg?maxAge=2419200)](https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/test.yml)
+[![Tested on PHP 5.4 to 8.3](https://img.shields.io/badge/tested%20on-PHP%205.4%20|%205.5%20|%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3-brightgreen.svg?maxAge=2419200)][GHA-test]
+
+[GHA-test]: https://github.com/PHPCSStandards/PHP_CodeSniffer/actions/workflows/test.yml
 
 </div>
 
@@ -47,7 +48,7 @@ php phpcbf.phar -h
 ```
 
 These Phars are signed with the official Release key for PHPCS with the
-fingerprint `95DE 904A B800 754A 11D8 0B60 5E6D DE99 8AB7 3B8E`.
+fingerprint `689D AD77 8FF0 8760 E046 228B A978 2203 05CD 5C32`.
 
 ### Composer
 If you use Composer, you can install PHP_CodeSniffer system-wide with the following command:
@@ -71,17 +72,19 @@ You will then be able to run PHP_CodeSniffer from the vendor bin directory:
 ./vendor/bin/phpcs -h
 ./vendor/bin/phpcbf -h
 ```
+
 ### Phive
 If you use Phive, you can install PHP_CodeSniffer as a project tool using the following commands:
 ```bash
-phive install --trust-gpg-keys 95DE904AB800754A11D80B605E6DDE998AB73B8E phpcs
-phive install --trust-gpg-keys 95DE904AB800754A11D80B605E6DDE998AB73B8E phpcbf
+phive install --trust-gpg-keys 689DAD778FF08760E046228BA978220305CD5C32 phpcs
+phive install --trust-gpg-keys 689DAD778FF08760E046228BA978220305CD5C32 phpcbf
 ```
 You will then be able to run PHP_CodeSniffer from the `tools` directory:
 ```bash
 ./tools/phpcs -h
 ./tools/phpcbf -h
 ```
+
 ### Git Clone
 You can also download the PHP_CodeSniffer source and run the `phpcs` and `phpcbf` commands directly from the Git clone:
 ```bash
@@ -90,6 +93,7 @@ cd PHP_CodeSniffer
 php bin/phpcs -h
 php bin/phpcbf -h
 ```
+
 ## Getting Started
 
 The default coding standard used by PHP_CodeSniffer is the PEAR coding standard. To check a file against the PEAR coding standard, simply specify the file's location:

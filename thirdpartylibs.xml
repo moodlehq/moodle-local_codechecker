@@ -3,14 +3,14 @@
     <library>
         <location>vendor/squizlabs/php_codesniffer</location>
         <name>PHP_CodeSniffer</name>
-        <version>3.9.1</version>
+        <version>3.10.1</version>
         <license>BSD</license>
         <licenseversion>3-Clause</licenseversion>
     </library>
     <library>
         <location>vendor/phpcompatibility/php-compatibility</location>
         <name>PHP Compatibility Coding Standard</name>
-        <version>10.0dev (e5cd2e24)</version>
+        <version>10.0dev (96072c30)</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>
@@ -24,14 +24,14 @@
     <library>
         <location>vendor/phpcsstandards/phpcsutils</location>
         <name>A suite of utility functions for use with PHP_CodeSniffer</name>
-        <version>1.0.10</version>
+        <version>1.0.12</version>
         <license>LGPL</license>
         <licenseversion>3</licenseversion>
     </library>
     <library>
         <location>vendor/moodlehq/moodle-cs</location>
         <name>Moodle Coding Style</name>
-        <version>v3.4.6</version>
+        <version>v3.4.7</version>
         <license>GPL</license>
         <licenseversion>3</licenseversion>
     </library>

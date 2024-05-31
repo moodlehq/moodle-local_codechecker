@@ -84,7 +84,7 @@ use ReflectionProperty;
  *      *
  *      * @return array
  *      * /
- *     public function dataMyMethod()
+ *     public static function dataMyMethod()
  *     {
  *         return array(
  *             array('/* testTestCaseDescription * /', false),
