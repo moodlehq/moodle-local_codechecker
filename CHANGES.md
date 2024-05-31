@@ -1,3 +1,11 @@
+Changes in version 5.0.6 (20240531) - Bye, May!
+-----------------------------------------------
+- Bundled dependencies updated:
+  - Moodle CS v3.4.7
+  - PHP Compatibility 96072c30
+  - PHP CodeSniffer 3.10.1
+  - PHPCS Utils 1.0.12
+
 Changes in version 5.0.5 (20240410) - Fools plus 9
 --------------------------------------------------
 - Bundled dependencies updated:
