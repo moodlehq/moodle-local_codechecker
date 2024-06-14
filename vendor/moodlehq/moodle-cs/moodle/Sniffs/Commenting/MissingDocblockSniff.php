@@ -101,7 +101,7 @@ class MissingDocblockSniff implements Sniff
 
             if ($fileblock === null) {
                 $objectName = TokenUtil::getObjectName($phpcsFile, $stackPtr);
-                $phpcsFile->addError('Missing docblock for file %s', $stackPtr, 'Missing', [$objectName]);
+                $phpcsFile->addError('Missing docblock for file %s', $stackPtr, 'File', [$objectName]);
             }
         }
 
@@ -110,7 +110,7 @@ class MissingDocblockSniff implements Sniff
             $objectName = TokenUtil::getObjectName($phpcsFile, $typePtr);
             $objectType = TokenUtil::getObjectType($phpcsFile, $typePtr);
 
-            $phpcsFile->addError('Missing docblock for %s %s', $typePtr, 'Missing', [$objectType, $objectName]);
+            $phpcsFile->addError('Missing docblock for %s %s', $typePtr, ucfirst($objectType), [$objectType, $objectName]);
         }
 
         if ($artifactCount === 1) {
@@ -208,7 +208,7 @@ class MissingDocblockSniff implements Sniff
                     );
                 }
             } else {
-                $phpcsFile->addError('Missing docblock for %s %s', $typePtr, 'Missing', [$objectType, $objectName]);
+                $phpcsFile->addError('Missing docblock for %s %s', $typePtr, ucfirst($objectType), [$objectType, $objectName]);
             }
         }
     }
@@ -255,14 +255,14 @@ class MissingDocblockSniff implements Sniff
                 $phpcsFile->addError(
                     'Missing docblock for constant %s::%s',
                     $typePtr,
-                    'Missing',
+                    'Constant',
                     [$containerName, $objectName]
                 );
             } else {
                 $phpcsFile->addError(
                     'Missing docblock for constant %s',
                     $typePtr,
-                    'Missing',
+                    'Constant',
                     [$objectName]
                 );
             }

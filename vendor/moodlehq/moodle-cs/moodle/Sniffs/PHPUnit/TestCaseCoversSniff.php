@@ -85,6 +85,7 @@ class TestCaseCoversSniff implements Sniff
             $class = $file->getDeclarationName($cStart);
             $classCovers = false; // To control when the class has a @covers tag.
             $classCoversNothing = false; // To control when the class has a @coversNothing tag.
+            $classCoversDefaultClass = []; // To annotate all the existing @coversDefaultClass tags.
 
             // Only if the class is extending something.
             // TODO: We could add a list of valid classes once we have a class-map available.
@@ -121,9 +122,27 @@ class TestCaseCoversSniff implements Sniff
                             case '@coversDefaultClass':
                                 // Validate basic syntax (FQCN).
                                 $this->checkCoversTagsSyntax($file, $docPointer, '@coversDefaultClass');
+                                $classCoversDefaultClass[] = $docPointer; // Annotated for later checks.
                                 break;
                         }
                     }
+                }
+            }
+
+            // If we have found more than one @coversDefaultClass, that's an error.
+            if (count($classCoversDefaultClass) > 1) {
+                // We have to reverse the array to get them in correct order and then
+                // remove the 1st one that is correct/allowed.
+                $classCoversDefaultClass = array_reverse($classCoversDefaultClass);
+                array_shift($classCoversDefaultClass);
+                // Report the remaining ones.
+                foreach ($classCoversDefaultClass as $classCoversDefaultClassPointer) {
+                    $file->addError(
+                        'Class %s has more than one @coversDefaultClass tag, only one allowed',
+                        $classCoversDefaultClassPointer,
+                        'MultipleDefaultClass',
+                        [$class]
+                    );
                 }
             }
 

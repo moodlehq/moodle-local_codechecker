@@ -30,7 +30,7 @@ use PHP_CodeSniffer\Util\Tokens;
 
 class BoilerplateCommentSniff implements Sniff
 {
-    protected static $comment = [
+    protected static array $comment = [
         "// This file is part of",
         "//",
         "// Moodle is free software: you can redistribute it and/or modify",
@@ -44,80 +44,231 @@ class BoilerplateCommentSniff implements Sniff
         "// GNU General Public License for more details.",
         "//",
         "// You should have received a copy of the GNU General Public License",
-        "// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.",
+        "// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.",
     ];
-    public function register() {
+
+    public string $productName = 'Moodle';
+
+    public string $firstLinePostfix = ' - https://moodle.org/';
+
+    public function register(): array
+    {
         return [T_OPEN_TAG];
     }
 
-    public function process(File $file, $stackptr) {
+    public function process(File $phpcsFile, $stackPtr): void
+    {
         // We only want to do this once per file.
-        $prevopentag = $file->findPrevious(T_OPEN_TAG, $stackptr - 1);
+        $prevopentag = $phpcsFile->findPrevious(T_OPEN_TAG, $stackPtr - 1);
         if ($prevopentag !== false) {
             return; // @codeCoverageIgnore
         }
 
-        if ($stackptr > 0) {
-            $file->addError('The first thing in a PHP file must be the <?php tag.', 0, 'NoPHP');
+        if ($stackPtr > 0) {
+            $phpcsFile->addError('The first thing in a PHP file must be the <?php tag.', 0, 'NoPHP');
             return;
         }
 
-        $tokens = $file->getTokens();
+        $tokens = $phpcsFile->getTokens();
 
         // Allow T_PHPCS_XXX comment annotations in the first line (skip them).
-        if ($commentptr = $file->findNext(Tokens::$phpcsCommentTokens, $stackptr + 1, $stackptr + 3)) {
-            $stackptr = $commentptr;
+        if ($commentptr = $phpcsFile->findNext(Tokens::$phpcsCommentTokens, $stackPtr + 1, $stackPtr + 3)) {
+            $stackPtr = $commentptr;
         }
 
-        // Find count the number of newlines after the opening <?PHP. We only
-        // count enough to see if the number is right.
-        // Note that the opening PHP tag includes one newline.
-        $numnewlines = 0;
-        for ($i = $stackptr + 1; $i <= $stackptr + 5; ++$i) {
-            if (isset($tokens[$i]) && $tokens[$i]['code'] == T_WHITESPACE && $tokens[$i]['content'] == "\n") {
-                $numnewlines++;
-            } else {
-                break;
-            }
-        }
+        $expectedafter = $stackPtr;
 
-        if ($numnewlines > 0) {
-            $file->addError(
-                'The opening <?php tag must be followed by exactly one newline.',
-                $stackptr + 1,
-                'WrongWhitespace'
+        $firstcommentptr = $phpcsFile->findNext(T_COMMENT, $expectedafter + 1);
+
+        // Check that it appears to be a Moodle boilerplate comment.
+        $regex = $this->regexForLine(self::$comment[0]);
+        $boilerplatefound = ($firstcommentptr !== false) && preg_match($regex, $tokens[$firstcommentptr]['content']);
+
+        if (!$boilerplatefound) {
+            $fix = $phpcsFile->addFixableError(
+                'Moodle boilerplate not found',
+                $stackPtr,
+                'NoBoilerplateComment'
             );
+
+            if ($fix) {
+                $this->insertBoilerplate($phpcsFile, $expectedafter);
+            }
             return;
         }
-        $offset = $stackptr + $numnewlines + 1;
 
         // Now check the text of the comment.
+        $textfixed = false;
+        $tokenptr = $firstcommentptr;
         foreach (self::$comment as $lineindex => $line) {
-            $tokenptr = $offset + $lineindex;
+            // We already checked the first line.
+            if ($lineindex === 0) {
+                continue;
+            }
 
-            if (!array_key_exists($tokenptr, $tokens)) {
-                $file->addError('Reached the end of the file before finding ' .
-                        'all of the opening comment.', $tokenptr - 1, 'FileTooShort');
+            $tokenptr = $firstcommentptr + $lineindex;
+            $iseof = $tokenptr >= $phpcsFile->numTokens;
+
+            if ($iseof || $tokens[$tokenptr]['code'] != T_COMMENT || strpos($tokens[$tokenptr]['content'], '//') !== 0) {
+                $errorline = $iseof ? $tokenptr - 1 : $tokenptr;
+
+                $fix = $phpcsFile->addFixableError(
+                    'Comment does not contain full Moodle boilerplate',
+                    $errorline,
+                    'CommentEndedTooSoon'
+                );
+
+                if ($fix) {
+                    $this->completeBoilerplate($phpcsFile, $tokenptr - 1, $lineindex);
+                    return;
+                }
+
+                // No point checking whitespace after comment if it is incomplete.
                 return;
             }
 
-            $regex = str_replace(
-                ['Moodle', 'http\\:'],
-                ['.*', 'https?\\:'],
-                '/^' . preg_quote($line, '/') . '/'
-            );
+            $regex = $this->regexForLine($line);
 
-            if (
-                $tokens[$tokenptr]['code'] != T_COMMENT ||
-                !preg_match($regex, $tokens[$tokenptr]['content'])
-            ) {
-                $file->addError(
+            if (!preg_match($regex, $tokens[$tokenptr]['content'])) {
+                $fix = $phpcsFile->addFixableError(
                     'Line %s of the opening comment must start "%s".',
                     $tokenptr,
                     'WrongLine',
                     [$lineindex + 1, $line]
                 );
+
+                if ($fix) {
+                    $phpcsFile->fixer->replaceToken($tokenptr, $line . "\n");
+                    $textfixed = true;
+                }
             }
         }
+
+        if ($firstcommentptr !== $expectedafter + 1) {
+            $fix = $phpcsFile->addFixableError(
+                'Moodle boilerplate not found at first line',
+                $expectedafter + 1,
+                'NotAtFirstLine'
+            );
+
+            // If the boilerplate comment has been changed we need to commit the fixes before
+            // moving it.
+            if ($fix && !$textfixed) {
+                $this->moveBoilerplate($phpcsFile, $firstcommentptr, $expectedafter);
+            }
+
+            // There's no point in checking the whitespace after the boilerplate
+            // if it's not in the right place.
+            return;
+        }
+
+        if ($tokenptr === $phpcsFile->numTokens - 1) {
+            return;
+        }
+
+        $tokenptr++;
+
+        $nextnonwhitespace = $phpcsFile->findNext(T_WHITESPACE, $tokenptr, null, true);
+
+        // Allow indentation.
+        if ($nextnonwhitespace !== false && strpos($tokens[$nextnonwhitespace - 1]['content'], "\n") === false) {
+            $nextnonwhitespace--;
+        }
+
+        if (
+            ($nextnonwhitespace === false) && array_key_exists($tokenptr + 1, $tokens) ||
+            ($nextnonwhitespace !== false && $nextnonwhitespace !== $tokenptr + 1)
+        ) {
+            $fix = $phpcsFile->addFixableError(
+                'Boilerplate comment must be followed by a single blank line or end of file',
+                $tokenptr,
+                'SingleTrailingNewLine'
+            );
+
+            if ($fix) {
+                if ($nextnonwhitespace === false) {
+                    while (array_key_exists(++$tokenptr, $tokens)) {
+                        $phpcsFile->fixer->replaceToken($tokenptr, '');
+                    }
+                } elseif ($nextnonwhitespace === $tokenptr) {
+                    $phpcsFile->fixer->addContentBefore($tokenptr, "\n");
+                } else {
+                    while (++$tokenptr < $nextnonwhitespace) {
+                        if ($tokens[$tokenptr]['content'][-1] === "\n") {
+                            $phpcsFile->fixer->replaceToken($tokenptr, '');
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private function fullComment(): array
+    {
+        $result = [];
+        foreach (self::$comment as $lineindex => $line) {
+            if ($lineindex === 0) {
+                $result[] = $line . ' ' . $this->productName . $this->firstLinePostfix;
+            } else {
+                $result[] = str_replace('Moodle', $this->productName, $line);
+            }
+        }
+        return $result;
+    }
+
+    private function insertBoilerplate(File $file, int $stackptr): void
+    {
+        $prefix = substr($file->getTokens()[$stackptr]['content'], -1) === "\n" ? '' : "\n";
+        $file->fixer->addContent($stackptr, $prefix . implode("\n", $this->fullComment()) . "\n");
+    }
+
+    private function moveBoilerplate(File $file, int $start, int $target): void
+    {
+        $tokens = $file->getTokens();
+
+        $file->fixer->beginChangeset();
+
+        // If we have only whitespace between expected location and first comment, just remove it.
+        $nextnonwhitespace = $file->findPrevious(T_WHITESPACE, $start - 1, $target, true);
+
+        if ($nextnonwhitespace === false || $nextnonwhitespace === $target) {
+            foreach (range($target + 1, $start - 1) as $whitespaceptr) {
+                $file->fixer->replaceToken($whitespaceptr, '');
+            }
+            $file->fixer->endChangeset();
+            return;
+        }
+
+        // Otherwise shift existing comment to correct place.
+        $existingboilerplate = [];
+        foreach (range(0, count(self::$comment)) as $lineindex) {
+            $tokenptr = $start + $lineindex;
+
+            $existingboilerplate[] = $tokens[$tokenptr]['content'];
+
+            $file->fixer->replaceToken($tokenptr, '');
+        }
+
+        $file->fixer->addContent($target, implode("", $existingboilerplate) . "\n");
+
+        $file->fixer->endChangeset();
+    }
+
+    private function completeBoilerplate(File $file, $stackptr, int $lineindex): void
+    {
+        $file->fixer->addContent($stackptr, implode("\n", array_slice($this->fullComment(), $lineindex)) . "\n");
+    }
+
+    /**
+     * @param string $line
+     * @return string
+     */
+    private function regexForLine(string $line): string
+    {
+        return str_replace(
+            ['Moodle', 'https\\:'],
+            ['.*', 'https?\\:'],
+            '/^' . preg_quote($line, '/') . '/'
+        );
     }
 }
