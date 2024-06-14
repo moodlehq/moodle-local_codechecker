@@ -1,3 +1,8 @@
+Changes in version 5.0.7 (20240614) - It's a small world
+--------------------------------------------------------
+- Bundled dependencies updated:
+  - Moodle CS v3.4.8
+
 Changes in version 5.0.6 (20240531) - Bye, May!
 -----------------------------------------------
 - Bundled dependencies updated:

@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2024053100;
-$plugin->release   = '5.0.6';
+$plugin->version   = 2024061400;
+$plugin->release   = '5.0.7';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->requires  = 2019111803; // Moodle 3.8.3 release and upwards (first one supporting PHP 7.4).
 $plugin->component = 'local_codechecker';
