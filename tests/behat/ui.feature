@@ -42,7 +42,7 @@ Feature: Codechecker UI works as expected
       | local/codechecker/tests  | */tests/fixtures/* | Files found: 3                | Invalid path |
       | local/codechecker/tests/ | *one*, *moodle_*   | Files found: 10               | Invalid path |
       | local/codechecker/tests  | */tests/fixtures/* | locallib_test.php             | problem.php  |
-      | local/codechecker/tests/ | *moodle_*          | Line 1 of the opening comment | moodle_php   |
+      | local/codechecker/tests/ | *moodle_*          | not found at first line       | moodle_php   |
       | local/codechecker/tests/ | *moodle_*          | fixtures/behat/phpcompat      | /moodle_php  |
       | local/codechecker/tests/ | *PHPC*, *moodle_*  | Inline comments must end      | /phpcompat   |
 
@@ -81,8 +81,8 @@ Feature: Codechecker UI works as expected
     And I set the field "Path(s) to check" to "local/codechecker/tests/fixtures/behat/problem.php"
     And I set the field "Display phpcs standard associated with a problem" to "1"
     When I press "Check code"
-    Then I should see "moodle.Files.BoilerplateComment.WrongWhitespace"
+    Then I should see "moodle.Files.BoilerplateComment.NotAtFirstLine"
     And I set the field "Display phpcs standard associated with a problem" to "0"
     And I press "Check code"
-    And I should not see "moodle.Files.BoilerplateComment.WrongWhitespace"
+    And I should not see "moodle.Files.BoilerplateComment.NotAtFirstLine"
     And I log out
