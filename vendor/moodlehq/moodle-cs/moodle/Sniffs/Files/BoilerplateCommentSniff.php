@@ -166,7 +166,22 @@ class BoilerplateCommentSniff implements Sniff
             return;
         }
 
-        $tokenptr++;
+        // Let's jump over all the extra (allowed) consecutive comments to find the first non-comment token.
+        $lastComment = $tokenptr;
+        $nextComment = $tokenptr;
+        while (($nextComment = $phpcsFile->findNext(T_COMMENT, ($nextComment + 1), null, false)) !== false) {
+            // Only \n is allowed as spacing since the previous comment line.
+            if (strpos($tokens[$nextComment - 1]['content'], "\n") === false) {
+                // Stop looking for consecutive comments, some spacing broke the sequence.
+                break;
+            }
+            if ($tokens[$nextComment]['line'] !== ($tokens[$lastComment]['line'] + 1)) {
+                // Stop looking for comments, the lines are not consecutive.
+                break;
+            }
+            $lastComment = $nextComment;
+        }
+        $tokenptr = $lastComment + 1; // Move to the last found comment + 1.
 
         $nextnonwhitespace = $phpcsFile->findNext(T_WHITESPACE, $tokenptr, null, true);
 
@@ -218,8 +233,16 @@ class BoilerplateCommentSniff implements Sniff
 
     private function insertBoilerplate(File $file, int $stackptr): void
     {
-        $prefix = substr($file->getTokens()[$stackptr]['content'], -1) === "\n" ? '' : "\n";
-        $file->fixer->addContent($stackptr, $prefix . implode("\n", $this->fullComment()) . "\n");
+        $token = $file->getTokens()[$stackptr];
+        $paddedComment = implode("\n", $this->fullComment()) . "\n";
+
+        if ($token['code'] === T_OPEN_TAG) {
+            $replacement = trim($token['content']) . "\n" . $paddedComment;
+            $file->fixer->replaceToken($stackptr, $replacement);
+        } else {
+            $prefix = substr($token['content'], -1) === "\n" ? '' : "\n";
+            $file->fixer->addContent($stackptr, $prefix . $paddedComment);
+        }
     }
 
     private function moveBoilerplate(File $file, int $start, int $target): void
@@ -265,6 +288,11 @@ class BoilerplateCommentSniff implements Sniff
      */
     private function regexForLine(string $line): string
     {
+        // We need to match the blank lines in their entirety.
+        if ($line === '//') {
+            return '/^\/\/$/';
+        }
+
         return str_replace(
             ['Moodle', 'https\\:'],
             ['.*', 'https?\\:'],

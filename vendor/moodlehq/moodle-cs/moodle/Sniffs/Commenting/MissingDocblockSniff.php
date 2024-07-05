@@ -83,6 +83,11 @@ class MissingDocblockSniff implements Sniff
                 // Skip methods of classes, traits and interfaces.
                 continue;
             }
+            if ($token['code'] === T_ANON_CLASS && !empty($token['conditions'])) {
+                // Skip anonymous classes.
+                continue;
+            }
+
             $artifactCount++;
 
             if ($token['code'] === T_FUNCTION) {

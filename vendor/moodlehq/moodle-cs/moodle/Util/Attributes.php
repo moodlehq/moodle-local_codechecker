@@ -20,6 +20,7 @@ namespace MoodleHQ\MoodleCS\moodle\Util;
 use PHP_CodeSniffer\Files\File;
 use PHPCSUtils\Utils\Context;
 use PHPCSUtils\Utils\Namespaces;
+use PHPCSUtils\Utils\ObjectDeclarations;
 
 /**
  * Utilities related to PHP Attributes.
@@ -107,5 +108,66 @@ abstract class Attributes
         // TODO Get the qualified name.
 
         return $properties;
+    }
+
+    /**
+     * Check if a function has an \Override Attribute.
+     *
+     * Note: Override attributes can only be valid on methods of classes which extend or implement another class.
+     *
+     * @param File $phpcsFile
+     * @param int $stackPtr
+     * @return bool
+     */
+    public static function hasOverrideAttribute(
+        File $phpcsFile,
+        int $stackPtr
+    ): bool {
+        $tokens = $phpcsFile->getTokens();
+        $token = $tokens[$stackPtr];
+        if ($token['code'] !== T_FUNCTION) {
+            // Not a function so can't have an Override Attribute.
+            return false;
+        }
+
+        if (empty($token['conditions'])) {
+            // Not in a class or interface.
+            return false;
+        }
+
+        $extendsOrImplements = false;
+        foreach ($token['conditions'] as $condition => $conditionCode) {
+            $extendsOrImplements = $extendsOrImplements || ObjectDeclarations::findExtendedClassName(
+                $phpcsFile,
+                $condition
+            );
+            $extendsOrImplements = $extendsOrImplements || ObjectDeclarations::findImplementedInterfaceNames(
+                $phpcsFile,
+                $condition
+            );
+            $extendsOrImplements = $extendsOrImplements || ObjectDeclarations::findExtendedInterfaceNames(
+                $phpcsFile,
+                $condition
+            );
+
+            if ($extendsOrImplements) {
+                break;
+            }
+        }
+
+        if (!$extendsOrImplements) {
+            // The OVerride attrinbute can only apply to a class which has a parent.
+            return false;
+        }
+
+        $attributes = self::getAttributePointers($phpcsFile, $stackPtr);
+        foreach ($attributes as $attributePtr) {
+            $attribute = self::getAttributeProperties($phpcsFile, $attributePtr);
+            if ($attribute['attribute_name'] === '\Override') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

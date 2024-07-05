@@ -83,17 +83,17 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.4.8",
-            "version_normalized": "3.4.8.0",
+            "version": "v3.4.10",
+            "version_normalized": "3.4.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "91661a17a23ed17e7ae4276f8c19df789b8882c2"
+                "reference": "89ff0acd727f8611cbafe5aea524614090b24ad9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/91661a17a23ed17e7ae4276f8c19df789b8882c2",
-                "reference": "91661a17a23ed17e7ae4276f8c19df789b8882c2",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/89ff0acd727f8611cbafe5aea524614090b24ad9",
+                "reference": "89ff0acd727f8611cbafe5aea524614090b24ad9",
                 "shasum": ""
             },
             "require": {
@@ -116,7 +116,7 @@
                 "sebastian/phpcpd": "^6.0",
                 "thor-juhasz/phpunit-coverage-check": "^0.3.0"
             },
-            "time": "2024-06-14T14:47:25+00:00",
+            "time": "2024-07-04T16:34:56+00:00",
             "type": "phpcodesniffer-standard",
             "installation-source": "dist",
             "autoload": {

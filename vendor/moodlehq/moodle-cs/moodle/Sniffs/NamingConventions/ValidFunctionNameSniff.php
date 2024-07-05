@@ -27,6 +27,7 @@
 
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\NamingConventions;
 
+use MoodleHQ\MoodleCS\moodle\Util\Attributes;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\AbstractScopeSniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -107,6 +108,11 @@ class ValidFunctionNameSniff extends AbstractScopeSniff
         $methodprops    = $phpcsfile->getMethodProperties($stackptr);
         $scope          = $methodprops['scope'];
         $scopespecified = $methodprops['scope_specified'];
+
+        if (Attributes::hasOverrideAttribute($phpcsfile, $stackptr)) {
+            // This method has an `#[\Override]` attribute, so it is allowed to have a different name.
+            return;
+        }
 
         // Only lower-case accepted.
         if (

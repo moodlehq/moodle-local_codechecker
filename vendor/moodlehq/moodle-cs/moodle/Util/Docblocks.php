@@ -256,6 +256,11 @@ abstract class Docblocks
         ];
 
         while ($stackPtr = $phpcsFile->findNext($ignore, ($stackPtr + 1), null, true)) {
+            // If we have arrived to a stop token, and haven't found the file docblock yet, then there isn't one.
+            if (in_array($tokens[$stackPtr]['code'], $stopAtTypes)) {
+                return null;
+            }
+
             if ($tokens[$stackPtr]['code'] === T_NAMESPACE || $tokens[$stackPtr]['code'] === T_USE) {
                 $stackPtr = $phpcsFile->findNext(T_SEMICOLON, $stackPtr + 1);
                 continue;
