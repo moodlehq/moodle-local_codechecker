@@ -1,3 +1,8 @@
+Changes in version 5.0.8 (20240705) - Refreshing summer
+-------------------------------------------------------
+- Bundled dependencies updated:
+  - Moodle CS v3.4.10
+
 Changes in version 5.0.7 (20240614) - It's a small world
 --------------------------------------------------------
 - Bundled dependencies updated:
