@@ -30,6 +30,8 @@ final class ScopeIndentUnitTest extends AbstractSniffUnitTest
      */
     public function setCliValues($testFile, $config)
     {
+        $config->setConfigData('scope_indent_debug', '0', true);
+
         // Tab width setting is only needed for the tabbed file.
         if ($testFile === 'ScopeIndentUnitTest.2.inc') {
             $config->tabWidth = 4;
@@ -84,6 +86,7 @@ final class ScopeIndentUnitTest extends AbstractSniffUnitTest
                 6  => 1,
                 7  => 1,
                 10 => 1,
+                33 => 1,
             ];
         }
 
@@ -192,10 +195,10 @@ final class ScopeIndentUnitTest extends AbstractSniffUnitTest
             1527 => 1,
             1529 => 1,
             1530 => 1,
-            1625 => 1,
-            1626 => 1,
-            1627 => 1,
-            1628 => 1,
+            1631 => 1,
+            1632 => 1,
+            1633 => 1,
+            1634 => 1,
         ];
 
     }//end getErrorList()

@@ -52,8 +52,6 @@ final class Operators
         \T_OPEN_SHORT_ARRAY    => true,
         \T_OPEN_CURLY_BRACKET  => true,
         \T_COLON               => true,
-        \T_INLINE_THEN         => true,
-        \T_INLINE_ELSE         => true,
         \T_CASE                => true,
         \T_FN_ARROW            => true,
         \T_MATCH_ARROW         => true,
@@ -206,6 +204,7 @@ final class Operators
             || isset(Tokens::$booleanOperators[$tokens[$prev]['code']]) === true
             || isset(Tokens::$assignmentTokens[$tokens[$prev]['code']]) === true
             || isset(Tokens::$castTokens[$tokens[$prev]['code']]) === true
+            || isset(Collections::ternaryOperators()[$tokens[$prev]['code']]) === true
             || isset(self::$extraUnaryIndicators[$tokens[$prev]['code']]) === true
         ) {
             return true;

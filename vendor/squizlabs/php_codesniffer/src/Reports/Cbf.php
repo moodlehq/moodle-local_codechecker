@@ -28,10 +28,11 @@ class Cbf implements Report
      * and FALSE if it ignored the file. Returning TRUE indicates that the file and
      * its data should be counted in the grand totals.
      *
-     * @param array                       $report      Prepared report data.
-     * @param \PHP_CodeSniffer\Files\File $phpcsFile   The file being reported on.
-     * @param bool                        $showSources Show sources?
-     * @param int                         $width       Maximum allowed line width.
+     * @param array<string, string|int|array> $report      Prepared report data.
+     *                                                     See the {@see Report} interface for a detailed specification.
+     * @param \PHP_CodeSniffer\Files\File     $phpcsFile   The file being reported on.
+     * @param bool                            $showSources Show sources?
+     * @param int                             $width       Maximum allowed line width.
      *
      * @return bool
      * @throws \PHP_CodeSniffer\Exceptions\DeepExitException
@@ -148,7 +149,12 @@ class Cbf implements Report
         array_pop($lines);
 
         if (empty($lines) === true) {
-            echo PHP_EOL.'No fixable errors were found'.PHP_EOL;
+            if (($totalErrors + $totalWarnings) === 0) {
+                echo PHP_EOL.'No violations were found'.PHP_EOL;
+            } else {
+                echo PHP_EOL.'No fixable errors were found'.PHP_EOL;
+            }
+
             return;
         }
 

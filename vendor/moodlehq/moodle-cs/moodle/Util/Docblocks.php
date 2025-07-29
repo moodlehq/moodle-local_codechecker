@@ -43,6 +43,7 @@ abstract class Docblocks
         'AfterFeature' => true,
         'AfterScenario' => true,
         'AfterStep' => true,
+        'Transform' => true,
 
         // PHPUnit tags.
         'codeCoverageIgnore' => true,
@@ -130,6 +131,7 @@ abstract class Docblocks
         'AfterFeature' => ['#.*/tests/behat/.*#'],
         'AfterScenario' => ['#.*/tests/behat/.*#'],
         'AfterStep' => ['#.*/tests/behat/.*#'],
+        'Transform' => ['#.*/tests/behat/.*#'],
 
         'covers' => ['#.*/tests/.*_test.php#'],
         'coversDefaultClass' => ['#.*/tests/.*_test.php#'],

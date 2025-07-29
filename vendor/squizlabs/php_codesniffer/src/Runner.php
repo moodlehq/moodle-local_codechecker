@@ -13,6 +13,7 @@
 namespace PHP_CodeSniffer;
 
 use Exception;
+use InvalidArgumentException;
 use PHP_CodeSniffer\Exceptions\DeepExitException;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\DummyFile;
@@ -333,11 +334,11 @@ class Runner
 
         // Create this class so it is autoloaded and sets up a bunch
         // of PHP_CodeSniffer-specific token type constants.
-        $tokens = new Tokens();
+        new Tokens();
 
         // Allow autoloading of custom files inside installed standards.
         $installedStandards = Standards::getInstalledStandardDetails();
-        foreach ($installedStandards as $name => $details) {
+        foreach ($installedStandards as $details) {
             Autoload::addSearchPath($details['path'], $details['namespace']);
         }
 
@@ -350,7 +351,7 @@ class Runner
                 $this->ruleset->showSniffDeprecations();
             }
         } catch (RuntimeException $e) {
-            $error  = 'ERROR: '.$e->getMessage().PHP_EOL.PHP_EOL;
+            $error  = rtrim($e->getMessage(), "\r\n").PHP_EOL.PHP_EOL;
             $error .= $this->config->printShortUsage(true);
             throw new DeepExitException($error, 3);
         }
@@ -688,16 +689,23 @@ class Runner
             }
 
             if (empty($sniffStack) === false) {
-                if (empty($nextStack) === false
-                    && isset($nextStack['class']) === true
-                    && substr($nextStack['class'], -5) === 'Sniff'
-                ) {
-                    $sniffCode = Common::getSniffCode($nextStack['class']);
-                } else {
+                $sniffCode = '';
+                try {
+                    if (empty($nextStack) === false
+                        && isset($nextStack['class']) === true
+                        && substr($nextStack['class'], -5) === 'Sniff'
+                    ) {
+                        $sniffCode = 'the '.Common::getSniffCode($nextStack['class']).' sniff';
+                    }
+                } catch (InvalidArgumentException $e) {
+                    // Sniff code could not be determined. This may be an abstract sniff class.
+                }
+
+                if ($sniffCode === '') {
                     $sniffCode = substr(strrchr(str_replace('\\', '/', $sniffStack['file']), '/'), 1);
                 }
 
-                $error .= sprintf(PHP_EOL.'The error originated in the %s sniff on line %s.', $sniffCode, $sniffStack['line']);
+                $error .= sprintf(PHP_EOL.'The error originated in %s on line %s.', $sniffCode, $sniffStack['line']);
             }
 
             $file->addErrorOnLine($error, 1, 'Internal.Exception');
@@ -848,9 +856,14 @@ class Runner
             return;
         }
 
+        $showColors  = $this->config->colors;
+        $colorOpen   = '';
+        $progressDot = '.';
+        $colorClose  = '';
+
         // Show progress information.
         if ($file->ignored === true) {
-            echo 'S';
+            $progressDot = 'S';
         } else {
             $errors   = $file->getErrorCount();
             $warnings = $file->getWarningCount();
@@ -862,27 +875,19 @@ class Runner
                 // Files with unfixable errors or warnings are E (red).
                 // Files with no errors or warnings are . (black).
                 if ($fixable > 0) {
-                    if ($this->config->colors === true) {
-                        echo "\033[31m";
-                    }
+                    $progressDot = 'E';
 
-                    echo 'E';
-
-                    if ($this->config->colors === true) {
-                        echo "\033[0m";
+                    if ($showColors === true) {
+                        $colorOpen  = "\033[31m";
+                        $colorClose = "\033[0m";
                     }
                 } else if ($fixed > 0) {
-                    if ($this->config->colors === true) {
-                        echo "\033[32m";
-                    }
+                    $progressDot = 'F';
 
-                    echo 'F';
-
-                    if ($this->config->colors === true) {
-                        echo "\033[0m";
+                    if ($showColors === true) {
+                        $colorOpen  = "\033[32m";
+                        $colorClose = "\033[0m";
                     }
-                } else {
-                    echo '.';
                 }//end if
             } else {
                 // Files with errors are E (red).
@@ -891,38 +896,34 @@ class Runner
                 // Files with fixable warnings are W (green).
                 // Files with no errors or warnings are . (black).
                 if ($errors > 0) {
-                    if ($this->config->colors === true) {
+                    $progressDot = 'E';
+
+                    if ($showColors === true) {
                         if ($fixable > 0) {
-                            echo "\033[32m";
+                            $colorOpen = "\033[32m";
                         } else {
-                            echo "\033[31m";
+                            $colorOpen = "\033[31m";
                         }
-                    }
 
-                    echo 'E';
-
-                    if ($this->config->colors === true) {
-                        echo "\033[0m";
+                        $colorClose = "\033[0m";
                     }
                 } else if ($warnings > 0) {
-                    if ($this->config->colors === true) {
+                    $progressDot = 'W';
+
+                    if ($showColors === true) {
                         if ($fixable > 0) {
-                            echo "\033[32m";
+                            $colorOpen = "\033[32m";
                         } else {
-                            echo "\033[33m";
+                            $colorOpen = "\033[33m";
                         }
-                    }
 
-                    echo 'W';
-
-                    if ($this->config->colors === true) {
-                        echo "\033[0m";
+                        $colorClose = "\033[0m";
                     }
-                } else {
-                    echo '.';
                 }//end if
             }//end if
         }//end if
+
+        echo $colorOpen.$progressDot.$colorClose;
 
         $numPerLine = 60;
         if ($numProcessed !== $numFiles && ($numProcessed % $numPerLine) !== 0) {

@@ -9,6 +9,176 @@ This projects adheres to [Keep a CHANGELOG](https://keepachangelog.com/) and use
 
 _Nothing yet._
 
+
+## [1.1.0] - 2025-06-12
+
+### Added
+
+Compatibility with the new PHP_CodeSniffer `4.x` branch in anticipation of the PHP_CodeSniffer 4.0 release. [#674], [#679]
+PHPCSUtils should now be fully compatible with PHP_CodeSniffer 4.0 (again). If you still find an issue, please report it.
+
+#### PHPCS BackCompat
+
+* `BCFile::findExtendedClassName()`: sync with PHPCS 4.0.0 - support for namespace relative names when used as the _extended_ parent class name. [#674]
+* `BCFile::findImplementedInterfaceNames()`: sync with PHPCS 4.0.0 - support for namespace relative names when used in _implemented_ interface names. [#674]
+* `BCFile::getMemberProperties()`: sync with PHPCS 3.12.0 - support for PHP 8.4 final properties. Thanks [@DanielEScherzer]! [#646]
+* `BCFile::getMemberProperties()`: sync with PHPCS 3.13.1 - support for PHP 8.4 asymmetric visibility. [#677]
+* `BCFile::getMemberProperties()`: sync with PHPCS 4.0.0. [#674]
+    - Add support for PHP 8.4 properties in interfaces.
+    - Removed parse error warning.
+* `BCFile::getMethodParameters()`: sync with PHPCS 3.13.1 - support for PHP 8.4 asymmetric visibility. [#677]
+* `BCFile::findStartOfStatement()`: sync with PHPCS 3.12.1 - support for `goto` as a `switch` - `case` terminating statement. [#661]
+* `BCTokens::nameTokens()` as introduced in PHPCS 4.0.0. [#674]
+    The same token array previously already existed in PHPCSUtils as `Collections::nameTokens()`.
+* `BCTokens::functionNameTokens()`: sync with PHPCS 4.0.0 - added the `T_ANON_CLASS` token. [#674]
+* `BCTokens::parenthesisOpeners()`: sync with PHPCS 4.0.0 - added the `T_USE`, `T_ISSET`, `T_UNSET`, `T_EMPTY`, `T_EVAL` and `T_EXIT` tokens. [#674]
+    Note: While `T_USE`, `T_ISSET`, `T_UNSET`, `T_EMPTY`, `T_EVAL` and `T_EXIT` will be included in the return value for this method,
+    the associated parentheses will not have the `'parenthesis_owner'` index set unless PHPCS 4.0.0 is used.
+    Use the [`Parentheses::getOwner()`][`Parentheses`] or the [`Parentheses::hasOwner()`][`Parentheses`] methods if you need to check
+    whether any of these tokens are a parentheses owner. The methods in the `Parentheses` class are PHPCS cross-version compatible.
+
+#### TestUtils
+
+* New [`PHPCSUtils\TestUtils\ConfigDouble`][`ConfigDouble`] class as a lightweight and more stable alternative to directly using the PHPCS native `Config` class in tests. [#550], [#612]
+    Props to [@fredden] for helping me find and fix a bug in this feature before it was released.
+* New [`PHPCSUtils\TestUtils\RulesetDouble`][`RulesetDouble`] class which allows for creating a `Ruleset` object without registering any sniffs. [#674]
+    This allows for the [`PHPCSUtils\TestUtils\UtilityMethodTestCase`][`UtilityMethodTestCase`] class to be cross-version compatible with both PHP_CodeSniffer 3.x as well as 4.x.
+* New [`PHPCSUtils\TestUtils\UtilityMethodTestCase::parseFile()`][`UtilityMethodTestCase`] method to allow for on-demand tokenizing of a (secondary) test case file. [#591], [#610]
+    This method is intended for tests which need to use multiple test case files, like, for example, tests which need to verify that a utility resets a `$fileName` property on seeing another file.
+* New [`PHPCSUtils\TestUtils\UtilityMethodTestCase::testTestMarkersAreUnique()` and `PHPCSUtils\TestUtils\UtilityMethodTestCase::assertTestMarkersAreUnique()`][`UtilityMethodTestCase`] methods which automatically check that code sample files used with this `TestCase` do not contain duplicate test case markers. [#642]
+    If needs be, the test method can be disabled by overloading it (discouraged). If a test uses multiple test case/code sample files, the assertion method can be called directly.
+
+#### Tokens
+
+* New [`Collections::constantTypeTokens()`][`Collections`] method to support PHP 8.3 typed class constants. [#562]
+* New [`Collections::ternaryOperators()`][`Collections`] method. [#549]
+* `T_EXIT` to the `Collections::functionCallTokens()` and `Collections::parameterPassingTokens()` in light of the PHP 8.4 "exit as function" change. [#618]
+* The PHP 8.4 asymmetric visibility tokens have been added to the [`Collections::propertyModifierKeywords()`][`Collections`] method. [#653]
+* `T_INTERFACE` has been added to the [`Collections::ooPropertyScopes()`][`Collections`] method for PHP 8.4 interface properties support. [#674]
+
+#### Utils
+
+* New [`PHPCSUtils\Utils\Constants`][`Constants`] class: Utility functions to examine (class) constants. [#562]
+    Initially available method: `getProperties()` to retrieve an array of information about an OO constant declaration.
+* New [`PHPCSUtils\Utils\FileInfo`][`FileInfo`] class: Utility functions to check characteristics of the file under scan. [#572]
+    Initial set of available methods: `hasByteOrderMark()` and `hasSheBang()`.
+* New [`PHPCSUtils\Utils\FilePath`][`FilePath`] class: Utility functions for handling and comparing file paths. [#593]
+    Initial set of available methods: `getName()` to retrieve the normalized path for the current file, `isStdin()`, `normalizeAbsolutePath()`, `normalizeDirectorySeparators()`, `trailingSlashIt()` and `startsWith()`.
+* New [`PHPCSUtils\Utils\TypeString`][`TypeString`] class: Utility functions for analysing typestrings as retrieved via the various available `getParameters()`/`getProperties()` methods. [#588]
+    Initial set of available methods: `getKeywordTypes()`, `isKeyword()`, `normalizeCase()`, `isSingular()`, `isNullable()`, `isUnion()`, `isIntersection()`, `isDNF()`, `toArray()`, `toArrayUnique()`, `filterKeywordTypes()` and `filterOOTypes()`.
+    Note: The `is*()` methods will not check if the type string provided is valid, as doing so would inhibit what sniffs can flag. The `is*()` methods will only look at the form of the type string to determine if it could be valid for a certain type.
+* New `PHPCSUtils\Utils\ObjectDeclarations::getDeclaredConstants()`, `PHPCSUtils\Utils\ObjectDeclarations::getDeclaredEnumCases()`, `PHPCSUtils\Utils\ObjectDeclarations::getDeclaredProperties()` and `PHPCSUtils\Utils\ObjectDeclarations::getDeclaredMethods()` utility methods. [#592]
+    These methods will each return an array with the name of the constant/case/property/method as the key and the typical stack pointer needed for further processing.
+    The retrieval of this information is highly optimized for performance. If a sniff needs to search for a named constant/enum case/property/method in an OO structure, in most cases, these methods should be the recommended way for finding the declaration, instead of the sniff attempting to do this itself.
+    Mind: the return value of the `getDeclaredProperties()` method includes constructor promoted properties. Passing the stack pointer of constructor promoted properties onto a call to the `Variables::getMemberProperties()` method, however, is currently not supported.
+* `FunctionDeclarations::getParameters()`: support for PHP 8.4 asymmetric visibility. [#677]
+* `Variables::getMemberProperties()`: support for PHP 8.4 final properties. Thanks [@DanielEScherzer]! [#646]
+* `Variables::getMemberProperties()`: support for PHP 8.4 asymmetric visibility. [#677]
+
+### Changed
+
+* The exceptions thrown by PHPCSUtils native utilities have been made more modular and more specific. [#598], [#599], [#600]
+    - Passing a parameter of the wrong type will now result in a `PHPCSUtils\Exceptions\TypeError` being thrown.
+    - Passing a parameter of the correct type, but with an invalid value, like an empty string when only non-empty strings are expected/accepted, will now result in a `PHPCSUtils\Exceptions\ValueError` being thrown.
+    - Passing a (positive) integer stack pointer, which doesn't exist in the token stack of the current file, will now result in a `PHPCSUtils\Exceptions\OutOfBoundsStackPtr` being thrown.
+    - Passing a stack pointer to a token which is not within the range of token types which is accepted by the method, will now result in a `PHPCSUtils\Exceptions\UnexpectedTokenType` being thrown.
+    - Logic errors will now result in a `PHPCSUtils\Exceptions\LogicException` being thrown.
+        This can occur, for instance, when a method takes a `$start` and `$end` parameter and the `$end` pointer is before the `$start` pointer.
+    - Missing, conditionally required, parameters, will now result in a `PHPCSUtils\Exceptions\MissingArgumentError` being thrown.
+    - Generic errors will now result in a `PHPCSUtils\Exceptions\RuntimeException` being thrown.
+    - Previously the PHPCS native `PHP_CodeSniffer\Exceptions\RuntimeException` was used for all these exceptions.
+        Catching the PHPCS native `RuntimeException` will still catch the new exceptions, but it is strongly recommended to be more selective when catching exceptions to prevent accidentally hiding errors in sniffs.
+    - Also note that the PHPCSUtils native utilities now include more and stricter type checking to help surface bugs in sniffs.
+
+#### Abstract Sniffs
+
+* The `AbstractArrayDeclarationSniff::process()` method will no longer hide exceptions about a non-integer or non-existent stack pointer being passed. [#600]
+* The `AbstractArrayDeclarationSniff::processArray()` method will no longer hide exceptions about non-integer or non-existent stack pointers being passed. [#600]
+
+#### PHPCS BackCompat
+
+* `BCFile::getDeclarationName()`: sync with PHPCS 3.12.0 - prevent incorrect result during live coding for unfinished closures. [#644]
+* `BCFile::getDeclarationName()`: sync with PHPCS 4.0.0 - no longer accept the `T_CLOSURE` or `T_ANON_CLASS` tokens. [#674]
+    Passing these will now result in an exception.
+* `BCFile::getDeclarationName()`: sync with PHPCS 4.0.0 - the method will now always return a string. [#674]
+    Previously, the method could return `null` when the name could not be determined. Now it will return an empty string.
+
+#### TestUtils
+
+* The [`PHPCSUtils\TestUtils\UtilityMethodTestCase`][`UtilityMethodTestCase`] is now officially compatible with PHPUnit 11 and will no longer generate any deprecation notices on PHPUnit 11.
+
+#### Utils
+
+* [`Parentheses`]: all methods will now recognize closer `use()` as a parentheses owner. [#674]
+    Note: PHPCS natively does not recognize closure `use` as a parentheses owners until PHP_CodeSniffer 4.0.
+* All methods in the [`PassedParameters`] class will now be able to analyze exit/die when used as a function call. [#618]
+* The `Scopes::isOOProperty()` method now allows for PHP 8.4 properties in interfaces. [#674]
+    - This also adds support for properties in interfaces to the `Variables::getMemberProperties()` method.
+* The `UseStatements::splitAndMergeImportUseStatement()` method will no longer hide exceptions about a non-integer, non-existent or non-`T_USE` stack pointer being passed. [#600]
+
+#### Other
+
+* Dropped support for [PHP_CodeSniffer] < 3.13.0. [#629], [#653]
+    Please ensure you run `composer update phpcsstandards/phpcsutils --with-dependencies` to benefit from this.
+* Various housekeeping, including making the test suite compatible with PHPUnit 11.
+
+### Deprecated
+
+#### TestUtils
+
+* The (internal) `PHPCSUtils\TestUtils\UtilityMethodTestCase::setStaticConfigProperty()` method. [#550]
+    This method has become redundant with the introduction of the `ConfigDouble` class.
+
+### Removed
+
+#### PHPCS BackCompat
+
+* The javascript specific `T_ZSR_EQUAL` token from the `BCTokens::assignmentTokens()` array, as per PHPCS 4.0.0. [#674]
+* The javascript specific `T_OBJECT` token from the `BCTokens::blockOpeners()` array, as per PHPCS 4.0.0. [#674]
+* The javascript specific `T_PROPERTY` and `T_OBJECT` tokens from the `BCTokens::blockOpeners()` array, as per PHPCS 4.0.0. [#674]
+
+### Fixed
+
+#### Abstract Sniffs
+
+* `AbstractArrayDeclarationSniff::getActualArrayKey()`: will now handle FQN `true`/`false`/`null` correctly. [#668]
+
+#### Utils
+
+* `Context::inForeachCondition()` could misidentify the `as` keyword for `foreach` when the iterable expression contained an array declaration in which the `as` keyword was being used. [#617]
+* The `Numbers::is*()` methods could misidentify strings which look like numeric literals with underscores, but are in actual fact invalid as numeric literals, as valid numbers. [#619], [#620]
+* `UseStatements::getType()` will now handle unfinished closure `use` statements (parse errors) more consistently and return `'closure'` for those cases. [#667]
+
+[#549]: https://github.com/PHPCSStandards/PHPCSUtils/pull/549
+[#550]: https://github.com/PHPCSStandards/PHPCSUtils/pull/550
+[#562]: https://github.com/PHPCSStandards/PHPCSUtils/pull/562
+[#572]: https://github.com/PHPCSStandards/PHPCSUtils/pull/572
+[#588]: https://github.com/PHPCSStandards/PHPCSUtils/pull/588
+[#591]: https://github.com/PHPCSStandards/PHPCSUtils/pull/591
+[#592]: https://github.com/PHPCSStandards/PHPCSUtils/pull/592
+[#593]: https://github.com/PHPCSStandards/PHPCSUtils/pull/593
+[#598]: https://github.com/PHPCSStandards/PHPCSUtils/pull/598
+[#599]: https://github.com/PHPCSStandards/PHPCSUtils/pull/599
+[#600]: https://github.com/PHPCSStandards/PHPCSUtils/pull/600
+[#610]: https://github.com/PHPCSStandards/PHPCSUtils/pull/610
+[#612]: https://github.com/PHPCSStandards/PHPCSUtils/pull/612
+[#617]: https://github.com/PHPCSStandards/PHPCSUtils/pull/617
+[#618]: https://github.com/PHPCSStandards/PHPCSUtils/pull/618
+[#619]: https://github.com/PHPCSStandards/PHPCSUtils/issues/619
+[#620]: https://github.com/PHPCSStandards/PHPCSUtils/pull/620
+[#629]: https://github.com/PHPCSStandards/PHPCSUtils/pull/629
+[#642]: https://github.com/PHPCSStandards/PHPCSUtils/pull/642
+[#644]: https://github.com/PHPCSStandards/PHPCSUtils/pull/644
+[#646]: https://github.com/PHPCSStandards/PHPCSUtils/pull/646
+[#653]: https://github.com/PHPCSStandards/PHPCSUtils/pull/653
+[#661]: https://github.com/PHPCSStandards/PHPCSUtils/pull/661
+[#667]: https://github.com/PHPCSStandards/PHPCSUtils/pull/667
+[#668]: https://github.com/PHPCSStandards/PHPCSUtils/pull/668
+[#674]: https://github.com/PHPCSStandards/PHPCSUtils/pull/674
+[#677]: https://github.com/PHPCSStandards/PHPCSUtils/pull/677
+[#679]: https://github.com/PHPCSStandards/PHPCSUtils/pull/679
+
+
 ## [1.0.12] - 2024-05-20
 
 ### Added
@@ -1051,6 +1221,7 @@ This initial alpha release contains the following utility classes:
 
 
 [Unreleased]:   https://github.com/PHPCSStandards/PHPCSUtils/compare/stable...HEAD
+[1.1.0]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.12...1.1.0
 [1.0.12]:       https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.11...1.0.12
 [1.0.11]:       https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.10...1.0.11
 [1.0.10]:       https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.9...1.0.10
@@ -1077,15 +1248,20 @@ This initial alpha release contains the following utility classes:
 [`BCTokens`]:                      https://phpcsutils.com/phpdoc/classes/PHPCSUtils-BackCompat-BCTokens.html
 [`Helper`]:                        https://phpcsutils.com/phpdoc/classes/PHPCSUtils-BackCompat-Helper.html
 [`SpacesFixer`]:                   https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Fixers-SpacesFixer.html
+[`ConfigDouble`]:                  https://phpcsutils.com/phpdoc/classes/PHPCSUtils-TestUtils-ConfigDouble.html
+[`RulesetDouble`]:                 https://phpcsutils.com/phpdoc/classes/PHPCSUtils-TestUtils-RulesetDouble.html
 [`UtilityMethodTestCase`]:         https://phpcsutils.com/phpdoc/classes/PHPCSUtils-TestUtils-UtilityMethodTestCase.html
 [`Collections`]:                   https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Tokens-Collections.html
 [`TokenHelper`]:                   https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Tokens-TokenHelper.html
 [`Arrays`]:                        https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Arrays.html
 [`Conditions`]:                    https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Conditions.html
+[`Constants`]:                     https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Constants.html
 [`Context`]:                       https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Context.html
 [`ControlStructures`]:             https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-ControlStructures.html
 [`FunctionDeclarations`]:          https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-FunctionDeclarations.html
 [`GetTokensAsString`]:             https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-GetTokensAsString.html
+[`FileInfo`]:                      https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-FileInfo.html
+[`FilePath`]:                      https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-FilePath.html
 [`Lists`]:                         https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Lists.html
 [`MessageHelper`]:                 https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-MessageHelper.html
 [`Namespaces`]:                    https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Namespaces.html
@@ -1098,9 +1274,11 @@ This initial alpha release contains the following utility classes:
 [`PassedParameters`]:              https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-PassedParameters.html
 [`Scopes`]:                        https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Scopes.html
 [`TextStrings`]:                   https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-TextStrings.html
+[`TypeString`]:                    https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-TypeString.html
 [`UseStatements`]:                 https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-UseStatements.html
 [`Variables`]:                     https://phpcsutils.com/phpdoc/classes/PHPCSUtils-Utils-Variables.html
 
-[@fredden]:     https://github.com/fredden
-[@GaryJones]:   https://github.com/GaryJones
-[@szepeviktor]: https://github.com/szepeviktor
+[@DanielEScherzer]: https://github.com/DanielEScherzer
+[@fredden]:         https://github.com/fredden
+[@GaryJones]:       https://github.com/GaryJones
+[@szepeviktor]:     https://github.com/szepeviktor

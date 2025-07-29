@@ -2,7 +2,7 @@
 
 <div aria-hidden="true">
 
-[![Latest Stable Version](https://poser.pugx.org/phpcsstandards/phpcsutils/v/stable)][phpcsutils-packagist]
+[![Latest Stable Version](https://img.shields.io/packagist/v/phpcsstandards/phpcsutils?label=stable)][phpcsutils-packagist]
 [![Release Date of the Latest Version](https://img.shields.io/github/release-date/PHPCSStandards/PHPCSUtils.svg?maxAge=1800)][phpcsutils-releases]
 :construction:
 [![Latest Unstable Version](https://img.shields.io/badge/unstable-dev--develop-e68718.svg?maxAge=2419200)](https://packagist.org/packages/phpcsstandards/phpcsutils#dev-develop)
@@ -13,10 +13,10 @@
 [![Test Build Status](https://github.com/PHPCSStandards/PHPCSUtils/actions/workflows/test.yml/badge.svg?branch=develop)][phpcsutils-tests-gha]
 [![Coverage Status](https://coveralls.io/repos/github/PHPCSStandards/PHPCSUtils/badge.svg?branch=develop)](https://coveralls.io/github/PHPCSStandards/PHPCSUtils?branch=develop)
 
-[![Minimum PHP Version](https://img.shields.io/packagist/php-v/phpcsstandards/phpcsutils.svg?maxAge=3600)][phpcsutils-packagist]
-[![Tested on PHP 5.4 to 8.3](https://img.shields.io/badge/tested%20on-PHP%205.4%20|%205.5%20|%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3-brightgreen.svg?maxAge=2419200)][phpcsutils-tests-gha]
+[![Minimum PHP Version](https://img.shields.io/packagist/dependency-v/phpcsstandards/phpcsutils/php.svg)][phpcsutils-packagist]
+[![Tested on PHP 5.4 to 8.4](https://img.shields.io/badge/tested%20on-PHP%205.4%20|%205.5%20|%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3%20|%208.4-brightgreen.svg?maxAge=2419200)][phpcsutils-tests-gha]
 
-[![License: LGPLv3](https://poser.pugx.org/phpcsstandards/phpcsutils/license)](https://github.com/PHPCSStandards/PHPCSUtils/blob/stable/LICENSE)
+[![License: LGPLv3](https://img.shields.io/github/license/PHPCSStandards/PHPCSUtils)](https://github.com/PHPCSStandards/PHPCSUtils/blob/stable/LICENSE)
 ![Awesome](https://img.shields.io/badge/awesome%3F-yes!-brightgreen.svg)
 
 </div>
@@ -46,7 +46,7 @@ Whether you need to split an `array` into the individual items, are trying to de
 
 Includes improved versions of the PHPCS native utility functions and plenty of new utility functions.
 
-These functions are compatible with PHPCS 3.10.0 up to PHPCS `master`.
+These functions are compatible with PHPCS 3.13.0 up to PHPCS `4.x`.
 
 ### A collection of static properties and methods for often-used token groups
 
@@ -60,13 +60,13 @@ These classes take most of the heavy lifting away for some frequently occurring 
 ### Test utilities
 
 An abstract `UtilityMethodTestCase` class to support testing of your utility methods written for PHP_CodeSniffer.
-Supports PHPUnit 4.x up to 9.x.
+Supports PHPUnit 4.x up to 11.x.
 
 ### Use the latest version of PHP_CodeSniffer native utility functions
 
 Normally to use the latest version of PHP_CodeSniffer native utility functions, you would have to raise the minimum requirements of your external PHPCS standard.
 
-Now you won't have to anymore. This package allows you to use the latest version of those utility functions in all PHP_CodeSniffer versions from PHPCS 3.10.0 and up.
+Now you won't have to anymore. This package allows you to use the latest version of those utility functions in all PHP_CodeSniffer versions from PHPCS 3.13.0 and up.
 
 ### Fully documented
 
@@ -78,7 +78,7 @@ To see detailed information about all the available abstract sniffs, utility fun
 ## Minimum Requirements
 
 * PHP 5.4 or higher.
-* [PHP_CodeSniffer] 3.10.0+.
+* [PHP_CodeSniffer] 3.13.0+/4.0.0+.
 * Recommended PHP extensions for optimal functionality:
     - PCRE with Unicode support (normally enabled by default)
 

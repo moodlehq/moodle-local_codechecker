@@ -10,10 +10,11 @@
 
 namespace PHPCSUtils\AbstractSniffs;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Exceptions\LogicException;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\Arrays;
 use PHPCSUtils\Utils\Numbers;
@@ -118,8 +119,6 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
         \T_DNUMBER                  => \T_DNUMBER,
         \T_CONSTANT_ENCAPSED_STRING => \T_CONSTANT_ENCAPSED_STRING,
         \T_STRING_CONCAT            => \T_STRING_CONCAT,
-        \T_INLINE_THEN              => \T_INLINE_THEN,
-        \T_INLINE_ELSE              => \T_INLINE_ELSE,
         \T_BOOLEAN_NOT              => \T_BOOLEAN_NOT,
     ];
 
@@ -143,6 +142,7 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
         $this->acceptedTokens += Tokens::$castTokens;
         $this->acceptedTokens += Tokens::$bracketTokens;
         $this->acceptedTokens += Tokens::$heredocTokens;
+        $this->acceptedTokens += Collections::ternaryOperators();
     }
 
     /**
@@ -179,7 +179,7 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
     {
         try {
             $this->arrayItems = PassedParameters::getParameters($phpcsFile, $stackPtr);
-        } catch (RuntimeException $e) {
+        } catch (UnexpectedTokenType $e) {
             // Parse error, short list, real square open bracket or incorrectly tokenized short array token.
             return;
         }
@@ -246,7 +246,7 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
         foreach ($this->arrayItems as $itemNr => $arrayItem) {
             try {
                 $arrowPtr = Arrays::getDoubleArrowPtr($phpcsFile, $arrayItem['start'], $arrayItem['end']);
-            } catch (RuntimeException $e) {
+            } catch (LogicException $e) {
                 // Parse error: empty array item. Ignore.
                 continue;
             }
@@ -476,6 +476,37 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
             if ($this->tokens[$i]['code'] === \T_WHITESPACE) {
                 $content .= ' ';
                 continue;
+            }
+
+            // Handle FQN true/false/null.
+            if ($this->tokens[$i]['code'] === \T_NAME_FULLY_QUALIFIED) {
+                $compareReadyKeyword = \strtolower($this->tokens[$i]['content']);
+                if ($compareReadyKeyword === '\true'
+                    || $compareReadyKeyword === '\false'
+                    || $compareReadyKeyword === '\null'
+                ) {
+                    // FQN true/false/null on PHPCS 4.x. This can be handled.
+                    $content .= $this->tokens[$i]['content'];
+                    continue;
+                }
+            } elseif ($this->tokens[$i]['code'] === \T_NS_SEPARATOR) {
+                // PHPCS 3.x.
+                $nextNonEmpty   = $phpcsFile->findNext(Tokens::$emptyTokens, ($i + 1), null, true);
+                $nextNonEmptyLC = \strtolower($this->tokens[$nextNonEmpty]['content']);
+                if ($nextNonEmpty !== false
+                    // PHPCS 3.x with PHP < 8.0.
+                    && ($this->tokens[$nextNonEmpty]['code'] === \T_TRUE
+                    || $this->tokens[$nextNonEmpty]['code'] === \T_FALSE
+                    || $this->tokens[$nextNonEmpty]['code'] === \T_NULL
+                    // PHPCS 3.x with PHP >= 8.0 where the namespaced name tokenization has been undone.
+                    || ($this->tokens[$nextNonEmpty]['code'] === \T_STRING
+                        && ($nextNonEmptyLC === 'true' || $nextNonEmptyLC === 'false' || $nextNonEmptyLC === 'null')))
+                ) {
+                    // FQN true/false/null on PHPCS 3.x. This can be handled.
+                    $content .= $this->tokens[$nextNonEmpty]['content'];
+                    $i        = $nextNonEmpty;
+                    continue;
+                }
             }
 
             if (isset($this->acceptedTokens[$this->tokens[$i]['code']]) === false) {

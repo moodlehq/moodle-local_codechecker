@@ -29,12 +29,47 @@ use PHP_CodeSniffer\Files\File;
 
 class ValidVariableNameSniff extends AbstractVariableSniff
 {
-    public static $allowedglobals = ['ADMIN', 'CFG', 'COURSE', 'DB', 'FULLME',
-        'OUTPUT', 'PAGE', 'PERF', 'SESSION', 'SITE', 'THEME', 'USER',
-        '_SERVER', '_GET', '_POST', '_FILES', '_REQUEST', '_SESSION', '_ENV',
-        '_COOKIE', '_HTTP_RAW_POST_DATA', 'ACCESSLIB_PRIVATE', 'ME',
-        'CONDITIONLIB_PRIVATE', 'FILTERLIB_PRIVATE', 'SCRIPT', 'MNET_REMOTE_CLIENT',
-        'http_response_header'];
+    public static $allowedglobals = [
+        // PHP Superglobals.
+        '_COOKIE',
+        '_ENV',
+        '_FILES',
+        '_GET',
+        '_POST',
+        '_REQUEST',
+        '_SERVER',
+        '_SESSION',
+
+        // PHP Predefined variables.
+        'http_response_header',
+        '_HTTP_RAW_POST_DATA', // Removed in PHP 7.0.
+
+        // Moodle global objects.
+        'ADMIN',
+        'CFG',
+        'COURSE',
+        'DB',
+        'OUTPUT',
+        'PAGE',
+        'PERF',
+        'SESSION',
+        'SITE',
+        'THEME',
+        'USER',
+        'XMLDB',
+
+        // Moodle global literals.
+        'FULLME',
+        'FULLSCRIPT',
+        'ME',
+        'SCRIPT',
+
+        // Moodle private objects.
+        'ACCESSLIB_PRIVATE',
+        'CONDITIONLIB_PRIVATE', // Removed in Moodle 2.7.
+        'FILTERLIB_PRIVATE',
+        'MNET_REMOTE_CLIENT',
+    ];
 
     /**
      * Processes class member variables.

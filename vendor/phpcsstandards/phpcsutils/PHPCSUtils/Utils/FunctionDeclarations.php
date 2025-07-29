@@ -10,9 +10,12 @@
 
 namespace PHPCSUtils\Utils;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Exceptions\OutOfBoundsStackPtr;
+use PHPCSUtils\Exceptions\TypeError;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
+use PHPCSUtils\Exceptions\ValueError;
 use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Tokens\Collections;
 use PHPCSUtils\Utils\GetTokensAsString;
@@ -129,8 +132,8 @@ final class FunctionDeclarations
      * @return string|null The name of the function; or `NULL` if the passed token doesn't exist,
      *                     the function is anonymous or in case of a parse error/live coding.
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified token is not of type
-     *                                                      `T_FUNCTION`.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a `T_FUNCTION` token.
      */
     public static function getName(File $phpcsFile, $stackPtr)
     {
@@ -179,17 +182,25 @@ final class FunctionDeclarations
      *               );
      *               ```
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified position is not a T_FUNCTION
-     *                                                      or T_CLOSURE token, nor an arrow function.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a T_FUNCTION, T_CLOSURE
+     *                                                    or T_FN token.
      */
     public static function getProperties(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]) === false
-            || isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === false
-        ) {
-            throw new RuntimeException('$stackPtr must be of type T_FUNCTION or T_CLOSURE or an arrow function');
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if (isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === false) {
+            throw UnexpectedTokenType::create(2, '$stackPtr', 'T_FUNCTION, T_CLOSURE or T_FN', $tokens[$stackPtr]['type']);
         }
 
         if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {
@@ -373,6 +384,12 @@ final class FunctionDeclarations
      *                                       // This index will only be set if the property is readonly.
      * ```
      *
+     * ... and if the promoted property uses asymmetric visibility, these additional array indexes will also be available:
+     * ```php
+     *   'set_visibility'       => string, // The property set-visibility as declared.
+     *   'set_visibility_token' => int,    // The stack pointer to the set-visibility modifier token.
+     * ```
+     *
      * Main differences with the PHPCS version:
      * - Defensive coding against incorrect calls to this method.
      * - More efficient and more stable checking whether a `T_USE` token is a closure use.
@@ -392,21 +409,29 @@ final class FunctionDeclarations
      *
      * @return array<int, array<string, mixed>>
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified $stackPtr is not of
-     *                                                      type `T_FUNCTION`, `T_CLOSURE` or `T_USE`,
-     *                                                      nor an arrow function.
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If a passed `T_USE` token is not a closure
-     *                                                      use token.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a T_FUNCTION, T_CLOSURE,
+     *                                                    T_FN or T_USE token.
+     * @throws \PHPCSUtils\Exceptions\ValueError          If a passed `T_USE` token is not a closure use token.
      */
     public static function getParameters(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]) === false
-            || (isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === false
-                && $tokens[$stackPtr]['code'] !== \T_USE)
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if (isset(Collections::functionDeclarationTokens()[$tokens[$stackPtr]['code']]) === false
+            && $tokens[$stackPtr]['code'] !== \T_USE
         ) {
-            throw new RuntimeException('$stackPtr must be of type T_FUNCTION, T_CLOSURE or T_USE or an arrow function');
+            $acceptedTokens = 'T_FUNCTION, T_CLOSURE, T_FN or T_USE';
+            throw UnexpectedTokenType::create(2, '$stackPtr', $acceptedTokens, $tokens[$stackPtr]['type']);
         }
 
         if ($tokens[$stackPtr]['code'] === \T_USE) {
@@ -416,7 +441,7 @@ final class FunctionDeclarations
                 || $tokens[$opener]['code'] !== \T_OPEN_PARENTHESIS
                 || UseStatements::isClosureUse($phpcsFile, $stackPtr) === false
             ) {
-                throw new RuntimeException('$stackPtr was not a valid closure T_USE');
+                throw ValueError::create(2, '$stackPtr', 'must be the pointer to a closure use statement');
             }
         } else {
             if (isset($tokens[$stackPtr]['parenthesis_opener']) === false) {
@@ -438,23 +463,24 @@ final class FunctionDeclarations
 
         $closer = $tokens[$opener]['parenthesis_closer'];
 
-        $vars             = [];
-        $currVar          = null;
-        $paramStart       = ($opener + 1);
-        $defaultStart     = null;
-        $equalToken       = null;
-        $paramCount       = 0;
-        $hasAttributes    = false;
-        $passByReference  = false;
-        $referenceToken   = false;
-        $variableLength   = false;
-        $variadicToken    = false;
-        $typeHint         = '';
-        $typeHintToken    = false;
-        $typeHintEndToken = false;
-        $nullableType     = false;
-        $visibilityToken  = null;
-        $readonlyToken    = null;
+        $vars               = [];
+        $currVar            = null;
+        $paramStart         = ($opener + 1);
+        $defaultStart       = null;
+        $equalToken         = null;
+        $paramCount         = 0;
+        $hasAttributes      = false;
+        $passByReference    = false;
+        $referenceToken     = false;
+        $variableLength     = false;
+        $variadicToken      = false;
+        $typeHint           = '';
+        $typeHintToken      = false;
+        $typeHintEndToken   = false;
+        $nullableType       = false;
+        $visibilityToken    = null;
+        $setVisibilityToken = null;
+        $readonlyToken      = null;
 
         $parameterTypeTokens = Collections::parameterTypeTokens();
 
@@ -510,6 +536,12 @@ final class FunctionDeclarations
                     $visibilityToken = $i;
                     break;
 
+                case \T_PUBLIC_SET:
+                case \T_PROTECTED_SET:
+                case \T_PRIVATE_SET:
+                    $setVisibilityToken = $i;
+                    break;
+
                 case \T_READONLY:
                     $readonlyToken = $i;
                     break;
@@ -547,16 +579,21 @@ final class FunctionDeclarations
                     $vars[$paramCount]['type_hint_end_token'] = $typeHintEndToken;
                     $vars[$paramCount]['nullable_type']       = $nullableType;
 
-                    if ($visibilityToken !== null || $readonlyToken !== null) {
+                    if ($visibilityToken !== null || $setVisibilityToken !== null || $readonlyToken !== null) {
                         $vars[$paramCount]['property_visibility'] = 'public';
                         $vars[$paramCount]['visibility_token']    = false;
-                        $vars[$paramCount]['property_readonly']   = false;
 
                         if ($visibilityToken !== null) {
                             $vars[$paramCount]['property_visibility'] = $tokens[$visibilityToken]['content'];
                             $vars[$paramCount]['visibility_token']    = $visibilityToken;
                         }
 
+                        if ($setVisibilityToken !== null) {
+                            $vars[$paramCount]['set_visibility']       = $tokens[$setVisibilityToken]['content'];
+                            $vars[$paramCount]['set_visibility_token'] = $setVisibilityToken;
+                        }
+
+                        $vars[$paramCount]['property_readonly'] = false;
                         if ($readonlyToken !== null) {
                             $vars[$paramCount]['property_readonly'] = true;
                             $vars[$paramCount]['readonly_token']    = $readonlyToken;
@@ -570,21 +607,22 @@ final class FunctionDeclarations
                     }
 
                     // Reset the vars, as we are about to process the next parameter.
-                    $currVar          = null;
-                    $paramStart       = ($i + 1);
-                    $defaultStart     = null;
-                    $equalToken       = null;
-                    $hasAttributes    = false;
-                    $passByReference  = false;
-                    $referenceToken   = false;
-                    $variableLength   = false;
-                    $variadicToken    = false;
-                    $typeHint         = '';
-                    $typeHintToken    = false;
-                    $typeHintEndToken = false;
-                    $nullableType     = false;
-                    $visibilityToken  = null;
-                    $readonlyToken    = null;
+                    $currVar            = null;
+                    $paramStart         = ($i + 1);
+                    $defaultStart       = null;
+                    $equalToken         = null;
+                    $hasAttributes      = false;
+                    $passByReference    = false;
+                    $referenceToken     = false;
+                    $variableLength     = false;
+                    $variadicToken      = false;
+                    $typeHint           = '';
+                    $typeHintToken      = false;
+                    $typeHintEndToken   = false;
+                    $nullableType       = false;
+                    $visibilityToken    = null;
+                    $setVisibilityToken = null;
+                    $readonlyToken      = null;
 
                     ++$paramCount;
                     break;

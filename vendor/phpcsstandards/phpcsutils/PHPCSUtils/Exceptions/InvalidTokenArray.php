@@ -10,7 +10,7 @@
 
 namespace PHPCSUtils\Exceptions;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
+use PHPCSUtils\Exceptions\RuntimeException;
 
 /**
  * Exception thrown when an non-existent token array is requested.

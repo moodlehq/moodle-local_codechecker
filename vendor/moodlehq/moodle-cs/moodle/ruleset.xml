@@ -9,8 +9,57 @@
     <arg name="extensions" value="php" />
     <arg name="encoding" value="utf-8" />
 
+    <!--
+        Add the complete PHPCompatibility standard to warn about features of unsupported PHP versions.
+    -->
+    <rule ref="PHPCompatibility" />
+
+    <!--
+        Include the PSR-12 ruleset with relevant Moodle exclusions
+    -->
+    <rule ref="PSR12">
+        <!-- Moodle already defines its own line length, so remove this from the PSR-12 standard -->
+        <!-- The Moodle standard also ignores long lines in lang files. -->
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+
+        <!-- Moodle has a header manager and places its copyright on the first line after the opening tag -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/>
+
+        <!-- Moodle doesn't mandate (nor support) namespaces everywhere, so remove this for now -->
+        <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+
+        <!-- Moodle has its own custom sniff for side effects  -->
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+
+        <!-- Moodle does not support camel case at all -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+
+        <!-- Moodle does not place the opening brace on a new line -->
+        <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNewLine"/>
+
+        <!-- Moodle allows use of else if-->
+        <exclude name="PSR2.ControlStructures.ElseIfDeclaration.NotAllowed"/>
+
+        <!-- Moodle casing rules do not allow camel case at all -->
+        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
+
+        <!-- Moodle currently places the brace in the same line -->
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine"/>
+    </rule>
+
+    <!--
+        Moodle has its own naming conventions for variables, which are different from the PSR-12 standard.
+        These are managed by the ValidVariableName sniff in the moodle standard.
+        Unfortunately the phpcbf tool can be too aggressive in fixing these issues and will break legacy code if these are applied.
+        As a temporary solution we exclude these from phpcbf, so that they can be fixed manually in the future.
+    -->
+    <exclude name="moodle.NamingConventions.ValidVariableName.MemberNameUnderscore" phpcbf-only="true" />
+    <exclude name="moodle.NamingConventions.ValidVariableName.VariableNameUnderscore" phpcbf-only="true" />
+    <exclude name="moodle.NamingConventions.ValidVariableName.VariableNameLowerCase" phpcbf-only="true" />
+
+    <!-- Disallow the Long Array syntax `array()` -->
     <rule ref="Generic.Arrays.DisallowLongArraySyntax">
-        <type>warning</type>
+        <type>error</type>
     </rule>
 
     <!--
@@ -25,41 +74,31 @@
         <exclude name="NormalizedArrays.Arrays.CommaAfterLast.MissingMultiLineCloserSameLine" />
     </rule>
 
+    <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+
     <rule ref="Generic.Classes.DuplicateClassName"/>
-    <rule ref="Generic.Classes.OpeningBraceSameLine"/>
 
     <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
     <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
 
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
 
-    <rule ref="Generic.Files.LineEndings"/>
-    <rule ref="Generic.Files.EndFileNewline"/>
-
     <rule ref="Generic.Functions.CallTimePassByReference"/>
     <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
 
     <rule ref="Generic.NamingConventions.ConstructorName"/>
-    <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
-
-    <rule ref="Generic.PHP.DisallowShortOpenTag"/>
-    <rule ref="Generic.PHP.LowerCaseConstant"/>
 
     <rule ref="Generic.WhiteSpace.ScopeIndent">
         <properties>
-            <property name="ignoreIndentationTokens" type="array"
-                value="T_CLOSE_TAG"/>
+            <property name="ignoreIndentationTokens" type="array" value="T_CLOSE_TAG"/>
         </properties>
     </rule>
-    <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
 
     <rule ref="Squiz.Classes.DuplicateProperty"/>
     <rule ref="Squiz.Classes.LowercaseClassKeywords"/>
     <rule ref="Squiz.Classes.SelfMemberReference"/>
 
     <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
-
-    <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
 
     <rule ref="Squiz.Commenting.DocCommentAlignment"/>
     <rule ref="Squiz.Commenting.EmptyCatchComment"/>
@@ -69,7 +108,6 @@
     <rule ref="Squiz.ControlStructures.ForLoopDeclaration"/>
     <rule ref="Squiz.ControlStructures.LowercaseDeclaration"/>
 
-    <rule ref="Squiz.Functions.LowercaseFunctionKeywords"/>
     <rule ref="PSR2.Methods.MethodDeclaration"/>
 
     <rule ref="Squiz.Operators.ValidLogicalOperators"/>
@@ -81,7 +119,6 @@
         </properties>
     </rule>
 
-    <rule ref="Squiz.Scope.MethodScope"/>
     <rule ref="Squiz.Scope.StaticThisUsage"/>
 
     <rule ref="Squiz.WhiteSpace.OperatorSpacing">
@@ -98,9 +135,21 @@
     <rule ref="Squiz.WhiteSpace.ScopeClosingBrace"/>
     <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing"/>
     <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
-    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
 
-    <rule ref="Zend.Files.ClosingTag"/>
+    <!--
+        Moodle has its own rules for whitespace, which are stricter than the PSR-12 standard.
+        We do not allow superfluous whitespace at the start or end of files, or multiple consecutive empty lines.
+    -->
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.StartFile">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EndFile">
+        <severity>5</severity>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines">
+        <severity>5</severity>
+    </rule>
 
     <!-- Disable this exact error unless it's approved -->
     <rule ref="moodle.Commenting.InlineComment.SpacingAfter">
@@ -108,20 +157,39 @@
     </rule>
 
     <!--
-        Namespace statements, and class imports (use statements) should not use a leading backslash.
-    -->
-    <rule ref="PSR12.Files.ImportStatement.LeadingSlash"/>
-
-    <!-- PSR12 function return types (whitespace handling) -->
-    <rule ref="PSR12.Functions.ReturnTypeDeclaration"/>
-    <rule ref="PSR12.Functions.NullableTypeDeclaration"/>
-
-    <!-- Let's add the complete PHPCompatibility standard -->
-    <rule ref="PHPCompatibility" />
-
-    <!--
         Detect duplicate array keys. This is useful for unit test providers in particular.
     -->
     <rule ref="Universal.Arrays.DuplicateArrayKey"/>
 
+    <!-- Disallow use of list() instead of [] -->
+    <rule ref="Universal.Lists.DisallowLongListSyntax"/>
+
+    <!-- Ensure that ::class is lower-cased -->
+    <rule ref="Universal.Constants.LowercaseClassResolutionKeyword"/>
+
+    <!-- Require a consistent modifier keyword order for OO constant declarations -->
+    <rule ref="Universal.Constants.ModifierKeywordOrder"/>
+
+    <!-- Enforce that the names used in a class/enum "implements" statement or an interface "extends" statement are listed in alphabetic order -->
+    <rule ref="Universal.OOStructures.AlphabeticExtendsImplements"/>
+
+    <!-- Enforce the use of a single space after the use, function, const keywords and both before and after the as keyword in import use statements -->
+    <rule ref="Universal.UseStatements.KeywordSpacing"/>
+
+    <!-- Enforce lowercase function/const -->
+    <rule ref="Universal.UseStatements.LowercaseFunctionConst"/>
+
+    <!-- Detect useless class imports (aliases) -->
+    <rule ref="Universal.UseStatements.NoUselessAliases"/>
+
+    <!-- Enforce comma, spacing, like, this -->
+    <rule ref="Universal.WhiteSpace.CommaSpacing"/>
+
+    <!--
+        Moodle contains a lot of code which pre-dates PHP 7.1 and did not support constant visibility.
+        We will remove this override in the future.
+    -->
+    <rule ref="PSR12.Properties.ConstantVisibility.NotFound">
+        <severity>0</severity>
+    </rule>
 </ruleset>

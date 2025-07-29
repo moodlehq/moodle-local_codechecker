@@ -346,7 +346,6 @@ class File
         $listenerIgnoreTo = [];
         $inTests          = defined('PHP_CODESNIFFER_IN_TESTS');
         $checkAnnotations = $this->config->annotations;
-        $annotationErrors = [];
 
         // Foreach of the listeners that have registered to listen for this
         // token, get them to process it.
@@ -415,15 +414,7 @@ class File
                                 'scope' => 'sniff',
                             ];
                             $listenerClass = $this->ruleset->sniffCodes[$listenerCode];
-                            try {
-                                $this->ruleset->setSniffProperty($listenerClass, $propertyCode, $settings);
-                            } catch (RuntimeException $e) {
-                                // Non-existant property being set via an inline annotation.
-                                // This is typically a PHPCS test case file, but we can't throw an error on the annotation
-                                // line as it would get ignored. We also don't want this error to block
-                                // the scan of the current file, so collect these and throw later.
-                                $annotationErrors[] = 'Line '.$token['line'].': '.str_replace('Ruleset invalid. ', '', $e->getMessage());
-                            }
+                            $this->ruleset->setSniffProperty($listenerClass, $propertyCode, $settings);
                         }
                     }
                 }//end if
@@ -553,13 +544,6 @@ class File
             }
         }
 
-        if ($annotationErrors !== []) {
-            $error  = 'Encountered invalid inline phpcs:set annotations. Found:'.PHP_EOL;
-            $error .= implode(PHP_EOL, $annotationErrors);
-
-            $this->addWarning($error, null, 'Internal.PropertyDoesNotExist');
-        }
-
         if (PHP_CODESNIFFER_VERBOSITY > 2) {
             echo "\t*** END TOKEN PROCESSING ***".PHP_EOL;
             echo "\t*** START SNIFF PROCESSING REPORT ***".PHP_EOL;
@@ -672,13 +656,13 @@ class File
     /**
      * Records an error against a specific token in the file.
      *
-     * @param string  $error    The error message.
-     * @param int     $stackPtr The stack position where the error occurred.
-     * @param string  $code     A violation code unique to the sniff message.
-     * @param array   $data     Replacements for the error message.
-     * @param int     $severity The severity level for this error. A value of 0
-     *                          will be converted into the default severity level.
-     * @param boolean $fixable  Can the error be fixed by the sniff?
+     * @param string   $error    The error message.
+     * @param int|null $stackPtr The stack position where the error occurred.
+     * @param string   $code     A violation code unique to the sniff message.
+     * @param array    $data     Replacements for the error message.
+     * @param int      $severity The severity level for this error. A value of 0
+     *                           will be converted into the default severity level.
+     * @param boolean  $fixable  Can the error be fixed by the sniff?
      *
      * @return boolean
      */
@@ -706,13 +690,13 @@ class File
     /**
      * Records a warning against a specific token in the file.
      *
-     * @param string  $warning  The error message.
-     * @param int     $stackPtr The stack position where the error occurred.
-     * @param string  $code     A violation code unique to the sniff message.
-     * @param array   $data     Replacements for the warning message.
-     * @param int     $severity The severity level for this warning. A value of 0
-     *                          will be converted into the default severity level.
-     * @param boolean $fixable  Can the warning be fixed by the sniff?
+     * @param string   $warning  The error message.
+     * @param int|null $stackPtr The stack position where the error occurred.
+     * @param string   $code     A violation code unique to the sniff message.
+     * @param array    $data     Replacements for the warning message.
+     * @param int      $severity The severity level for this warning. A value of 0
+     *                           will be converted into the default severity level.
+     * @param boolean  $fixable  Can the warning be fixed by the sniff?
      *
      * @return boolean
      */
@@ -873,9 +857,13 @@ class File
         $parts = explode('.', $code);
         if ($parts[0] === 'Internal') {
             // An internal message.
-            $listenerCode = Common::getSniffCode($this->activeListener);
-            $sniffCode    = $code;
-            $checkCodes   = [$sniffCode];
+            $listenerCode = '';
+            if ($this->activeListener !== '') {
+                $listenerCode = Common::getSniffCode($this->activeListener);
+            }
+
+            $sniffCode  = $code;
+            $checkCodes = [$sniffCode];
         } else {
             if ($parts[0] !== $code) {
                 // The full message code has been passed in.
@@ -1300,8 +1288,17 @@ class File
             return $this->tokens[$stackPtr]['content'];
         }
 
+        $stopPoint = $this->numTokens;
+        if (isset($this->tokens[$stackPtr]['parenthesis_opener']) === true) {
+            // For functions, stop searching at the parenthesis opener.
+            $stopPoint = $this->tokens[$stackPtr]['parenthesis_opener'];
+        } else if (isset($this->tokens[$stackPtr]['scope_opener']) === true) {
+            // For OO tokens, stop searching at the open curly.
+            $stopPoint = $this->tokens[$stackPtr]['scope_opener'];
+        }
+
         $content = null;
-        for ($i = $stackPtr; $i < $this->numTokens; $i++) {
+        for ($i = $stackPtr; $i < $stopPoint; $i++) {
             if ($this->tokens[$i]['code'] === T_STRING) {
                 $content = $this->tokens[$i]['content'];
                 break;
@@ -1357,6 +1354,10 @@ class File
      *         'readonly_token'      => integer,       // The stack pointer to the readonly modifier token.
      *                                                 // This index will only be set if the property is readonly.
      *
+     * ... and if the promoted property uses asymmetric visibility, these additional array indexes will also be available:
+     *         'set_visibility'       => string,       // The property set-visibility as declared.
+     *         'set_visibility_token' => integer,      // The stack pointer to the set-visibility modifier token.
+     *
      * @param int $stackPtr The position in the stack of the function token
      *                      to acquire the parameters for.
      *
@@ -1409,10 +1410,11 @@ class File
         $variadicToken   = false;
         $typeHint        = '';
         $typeHintToken   = false;
-        $typeHintEndToken = false;
-        $nullableType     = false;
-        $visibilityToken  = null;
-        $readonlyToken    = null;
+        $typeHintEndToken   = false;
+        $nullableType       = false;
+        $visibilityToken    = null;
+        $setVisibilityToken = null;
+        $readonlyToken      = null;
 
         for ($i = $paramStart; $i <= $closer; $i++) {
             // Check to see if this token has a parenthesis or bracket opener. If it does
@@ -1544,6 +1546,13 @@ class File
                     $visibilityToken = $i;
                 }
                 break;
+            case T_PUBLIC_SET:
+            case T_PROTECTED_SET:
+            case T_PRIVATE_SET:
+                if ($defaultStart === null) {
+                    $setVisibilityToken = $i;
+                }
+                break;
             case T_READONLY:
                 if ($defaultStart === null) {
                     $readonlyToken = $i;
@@ -1578,16 +1587,21 @@ class File
                 $vars[$paramCount]['type_hint_end_token'] = $typeHintEndToken;
                 $vars[$paramCount]['nullable_type']       = $nullableType;
 
-                if ($visibilityToken !== null || $readonlyToken !== null) {
+                if ($visibilityToken !== null || $setVisibilityToken !== null || $readonlyToken !== null) {
                     $vars[$paramCount]['property_visibility'] = 'public';
                     $vars[$paramCount]['visibility_token']    = false;
-                    $vars[$paramCount]['property_readonly']   = false;
 
                     if ($visibilityToken !== null) {
                         $vars[$paramCount]['property_visibility'] = $this->tokens[$visibilityToken]['content'];
                         $vars[$paramCount]['visibility_token']    = $visibilityToken;
                     }
 
+                    if ($setVisibilityToken !== null) {
+                        $vars[$paramCount]['set_visibility']       = $this->tokens[$setVisibilityToken]['content'];
+                        $vars[$paramCount]['set_visibility_token'] = $setVisibilityToken;
+                    }
+
+                    $vars[$paramCount]['property_readonly'] = false;
                     if ($readonlyToken !== null) {
                         $vars[$paramCount]['property_readonly'] = true;
                         $vars[$paramCount]['readonly_token']    = $readonlyToken;
@@ -1601,21 +1615,22 @@ class File
                 }
 
                 // Reset the vars, as we are about to process the next parameter.
-                $currVar          = null;
-                $paramStart       = ($i + 1);
-                $defaultStart     = null;
-                $equalToken       = null;
-                $hasAttributes    = false;
-                $passByReference  = false;
-                $referenceToken   = false;
-                $variableLength   = false;
-                $variadicToken    = false;
-                $typeHint         = '';
-                $typeHintToken    = false;
-                $typeHintEndToken = false;
-                $nullableType     = false;
-                $visibilityToken  = null;
-                $readonlyToken    = null;
+                $currVar            = null;
+                $paramStart         = ($i + 1);
+                $defaultStart       = null;
+                $equalToken         = null;
+                $hasAttributes      = false;
+                $passByReference    = false;
+                $referenceToken     = false;
+                $variableLength     = false;
+                $variadicToken      = false;
+                $typeHint           = '';
+                $typeHintToken      = false;
+                $typeHintEndToken   = false;
+                $nullableType       = false;
+                $visibilityToken    = null;
+                $setVisibilityToken = null;
+                $readonlyToken      = null;
 
                 $paramCount++;
                 break;
@@ -1830,8 +1845,12 @@ class File
      *   array(
      *    'scope'           => string,        // Public, private, or protected.
      *    'scope_specified' => boolean,       // TRUE if the scope was explicitly specified.
+     *    'set_scope'       => string|false,  // Scope for asymmetric visibility.
+     *                                        // Either public, private, or protected or
+     *                                        // FALSE if no set scope is specified.
      *    'is_static'       => boolean,       // TRUE if the static keyword was found.
      *    'is_readonly'     => boolean,       // TRUE if the readonly keyword was found.
+     *    'is_final'        => boolean,       // TRUE if the final keyword was found.
      *    'type'            => string,        // The type of the var (empty if no type specified).
      *    'type_token'      => integer|false, // The stack pointer to the start of the type
      *                                        // or FALSE if there is no type.
@@ -1898,20 +1917,21 @@ class File
         }
 
         $valid = [
-            T_PUBLIC    => T_PUBLIC,
-            T_PRIVATE   => T_PRIVATE,
-            T_PROTECTED => T_PROTECTED,
-            T_STATIC    => T_STATIC,
-            T_VAR       => T_VAR,
-            T_READONLY  => T_READONLY,
+            T_STATIC   => T_STATIC,
+            T_VAR      => T_VAR,
+            T_READONLY => T_READONLY,
+            T_FINAL    => T_FINAL,
         ];
 
+        $valid += Tokens::$scopeModifiers;
         $valid += Tokens::$emptyTokens;
 
         $scope          = 'public';
         $scopeSpecified = false;
+        $setScope       = false;
         $isStatic       = false;
         $isReadonly     = false;
+        $isFinal        = false;
 
         $startOfStatement = $this->findPrevious(
             [
@@ -1941,13 +1961,25 @@ class File
                 $scope          = 'protected';
                 $scopeSpecified = true;
                 break;
+            case T_PUBLIC_SET:
+                $setScope = 'public';
+                break;
+            case T_PROTECTED_SET:
+                $setScope = 'protected';
+                break;
+            case T_PRIVATE_SET:
+                $setScope = 'private';
+                break;
             case T_STATIC:
                 $isStatic = true;
                 break;
             case T_READONLY:
                 $isReadonly = true;
                 break;
-            }
+            case T_FINAL:
+                $isFinal = true;
+                break;
+            }//end switch
         }//end for
 
         $type         = '';
@@ -2001,8 +2033,10 @@ class File
         return [
             'scope'           => $scope,
             'scope_specified' => $scopeSpecified,
+            'set_scope'       => $setScope,
             'is_static'       => $isStatic,
             'is_readonly'     => $isReadonly,
+            'is_final'        => $isFinal,
             'type'            => $type,
             'type_token'      => $typeToken,
             'type_end_token'  => $typeEndToken,
@@ -2554,6 +2588,7 @@ class File
                 && $this->tokens[$i]['code'] !== T_CONTINUE
                 && $this->tokens[$i]['code'] !== T_THROW
                 && $this->tokens[$i]['code'] !== T_EXIT
+                && $this->tokens[$i]['code'] !== T_GOTO
             ) {
                 // Found the end of the previous scope block.
                 return $lastNotEmpty;
