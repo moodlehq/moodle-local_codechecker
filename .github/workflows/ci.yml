@@ -36,6 +36,9 @@ jobs:
             moodle-branch: main
             database: mariadb
           - php: 8.3
+            moodle-branch: MOODLE_500_STABLE
+            database: pgsql
+          - php: 8.3
             moodle-branch: MOODLE_405_STABLE
             database: pgsql
           - php: 8.3
@@ -83,6 +86,10 @@ jobs:
           - php: 8.1
             moodle-branch: main
             database: mariadb
+          - php: 8.2
+            moodle-branch: MOODLE_500_STABLE
+            database: pgsql
+
           - php: 8.1
             moodle-branch: MOODLE_405_STABLE
             database: pgsql
