@@ -56,28 +56,6 @@ jobs:
             moodle-branch: MOODLE_401_STABLE
             database: pgsql
 
-          - php: 8.0
-            moodle-branch: MOODLE_400_STABLE
-            database: pgsql
-            # The following line is only needed if you're going to run php8 jobs and your
-            # plugin needs xmlrpc services.
-            extensions: xmlrpc-beta
-          - php: 8.0
-            moodle-branch: MOODLE_311_STABLE
-            database: pgsql
-            # The following line is only needed if you're going to run php8 jobs and your
-            # plugin needs xmlrpc services.
-            extensions: xmlrpc-beta
-
-          - php: 7.4
-            moodle-branch: MOODLE_310_STABLE
-            database: pgsql
-          - php: 7.4
-            moodle-branch: MOODLE_39_STABLE
-            database: pgsql
-          - php: 7.4
-            moodle-branch: MOODLE_38_STABLE
-            database: pgsql
 
           # Lowest php versions supported by each branch (with main always being tested twice).
           - php: 8.2
