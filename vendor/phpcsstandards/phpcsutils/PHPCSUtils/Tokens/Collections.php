@@ -23,40 +23,57 @@ use PHPCSUtils\Exceptions\InvalidTokenArray;
  *
  * @since 1.0.0
  *
- * @method static array alternativeControlStructureSyntaxes()      Tokens for control structures which can use the
- *                                                                 alternative control structure syntax.
- * @method static array alternativeControlStructureSyntaxClosers() Tokens representing alternative control structure
- *                                                                 syntax closer keywords.
- * @method static array arrayTokens()                              Tokens which are used to create arrays.
- * @method static array classModifierKeywords()                    Modifier keywords which can be used for a class
- *                                                                 declaration.
- * @method static array closedScopes()                             List of tokens which represent "closed" scopes.
- * @method static array constantModifierKeywords()                 Tokens which can be used as modifiers for a constant
- *                                                                 declaration (in OO structures).
- * @method static array controlStructureTokens()                   Control structure tokens.
- * @method static array functionDeclarationTokens()                Tokens which represent a keyword which starts
- *                                                                 a function declaration.
- * @method static array incrementDecrementOperators()              Increment/decrement operator tokens.
- * @method static array listTokens()                               Tokens which are used to create lists.
- * @method static array namespaceDeclarationClosers()              List of tokens which can end a namespace
- *                                                                 declaration statement.
- * @method static array nameTokens()                               Tokens used for "names", be it namespace, OO,
- *                                                                 function
- *                                                                 or constant names.
- * @method static array objectOperators()                          Object operator tokens.
- * @method static array ooCanExtend()                              OO structures which can use the "extends" keyword.
- * @method static array ooCanImplement()                           OO structures which can use the "implements" keyword.
- * @method static array ooConstantScopes()                         OO scopes in which constants can be declared.
- * @method static array ooHierarchyKeywords()                      Tokens types used for "forwarding" calls within
- *                                                                 OO structures.
- * @method static array ooPropertyScopes()                         OO scopes in which properties can be declared.
- * @method static array phpOpenTags()                              Tokens which open PHP.
- * @method static array propertyModifierKeywords()                 Modifier keywords which can be used for a property
- *                                                                 declaration.
- * @method static array shortArrayTokens()                         Tokens which are used for short arrays.
- * @method static array shortListTokens()                          Tokens which are used for short lists.
- * @method static array textStringStartTokens()                    Tokens which can start a - potentially multi-line -
- *                                                                 text string.
+ * @method static array<int|string, int|string> alternativeControlStructureSyntaxes()      Tokens for control structures
+ *                                                                                         which can use the alternative
+ *                                                                                         control structure syntax.
+ * @method static array<int|string, int|string> alternativeControlStructureSyntaxClosers() Tokens representing alternative
+ *                                                                                         control structure syntax closer
+ *                                                                                         keywords.
+ * @method static array<int|string, int|string> arrayTokens()                              Tokens which are used to create
+ *                                                                                         arrays.
+ * @method static array<int|string, int|string> classModifierKeywords()                    Modifier keywords which can be
+ *                                                                                         used for a class declaration.
+ * @method static array<int|string, int|string> closedScopes()                             List of tokens which represent
+ *                                                                                         "closed" scopes.
+ * @method static array<int|string, int|string> constantModifierKeywords()                 Tokens which can be used as
+ *                                                                                         modifiers for a constant
+ *                                                                                         declaration (in OO structures).
+ * @method static array<int|string, int|string> controlStructureTokens()                   Control structure tokens.
+ * @method static array<int|string, int|string> functionDeclarationTokens()                Tokens which represent a keyword
+ *                                                                                         which starts a function
+ *                                                                                         declaration.
+ * @method static array<int|string, int|string> incrementDecrementOperators()              Increment/decrement operator
+ *                                                                                         tokens.
+ * @method static array<int|string, int|string> listTokens()                               Tokens which are used to create
+ *                                                                                         lists.
+ * @method static array<int|string, int|string> namespaceDeclarationClosers()              List of tokens which can end a
+ *                                                                                         namespace declaration statement.
+ * @method static array<int|string, int|string> nameTokens()                               Tokens used for "names", be it
+ *                                                                                         namespace, OO, function or
+ *                                                                                         constant names.
+ * @method static array<int|string, int|string> objectOperators()                          Object operator tokens.
+ * @method static array<int|string, int|string> ooCanExtend()                              OO structures which can use the
+ *                                                                                         "extends" keyword.
+ * @method static array<int|string, int|string> ooCanImplement()                           OO structures which can use the
+ *                                                                                         "implements" keyword.
+ * @method static array<int|string, int|string> ooConstantScopes()                         OO scopes in which constants can
+ *                                                                                         be declared.
+ * @method static array<int|string, int|string> ooHierarchyKeywords()                      Tokens types used for "forwarding"
+ *                                                                                         calls within OO structures.
+ * @method static array<int|string, int|string> ooPropertyScopes()                         OO scopes in which properties can
+ *                                                                                         be declared.
+ * @method static array<int|string, int|string> phpOpenTags()                              Tokens which open PHP.
+ * @method static array<int|string, int|string> propertyModifierKeywords()                 Modifier keywords which can be
+ *                                                                                         used for a property declaration.
+ * @method static array<int|string, int|string> shortArrayTokens()                         Tokens which are used for
+ *                                                                                         short arrays.
+ * @method static array<int|string, int|string> shortListTokens()                          Tokens which are used for
+ *                                                                                         short lists.
+ * @method static array<int|string, int|string> ternaryOperators()                         Tokens which represent ternary
+ *                                                                                         operators.
+ * @method static array<int|string, int|string> textStringStartTokens()                    Tokens which can start a
+ *                                                                                         - potentially multi-line -
+ *                                                                                         text string.
  */
 final class Collections
 {
@@ -186,6 +203,24 @@ final class Collections
         \T_PRIVATE   => \T_PRIVATE,
         \T_PROTECTED => \T_PROTECTED,
         \T_FINAL     => \T_FINAL,
+    ];
+
+    /**
+     * Token types which can be encountered in an OO constant type declaration.
+     *
+     * @since 1.1.0 Use the {@see Collections::constantTypeTokens()} method for access.
+     *
+     * @var array<int|string, int|string>
+     */
+    private static $constantTypeTokens = [
+        \T_CALLABLE               => \T_CALLABLE, // Not allowed in PHP, but in this list to allow for flagging code errors.
+        \T_FALSE                  => \T_FALSE,
+        \T_TRUE                   => \T_TRUE,
+        \T_NULL                   => \T_NULL,
+        \T_TYPE_UNION             => \T_TYPE_UNION,
+        \T_TYPE_INTERSECTION      => \T_TYPE_INTERSECTION,
+        \T_TYPE_OPEN_PARENTHESIS  => \T_TYPE_OPEN_PARENTHESIS,
+        \T_TYPE_CLOSE_PARENTHESIS => \T_TYPE_CLOSE_PARENTHESIS,
     ];
 
     /**
@@ -348,7 +383,7 @@ final class Collections
     /**
      * OO scopes in which constants can be declared.
      *
-     * Note: traits can only declare constants since PHP 8.2.
+     * - PHP 8.2 added support for constants in traits.
      *
      * @since 1.0.0 Use the {@see Collections::ooConstantScopes()} method for access.
      *
@@ -380,7 +415,7 @@ final class Collections
     /**
      * OO scopes in which properties can be declared.
      *
-     * Note: interfaces can not declare properties.
+     * - PHP 8.4 added support for properties in interfaces.
      *
      * @since 1.0.0 Use the {@see Collections::ooPropertyScopes()} method for access.
      *
@@ -389,6 +424,7 @@ final class Collections
     private static $ooPropertyScopes = [
         \T_CLASS      => \T_CLASS,
         \T_ANON_CLASS => \T_ANON_CLASS,
+        \T_INTERFACE  => \T_INTERFACE,
         \T_TRAIT      => \T_TRAIT,
     ];
 
@@ -432,12 +468,16 @@ final class Collections
      * @var array<int|string, int|string>
      */
     private static $propertyModifierKeywords = [
-        \T_PUBLIC    => \T_PUBLIC,
-        \T_PRIVATE   => \T_PRIVATE,
-        \T_PROTECTED => \T_PROTECTED,
-        \T_STATIC    => \T_STATIC,
-        \T_VAR       => \T_VAR,
-        \T_READONLY  => \T_READONLY,
+        \T_PUBLIC        => \T_PUBLIC,
+        \T_PUBLIC_SET    => \T_PUBLIC_SET,
+        \T_PROTECTED     => \T_PROTECTED,
+        \T_PROTECTED_SET => \T_PROTECTED_SET,
+        \T_PRIVATE       => \T_PRIVATE,
+        \T_PRIVATE_SET   => \T_PRIVATE_SET,
+        \T_STATIC        => \T_STATIC,
+        \T_VAR           => \T_VAR,
+        \T_READONLY      => \T_READONLY,
+        \T_FINAL         => \T_FINAL,
     ];
 
     /**
@@ -518,6 +558,18 @@ final class Collections
     private static $shortListTokens = [
         \T_OPEN_SHORT_ARRAY  => \T_OPEN_SHORT_ARRAY,
         \T_CLOSE_SHORT_ARRAY => \T_CLOSE_SHORT_ARRAY,
+    ];
+
+    /**
+     * Tokens which represent ternary operators.
+     *
+     * @since 1.1.0 Use the {@see Collections::ternaryOperators()} method for access.
+     *
+     * @var array<int|string, int|string>
+     */
+    private static $ternaryOperators = [
+        \T_INLINE_THEN => \T_INLINE_THEN,
+        \T_INLINE_ELSE => \T_INLINE_ELSE,
     ];
 
     /**
@@ -626,6 +678,23 @@ final class Collections
     }
 
     /**
+     * Token types which can be encountered in OO constant type declaration.
+     *
+     * @since 1.1.0
+     *
+     * @return array<int|string, int|string>
+     */
+    public static function constantTypeTokens()
+    {
+        $tokens = self::$constantTypeTokens;
+        // Self and static are only allowed in enums, but that's not the concern of this method.
+        $tokens += self::$ooHierarchyKeywords;
+        $tokens += self::namespacedNameTokens();
+
+        return $tokens;
+    }
+
+    /**
      * Tokens which can represent function calls and function-call-like language constructs.
      *
      * @see \PHPCSUtils\Tokens\Collections::parameterPassingTokens() Related method.
@@ -643,6 +712,10 @@ final class Collections
         // Class instantiation only.
         $tokens[\T_ANON_CLASS] = \T_ANON_CLASS;
         $tokens               += self::$ooHierarchyKeywords;
+
+        // As of PHP 8.4, exit()/die() should be treated as function call tokens.
+        // Sniffs using this collection should safeguard against use as a constant.
+        $tokens[\T_EXIT] = \T_EXIT;
 
         return $tokens;
     }

@@ -17,8 +17,8 @@ use PHP_CodeSniffer\Util\Tokens;
  * Utility functions for use when examining parenthesis tokens and arbitrary tokens wrapped
  * in parentheses.
  *
- * In contrast to PHPCS natively, `isset()`, `unset()`, `empty()`, `exit()`, `die()` and `eval()`
- * will be considered parentheses owners by the functions in this class.
+ * In contrast to PHPCS natively (< 4.0), `isset()`, `unset()`, `empty()`, `exit()`, `die()`, `eval()`
+ * and closure `use()` will be considered parentheses owners by the functions in this class.
  *
  * @since 1.0.0
  */
@@ -29,8 +29,9 @@ final class Parentheses
      * Extra tokens which should be considered parentheses owners.
      *
      * - `T_ISSET`, `T_UNSET`, `T_EMPTY`, `T_EXIT` and `T_EVAL` are not PHPCS native parentheses
-     *    owners, but are considered such for the purposes of this class.
+     *    owners until PHPCS 4.0.0, but are considered such for the purposes of this class.
      *    Also see {@link https://github.com/squizlabs/PHP_CodeSniffer/issues/3118 PHPCS#3118}.
+     * - `T_USE` when used for a closure use statement also became a parentheses owner in PHPCS 4.0.0.
      *
      * @since 1.0.0
      *
@@ -42,6 +43,7 @@ final class Parentheses
         \T_EMPTY => \T_EMPTY,
         \T_EXIT  => \T_EXIT,
         \T_EVAL  => \T_EVAL,
+        \T_USE   => \T_USE,
     ];
 
     /**

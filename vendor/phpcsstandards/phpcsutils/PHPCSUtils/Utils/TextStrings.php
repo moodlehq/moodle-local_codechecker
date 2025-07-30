@@ -10,9 +10,12 @@
 
 namespace PHPCSUtils\Utils;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Exceptions\OutOfBoundsStackPtr;
+use PHPCSUtils\Exceptions\TypeError;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
+use PHPCSUtils\Exceptions\ValueError;
 use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Internal\NoFileCache;
 use PHPCSUtils\Tokens\Collections;
@@ -72,10 +75,11 @@ final class TextStrings
      *
      * @return string The contents of the complete text string.
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified position is not a
-     *                                                      valid text string token.
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified token is not the _first_
-     *                                                      token in a text string.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a valid text string token.
+     * @throws \PHPCSUtils\Exceptions\ValueError          If the specified token is not the _first_ token in
+     *                                                    a text string.
      */
     public static function getCompleteTextString(File $phpcsFile, $stackPtr, $stripQuotes = true)
     {
@@ -118,27 +122,34 @@ final class TextStrings
      *
      * @return int Stack pointer to the last token in the text string.
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified position is not a
-     *                                                      valid text string token.
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified token is not the _first_
-     *                                                      token in a text string.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a valid text string token.
+     * @throws \PHPCSUtils\Exceptions\ValueError          If the specified token is not the _first_ token in
+     *                                                    a text string.
      */
     public static function getEndOfCompleteTextString(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        // Must be the start of a text string token.
-        if (isset($tokens[$stackPtr], Collections::textStringStartTokens()[$tokens[$stackPtr]['code']]) === false) {
-            throw new RuntimeException(
-                '$stackPtr must be of type T_START_HEREDOC, T_START_NOWDOC, T_CONSTANT_ENCAPSED_STRING'
-                . ' or T_DOUBLE_QUOTED_STRING'
-            );
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
         }
 
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if (isset(Collections::textStringStartTokens()[$tokens[$stackPtr]['code']]) === false) {
+            $acceptedTokens = 'T_START_HEREDOC, T_START_NOWDOC, T_CONSTANT_ENCAPSED_STRING or T_DOUBLE_QUOTED_STRING';
+            throw UnexpectedTokenType::create(2, '$stackPtr', $acceptedTokens, $tokens[$stackPtr]['type']);
+        }
+
+        // Must be the start of a text string token.
         if (isset(Tokens::$stringTokens[$tokens[$stackPtr]['code']]) === true) {
             $prev = $phpcsFile->findPrevious(\T_WHITESPACE, ($stackPtr - 1), null, true);
             if ($tokens[$stackPtr]['code'] === $tokens[$prev]['code']) {
-                throw new RuntimeException('$stackPtr must be the start of the text string');
+                throw ValueError::create(2, '$stackPtr', 'must be the start of the text string');
             }
         }
 

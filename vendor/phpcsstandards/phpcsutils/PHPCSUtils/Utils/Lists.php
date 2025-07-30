@@ -10,9 +10,9 @@
 
 namespace PHPCSUtils\Utils;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
 use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Internal\IsShortArrayOrListWithCache;
 use PHPCSUtils\Tokens\Collections;
@@ -194,16 +194,22 @@ final class Lists
      *               An array with information on each assignment made, including skipped assignments (empty),
      *               or an empty array if no assignments are made at all (fatal error in PHP >= 7.0).
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified $stackPtr is not of
-     *                                                      type T_LIST, T_OPEN_SHORT_ARRAY or
-     *                                                      T_OPEN_SQUARE_BRACKET.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a T_LIST, T_OPEN_SHORT_ARRAY or
+     *                                                    T_OPEN_SQUARE_BRACKET token.
      */
     public static function getAssignments(File $phpcsFile, $stackPtr)
     {
         $openClose = self::getOpenClose($phpcsFile, $stackPtr);
         if ($openClose === false) {
             // The `getOpenClose()` method does the $stackPtr validation.
-            throw new RuntimeException('The Lists::getAssignments() method expects a long/short list token.');
+            $received = $stackPtr;
+            $tokens   = $phpcsFile->getTokens();
+            if (\is_int($stackPtr) && isset($tokens[$stackPtr])) {
+                $received = $tokens[$stackPtr]['type'];
+            } elseif (\is_int($stackPtr) === false) {
+                $received = \gettype($stackPtr);
+            }
+            throw UnexpectedTokenType::create(2, '$stackPtr', 'long/short list', $received);
         }
 
         if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {

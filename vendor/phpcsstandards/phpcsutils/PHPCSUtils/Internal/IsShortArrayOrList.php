@@ -10,10 +10,12 @@
 
 namespace PHPCSUtils\Internal;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use PHPCSUtils\BackCompat\Helper;
+use PHPCSUtils\Exceptions\OutOfBoundsStackPtr;
+use PHPCSUtils\Exceptions\TypeError;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
 use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Internal\IsShortArrayOrListWithCache;
 use PHPCSUtils\Internal\StableCollections;
@@ -161,7 +163,7 @@ final class IsShortArrayOrList
      *
      * @var string
      */
-    private $phpcsVersion; // @phpstan-ignore-line
+    private $phpcsVersion; // @phpstan-ignore property.onlyWritten
 
     /**
      * Tokens which can open a short array or short list (PHPCS cross-version compatible).
@@ -182,20 +184,26 @@ final class IsShortArrayOrList
      *
      * @return void
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the token passed is not one of the
-     *                                                      accepted types or doesn't exist.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not one of the accepted types.
      */
     public function __construct(File $phpcsFile, $stackPtr)
     {
         $tokens       = $phpcsFile->getTokens();
         $openBrackets = StableCollections::$shortArrayListOpenTokensBC;
 
-        if (isset($tokens[$stackPtr]) === false
-            || isset($openBrackets[$tokens[$stackPtr]['code']]) === false
-        ) {
-            throw new RuntimeException(
-                'The IsShortArrayOrList class expects to be passed a T_OPEN_SHORT_ARRAY or T_OPEN_SQUARE_BRACKET token.'
-            );
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if (isset($openBrackets[$tokens[$stackPtr]['code']]) === false) {
+            $acceptedTokens = 'T_OPEN_SHORT_ARRAY or T_OPEN_SQUARE_BRACKET';
+            throw UnexpectedTokenType::create(2, '$stackPtr', $acceptedTokens, $tokens[$stackPtr]['type']);
         }
 
         $this->phpcsFile = $phpcsFile;
@@ -344,15 +352,13 @@ final class IsShortArrayOrList
     /**
      * Verify that the current set of brackets is not affected by known PHPCS cross-version tokenizer issues.
      *
-     * List of current tokenizer issues which affect the short array/short list tokenization:
-     * - {@link https://github.com/squizlabs/PHP_CodeSniffer/pull/3632 PHPCS#3632} (PHPCS < 3.7.2)
-     *
      * List of previous tokenizer issues which affected the short array/short list tokenization for reference:
      * - {@link https://github.com/squizlabs/PHP_CodeSniffer/issues/1284 PHPCS#1284} (PHPCS < 2.8.1)
      * - {@link https://github.com/squizlabs/PHP_CodeSniffer/issues/1381 PHPCS#1381} (PHPCS < 2.9.0)
      * - {@link https://github.com/squizlabs/PHP_CodeSniffer/issues/1971 PHPCS#1971} (PHPCS 2.8.0 - 3.2.3)
      * - {@link https://github.com/squizlabs/PHP_CodeSniffer/pull/3013 PHPCS#3013} (PHPCS < 3.5.6)
      * - {@link https://github.com/squizlabs/PHP_CodeSniffer/pull/3172 PHPCS#3172} (PHPCS < 3.6.0)
+     * - {@link https://github.com/squizlabs/PHP_CodeSniffer/pull/3632 PHPCS#3632} (PHPCS < 3.7.2)
      *
      * @since 1.0.0
      *
@@ -362,7 +368,7 @@ final class IsShortArrayOrList
     private function isShortArrayBracket()
     {
         if ($this->tokens[$this->opener]['code'] === \T_OPEN_SQUARE_BRACKET) {
-            // Currently there are no known issues with the tokenization in PHPCS 3.9.0 and higher.
+            // Currently there are no known issues with the tokenization in PHPCS.
             return false;
         }
 

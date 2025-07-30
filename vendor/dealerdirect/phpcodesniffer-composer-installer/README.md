@@ -1,6 +1,5 @@
 # PHP_CodeSniffer Standards Composer Installer Plugin
 
-![Project Stage][project-stage-shield]
 ![Last Commit][last-updated-shield]
 ![Awesome][awesome-shield]
 [![License][license-shield]](LICENSE.md)
@@ -11,20 +10,19 @@
 
 [![Contributor Covenant][code-of-conduct-shield]][code-of-conduct]
 
-This composer installer plugin allows for easy installation of [PHP_CodeSniffer][codesniffer] coding standards (rulesets).
+This composer installer plugin makes installation of [PHP_CodeSniffer][codesniffer] coding standards (rulesets) straight-forward.
 
-No more symbolic linking of directories, checking out repositories on specific locations or changing
-the `phpcs` configuration.
+No more symbolic linking of directories, checking out repositories on specific locations or manually changing the `phpcs` configuration.
 
 ## Usage
 
 Installation can be done with [Composer][composer], by requiring this package as a development dependency:
 
 ```bash
-composer require --dev dealerdirect/phpcodesniffer-composer-installer
+composer require --dev dealerdirect/phpcodesniffer-composer-installer:"^1.0"
 ```
 
-When using Composer 2.2 or higher, Composer will [ask for your permission](https://blog.packagist.com/composer-2-2/#more-secure-plugin-execution) to allow this plugin to execute code. For this plugin to be functional, permission needs to be granted.
+Since Composer 2.2, Composer will [ask for your permission](https://blog.packagist.com/composer-2-2/#more-secure-plugin-execution) to allow this plugin to execute code. For this plugin to be functional, permission needs to be granted.
 
 When permission has been granted, the following snippet will automatically be added to your `composer.json` file by Composer:
 ```json
@@ -37,7 +35,7 @@ When permission has been granted, the following snippet will automatically be ad
 }
 ```
 
-When using Composer < 2.2, you can add the permission flag ahead of the upgrade to Composer 2.2, by running:
+You can safely add the permission flag (to avoid Composer needing to ask), by running:
 ```bash
 composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 ```
@@ -49,11 +47,8 @@ That's it.
 This plugin is compatible with:
 
 - PHP **5.4+**, **7.x**, and **8.x** (Support for PHP v8 is available since [`v0.7.0`][v0.7])
-- [Composer][composer] **1.x** and **2.x** (Support for Composer v2 is available since [`v0.7.0`][v0.7])
-- [PHP_CodeSniffer][codesniffer] **2.x** and **3.x** (Support for PHP_CodeSniffer v3 is available since [`v0.4.0`][v0.4])
-
-
-> **ℹ️ Please Note:** [Composer treats _minor_ releases below 1.0.0 as _major_ releases][composer-manual-caret]. So version `0.7.x` (or higher) of this plugin must be _explicitly_ set as version constraint when using Composer 2.x or PHP 8.0. In other words: using `^0.6` will **not** work with Composer 2.x or PHP 8.0.
+- [Composer][composer] **2.2+** (Support for Composer v2 is available since [`v0.7.0`][v0.7]; support for Composer < 2.2 was dropped in [`v1.1.0`][v1.1])
+- [PHP_CodeSniffer][codesniffer] **2.x**, **3.x** and **4.x**(Support for PHP_CodeSniffer v3 is available since [`v0.4.0`][v0.4], support for PHP_CodeSniffer v4 since [`v0.7.0`][v0.7])
 
 ### How it works
 
@@ -92,7 +87,7 @@ After running `composer install` PHP_CodeSniffer just works:
 
 ```bash
 $ ./vendor/bin/phpcs -i
-The installed coding standards are MySource, PEAR, PSR1, PSR2, PSR12, Squiz, Zend, ObjectCalisthenics,
+The installed coding standards are PEAR, PSR1, PSR2, PSR12, Squiz, Zend, ObjectCalisthenics,
 PHPCompatibility, WordPress, WordPress-Core, WordPress-Docs and WordPress-Extra
 ```
 
@@ -198,22 +193,15 @@ via `require`, **not** `require-dev`.
 > To prevent your end-users getting into "_dependency hell_", make sure to make the version requirement
 > for this plugin flexible.
 >
-> As, for now, this plugin is still regarded as "unstable" (version < 1.0), remember that Composer
-> treats unstable minors as majors and will not be able to resolve one config requiring this plugin
-> at version `^0.5`, while another requires it at version `^0.6`.
+> Remember that [Composer treats unstable minors as majors][composer-manual-caret] and will not be able to resolve
+> one config requiring this plugin at version `^0.7`, while another requires it at version `^1.0`.
 > Either allow multiple minors or use `*` as the version requirement.
 >
 > Some examples of flexible requirements which can be used:
 > ```bash
 > composer require dealerdirect/phpcodesniffer-composer-installer:"*"
-> composer require dealerdirect/phpcodesniffer-composer-installer:"0.*"
-> composer require dealerdirect/phpcodesniffer-composer-installer:"^0.4.1 || ^0.5 || ^0.6 || ^0.7"
+> composer require dealerdirect/phpcodesniffer-composer-installer:"^0.4.1 || ^0.5 || ^0.6 || ^0.7 || ^1.0"
 > ```
-
-## Changelog
-
-This repository does not contain a `CHANGELOG.md` file, however, we do publish a changelog on each release
-using the [GitHub releases][changelog] functionality.
 
 ## Contributing
 
@@ -228,14 +216,20 @@ Thank you for being involved! :heart_eyes:
 
 The original idea and setup of this repository is by [Franck Nijhof][frenck], employee @ Dealerdirect.
 
-For a full list of all author and/or contributors, check [the contributors page][contributors].
+For a full list of all authors and/or contributors, check [the contributors page][contributors].
+
+## Funding
+
+This project is included in the projects supported via the [PHP_CodeSniffer Open Collective][phpcs-open-collective].
+
+If you use this plugin, financial contributions to the Open Collective are encouraged and appreciated.
 
 ## License
 
 The MIT License (MIT)
 
 Copyright (c) 2016-2022 Dealerdirect B.V. and contributors
-Copyright (c) 2022 PHPCSStandards and contributors
+Copyright (c) 2022- PHPCSStandards and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -256,10 +250,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 [awesome-shield]: https://img.shields.io/badge/awesome%3F-yes-brightgreen.svg
-[changelog]: https://github.com/PHPCSStandards/composer-installer/releases
 [code-of-conduct-shield]: https://img.shields.io/badge/Contributor%20Covenant-v2.0-ff69b4.svg
 [code-of-conduct]: CODE_OF_CONDUCT.md
-[codesniffer]: https://github.com/squizlabs/PHP_CodeSniffer
+[codesniffer]: https://github.com/PHPCSStandards/PHP_CodeSniffer
 [composer-manual-scripts]: https://getcomposer.org/doc/articles/scripts.md
 [composer-manual-caret]: https://getcomposer.org/doc/articles/versions.md#caret-version-range-
 [composer]: https://getcomposer.org/
@@ -274,12 +267,13 @@ THE SOFTWARE.
 [packagist-version]: https://packagist.org/packages/dealerdirect/phpcodesniffer-composer-installer
 [packagist]: https://packagist.org/packages/dealerdirect/phpcodesniffer-composer-installer
 [`phpcodesniffer-standard` packages]: https://packagist.org/explore/?type=phpcodesniffer-standard
-[project-stage-shield]: https://img.shields.io/badge/Project%20Stage-Development-yellowgreen.svg
+[phpcs-open-collective]: https://opencollective.com/php_codesniffer
 [scrutinizer-shield]: https://img.shields.io/scrutinizer/g/dealerdirect/phpcodesniffer-composer-installer.svg
 [scrutinizer]: https://scrutinizer-ci.com/g/dealerdirect/phpcodesniffer-composer-installer/
 [ghactionstest-shield]: https://github.com/PHPCSStandards/composer-installer/actions/workflows/integrationtest.yml/badge.svg
 [ghactions]: https://github.com/PHPCSStandards/composer-installer/actions/workflows/integrationtest.yml
-[tutorial]: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Coding-Standard-Tutorial
+[tutorial]: https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki/Coding-Standard-Tutorial
 [using-composer-plugins]: https://getcomposer.org/doc/articles/plugins.md#using-plugins
 [v0.4]: https://github.com/PHPCSStandards/composer-installer/releases/tag/v0.4.0
 [v0.7]: https://github.com/PHPCSStandards/composer-installer/releases/tag/v0.7.0
+[v1.1]: https://github.com/PHPCSStandards/composer-installer/releases/tag/v1.1.0

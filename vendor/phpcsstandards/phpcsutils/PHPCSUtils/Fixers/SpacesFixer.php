@@ -10,9 +10,13 @@
 
 namespace PHPCSUtils\Fixers;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Exceptions\LogicException;
+use PHPCSUtils\Exceptions\OutOfBoundsStackPtr;
+use PHPCSUtils\Exceptions\TypeError;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
+use PHPCSUtils\Exceptions\ValueError;
 use PHPCSUtils\Utils\Numbers;
 
 /**
@@ -80,11 +84,12 @@ final class SpacesFixer
      *
      * @return void
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the tokens passed do not exist or are whitespace
-     *                                                      tokens.
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If `$expectedSpaces` is not a valid value.
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the tokens passed are separated by more than just
-     *                                                      empty (whitespace + comments/annotations) tokens.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr or $secondPtr parameters are not integers.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the tokens passed do not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the tokens passed are whitespace tokens.
+     * @throws \PHPCSUtils\Exceptions\ValueError          If `$expectedSpaces` parameter is not a valid value.
+     * @throws \PHPCSUtils\Exceptions\LogicException      If the tokens passed are separated by more than just
+     *                                                    empty (whitespace + comments/annotations) tokens.
      */
     public static function checkAndFix(
         File $phpcsFile,
@@ -103,11 +108,28 @@ final class SpacesFixer
          * Validate the received function input.
          */
 
-        if (isset($tokens[$stackPtr], $tokens[$secondPtr]) === false
-            || $tokens[$stackPtr]['code'] === \T_WHITESPACE
-            || $tokens[$secondPtr]['code'] === \T_WHITESPACE
-        ) {
-            throw new RuntimeException('The $stackPtr and the $secondPtr token must exist and not be whitespace');
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (\is_int($secondPtr) === false) {
+            throw TypeError::create(3, '$secondPtr', 'integer', $secondPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if (isset($tokens[$secondPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(3, '$secondPtr', $secondPtr);
+        }
+
+        if ($tokens[$stackPtr]['code'] === \T_WHITESPACE) {
+            throw UnexpectedTokenType::create(2, '$stackPtr', 'any, except whitespace', 'T_WHITESPACE');
+        }
+
+        if ($tokens[$secondPtr]['code'] === \T_WHITESPACE) {
+            throw UnexpectedTokenType::create(3, '$secondPtr', 'any, except whitespace', 'T_WHITESPACE');
         }
 
         $expected = false;
@@ -120,9 +142,8 @@ final class SpacesFixer
         }
 
         if ($expected === false) {
-            throw new RuntimeException(
-                'The $expectedSpaces setting should be either "newline", 0 or a positive integer'
-            );
+            $message = \sprintf('should be either "newline", 0 or a positive integer; %s given', $expectedSpaces);
+            throw ValueError::create(4, '$expectedSpaces', $message);
         }
 
         $ptrA = $stackPtr;
@@ -134,7 +155,7 @@ final class SpacesFixer
 
         $nextNonEmpty = $phpcsFile->findNext(Tokens::$emptyTokens, ($ptrA + 1), null, true);
         if ($nextNonEmpty !== false && $nextNonEmpty < $ptrB) {
-            throw new RuntimeException(
+            throw LogicException::create(
                 'The $stackPtr and the $secondPtr token must be adjacent tokens separated only'
                     . ' by whitespace and/or comments'
             );

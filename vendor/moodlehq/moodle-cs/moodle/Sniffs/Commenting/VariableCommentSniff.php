@@ -36,6 +36,19 @@ use PHPCSUtils\Utils\ObjectDeclarations;
 class VariableCommentSniff extends AbstractVariableSniff
 {
     /**
+     * Tags which are allowed in a member variable comment.
+     *
+     * @var array
+     */
+    private static $allowedtags = [
+        '@var',
+        '@see',
+        '@link',
+        '@deprecated',
+        '@since',
+    ];
+
+    /**
      * Called to process class member vars.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
@@ -102,7 +115,8 @@ class VariableCommentSniff extends AbstractVariableSniff
                     $error = 'Content missing for @see tag in member variable comment';
                     $phpcsFile->addError($error, $tag, 'EmptySees');
                 }
-            } else {
+            } elseif (in_array($tokens[$tag]['content'], self::$allowedtags, true) === false) {
+                // If the tag is not in the allowed list, then it is an error.
                 $error = '%s tag is not allowed in member variable comment';
                 $data = [$tokens[$tag]['content']];
                 $phpcsFile->addWarning($error, $tag, 'TagNotAllowed', $data);

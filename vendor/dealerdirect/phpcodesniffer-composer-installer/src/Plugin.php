@@ -550,6 +550,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Returns the path to the PHP_CodeSniffer package installation location
      *
+     * {@internal Do NOT try to modernize via the Composer 2.2 API (`InstalledVersions::getInstallPath()`).
+     * Doing so doesn't play nice with other plugins.
+     * {@link https://github.com/PHPCSStandards/composer-installer/issues/239}}
+     *
      * @return string
      */
     private function getPHPCodeSnifferInstallPath()
@@ -559,6 +563,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * Simple check if PHP_CodeSniffer is installed.
+     *
+     * {@internal Do NOT try to modernize via the Composer 2.2 API (`InstalledVersions::isInstalled()`).
+     * Doing so doesn't play nice with integrations calling the Composer EventDispatcher programmatically.
+     * {@link https://github.com/PHPCSStandards/composer-installer/issues/247}}
      *
      * @param null|string|\Composer\Semver\Constraint\ConstraintInterface $versionConstraint to match against
      *

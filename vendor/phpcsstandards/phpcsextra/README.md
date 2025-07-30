@@ -1,9 +1,8 @@
-PHPCSExtra
-=====================================================
+# PHPCSExtra
 
 <div aria-hidden="true">
 
-[![Latest Stable Version](https://poser.pugx.org/phpcsstandards/phpcsextra/v/stable)][phpcsextra-packagist]
+[![Latest Stable Version](https://img.shields.io/packagist/v/phpcsstandards/phpcsextra?label=stable)][phpcsextra-packagist]
 [![Release Date of the Latest Version](https://img.shields.io/github/release-date/PHPCSStandards/PHPCSExtra.svg?maxAge=1800)](https://github.com/PHPCSStandards/PHPCSExtra/releases)
 :construction:
 [![Latest Unstable Version](https://img.shields.io/badge/unstable-dev--develop-e68718.svg?maxAge=2419200)](https://packagist.org/packages/phpcsstandards/phpcsextra#dev-develop)
@@ -13,10 +12,10 @@ PHPCSExtra
 [![Test Build Status](https://github.com/PHPCSStandards/PHPCSExtra/actions/workflows/test.yml/badge.svg?branch=develop)][gha-test-results]
 [![Coverage Status](https://coveralls.io/repos/github/PHPCSStandards/PHPCSExtra/badge.svg)](https://coveralls.io/github/PHPCSStandards/PHPCSExtra)
 
-[![Minimum PHP Version](https://img.shields.io/packagist/php-v/phpcsstandards/phpcsextra.svg?maxAge=3600)][phpcsextra-packagist]
-[![Tested on PHP 5.4 to 8.3](https://img.shields.io/badge/tested%20on-PHP%205.4%20|%205.5%20|%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3-brightgreen.svg?maxAge=2419200)][gha-test-results]
+[![Minimum PHP Version](https://img.shields.io/packagist/dependency-v/phpcsstandards/phpcsextra/php.svg)][phpcsextra-packagist]
+[![Tested on PHP 5.4 to 8.4](https://img.shields.io/badge/tested%20on-PHP%205.4%20|%205.5%20|%205.6%20|%207.0%20|%207.1%20|%207.2%20|%207.3%20|%207.4%20|%208.0%20|%208.1%20|%208.2%20|%208.3%20|%208.4-brightgreen.svg?maxAge=2419200)][gha-test-results]
 
-[![License: LGPLv3](https://poser.pugx.org/phpcsstandards/phpcsextra/license)](https://github.com/PHPCSStandards/PHPCSExtra/blob/stable/LICENSE)
+[![License: LGPLv3](https://img.shields.io/github/license/PHPCSStandards/PHPCSExtra)](https://github.com/PHPCSStandards/PHPCSExtra/blob/stable/LICENSE)
 ![Awesome](https://img.shields.io/badge/awesome%3F-yes!-brightgreen.svg)
 
 </div>
@@ -24,38 +23,35 @@ PHPCSExtra
 * [Introduction](#introduction)
 * [Minimum Requirements](#minimum-requirements)
 * [Installation](#installation)
-    + [Composer Project-based Installation](#composer-project-based-installation)
-    + [Composer Global Installation](#composer-global-installation)
-    + [Updating to a newer version](#updating-to-a-newer-version)
+    - [Composer Project-based Installation](#composer-project-based-installation)
+    - [Composer Global Installation](#composer-global-installation)
+    - [Updating to a newer version](#updating-to-a-newer-version)
 * [Features](#features)
 * [Sniffs](#sniffs)
-    + [Modernize](#modernize)
-    + [NormalizedArrays](#normalizedarrays)
-    + [Universal](#universal)
+    - [Modernize](#modernize)
+    - [NormalizedArrays](#normalizedarrays)
+    - [Universal](#universal)
 * [Contributing](#contributing)
 * [License](#license)
 
 
-Introduction
--------------------------------------------
+## Introduction
 
 PHPCSExtra is a collection of sniffs and standards for use with [PHP_CodeSniffer][phpcs-gh].
 
 
-Minimum Requirements
--------------------------------------------
+## Minimum Requirements
 
 * PHP 5.4 or higher.
-* [PHP_CodeSniffer][phpcs-gh] version **3.8.0** or higher.
-* [PHPCSUtils][phpcsutils-gh] version **1.0.9** or higher.
+* [PHP_CodeSniffer][phpcs-gh] version **3.13.0** or higher.
+* [PHPCSUtils][phpcsutils-gh] version **1.1.0** or higher.
 
 
-Installation
--------------------------------------------
+## Installation
 
 Installing via Composer is highly recommended.
 
-[Composer](http://getcomposer.org/) will automatically install the project dependencies and register the rulesets from PHPCSExtra and other external standards with PHP_CodeSniffer using the [Composer PHPCS plugin][composer-installer-gh].
+[Composer](https://getcomposer.org/) will automatically install the project dependencies and register the rulesets from PHPCSExtra and other external standards with PHP_CodeSniffer using the [Composer PHPCS plugin][composer-installer-gh].
 
 ### Composer Project-based Installation
 
@@ -93,8 +89,7 @@ composer global update phpcsstandards/phpcsextra --with-dependencies
 > (and potential other external PHPCS standards you use), manage the version requirements for these packages.
 
 
-Features
--------------------------------------------
+## Features
 
 Once this project is installed, you will see three new rulesets in the list of installed standards when you run `vendor/bin/phpcs -i`: `Modernize`, `NormalizedArrays` and `Universal`.
 
@@ -105,8 +100,7 @@ Once this project is installed, you will see three new rulesets in the list of i
     Instead include individual sniffs from this standard in a custom project/company ruleset to use them.
 
 
-Sniffs
--------------------------------------------
+## Sniffs
 
 **Legend**:
 * :wrench: = Includes auto-fixer.
@@ -138,13 +132,13 @@ In effect, this means that the sniff will only report on modernizations which ca
 Enforce consistent spacing for the open/close braces of array declarations.
 
 The sniff allows for having different settings for:
-- Space between the array keyword and the open parenthesis for long arrays via the `keywordSpacing` property.
+* Space between the array keyword and the open parenthesis for long arrays via the `keywordSpacing` property.
     Accepted values: (int) number of spaces or `false` to turn this check off. Defaults to `0` spaces.
-- Spaces on the inside of the braces for empty arrays via the `spacesWhenEmpty` property.
+* Spaces on the inside of the braces for empty arrays via the `spacesWhenEmpty` property.
     Accepted values: (string) `newline`, (int) number of spaces or `false` to turn this check off. Defaults to `0` spaces.
-- Spaces on the inside of the braces for single-line arrays via the `spacesSingleLine` property;
+* Spaces on the inside of the braces for single-line arrays via the `spacesSingleLine` property;
     Accepted values: (int) number of spaces or `false` to turn this check off. Defaults to `0` spaces.
-- Spaces on the inside of the braces for multi-line arrays via the `spacesMultiLine` property.
+* Spaces on the inside of the braces for multi-line arrays via the `spacesMultiLine` property.
     Accepted values: (string) `newline`, (int) number of spaces or `false` to turn this check off. Defaults to `newline`.
 
 Note: if any of the above properties are set to `newline`, it is recommended to also include an array indentation sniff. This sniff will not handle the indentation.
@@ -403,13 +397,21 @@ This is considered a **_risky_ fixer**.
 
 #### `Universal.Operators.TypeSeparatorSpacing` :wrench: :bar_chart: :books:
 
-Enforce no spaces around the union type and intersection type operators.
+Enforce spacing rules around the union, intersection and DNF type operators.
+* No space on either side of a union or intersection type operator.
+* No space on the inside of DNF type parenthesis or before/after if the previous/next "thing" is part of the type.
+* One space before a DNF open parenthesis when it is at the start of a type.
+* One space after a DNF close parenthesis when it is at the end of a type.
 
-The available error codes are: `UnionTypeSpacesBefore`, `UnionTypeSpacesAfter`, `IntersectionTypeSpacesBefore`, `IntersectionTypeSpacesAfter`.
+The available error codes are: `UnionTypeSpacesBefore`, `UnionTypeSpacesAfter`, `IntersectionTypeSpacesBefore`, `IntersectionTypeSpacesAfter`, `DNFOpenSpacesBefore`, `DNFOpenSpacesAfter`, `DNFCloseTypeSpacesBefore`, `DNFCloseTypeSpacesAfter`.
 
 #### `Universal.PHP.LowercasePHPTag` :wrench: :bar_chart: :books:
 
 Enforces that the "PHP" in a PHP open tag is lowercase.
+
+#### `Universal.PHP.NoFQNTrueFalseNull` :wrench: :books:
+
+Forbids using `true`, `false` and `null` as fully qualified constants.
 
 #### `Universal.PHP.OneStatementInShortEchoTag` :wrench: :books:
 
@@ -531,7 +533,7 @@ The behaviour of the sniff is customizable via the following properties:
     If this property is not set, the sniff will look to the `--tab-width` CLI value.
     If that also isn't set, the default tab-width of `4` will be used.
 * `ignoreAlignmentBefore`: allows for providing a list of token names for which (preceding) precision alignment should be ignored.
-    Accepted values: (array<string>) token constant names. Defaults to an empty array.
+    Accepted values: (`array<string>`) token constant names. Defaults to an empty array.
     Usage example:
     ```xml
     <rule ref="Universal.WhiteSpace.PrecisionAlignment">
@@ -551,14 +553,15 @@ The behaviour of the sniff is customizable via the following properties:
     Accepted values: (bool)`true`|`false`. Defaults to `true`.
 
 
-Contributing
--------
+## Contributing
+
 Contributions to this project are welcome. Clone the repo, branch off from `develop`, make your changes, commit them and send in a pull request.
 
 If unsure whether the changes you are proposing would be welcome, open an issue first to discuss your proposal.
 
-License
--------
+
+## License
+
 This code is released under the [GNU Lesser General Public License (LGPLv3)](LICENSE).
 
 

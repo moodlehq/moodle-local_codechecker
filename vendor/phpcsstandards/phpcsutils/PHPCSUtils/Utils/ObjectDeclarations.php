@@ -10,10 +10,14 @@
 
 namespace PHPCSUtils\Utils;
 
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
+use PHPCSUtils\Exceptions\OutOfBoundsStackPtr;
+use PHPCSUtils\Exceptions\TypeError;
+use PHPCSUtils\Exceptions\UnexpectedTokenType;
+use PHPCSUtils\Internal\Cache;
 use PHPCSUtils\Tokens\Collections;
+use PHPCSUtils\Utils\FunctionDeclarations;
 use PHPCSUtils\Utils\GetTokensAsString;
 
 /**
@@ -42,6 +46,10 @@ final class ObjectDeclarations
      *   being extended/interface being implemented.
      *   Using this version of the utility method, either the complete name (invalid or not) will
      *   be returned or `null` in case of no name (parse error).
+     * - The PHPCS 4.0 change to no longer accept tokens for anonymous structures (T_CLOSURE/T_ANON_CLASS)
+     *   has not been applied to this method (yet). This will change in PHPCSUtils 2.0.
+     * - The PHPCS 4.0 change to normalize the return type to `string` and no longer return `null`
+     *   has not been applied to this method (yet). This will change in PHPCSUtils 2.0.
      *
      * @see \PHP_CodeSniffer\Files\File::getDeclarationName()   Original source.
      * @see \PHPCSUtils\BackCompat\BCFile::getDeclarationName() Cross-version compatible version of the original.
@@ -57,13 +65,18 @@ final class ObjectDeclarations
      *                     or `NULL` if the passed token doesn't exist, the function or
      *                     class is anonymous or in case of a parse error/live coding.
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified token is not of type
-     *                                                      `T_FUNCTION`, `T_CLASS`, `T_ANON_CLASS`,
-     *                                                      `T_CLOSURE`, `T_TRAIT`, `T_ENUM` or `T_INTERFACE`.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a `T_FUNCTION`, `T_CLASS`,
+     *                                                    `T_ANON_CLASS`, `T_CLOSURE`, `T_TRAIT`, `T_ENUM`
+     *                                                    or `T_INTERFACE` token.
      */
     public static function getName(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
+
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
 
         if (isset($tokens[$stackPtr]) === false
             || ($tokens[$stackPtr]['code'] === \T_ANON_CLASS || $tokens[$stackPtr]['code'] === \T_CLOSURE)
@@ -79,10 +92,8 @@ final class ObjectDeclarations
             && $tokenCode !== \T_TRAIT
             && $tokenCode !== \T_ENUM
         ) {
-            throw new RuntimeException(
-                'Token type "' . $tokens[$stackPtr]['type']
-                . '" is not T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT or T_ENUM'
-            );
+            $acceptedTokens = 'T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT or T_ENUM';
+            throw UnexpectedTokenType::create(2, '$stackPtr', $acceptedTokens, $tokens[$stackPtr]['type']);
         }
 
         if ($tokenCode === \T_FUNCTION
@@ -163,15 +174,24 @@ final class ObjectDeclarations
      *               );
      *               ```
      *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified position is not a
-     *                                                      `T_CLASS` token.
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a T_CLASS token.
      */
     public static function getClassProperties(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
 
-        if (isset($tokens[$stackPtr]) === false || $tokens[$stackPtr]['code'] !== \T_CLASS) {
-            throw new RuntimeException('$stackPtr must be of type T_CLASS');
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if ($tokens[$stackPtr]['code'] !== \T_CLASS) {
+            throw UnexpectedTokenType::create(2, '$stackPtr', 'T_CLASS', $tokens[$stackPtr]['type']);
         }
 
         $valid      = Collections::classModifierKeywords() + Tokens::$emptyTokens;
@@ -222,7 +242,6 @@ final class ObjectDeclarations
      * - Bugs fixed:
      *   - Handling of PHPCS annotations.
      *   - Handling of comments.
-     *   - Handling of the namespace keyword used as operator.
      * - Improved handling of parse errors.
      * - The returned name will be clean of superfluous whitespace and/or comments.
      * - Support for PHP 8.0 tokenization of identifier/namespaced names, cross-version PHP & PHPCS.
@@ -258,7 +277,6 @@ final class ObjectDeclarations
      * - Bugs fixed:
      *   - Handling of PHPCS annotations.
      *   - Handling of comments.
-     *   - Handling of the namespace keyword used as operator.
      * - Improved handling of parse errors.
      * - The returned name(s) will be clean of superfluous whitespace and/or comments.
      * - Support for PHP 8.0 tokenization of identifier/namespaced names, cross-version PHP & PHPCS.
@@ -355,5 +373,266 @@ final class ObjectDeclarations
         }
 
         return $names;
+    }
+
+    /**
+     * Retrieve all constants declared in an OO structure.
+     *
+     * @since 1.1.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The stack position of the OO keyword.
+     *
+     * @return array<string, int> Array with names of the found constants as keys and the stack pointers
+     *                            to the T_CONST token for each constant as values.
+     *                            If no constants are found or a parse error is encountered,
+     *                            an empty array is returned.
+     *
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not an OO keyword token.
+     */
+    public static function getDeclaredConstants(File $phpcsFile, $stackPtr)
+    {
+        return self::analyzeOOStructure($phpcsFile, $stackPtr)['constants'];
+    }
+
+    /**
+     * Retrieve all cases declared in an enum.
+     *
+     * @since 1.1.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The stack position of the OO keyword.
+     *
+     * @return array<string, int> Array with names of the found cases as keys and the stack pointers
+     *                            to the T_ENUM_CASE token for each case as values.
+     *                            If no cases are found or a parse error is encountered,
+     *                            an empty array is returned.
+     *
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not a T_ENUM token.
+     */
+    public static function getDeclaredEnumCases(File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if ($tokens[$stackPtr]['code'] !== \T_ENUM) {
+            throw UnexpectedTokenType::create(2, '$stackPtr', 'T_ENUM', $tokens[$stackPtr]['type']);
+        }
+
+        return self::analyzeOOStructure($phpcsFile, $stackPtr)['cases'];
+    }
+
+    /**
+     * Retrieve all properties declared in an OO structure.
+     *
+     * Notes:
+     * - Properties declared via PHP 8.0+ contructor property promotion **will** be included
+     *   in the return value.
+     *   However, keep in mind that passing the stack pointer of such a property to the
+     *   {@see Variables::getMemberProperties()} method is not supported.
+     * - Interfaces and enums cannot contain properties. This method does not take this into
+     *   account to allow sniffs to flag this kind of incorrect PHP code.
+     *
+     * @since 1.1.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The stack position of the OO keyword.
+     *
+     * @return array<string, int> Array with names of the found properties as keys and the stack pointers
+     *                            to the T_VARIABLE token for each property as values.
+     *                            If no properties are found or a parse error is encountered,
+     *                            an empty array is returned.
+     *
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not an OO keyword token.
+     */
+    public static function getDeclaredProperties(File $phpcsFile, $stackPtr)
+    {
+        return self::analyzeOOStructure($phpcsFile, $stackPtr)['properties'];
+    }
+
+    /**
+     * Retrieve all methods declared in an OO structure.
+     *
+     * @since 1.1.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The stack pointer to the OO keyword.
+     *
+     * @return array<string, int> Array with names of the found methods as keys and the stack pointers
+     *                            to the T_FUNCTION keyword for each method as values.
+     *                            If no methods are found or a parse error is encountered,
+     *                            an empty array is returned.
+     *
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not an OO keyword token.
+     */
+    public static function getDeclaredMethods(File $phpcsFile, $stackPtr)
+    {
+        return self::analyzeOOStructure($phpcsFile, $stackPtr)['methods'];
+    }
+
+    /**
+     * Retrieve all constants, cases, properties and methods in an OO structure.
+     *
+     * @since 1.1.0
+     *
+     * @param \PHP_CodeSniffer\Files\File $phpcsFile The file where this token was found.
+     * @param int                         $stackPtr  The stack position of the OO keyword.
+     *
+     * @return array<string, array<string, int>> Multi-dimensional array with four keys:
+     *                                           - "constants"
+     *                                           - "cases"
+     *                                           - "properties"
+     *                                           - "methods"
+     *                                           Each index holds an associative array with the name of the "thing"
+     *                                           as the key and the stack pointer to the related token as the value.
+     *
+     * @throws \PHPCSUtils\Exceptions\TypeError           If the $stackPtr parameter is not an integer.
+     * @throws \PHPCSUtils\Exceptions\OutOfBoundsStackPtr If the token passed does not exist in the $phpcsFile.
+     * @throws \PHPCSUtils\Exceptions\UnexpectedTokenType If the token passed is not an OO keyword token.
+     */
+    private static function analyzeOOStructure(File $phpcsFile, $stackPtr)
+    {
+        $tokens = $phpcsFile->getTokens();
+
+        if (\is_int($stackPtr) === false) {
+            throw TypeError::create(2, '$stackPtr', 'integer', $stackPtr);
+        }
+
+        if (isset($tokens[$stackPtr]) === false) {
+            throw OutOfBoundsStackPtr::create(2, '$stackPtr', $stackPtr);
+        }
+
+        if (isset(Tokens::$ooScopeTokens[$tokens[$stackPtr]['code']]) === false) {
+            $acceptedTokens = 'T_CLASS, T_ANON_CLASS, T_INTERFACE, T_TRAIT or T_ENUM';
+            throw UnexpectedTokenType::create(2, '$stackPtr', $acceptedTokens, $tokens[$stackPtr]['type']);
+        }
+
+        // Set defaults.
+        $found = [
+            'constants'  => [],
+            'cases'      => [],
+            'properties' => [],
+            'methods'    => [],
+        ];
+
+        if (isset($tokens[$stackPtr]['scope_opener'], $tokens[$stackPtr]['scope_closer']) === false) {
+            return $found;
+        }
+
+        if (Cache::isCached($phpcsFile, __METHOD__, $stackPtr) === true) {
+            return Cache::get($phpcsFile, __METHOD__, $stackPtr);
+        }
+
+        for ($i = ($tokens[$stackPtr]['scope_opener'] + 1); $i < $tokens[$stackPtr]['scope_closer']; $i++) {
+            // Skip over potentially large docblocks.
+            if (isset($tokens[$i]['comment_closer']) === true) {
+                $i = $tokens[$i]['comment_closer'];
+                continue;
+            }
+
+            // Skip over attributes.
+            if (isset($tokens[$i]['attribute_closer']) === true) {
+                $i = $tokens[$i]['attribute_closer'];
+                continue;
+            }
+
+            // Skip over trait imports with conflict resolution.
+            if ($tokens[$i]['code'] === \T_USE
+                && isset($tokens[$i]['scope_closer']) === true
+            ) {
+                $i = $tokens[$i]['scope_closer'];
+                continue;
+            }
+
+            // Defensive coding against parse errors.
+            if ($tokens[$i]['code'] === \T_CLOSURE
+                && isset($tokens[$i]['scope_closer']) === true
+            ) {
+                $i = $tokens[$i]['scope_closer'];
+                continue;
+            }
+
+            switch ($tokens[$i]['code']) {
+                case \T_CONST:
+                    $assignmentPtr = $phpcsFile->findNext([\T_EQUAL, \T_SEMICOLON, \T_CLOSE_CURLY_BRACKET], ($i + 1));
+                    if ($assignmentPtr === false || $tokens[$assignmentPtr]['code'] !== \T_EQUAL) {
+                        // Probably a parse error. Ignore.
+                        continue 2;
+                    }
+
+                    $namePtr = $phpcsFile->findPrevious(Tokens::$emptyTokens, ($assignmentPtr - 1), ($i + 1), true);
+                    if ($namePtr === false || $tokens[$namePtr]['code'] !== \T_STRING) {
+                        // Probably a parse error. Ignore.
+                        continue 2;
+                    }
+
+                    $found['constants'][$tokens[$namePtr]['content']] = $i;
+
+                    // Skip to the assignment pointer, no need to double walk.
+                    $i = $assignmentPtr;
+                    break;
+
+                case \T_ENUM_CASE:
+                    $namePtr = $phpcsFile->findNext(Tokens::$emptyTokens, ($i + 1), null, true);
+                    if ($namePtr === false || $tokens[$namePtr]['code'] !== \T_STRING) {
+                        // Probably a parse error. Ignore.
+                        continue 2;
+                    }
+
+                    $name                  = $tokens[$namePtr]['content'];
+                    $found['cases'][$name] = $i;
+
+                    // Skip to the name pointer, no need to double walk.
+                    $i = $namePtr;
+                    break;
+
+                case \T_VARIABLE:
+                    $name                       = $tokens[$i]['content'];
+                    $found['properties'][$name] = $i;
+                    break;
+
+                case \T_FUNCTION:
+                    $name = self::getName($phpcsFile, $i);
+                    if (\is_string($name) && $name !== '') {
+                        $found['methods'][$name] = $i;
+
+                        if (\strtolower($name) === '__construct') {
+                            // Check for constructor property promotion.
+                            $parameters = FunctionDeclarations::getParameters($phpcsFile, $i);
+                            foreach ($parameters as $param) {
+                                if (isset($param['property_visibility'])) {
+                                    $found['properties'][$param['name']] = $param['token'];
+                                }
+                            }
+                        }
+                    }
+
+                    if (isset($tokens[$i]['scope_closer']) === true) {
+                        // Skip over the contents of the method, including the parameters.
+                        $i = $tokens[$i]['scope_closer'];
+                    } elseif (isset($tokens[$i]['parenthesis_closer']) === true) {
+                        // Skip over the contents of an abstract/interface method, including the parameters.
+                        $i = $tokens[$i]['parenthesis_closer'];
+                    }
+                    break;
+            }
+        }
+
+        Cache::set($phpcsFile, __METHOD__, $stackPtr, $found);
+        return $found;
     }
 }

@@ -3,7 +3,6 @@
  * PHPCSUtils, utility functions and classes for PHP_CodeSniffer sniff developers.
  *
  * Autoloader for the PHPCSUtils files.
- * Also provides PHPCS cross-version class aliases.
  *
  * - If an external standard only supports PHPCS >= 3.1.0 and uses the PHPCS
  *   native unit test framework, this file does not need to be included.
@@ -32,7 +31,7 @@ if (defined('PHPCSUTILS_AUTOLOAD') === false) {
      */
     spl_autoload_register(function ($fqClassName) {
         // Only try & load our own classes.
-        if (stripos($fqClassName, 'PHPCSUtils') !== 0) {
+        if (stripos($fqClassName, 'PHPCSUtils\\') !== 0) {
             return;
         }
 

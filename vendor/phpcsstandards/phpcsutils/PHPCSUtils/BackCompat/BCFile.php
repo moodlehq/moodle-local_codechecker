@@ -76,7 +76,8 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 0.0.5.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - PHPCS 4.0: The method no longer accepts `T_CLOSURE` and `T_ANON_CLASS` tokens.
+     * - PHPCS 4.0: The method will now always return a string.
      *
      * @see \PHP_CodeSniffer\Files\File::getDeclarationName() Original source.
      * @see \PHPCSUtils\Utils\ObjectDeclarations::getName()   PHPCSUtils native improved version.
@@ -88,17 +89,53 @@ final class BCFile
      *                                               which declared the class, interface,
      *                                               trait, enum or function.
      *
-     * @return string|null The name of the class, interface, trait, enum, or function;
-     *                     or `NULL` if the function or class is anonymous or
-     *                     in case of a parse error/live coding.
+     * @return string The name of the class, interface, trait, or function or an empty string
+     *                if the name could not be determined (live coding).
      *
      * @throws \PHP_CodeSniffer\Exceptions\RuntimeException If the specified token is not of type
-     *                                                      `T_FUNCTION`, `T_CLASS`, `T_ANON_CLASS`,
-     *                                                      `T_CLOSURE`, `T_TRAIT`, `T_ENUM` or `T_INTERFACE`.
+     *                                                      `T_FUNCTION`, `T_CLASS`, `T_TRAIT`, `T_ENUM`, or `T_INTERFACE`.
      */
     public static function getDeclarationName(File $phpcsFile, $stackPtr)
     {
-        return $phpcsFile->getDeclarationName($stackPtr);
+        $tokens = $phpcsFile->getTokens();
+
+        $tokenCode = $tokens[$stackPtr]['code'];
+
+        if ($tokenCode !== T_FUNCTION
+            && $tokenCode !== T_CLASS
+            && $tokenCode !== T_INTERFACE
+            && $tokenCode !== T_TRAIT
+            && $tokenCode !== T_ENUM
+        ) {
+            throw new RuntimeException('Token type "' . $tokens[$stackPtr]['type'] . '" is not T_FUNCTION, T_CLASS, T_INTERFACE, T_TRAIT or T_ENUM');
+        }
+
+        if ($tokenCode === T_FUNCTION
+            && strtolower($tokens[$stackPtr]['content']) !== 'function'
+        ) {
+            // This is a function declared without the "function" keyword.
+            // So this token is the function name.
+            return $tokens[$stackPtr]['content'];
+        }
+
+        $stopPoint = $phpcsFile->numTokens;
+        if (isset($tokens[$stackPtr]['parenthesis_opener']) === true) {
+            // For functions, stop searching at the parenthesis opener.
+            $stopPoint = $tokens[$stackPtr]['parenthesis_opener'];
+        } elseif (isset($tokens[$stackPtr]['scope_opener']) === true) {
+            // For OO tokens, stop searching at the open curly.
+            $stopPoint = $tokens[$stackPtr]['scope_opener'];
+        }
+
+        $content = '';
+        for ($i = $stackPtr; $i < $stopPoint; $i++) {
+            if ($tokens[$i]['code'] === T_STRING) {
+                $content = $tokens[$i]['content'];
+                break;
+            }
+        }
+
+        return $content;
     }
 
     /**
@@ -148,6 +185,12 @@ final class BCFile
      *                                           // This index will only be set if the property is readonly.
      * ```
      *
+     * ... and if the promoted property uses asymmetric visibility, these additional array indexes will also be available:
+     * ```php
+     *   'set_visibility'       => string,       // The property set-visibility as declared.
+     *   'set_visibility_token' => integer,      // The stack pointer to the set-visibility modifier token.
+     * ```
+     *
      * PHPCS cross-version compatible version of the `File::getMethodParameters()` method.
      *
      * Changelog for the PHPCS native function:
@@ -159,6 +202,7 @@ final class BCFile
      *
      * @since 1.0.0
      * @since 1.0.6 Sync with PHPCS 3.8.0, support for readonly properties without explicit visibility. PHPCS#3801.
+     * @since 1.1.0 Sync with PHPCS 3.13.1, support for asymmetric properties. PHPCS(new)#851
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.
      * @param int                         $stackPtr  The position in the stack of the function token
@@ -205,23 +249,24 @@ final class BCFile
 
         $closer = $tokens[$opener]['parenthesis_closer'];
 
-        $vars             = [];
-        $currVar          = null;
-        $paramStart       = ($opener + 1);
-        $defaultStart     = null;
-        $equalToken       = null;
-        $paramCount       = 0;
-        $hasAttributes    = false;
-        $passByReference  = false;
-        $referenceToken   = false;
-        $variableLength   = false;
-        $variadicToken    = false;
-        $typeHint         = '';
-        $typeHintToken    = false;
-        $typeHintEndToken = false;
-        $nullableType     = false;
-        $visibilityToken  = null;
-        $readonlyToken    = null;
+        $vars               = [];
+        $currVar            = null;
+        $paramStart         = ($opener + 1);
+        $defaultStart       = null;
+        $equalToken         = null;
+        $paramCount         = 0;
+        $hasAttributes      = false;
+        $passByReference    = false;
+        $referenceToken     = false;
+        $variableLength     = false;
+        $variadicToken      = false;
+        $typeHint           = '';
+        $typeHintToken      = false;
+        $typeHintEndToken   = false;
+        $nullableType       = false;
+        $visibilityToken    = null;
+        $setVisibilityToken = null;
+        $readonlyToken      = null;
 
         for ($i = $paramStart; $i <= $closer; $i++) {
             // Check to see if this token has a parenthesis or bracket opener. If it does
@@ -355,6 +400,13 @@ final class BCFile
                         $visibilityToken = $i;
                     }
                     break;
+                case T_PUBLIC_SET:
+                case T_PROTECTED_SET:
+                case T_PRIVATE_SET:
+                    if ($defaultStart === null) {
+                        $setVisibilityToken = $i;
+                    }
+                    break;
                 case T_READONLY:
                     if ($defaultStart === null) {
                         $readonlyToken = $i;
@@ -389,16 +441,21 @@ final class BCFile
                     $vars[$paramCount]['type_hint_end_token'] = $typeHintEndToken;
                     $vars[$paramCount]['nullable_type']       = $nullableType;
 
-                    if ($visibilityToken !== null || $readonlyToken !== null) {
+                    if ($visibilityToken !== null || $setVisibilityToken !== null || $readonlyToken !== null) {
                         $vars[$paramCount]['property_visibility'] = 'public';
                         $vars[$paramCount]['visibility_token']    = false;
-                        $vars[$paramCount]['property_readonly']   = false;
 
                         if ($visibilityToken !== null) {
                             $vars[$paramCount]['property_visibility'] = $tokens[$visibilityToken]['content'];
                             $vars[$paramCount]['visibility_token']    = $visibilityToken;
                         }
 
+                        if ($setVisibilityToken !== null) {
+                            $vars[$paramCount]['set_visibility']       = $tokens[$setVisibilityToken]['content'];
+                            $vars[$paramCount]['set_visibility_token'] = $setVisibilityToken;
+                        }
+
+                        $vars[$paramCount]['property_readonly'] = false;
                         if ($readonlyToken !== null) {
                             $vars[$paramCount]['property_readonly'] = true;
                             $vars[$paramCount]['readonly_token']    = $readonlyToken;
@@ -412,21 +469,22 @@ final class BCFile
                     }
 
                     // Reset the vars, as we are about to process the next parameter.
-                    $currVar          = null;
-                    $paramStart       = ($i + 1);
-                    $defaultStart     = null;
-                    $equalToken       = null;
-                    $hasAttributes    = false;
-                    $passByReference  = false;
-                    $referenceToken   = false;
-                    $variableLength   = false;
-                    $variadicToken    = false;
-                    $typeHint         = '';
-                    $typeHintToken    = false;
-                    $typeHintEndToken = false;
-                    $nullableType     = false;
-                    $visibilityToken  = null;
-                    $readonlyToken    = null;
+                    $currVar            = null;
+                    $paramStart         = ($i + 1);
+                    $defaultStart       = null;
+                    $equalToken         = null;
+                    $hasAttributes      = false;
+                    $passByReference    = false;
+                    $referenceToken     = false;
+                    $variableLength     = false;
+                    $variadicToken      = false;
+                    $typeHint           = '';
+                    $typeHintToken      = false;
+                    $typeHintEndToken   = false;
+                    $nullableType       = false;
+                    $visibilityToken    = null;
+                    $setVisibilityToken = null;
+                    $readonlyToken      = null;
 
                     ++$paramCount;
                     break;
@@ -466,7 +524,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 0.0.5.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::getMethodProperties()      Original source.
      * @see \PHPCSUtils\Utils\FunctionDeclarations::getProperties() PHPCSUtils native improved version.
@@ -495,8 +553,12 @@ final class BCFile
      * array(
      *   'scope'           => string,        // Public, private, or protected.
      *   'scope_specified' => boolean,       // TRUE if the scope was explicitly specified.
+     *   'set_scope'       => string|false,  // Scope for asymmetric visibility.
+     *                                       // Either public, private, or protected or
+     *                                       // FALSE if no set scope is specified.
      *   'is_static'       => boolean,       // TRUE if the static keyword was found.
      *   'is_readonly'     => boolean,       // TRUE if the readonly keyword was found.
+     *   'is_final'        => boolean,       // TRUE if the final keyword was found.
      *   'type'            => string,        // The type of the var (empty if no type specified).
      *   'type_token'      => integer|false, // The stack pointer to the start of the type
      *                                       // or FALSE if there is no type.
@@ -511,7 +573,8 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 0.0.5.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - PHPCS 4.0: properties in interfaces (PHP 8.4+) are accepted.
+     * - PHPCS 4.0: will no longer throw a parse error warning.
      *
      * @see \PHP_CodeSniffer\Files\File::getMemberProperties() Original source.
      * @see \PHPCSUtils\Utils\Variables::getMemberProperties() PHPCSUtils native improved version.
@@ -530,7 +593,146 @@ final class BCFile
      */
     public static function getMemberProperties(File $phpcsFile, $stackPtr)
     {
-        return $phpcsFile->getMemberProperties($stackPtr);
+        $tokens = $phpcsFile->getTokens();
+
+        if ($tokens[$stackPtr]['code'] !== T_VARIABLE) {
+            throw new RuntimeException('$stackPtr must be of type T_VARIABLE');
+        }
+
+        $conditions = $tokens[$stackPtr]['conditions'];
+        $conditions = array_keys($conditions);
+        $ptr        = array_pop($conditions);
+        if (isset($tokens[$ptr]) === false
+            || isset(Tokens::$ooScopeTokens[$tokens[$ptr]['code']]) === false
+            || $tokens[$ptr]['code'] === T_ENUM
+        ) {
+            throw new RuntimeException('$stackPtr is not a class member var');
+        }
+
+        // Make sure it's not a method parameter.
+        if (empty($tokens[$stackPtr]['nested_parenthesis']) === false) {
+            $parenthesis = array_keys($tokens[$stackPtr]['nested_parenthesis']);
+            $deepestOpen = array_pop($parenthesis);
+            if ($deepestOpen > $ptr
+                && isset($tokens[$deepestOpen]['parenthesis_owner']) === true
+                && $tokens[$tokens[$deepestOpen]['parenthesis_owner']]['code'] === T_FUNCTION
+            ) {
+                throw new RuntimeException('$stackPtr is not a class member var');
+            }
+        }
+
+        $valid = [
+            T_STATIC   => T_STATIC,
+            T_VAR      => T_VAR,
+            T_READONLY => T_READONLY,
+            T_FINAL    => T_FINAL,
+        ];
+
+        $valid += Tokens::$scopeModifiers;
+        $valid += Tokens::$emptyTokens;
+
+        $scope          = 'public';
+        $scopeSpecified = false;
+        $setScope       = false;
+        $isStatic       = false;
+        $isReadonly     = false;
+        $isFinal        = false;
+
+        $startOfStatement = $phpcsFile->findPrevious(
+            [
+                T_SEMICOLON,
+                T_OPEN_CURLY_BRACKET,
+                T_CLOSE_CURLY_BRACKET,
+                T_ATTRIBUTE_END,
+            ],
+            ($stackPtr - 1)
+        );
+
+        for ($i = ($startOfStatement + 1); $i < $stackPtr; $i++) {
+            if (isset($valid[$tokens[$i]['code']]) === false) {
+                break;
+            }
+
+            switch ($tokens[$i]['code']) {
+                case T_PUBLIC:
+                    $scope          = 'public';
+                    $scopeSpecified = true;
+                    break;
+                case T_PRIVATE:
+                    $scope          = 'private';
+                    $scopeSpecified = true;
+                    break;
+                case T_PROTECTED:
+                    $scope          = 'protected';
+                    $scopeSpecified = true;
+                    break;
+                case T_PUBLIC_SET:
+                    $setScope = 'public';
+                    break;
+                case T_PROTECTED_SET:
+                    $setScope = 'protected';
+                    break;
+                case T_PRIVATE_SET:
+                    $setScope = 'private';
+                    break;
+                case T_STATIC:
+                    $isStatic = true;
+                    break;
+                case T_READONLY:
+                    $isReadonly = true;
+                    break;
+                case T_FINAL:
+                    $isFinal = true;
+                    break;
+            }
+        }
+
+        $type         = '';
+        $typeToken    = false;
+        $typeEndToken = false;
+        $nullableType = false;
+
+        if ($i < $stackPtr) {
+            // We've found a type.
+            $valid = Collections::propertyTypeTokens();
+
+            for ($i; $i < $stackPtr; $i++) {
+                if ($tokens[$i]['code'] === T_VARIABLE) {
+                    // Hit another variable in a group definition.
+                    break;
+                }
+
+                if ($tokens[$i]['code'] === T_NULLABLE) {
+                    $nullableType = true;
+                }
+
+                if (isset($valid[$tokens[$i]['code']]) === true) {
+                    $typeEndToken = $i;
+                    if ($typeToken === false) {
+                        $typeToken = $i;
+                    }
+
+                    $type .= $tokens[$i]['content'];
+                }
+            }
+
+            if ($type !== '' && $nullableType === true) {
+                $type = '?' . $type;
+            }
+        }
+
+        return [
+            'scope'           => $scope,
+            'scope_specified' => $scopeSpecified,
+            'set_scope'       => $setScope,
+            'is_static'       => $isStatic,
+            'is_readonly'     => $isReadonly,
+            'is_final'        => $isFinal,
+            'type'            => $type,
+            'type_token'      => $typeToken,
+            'type_end_token'  => $typeEndToken,
+            'nullable_type'   => $nullableType,
+        ];
     }
 
     /**
@@ -549,7 +751,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 1.3.0.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::getClassProperties()          Original source.
      * @see \PHPCSUtils\Utils\ObjectDeclarations::getClassProperties() PHPCSUtils native improved version.
@@ -577,7 +779,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 0.0.5.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::isReference() Original source.
      * @see \PHPCSUtils\Utils\Operators::isReference() PHPCSUtils native improved version.
@@ -603,7 +805,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 0.0.5.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::getTokensAsString() Original source.
      * @see \PHPCSUtils\Utils\GetTokensAsString              Related set of functions.
@@ -632,7 +834,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 2.1.0.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::findStartOfStatement() Original source.
      *
@@ -656,7 +858,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 2.1.0.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::findEndOfStatement() Original source.
      *
@@ -680,7 +882,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 0.0.5.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::hasCondition()  Original source.
      * @see \PHPCSUtils\Utils\Conditions::hasCondition() PHPCSUtils native alternative.
@@ -705,7 +907,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 1.3.0.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - The upstream method has received no significant updates since PHPCS 3.13.0.
      *
      * @see \PHP_CodeSniffer\Files\File::getCondition()  Original source.
      * @see \PHPCSUtils\Utils\Conditions::getCondition() More versatile alternative.
@@ -736,7 +938,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 1.2.0.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - PHPCS 4.0.0: Handling of the namespace relative parent class using the namespace keyword as operator.
      *
      * @see \PHP_CodeSniffer\Files\File::findExtendedClassName()          Original source.
      * @see \PHPCSUtils\Utils\ObjectDeclarations::findExtendedClassName() PHPCSUtils native improved version.
@@ -751,7 +953,42 @@ final class BCFile
      */
     public static function findExtendedClassName(File $phpcsFile, $stackPtr)
     {
-        return $phpcsFile->findExtendedClassName($stackPtr);
+        $tokens = $phpcsFile->getTokens();
+
+        // Check for the existence of the token.
+        if (isset($tokens[$stackPtr]) === false) {
+            return false;
+        }
+
+        if ($tokens[$stackPtr]['code'] !== T_CLASS
+            && $tokens[$stackPtr]['code'] !== T_ANON_CLASS
+            && $tokens[$stackPtr]['code'] !== T_INTERFACE
+        ) {
+            return false;
+        }
+
+        if (isset($tokens[$stackPtr]['scope_opener']) === false) {
+            return false;
+        }
+
+        $classOpenerIndex = $tokens[$stackPtr]['scope_opener'];
+        $extendsIndex     = $phpcsFile->findNext(T_EXTENDS, $stackPtr, $classOpenerIndex);
+        if ($extendsIndex === false) {
+            return false;
+        }
+
+        $find   = Collections::namespacedNameTokens();
+        $find[] = T_WHITESPACE;
+
+        $end  = $phpcsFile->findNext($find, ($extendsIndex + 1), ($classOpenerIndex + 1), true);
+        $name = $phpcsFile->getTokensAsString(($extendsIndex + 1), ($end - $extendsIndex - 1));
+        $name = trim($name);
+
+        if ($name === '') {
+            return false;
+        }
+
+        return $name;
     }
 
     /**
@@ -761,7 +998,7 @@ final class BCFile
      *
      * Changelog for the PHPCS native function:
      * - Introduced in PHPCS 2.7.0.
-     * - The upstream method has received no significant updates since PHPCS 3.10.0.
+     * - PHPCS 4.0.0: Handling of the namespace relative parent class using the namespace keyword as operator.
      *
      * @see \PHP_CodeSniffer\Files\File::findImplementedInterfaceNames()          Original source.
      * @see \PHPCSUtils\Utils\ObjectDeclarations::findImplementedInterfaceNames() PHPCSUtils native improved version.
@@ -776,6 +1013,44 @@ final class BCFile
      */
     public static function findImplementedInterfaceNames(File $phpcsFile, $stackPtr)
     {
-        return $phpcsFile->findImplementedInterfaceNames($stackPtr);
+        $tokens = $phpcsFile->getTokens();
+
+        // Check for the existence of the token.
+        if (isset($tokens[$stackPtr]) === false) {
+            return false;
+        }
+
+        if ($tokens[$stackPtr]['code'] !== T_CLASS
+            && $tokens[$stackPtr]['code'] !== T_ANON_CLASS
+            && $tokens[$stackPtr]['code'] !== T_ENUM
+        ) {
+            return false;
+        }
+
+        if (isset($tokens[$stackPtr]['scope_closer']) === false) {
+            return false;
+        }
+
+        $classOpenerIndex = $tokens[$stackPtr]['scope_opener'];
+        $implementsIndex  = $phpcsFile->findNext(T_IMPLEMENTS, $stackPtr, $classOpenerIndex);
+        if ($implementsIndex === false) {
+            return false;
+        }
+
+        $find   = Collections::namespacedNameTokens();
+        $find[] = T_WHITESPACE;
+        $find[] = T_COMMA;
+
+        $end  = $phpcsFile->findNext($find, ($implementsIndex + 1), ($classOpenerIndex + 1), true);
+        $name = $phpcsFile->getTokensAsString(($implementsIndex + 1), ($end - $implementsIndex - 1));
+        $name = trim($name);
+
+        if ($name === '') {
+            return false;
+        } else {
+            $names = explode(',', $name);
+            $names = array_map('trim', $names);
+            return $names;
+        }
     }
 }

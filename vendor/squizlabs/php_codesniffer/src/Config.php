@@ -85,7 +85,7 @@ class Config
      *
      * @var string
      */
-    const VERSION = '3.10.1';
+    const VERSION = '3.13.2';
 
     /**
      * Package stability; either stable, beta or alpha.
@@ -169,6 +169,21 @@ class Config
      * @var string[]
      */
     private $cliArgs = [];
+
+    /**
+     * A list of valid generators.
+     *
+     * {@internal Once support for PHP < 5.6 is dropped, this property should be refactored into a
+     * class constant.}
+     *
+     * @var array<string, string> Keys are the lowercase version of the generator name, while values
+     *                            are the associated PHP generator class.
+     */
+    private $validGenerators = [
+        'text'     => 'Text',
+        'html'     => 'HTML',
+        'markdown' => 'Markdown',
+    ];
 
     /**
      * Command line values that the user has supplied directly.
@@ -885,32 +900,14 @@ class Config
                     break;
                 }
 
-                $sniffs = explode(',', substr($arg, 7));
-                foreach ($sniffs as $sniff) {
-                    if (substr_count($sniff, '.') !== 2) {
-                        $error  = 'ERROR: The specified sniff code "'.$sniff.'" is invalid'.PHP_EOL.PHP_EOL;
-                        $error .= $this->printShortUsage(true);
-                        throw new DeepExitException($error, 3);
-                    }
-                }
-
-                $this->sniffs = $sniffs;
+                $this->sniffs = $this->parseSniffCodes(substr($arg, 7), 'sniffs');
                 self::$overriddenDefaults['sniffs'] = true;
             } else if (substr($arg, 0, 8) === 'exclude=') {
                 if (isset(self::$overriddenDefaults['exclude']) === true) {
                     break;
                 }
 
-                $sniffs = explode(',', substr($arg, 8));
-                foreach ($sniffs as $sniff) {
-                    if (substr_count($sniff, '.') !== 2) {
-                        $error  = 'ERROR: The specified sniff code "'.$sniff.'" is invalid'.PHP_EOL.PHP_EOL;
-                        $error .= $this->printShortUsage(true);
-                        throw new DeepExitException($error, 3);
-                    }
-                }
-
-                $this->exclude = $sniffs;
+                $this->exclude = $this->parseSniffCodes(substr($arg, 8), 'exclude');
                 self::$overriddenDefaults['exclude'] = true;
             } else if (defined('PHP_CODESNIFFER_IN_TESTS') === false
                 && substr($arg, 0, 6) === 'cache='
@@ -1013,8 +1010,8 @@ class Config
                 }
 
                 self::$overriddenDefaults['stdinPath'] = true;
-            } else if (PHP_CODESNIFFER_CBF === false && substr($arg, 0, 12) === 'report-file=') {
-                if (isset(self::$overriddenDefaults['reportFile']) === true) {
+            } else if (substr($arg, 0, 12) === 'report-file=') {
+                if (PHP_CODESNIFFER_CBF === true || isset(self::$overriddenDefaults['reportFile']) === true) {
                     break;
                 }
 
@@ -1144,21 +1141,24 @@ class Config
                     break;
                 }
 
-                $extensions    = explode(',', substr($arg, 11));
-                $newExtensions = [];
-                foreach ($extensions as $ext) {
-                    $slash = strpos($ext, '/');
-                    if ($slash !== false) {
-                        // They specified the tokenizer too.
-                        list($ext, $tokenizer) = explode('/', $ext);
-                        $newExtensions[$ext]   = strtoupper($tokenizer);
-                        continue;
-                    }
+                $extensionsString = substr($arg, 11);
+                $newExtensions    = [];
+                if (empty($extensionsString) === false) {
+                    $extensions = explode(',', $extensionsString);
+                    foreach ($extensions as $ext) {
+                        $slash = strpos($ext, '/');
+                        if ($slash !== false) {
+                            // They specified the tokenizer too.
+                            list($ext, $tokenizer) = explode('/', $ext);
+                            $newExtensions[$ext]   = strtoupper($tokenizer);
+                            continue;
+                        }
 
-                    if (isset($this->extensions[$ext]) === true) {
-                        $newExtensions[$ext] = $this->extensions[$ext];
-                    } else {
-                        $newExtensions[$ext] = 'PHP';
+                        if (isset($this->extensions[$ext]) === true) {
+                            $newExtensions[$ext] = $this->extensions[$ext];
+                        } else {
+                            $newExtensions[$ext] = 'PHP';
+                        }
                     }
                 }
 
@@ -1233,7 +1233,22 @@ class Config
                     break;
                 }
 
-                $this->generator = substr($arg, 10);
+                $generatorName          = substr($arg, 10);
+                $lowerCaseGeneratorName = strtolower($generatorName);
+
+                if (isset($this->validGenerators[$lowerCaseGeneratorName]) === false) {
+                    $validOptions = implode(', ', $this->validGenerators);
+                    $validOptions = substr_replace($validOptions, ' and', strrpos($validOptions, ','), 1);
+                    $error        = sprintf(
+                        'ERROR: "%s" is not a valid generator. The following generators are supported: %s.'.PHP_EOL.PHP_EOL,
+                        $generatorName,
+                        $validOptions
+                    );
+                    $error       .= $this->printShortUsage(true);
+                    throw new DeepExitException($error, 3);
+                }
+
+                $this->generator = $this->validGenerators[$lowerCaseGeneratorName];
                 self::$overriddenDefaults['generator'] = true;
             } else if (substr($arg, 0, 9) === 'encoding=') {
                 if (isset(self::$overriddenDefaults['encoding']) === true) {
@@ -1275,6 +1290,93 @@ class Config
         }//end switch
 
     }//end processLongArgument()
+
+
+    /**
+     * Parse supplied string into a list of validated sniff codes.
+     *
+     * @param string $input    Comma-separated string of sniff codes.
+     * @param string $argument The name of the argument which is being processed.
+     *
+     * @return array<string>
+     * @throws \PHP_CodeSniffer\Exceptions\DeepExitException When any of the provided codes are not valid as sniff codes.
+     */
+    private function parseSniffCodes($input, $argument)
+    {
+        $errors = [];
+        $sniffs = [];
+
+        $possibleSniffs = array_filter(explode(',', $input));
+
+        if ($possibleSniffs === []) {
+            $errors[] = 'No codes specified / empty argument';
+        }
+
+        foreach ($possibleSniffs as $sniff) {
+            $sniff = trim($sniff);
+
+            $partCount = substr_count($sniff, '.');
+            if ($partCount === 2) {
+                // Correct number of parts.
+                $sniffs[] = $sniff;
+                continue;
+            }
+
+            if ($partCount === 0) {
+                $errors[] = 'Standard codes are not supported: '.$sniff;
+            } else if ($partCount === 1) {
+                $errors[] = 'Category codes are not supported: '.$sniff;
+            } else if ($partCount === 3) {
+                $errors[] = 'Message codes are not supported: '.$sniff;
+            } else {
+                $errors[] = 'Too many parts: '.$sniff;
+            }
+
+            if ($partCount > 2) {
+                $parts    = explode('.', $sniff, 4);
+                $sniffs[] = $parts[0].'.'.$parts[1].'.'.$parts[2];
+            }
+        }//end foreach
+
+        $sniffs = array_reduce(
+            $sniffs,
+            static function ($carry, $item) {
+                $lower = strtolower($item);
+
+                foreach ($carry as $found) {
+                    if ($lower === strtolower($found)) {
+                        // This sniff is already in our list.
+                        return $carry;
+                    }
+                }
+
+                $carry[] = $item;
+
+                return $carry;
+            },
+            []
+        );
+
+        if ($errors !== []) {
+            $error  = 'ERROR: The --'.$argument.' option only supports sniff codes.'.PHP_EOL;
+            $error .= 'Sniff codes are in the form "Standard.Category.Sniff".'.PHP_EOL;
+            $error .= PHP_EOL;
+            $error .= 'The following problems were detected:'.PHP_EOL;
+            $error .= '* '.implode(PHP_EOL.'* ', $errors).PHP_EOL;
+
+            if ($sniffs !== []) {
+                $error .= PHP_EOL;
+                $error .= 'Perhaps try --'.$argument.'="'.implode(',', $sniffs).'" instead.'.PHP_EOL;
+            }
+
+            $error .= PHP_EOL;
+            $error .= $this->printShortUsage(true);
+            throw new DeepExitException(ltrim($error), 3);
+        }
+
+        return $sniffs;
+
+    }//end parseSniffCodes()
 
 
     /**
@@ -1570,7 +1672,7 @@ class Config
         // standards paths are added to the autoloader.
         if ($key === 'installed_paths') {
             $installedStandards = Standards::getInstalledStandardDetails();
-            foreach ($installedStandards as $name => $details) {
+            foreach ($installedStandards as $details) {
                 Autoload::addSearchPath($details['path'], $details['namespace']);
             }
         }
@@ -1602,11 +1704,6 @@ class Config
             $configFile = dirname($path).DIRECTORY_SEPARATOR.'CodeSniffer.conf';
         } else {
             $configFile = dirname(__DIR__).DIRECTORY_SEPARATOR.'CodeSniffer.conf';
-            if (is_file($configFile) === false
-                && strpos('@data_dir@', '@data_dir') === false
-            ) {
-                $configFile = '@data_dir@/PHP_CodeSniffer/CodeSniffer.conf';
-            }
         }
 
         if (is_file($configFile) === false) {

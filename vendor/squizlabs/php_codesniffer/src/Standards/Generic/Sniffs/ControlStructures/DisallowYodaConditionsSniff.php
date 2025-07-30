@@ -92,7 +92,7 @@ class DisallowYodaConditionsSniff implements Sniff
                     return;
                 }
 
-                // If it is not an array check what is inside.
+                // If it is not an array, check what is inside.
                 $found = $phpcsFile->findPrevious(
                     T_VARIABLE,
                     ($previousIndex - 1),
@@ -146,7 +146,7 @@ class DisallowYodaConditionsSniff implements Sniff
             $end   = $tokens[$arrayToken]['parenthesis_closer'];
         } else {
             // Shouldn't be possible but may happen if external sniffs are using this method.
-            return true;
+            return true; // @codeCoverageIgnore
         }
 
         $staticTokens  = Tokens::$emptyTokens;

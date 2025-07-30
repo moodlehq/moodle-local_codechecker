@@ -6,7 +6,9 @@
  * in a standard.
  *
  * @author    Greg Sherwood <gsherwood@squiz.net>
+ * @author    Juliette Reinders Folmer <phpcs_nospam@adviesenzo.nl>
  * @copyright 2006-2015 Squiz Pty Ltd (ABN 77 084 670 600)
+ * @copyright 2024 PHPCSStandards and contributors
  * @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/master/licence.txt BSD Licence
  */
 
@@ -46,19 +48,26 @@ abstract class Generator
     {
         $this->ruleset = $ruleset;
 
+        $find    = [
+            DIRECTORY_SEPARATOR.'Sniffs'.DIRECTORY_SEPARATOR,
+            'Sniff.php',
+        ];
+        $replace = [
+            DIRECTORY_SEPARATOR.'Docs'.DIRECTORY_SEPARATOR,
+            'Standard.xml',
+        ];
+
         foreach ($ruleset->sniffs as $className => $sniffClass) {
             $file    = Autoload::getLoadedFileName($className);
-            $docFile = str_replace(
-                DIRECTORY_SEPARATOR.'Sniffs'.DIRECTORY_SEPARATOR,
-                DIRECTORY_SEPARATOR.'Docs'.DIRECTORY_SEPARATOR,
-                $file
-            );
-            $docFile = str_replace('Sniff.php', 'Standard.xml', $docFile);
+            $docFile = str_replace($find, $replace, $file);
 
             if (is_file($docFile) === true) {
                 $this->docFiles[] = $docFile;
             }
         }
+
+        // Always present the docs in a consistent alphabetical order.
+        sort($this->docFiles, (SORT_NATURAL | SORT_FLAG_CASE));
 
     }//end __construct()
 
@@ -74,7 +83,22 @@ abstract class Generator
      */
     protected function getTitle(DOMNode $doc)
     {
-        return $doc->getAttribute('title');
+        $title = $doc->getAttribute('title');
+
+        if (empty($title) === true) {
+            // Fall back to the sniff name if no title was supplied.
+            $fileName  = $doc->ownerDocument->documentURI;
+            $lastSlash = strrpos($fileName, '/');
+            if (is_int($lastSlash) === true) {
+                // Get the sniff name without "Standard.xml".
+                $title = substr($fileName, ($lastSlash + 1), -12);
+
+                // Split the sniff name to individual words.
+                $title = preg_replace('`[-._]|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])`', '$1 $2', $title);
+            }
+        }
+
+        return $title;
 
     }//end getTitle()
 

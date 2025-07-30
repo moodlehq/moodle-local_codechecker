@@ -11,8 +11,8 @@
 namespace PHPCSUtils\BackCompat;
 
 use PHP_CodeSniffer\Config;
-use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
+use PHPCSUtils\Exceptions\MissingArgumentError;
 
 /**
  * Utility methods to retrieve (configuration) information from PHP_CodeSniffer.
@@ -63,6 +63,8 @@ final class Helper
      *                                        in PHPCS 3.x and higher.
      *
      * @return bool Whether the setting of the data was successfull.
+     *
+     * @throws \PHPCSUtils\Exceptions\MissingArgumentError When using PHPCS 4.x and not passing the $config parameter.
      */
     public static function setConfigData($key, $value, $temp = false, $config = null)
     {
@@ -72,7 +74,7 @@ final class Helper
         }
 
         if (\version_compare(self::getVersion(), '3.99.99', '>') === true) {
-            throw new RuntimeException('Passing the $config parameter is required in PHPCS 4.x');
+            throw MissingArgumentError::create(4, '$config', 'when running on PHPCS 4.x');
         }
 
         // PHPCS 3.x.

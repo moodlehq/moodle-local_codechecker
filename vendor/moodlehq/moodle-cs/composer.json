@@ -24,10 +24,10 @@
     "require": {
         "php": ">=7.4.0",
         "ext-json": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
-        "squizlabs/php_codesniffer": "^3.10.1",
-        "phpcsstandards/phpcsextra": "^1.2.1",
-        "phpcompatibility/php-compatibility": "dev-develop#96072c30"
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.1.1",
+        "squizlabs/php_codesniffer": "^3.13.2",
+        "phpcsstandards/phpcsextra": "^1.4.0",
+        "phpcompatibility/php-compatibility": "dev-develop#5e207bcc"
     },
     "config": {
         "allow-plugins": {
