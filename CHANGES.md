@@ -1,3 +1,8 @@
+Changes in version 5.0.9 (20250730) - Long time no bump
+-------------------------------------------------------
+- Bundled dependencies updated:
+  - Moodle CS v3.5.1
+
 Changes in version 5.0.8 (20240705) - Refreshing summer
 -------------------------------------------------------
 - Bundled dependencies updated:
