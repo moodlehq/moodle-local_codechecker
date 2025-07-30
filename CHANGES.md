@@ -1,3 +1,7 @@
+Changes in version 5.0.10 (20250730) - Too soon?
+-------------------------------------------------------
+- Fixed bundled dependencies
+
 Changes in version 5.0.9 (20250730) - Long time no bump
 -------------------------------------------------------
 - Bundled dependencies updated:
