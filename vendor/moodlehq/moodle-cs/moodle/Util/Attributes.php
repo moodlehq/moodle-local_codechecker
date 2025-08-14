@@ -18,8 +18,6 @@
 namespace MoodleHQ\MoodleCS\moodle\Util;
 
 use PHP_CodeSniffer\Files\File;
-use PHPCSUtils\Utils\Context;
-use PHPCSUtils\Utils\Namespaces;
 use PHPCSUtils\Utils\ObjectDeclarations;
 
 /**
@@ -92,6 +90,9 @@ abstract class Attributes
             'attribute_opener' => $opener,
             'attribute_closer' => $closer,
             'attribute_name' => null,
+            'qualified_name' => null,
+            'parenthesis_opener' => null,
+            'parenthesis_closer' => null,
         ];
 
         $stopAt = [
@@ -105,9 +106,86 @@ abstract class Attributes
             $properties['attribute_name'] .= $tokens[$i]['content'];
         }
 
-        // TODO Get the qualified name.
+        if ($properties['attribute_name'] !== null) {
+            $properties['qualified_name'] = NamespaceScopeUtil::getQualifiedName(
+                $phpcsFile,
+                $stackPtr,
+                $properties['attribute_name']
+            );
+        }
+
+        // Find the parenthesis if they exist.
+        $openParen = $phpcsFile->findNext(
+            T_OPEN_PARENTHESIS,
+            $opener + 1,
+            $closer
+        );
+
+        if ($openParen !== false) {
+            $properties['parenthesis_opener'] = $openParen;
+            $properties['parenthesis_closer'] = $tokens[$openParen]['parenthesis_closer'];
+        }
 
         return $properties;
+    }
+
+    /**
+     * Check if an Attribute exists on an Attributable object.
+     *
+     * @param File $file
+     * @param int $pointer
+     * @param string $attributeName The name of the attribute to check for.
+     * @return bool True if the attribute exists, false otherwise.
+     */
+    public static function hasAttribute(
+        File $file,
+        int $pointer,
+        string $attributeName
+    ) {
+        $attributes = self::getAttributePointers($file, $pointer);
+        foreach ($attributes as $attributePtr) {
+            $attribute = self::getAttributeProperties($file, $attributePtr);
+            if ($attribute['qualified_name'] === $attributeName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the properties of an Attribute from a pointer.
+     *
+     * @param File $file
+     * @param int $pointer The pointer to the attribute.
+     * @param array $attributeNameFilter An optional filter for attribute names.
+     * @return array An array of attributes with their properties.
+     */
+    public static function getAttributePropertiesFromPointer(
+        File $file,
+        int $pointer,
+        array $attributeNameFilter = []
+    ): array {
+        $attributesWithProperties = [];
+
+        $attributes = Attributes::getAttributePointers($file, $pointer);
+        foreach ($attributes as $attributePtr) {
+            $attribute = Attributes::getAttributeProperties($file, $attributePtr);
+            if ($attribute === null) {
+                continue; // @codeCoverageIgnore
+            }
+
+            if (count($attributeNameFilter) > 0) {
+                // If the attribute name is not in the filter, skip it.
+                if (!in_array($attribute['qualified_name'], $attributeNameFilter, true)) {
+                    continue;
+                }
+            }
+
+            // If the attribute is already in the array, skip it.
+            $attributesWithProperties[$attributePtr] = $attribute;
+        }
+        return $attributesWithProperties;
     }
 
     /**
