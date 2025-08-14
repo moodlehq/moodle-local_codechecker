@@ -3,11 +3,11 @@
         'name' => 'moodlehq/local_codechecker',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '53bc3b9f2e41e56e13653ba89eb9a5eba1c93718',
+        'reference' => '94c68a0aa5089bd7a579572916810e2c7239f2b5',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'dealerdirect/phpcodesniffer-composer-installer' => array(
@@ -22,7 +22,7 @@
         'moodlehq/local_codechecker' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '53bc3b9f2e41e56e13653ba89eb9a5eba1c93718',
+            'reference' => '94c68a0aa5089bd7a579572916810e2c7239f2b5',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

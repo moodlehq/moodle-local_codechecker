@@ -538,6 +538,6 @@
             "install-path": "../squizlabs/php_codesniffer"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

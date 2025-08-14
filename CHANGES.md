@@ -1,3 +1,7 @@
+Changes in version 5.0.12 (20250815) -  Git excludes thee
+-------------------------------------------------------
+- Fixed Bundled dependencies
+
 Changes in version 5.0.11 (20250814) - I attribute this change to PHPUnit
 -------------------------------------------------------
 - Bundled dependencies updated:
