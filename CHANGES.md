@@ -1,3 +1,8 @@
+Changes in version 5.0.11 (20250814) - I attribute this change to PHPUnit
+-------------------------------------------------------
+- Bundled dependencies updated:
+  - Moodle CS v3.5.2
+
 Changes in version 5.0.10 (20250730) - Too soon?
 -------------------------------------------------------
 - Fixed bundled dependencies
