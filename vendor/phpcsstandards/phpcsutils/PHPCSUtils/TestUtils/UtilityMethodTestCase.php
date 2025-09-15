@@ -12,8 +12,8 @@ namespace PHPCSUtils\TestUtils;
 
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Exceptions\TokenizerException;
-use PHP_CodeSniffer\Files\DummyFile;
 use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Files\LocalFile;
 use PHP_CodeSniffer\Ruleset;
 use PHPCSUtils\BackCompat\Helper;
 use PHPCSUtils\Exceptions\TestFileNotFound;
@@ -253,11 +253,7 @@ abstract class UtilityMethodTestCase extends TestCase
             parent::fail("Test case file missing. Expected case file location: $caseFile");
         }
 
-        // Make sure the file gets parsed correctly based on the file type.
-        $contents = \file_get_contents($caseFile);
-        $contents = 'phpcs_input_file: ' . $caseFile . \PHP_EOL . $contents;
-
-        $file = new DummyFile($contents, $ruleset, $config);
+        $file = new LocalFile($caseFile, $ruleset, $config);
 
         // Only tokenize the file, do not process it.
         try {
@@ -353,9 +349,9 @@ abstract class UtilityMethodTestCase extends TestCase
     public static function setStaticConfigProperty($name, $value)
     {
         $property = new ReflectionProperty('PHP_CodeSniffer\Config', $name);
-        $property->setAccessible(true);
+        (\PHP_VERSION_ID < 80100) && $property->setAccessible(true);
         $property->setValue(null, $value);
-        $property->setAccessible(false);
+        (\PHP_VERSION_ID < 80100) && $property->setAccessible(false);
     }
 
     /**

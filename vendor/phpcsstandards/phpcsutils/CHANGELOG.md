@@ -10,6 +10,61 @@ This projects adheres to [Keep a CHANGELOG](https://keepachangelog.com/) and use
 _Nothing yet._
 
 
+## [1.1.2] - 2025-09-05
+
+### Added
+
+#### PHPCS BackCompat
+
+* `BCFile::getMemberProperties()`: sync with PHPCS 3.13.3 - support for PHP 8.4 abstract properties. [#698]
+
+#### Utils
+
+* `Variables::getMemberProperties()`: support for PHP 8.4 abstract properties. [#698]
+
+### Changed
+
+#### Utils
+
+* `TypeString::normalizeCase()` will now also normalize a fully qualified `true`, `false` or `null` type to unqualified. [#702]
+
+#### Other
+
+* Dropped support for [PHP_CodeSniffer] < 3.13.3. [#698]
+    Please ensure you run `composer update phpcsstandards/phpcsutils --with-dependencies` to benefit from this.
+* Various housekeeping.
+
+### Fixed
+
+#### Utils
+
+* `TypeString::isNullable()`: a type string with a fully qualified `null` was not recognized as nullable. [#702]
+* `TypeString::isKeyword()`: a fully qualified `true`, `false` or `null` type was not recognized as a keyword type. [#702]
+
+_Note: using fully qualified `true`, `false` or `null` in a typestring is not allowed by PHP. Even so, the `TypeString` utility will now handle this in a parse error tolerant manner._
+
+[#698]: https://github.com/PHPCSStandards/PHPCSUtils/pull/698
+[#702]: https://github.com/PHPCSStandards/PHPCSUtils/pull/702
+
+
+## [1.1.1] - 2025-08-10
+
+### Changed
+
+#### TestUtils
+
+* The [`PHPCSUtils\TestUtils\UtilityMethodTestCase`][`UtilityMethodTestCase`] now uses the PHP_CodeSniffer `LocalFile` instead of the `DummyFile` class under the hood. [#692]
+
+### Fixed
+
+#### TestUtils
+
+* Prevent PHP 8.5 deprecation notices for `Reflection*::setAccessible()` in the [`PHPCSUtils\TestUtils\UtilityMethodTestCase`][`UtilityMethodTestCase`] and the [`PHPCSUtils\TestUtils\ConfigDouble`][`ConfigDouble`] classes. [#695]
+
+[#692]: https://github.com/PHPCSStandards/PHPCSUtils/pull/692
+[#695]: https://github.com/PHPCSStandards/PHPCSUtils/pull/695
+
+
 ## [1.1.0] - 2025-06-12
 
 ### Added
@@ -1221,6 +1276,8 @@ This initial alpha release contains the following utility classes:
 
 
 [Unreleased]:   https://github.com/PHPCSStandards/PHPCSUtils/compare/stable...HEAD
+[1.1.2]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.1.1...1.1.2
+[1.1.1]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.1.0...1.1.1
 [1.1.0]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.12...1.1.0
 [1.0.12]:       https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.11...1.0.12
 [1.0.11]:       https://github.com/PHPCSStandards/PHPCSUtils/compare/1.0.10...1.0.11

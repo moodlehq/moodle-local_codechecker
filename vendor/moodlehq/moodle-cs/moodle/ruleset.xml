@@ -83,18 +83,18 @@
 
     <rule ref="Generic.ControlStructures.InlineControlStructure"/>
 
-    <rule ref="Generic.Functions.CallTimePassByReference"/>
     <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
 
     <rule ref="Generic.NamingConventions.ConstructorName"/>
 
     <rule ref="Generic.WhiteSpace.ScopeIndent">
         <properties>
-            <property name="ignoreIndentationTokens" type="array" value="T_CLOSE_TAG"/>
+            <property name="ignoreIndentationTokens" type="array">
+                <element value="T_CLOSE_TAG"/>
+            </property>
         </properties>
     </rule>
 
-    <rule ref="Squiz.Classes.DuplicateProperty"/>
     <rule ref="Squiz.Classes.LowercaseClassKeywords"/>
     <rule ref="Squiz.Classes.SelfMemberReference"/>
 

@@ -440,7 +440,7 @@ final class ObjectDeclarations
      *   in the return value.
      *   However, keep in mind that passing the stack pointer of such a property to the
      *   {@see Variables::getMemberProperties()} method is not supported.
-     * - Interfaces and enums cannot contain properties. This method does not take this into
+     * - Interfaces (prior to PHP 8.4) and enums cannot contain properties. This method does not take this into
      *   account to allow sniffs to flag this kind of incorrect PHP code.
      *
      * @since 1.1.0

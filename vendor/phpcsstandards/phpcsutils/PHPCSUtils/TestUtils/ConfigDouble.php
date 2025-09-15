@@ -211,7 +211,7 @@ final class ConfigDouble extends Config
     public function getStaticConfigProperty($name)
     {
         $property = new ReflectionProperty('PHP_CodeSniffer\Config', $name);
-        $property->setAccessible(true);
+        (\PHP_VERSION_ID < 80100) && $property->setAccessible(true);
 
         if ($name === 'overriddenDefaults' && \version_compare($this->phpcsVersion, '3.99.99', '>')) {
             return $property->getValue($this);
@@ -236,7 +236,7 @@ final class ConfigDouble extends Config
     public function setStaticConfigProperty($name, $value)
     {
         $property = new ReflectionProperty('PHP_CodeSniffer\Config', $name);
-        $property->setAccessible(true);
+        (\PHP_VERSION_ID < 80100) && $property->setAccessible(true);
 
         if ($name === 'overriddenDefaults' && \version_compare($this->phpcsVersion, '3.99.99', '>')) {
             $property->setValue($this, $value);
@@ -244,6 +244,6 @@ final class ConfigDouble extends Config
             $property->setValue(null, $value);
         }
 
-        $property->setAccessible(false);
+        (\PHP_VERSION_ID < 80100) && $property->setAccessible(false);
     }
 }

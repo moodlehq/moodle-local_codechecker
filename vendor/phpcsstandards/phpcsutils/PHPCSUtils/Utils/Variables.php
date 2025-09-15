@@ -108,6 +108,7 @@ final class Variables
      *                 'is_static'       => boolean,       // TRUE if the static keyword was found.
      *                 'is_readonly'     => boolean,       // TRUE if the readonly keyword was found.
      *                 'is_final'        => boolean,       // TRUE if the final keyword was found.
+     *                 'is_abstract'     => boolean,       // TRUE if the abstract keyword was found.
      *                 'type'            => string,        // The type of the var (empty if no type specified).
      *                 'type_token'      => integer|false, // The stack pointer to the start of the type
      *                                                     // or FALSE if there is no type.
@@ -155,6 +156,7 @@ final class Variables
         $isStatic       = false;
         $isReadonly     = false;
         $isFinal        = false;
+        $isAbstract     = false;
 
         $startOfStatement = $phpcsFile->findPrevious(
             [
@@ -211,6 +213,9 @@ final class Variables
                 case \T_FINAL:
                     $isFinal = true;
                     break;
+                case \T_ABSTRACT:
+                    $isAbstract = true;
+                    break;
             }
         }
 
@@ -254,6 +259,7 @@ final class Variables
             'is_static'       => $isStatic,
             'is_readonly'     => $isReadonly,
             'is_final'        => $isFinal,
+            'is_abstract'     => $isAbstract,
             'type'            => $type,
             'type_token'      => $typeToken,
             'type_end_token'  => $typeEndToken,
