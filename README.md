@@ -6,7 +6,7 @@ Moodle Code Checker
 Information
 -----------
 
-This Moodle plugin uses the [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) tool to
+This Moodle plugin uses the [PHP CodeSniffer](https://github.com/PHPCSStandards/PHP_CodeSniffer) tool to
 check that code follows the [Moodle coding style](https://moodledev.io/general/development/policies/codingstyle).
 It uses the [Moodle Coding Style](https://github.com/moodlehq/moodle-cs) 'sniffs' that check many aspects of the code, including the awesome
 [PHPCompatibility](https://github.com/PHPCompatibility/PHPCompatibility) ones.
