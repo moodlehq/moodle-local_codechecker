@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpcodesniffer.com/phpcs.xsd"
+    name="moodle600"
+    namespace="MoodleHQ\MoodleCS\Moodle600">
+
+    <description>Coding Style Standard for Moodle 6.0</description>
+
+    <!-- Extend the standard Moodle coding style -->
+    <rule ref="moodle"/>
+
+    <rule ref="moodle.Deprecations.DeprecatedCFGProperties">
+        <properties>
+            <property name="deprecatedProperties" type="array">
+                <element key="httpswwwroot" value="wwwroot" />
+                <element key="admin" value="" />
+                <element key="loginhttps" value="" />
+            </property>
+        </properties>
+    </rule>
+</ruleset>

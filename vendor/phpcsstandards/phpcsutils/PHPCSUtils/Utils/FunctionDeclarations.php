@@ -150,6 +150,7 @@ final class FunctionDeclarations
      *   - `"has_body"` index could be set to `true` for functions without body in the case of
      *      parse errors or live coding.
      * - Defensive coding against incorrect calls to this method.
+     * - Defensive coding against incorrect results due to parse errors in the code under scan.
      * - More efficient checking whether a function has a body.
      * - Support for PHP 8.0 identifier name tokens in return types, cross-version PHP & PHPCS.
      * - The results of this function call are cached during a PHPCS run for faster response times.
@@ -277,7 +278,10 @@ final class FunctionDeclarations
                     break;
                 }
 
-                if ($scopeOpener === null && $tokens[$i]['code'] === \T_SEMICOLON) {
+                if ($scopeOpener === null
+                    && ($tokens[$i]['code'] === \T_SEMICOLON
+                    || $tokens[$i]['code'] === \T_OPEN_CURLY_BRACKET)
+                ) {
                     // End of abstract/interface function definition.
                     break;
                 }

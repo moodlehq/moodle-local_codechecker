@@ -65,9 +65,16 @@ class WhiteSpaceInStringsSniff implements Sniff
                 $phpcsfile->addError($error, $stackptr, 'EndLine');
             }
         } else {
-            // Other tests within T_WHITESPACE tokens
+            // Other tests within T_WHITESPACE tokens.
             // Look for tabs only in whitespace tokens.
-            if (strpos($tokens[$stackptr]['content'], "\t") !== false) {
+            //
+            // Note: As of PHPCS 4.0 tabs within whitespace tokens are expanded to spaces
+            // (based on the tab width), so use the original content, when available, to
+            // detect a real tab.
+            $content = isset($tokens[$stackptr]['orig_content'])
+                ? $tokens[$stackptr]['orig_content']
+                : $tokens[$stackptr]['content'];
+            if (strpos($content, "\t") !== false) {
                 $error = 'Tab found within whitespace';
                 $phpcsfile->addError($error, $stackptr, 'TabWhitespace');
             }

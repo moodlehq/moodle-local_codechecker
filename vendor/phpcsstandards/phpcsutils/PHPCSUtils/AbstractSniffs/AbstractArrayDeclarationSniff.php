@@ -10,6 +10,7 @@
 
 namespace PHPCSUtils\AbstractSniffs;
 
+use Exception;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
@@ -20,6 +21,7 @@ use PHPCSUtils\Utils\Arrays;
 use PHPCSUtils\Utils\Numbers;
 use PHPCSUtils\Utils\PassedParameters;
 use PHPCSUtils\Utils\TextStrings;
+use Throwable;
 
 /**
  * Abstract sniff to easily examine all parts of an array declaration.
@@ -120,6 +122,24 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
         \T_CONSTANT_ENCAPSED_STRING => \T_CONSTANT_ENCAPSED_STRING,
         \T_STRING_CONCAT            => \T_STRING_CONCAT,
         \T_BOOLEAN_NOT              => \T_BOOLEAN_NOT,
+    ];
+
+    /**
+     * List of tokens which, when found directly before an open parenthesis, indicate a function call/callback.
+     *
+     * Note: some of these (end heredoc/nowdoc) can not result in valid code (parse error), but that's not our concern.
+     *
+     * @since 1.2.3
+     *
+     * @var array<int|string, int|string>
+     */
+    private $callbackIndicators = [
+        \T_CONSTANT_ENCAPSED_STRING => \T_CONSTANT_ENCAPSED_STRING,
+        \T_END_HEREDOC              => \T_END_HEREDOC,
+        \T_END_NOWDOC               => \T_END_NOWDOC,
+        \T_CLOSE_PARENTHESIS        => \T_CLOSE_PARENTHESIS,
+        \T_CLOSE_CURLY_BRACKET      => \T_CLOSE_CURLY_BRACKET,
+        \T_CLOSE_SQUARE_BRACKET     => \T_CLOSE_SQUARE_BRACKET,
     ];
 
     /**
@@ -468,7 +488,10 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
 
         $content = '';
 
-        for ($i = $firstNonEmpty; $i <= $lastNonEmpty; $i++) {
+        for ($i = $firstNonEmpty, $lastEffective = null;
+            $i <= $lastNonEmpty;
+            ($lastEffective = isset(Tokens::$emptyTokens[$this->tokens[$i]['code']]) === false ? $i : $lastEffective), $i++
+        ) {
             if (isset(Tokens::$commentTokens[$this->tokens[$i]['code']]) === true) {
                 continue;
             }
@@ -542,6 +565,14 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
                 }
             }
 
+            if (isset($lastEffective) === true
+                && $this->tokens[$i]['code'] === \T_OPEN_PARENTHESIS
+                && isset($this->callbackIndicators[$this->tokens[$lastEffective]['code']]) === true
+            ) {
+                // Bow out for potential function call in callback format.
+                return;
+            }
+
             // Account for heredoc with vars.
             if ($this->tokens[$i]['code'] === \T_START_HEREDOC) {
                 $text = TextStrings::getCompleteTextString($phpcsFile, $i);
@@ -562,8 +593,16 @@ abstract class AbstractArrayDeclarationSniff implements Sniff
             $content .= $this->tokens[$i]['content'];
         }
 
-        // The PHP_EOL is to prevent getting parse errors when the key is a heredoc/nowdoc.
-        $key = eval('return ' . $content . ';' . \PHP_EOL);
+        try {
+            // The PHP_EOL is to prevent getting parse errors when the key is a heredoc/nowdoc.
+            $key = @eval('return ' . $content . ';' . \PHP_EOL);
+        } catch (Throwable $e) { // phpcs:ignore PHPCompatibility.Interfaces.NewInterfaces.throwableFound
+            // The code didn't evaluate cleanly on PHP >= 7.0. Bow out.
+            return;
+        } catch (Exception $e) {
+            // The code didn't evaluate cleanly on PHP < 7.0. Bow out.
+            return;
+        }
 
         /*
          * Ok, so now we know the base value of the key, let's determine whether it is

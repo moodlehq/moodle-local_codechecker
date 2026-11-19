@@ -249,7 +249,6 @@ abstract class Docblocks
             T_ABSTRACT,
             T_READONLY,
             T_CONST,
-            T_PROPERTY,
             T_INCLUDE,
             T_INCLUDE_ONCE,
             T_REQUIRE,

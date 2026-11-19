@@ -10,13 +10,65 @@ This projects adheres to [Keep a CHANGELOG](https://keepachangelog.com/) and use
 _Nothing yet._
 
 
+## [1.2.3] - 2026-07-27
+
+**This is a security release and all users are advised to update their install(s) as soon as possible.**
+
+### Changed
+
+#### Other
+
+* Various housekeeping.
+
+### Fixed
+
+#### Abstract Sniffs
+
+* **SECURITY FIX**: Running a sniff which uses the `AbstractArrayDeclarationSniff::getActualArrayKey()` method over untrusted PHP code, for example, in a CI pipeline that lints pull requests, or on a developer machine reviewing third-party code, could lead to arbitrary command execution on the scanning host. [#774]
+    For more details, see the [security advisory][sec-1].
+    Thanks go to [@rodrigoprimo] for responsibly disclosing the vulnerability.
+* The `AbstractArrayDeclarationSniff::getActualArrayKey()` method now handles exceptions seen when evaluating array keys more gracefully. [#775]
+
+#### Utils
+
+* The `Arrays::getDoubleArrowPtr()` method did not recognize that, while rare, an array key can contain a (nested) array. [#771]
+
+[sec-1]: https://github.com/PHPCSStandards/PHPCSUtils/security/advisories/GHSA-r6hr-vr92-vv28
+
+[#771]: https://github.com/PHPCSStandards/PHPCSUtils/pull/771
+[#774]: https://github.com/PHPCSStandards/PHPCSUtils/pull/774
+[#775]: https://github.com/PHPCSStandards/PHPCSUtils/pull/775
+
+
+## [1.2.2] - 2025-12-08
+
+### Added
+
+#### PHPCS Backcompat
+
+* `BCTokens::castTokens()`: sync with PHPCS 4.0.2 - added the `T_VOID_CAST` token (when available). [#742]
+
+### Changed
+
+#### Utils
+
+* `FunctionDeclarations::getProperties()`: more defensive coding against parse errors/live coding. [#740]
+
+#### Other
+
+* Various housekeeping.
+
+[#740]: https://github.com/PHPCSStandards/PHPCSUtils/pull/740
+[#742]: https://github.com/PHPCSStandards/PHPCSUtils/pull/742
+
+
 ## [1.2.1] - 2025-11-17
 
 ### Fixed
 
 #### Abstract Sniffs
 
-* The `AbstractArrayDeclarationSniff::getActualArrayKey()` method could cause deprecation notices and even fatal errors, when a PHPCS scan would be run on a different PHP version than the "code under scan" is targetting and the "code under scan" contained deprecated/removed type casts. [#733]
+* The `AbstractArrayDeclarationSniff::getActualArrayKey()` method could cause deprecation notices and even fatal errors, when a PHPCS scan would be run on a different PHP version than the "code under scan" is targeting and the "code under scan" contained deprecated/removed type casts. [#733]
 
 [#733]: https://github.com/PHPCSStandards/PHPCSUtils/pull/733
 
@@ -1333,6 +1385,8 @@ This initial alpha release contains the following utility classes:
 
 
 [Unreleased]:   https://github.com/PHPCSStandards/PHPCSUtils/compare/stable...HEAD
+[1.2.3]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.2.2...1.2.3
+[1.2.2]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.2.1...1.2.2
 [1.2.1]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.2.0...1.2.1
 [1.2.0]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.1.3...1.2.0
 [1.1.3]:        https://github.com/PHPCSStandards/PHPCSUtils/compare/1.1.2...1.1.3
@@ -1399,4 +1453,5 @@ This initial alpha release contains the following utility classes:
 [@DanielEScherzer]: https://github.com/DanielEScherzer
 [@fredden]:         https://github.com/fredden
 [@GaryJones]:       https://github.com/GaryJones
+[@rodrigoprimo]:    https://github.com/rodrigoprimo
 [@szepeviktor]:     https://github.com/szepeviktor

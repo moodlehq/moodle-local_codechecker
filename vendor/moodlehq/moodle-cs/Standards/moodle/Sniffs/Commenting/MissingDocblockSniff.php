@@ -189,15 +189,9 @@ class MissingDocblockSniff implements Sniff
 
         foreach ($missingDocblocks as $typePtr => $extendsOrImplements) {
             $token = $tokens[$typePtr];
-            if ($extendsOrImplements) {
-                $attributes = Attributes::getAttributePointers($phpcsFile, $typePtr);
-                foreach ($attributes as $attributePtr) {
-                    $attribute = Attributes::getAttributeProperties($phpcsFile, $attributePtr);
-                    if ($attribute['attribute_name'] === '\Override') {
-                        // Skip methods that are marked as overrides.
-                        continue 2;
-                    }
-                }
+            if ($extendsOrImplements && Attributes::hasAttribute($phpcsFile, $typePtr, 'Override')) {
+                // Skip methods that are marked as overrides.
+                continue;
             }
 
             $objectName = TokenUtil::getObjectName($phpcsFile, $typePtr);

@@ -89,7 +89,11 @@ class ValidFunctionNameSniff extends AbstractScopeSniff
      * @return void
      */
     protected function processTokenWithinScope(File $phpcsfile, $stackptr, $currscope) {
-        $classname  = $phpcsfile->getDeclarationName($currscope);
+        $tokens = $phpcsfile->getTokens();
+
+        $classname = $tokens[$currscope]['code'] === T_ANON_CLASS
+            ? 'anonymous class'
+            : $phpcsfile->getDeclarationName($currscope);
         $methodname = $phpcsfile->getDeclarationName($stackptr);
 
         // Is this a magic method. IE. is prefixed with "__".

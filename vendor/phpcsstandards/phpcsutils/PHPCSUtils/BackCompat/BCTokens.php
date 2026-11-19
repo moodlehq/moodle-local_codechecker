@@ -46,7 +46,6 @@ use PHPCSUtils\Tokens\Collections;
  * @method static array<int|string, int|string> arithmeticTokens()         Tokens that represent arithmetic operators.
  * @method static array<int|string, int|string> booleanOperators()         Tokens that perform boolean operations.
  * @method static array<int|string, int|string> bracketTokens()            Tokens that represent brackets and parenthesis.
- * @method static array<int|string, int|string> castTokens()               Tokens that represent type casting.
  * @method static array<int|string, int|string> commentTokens()            Tokens that are comments.
  * @method static array<int|string, int|string> comparisonTokens()         Tokens that represent comparison operator.
  * @method static array<int|string, int|string> contextSensitiveKeywords() Tokens representing context sensitive keywords
@@ -139,6 +138,31 @@ final class BCTokens
 
         if (\defined('T_OBJECT') && isset($tokens[\T_OBJECT])) {
             unset($tokens[\T_OBJECT]);
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Tokens that represent casting.
+     *
+     * Retrieve the PHPCS cast tokens array in a cross-version compatible manner.
+     *
+     * Changelog for the PHPCS native array:
+     * - PHPCS 4.0.2: The PHP 8.5 T_VOID_CAST token was added.
+     *
+     * @see \PHP_CodeSniffer\Util\Tokens::$castTokens Original array.
+     *
+     * @since 1.2.1
+     *
+     * @return array<int|string, int|string> Token array.
+     */
+    public static function castTokens()
+    {
+        $tokens = Tokens::$castTokens;
+
+        if (\defined('T_VOID_CAST')) {
+            $tokens[\T_VOID_CAST] = \T_VOID_CAST;
         }
 
         return $tokens;
