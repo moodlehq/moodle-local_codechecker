@@ -50,8 +50,10 @@ class local_codechecker_form extends moodleform {
         $mform = $this->_form;
 
         $a = new stdClass();
-        $a->link = html_writer::link('https://moodledev.io/general/development/policies/codingstyle',
-                get_string('moodlecodingguidelines', 'local_codechecker'));
+        $a->link = html_writer::link(
+            'https://moodledev.io/general/development/policies/codingstyle',
+            get_string('moodlecodingguidelines', 'local_codechecker')
+        );
         $a->path = html_writer::tag('tt', 'local/codechecker');
         $a->excludeexample = html_writer::tag('tt', 'db, backup/*1, *lib*');
         $mform->addElement('static', '', '', get_string('info', 'local_codechecker', $a));
@@ -84,15 +86,19 @@ function autoload_tools(): bool {
     $vendordir = '';
     $phpcsdir = '';
     // Verify that we have the vendor directory at hand (it contains all the tools).
-    if (is_dir(__DIR__ . '/vendor') &&
-            file_exists(__DIR__ . '/vendor/autoload.php')) {
+    if (
+        is_dir(__DIR__ . '/vendor') &&
+            file_exists(__DIR__ . '/vendor/autoload.php')
+    ) {
         $vendordir = __DIR__ . '/vendor';
     } else {
         return false;
     }
     // Verify that the vendor dir has phpcs installed.
-    if (is_dir($vendordir . '/squizlabs/php_codesniffer') &&
-            file_exists($vendordir . '/squizlabs/php_codesniffer/autoload.php')) {
+    if (
+        is_dir($vendordir . '/squizlabs/php_codesniffer') &&
+            file_exists($vendordir . '/squizlabs/php_codesniffer/autoload.php')
+    ) {
         $phpcsdir = $vendordir . '/squizlabs/php_codesniffer';
     } else {
         return false;
@@ -129,13 +135,13 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
     // has been split so any plugin with dependencies can have its own. In order to
     // keep main compatibility with older branches we are doing some
     // conditional coding here.
-    if (file_exists($CFG->dirroot . '/' . $CFG->admin . '/' . 'thirdpartylibs.php')) {
+    if (file_exists($CFG->dirroot . '/admin/thirdpartylibs.php')) {
         // New behavior, distributed XML files, let's look for them.
         $plugintypes = core_component::get_plugin_types();
         foreach ($plugintypes as $type => $ignored) {
             $plugins = core_component::get_plugin_list_with_file($type, 'thirdpartylibs.xml', false);
             foreach ($plugins as $plugin => $path) {
-                $files[$type.'_'.$plugin] = $path;
+                $files[$type . '_' . $plugin] = $path;
             }
         }
     }
@@ -171,7 +177,8 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
 
     // Manually add our own phpcs stuff to be excluded.
     $paths[] = preg_quote(local_codechecker_clean_path(
-            '/local/codechecker' . DIRECTORY_SEPARATOR . 'phpcs'));
+        '/local/codechecker' . DIRECTORY_SEPARATOR . 'phpcs'
+    ));
 
     // Changed in PHP_CodeSniffer 1.4.4 and upwards, so we apply the
     // same here: Paths go to keys and mark all them as 'absolute'.
@@ -195,7 +202,8 @@ function local_codesniffer_get_ignores($extraignorelist = '') {
     // Ignore any compiled JS and test fixtures.
     $finalpaths['*/amd/build/*'] = 'absolute';
     $finalpaths['*/yui/build/*'] = 'absolute';
-    if (!defined('BEHAT_SITE_RUNNING')) { // We need testing fixtures at hand for testing purposes, heh.
+    if (!defined('BEHAT_SITE_RUNNING')) {
+        // We need testing fixtures at hand for testing purposes, heh.
         $finalpaths['*/tests/fixtures/*'] = 'absolute';
     }
 
@@ -324,7 +332,7 @@ function local_codechecker_find_other_files(&$arr, $folder, $ignores, $extension
  * @param string $key key within language file ('other_' will be prepended)
  * @param bool $warning if true is warning, otherwise error
  */
-function local_codechecker_add_problem($fileinxml, $file, $line, $key, $warning=false) {
+function local_codechecker_add_problem($fileinxml, $file, $line, $key, $warning = false) {
     $type = $warning ? 'warning' : 'error';
     $counter = $warning ? 'warnings' : 'errors';
 
