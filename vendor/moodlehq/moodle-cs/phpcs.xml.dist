@@ -4,8 +4,8 @@
 
     <!-- We don't want to analyse these -->
     <exclude-pattern>*/vendor/*</exclude-pattern>
-    <exclude-pattern>*/Tests/fixtures/*</exclude-pattern>
-    <exclude-pattern>*/Tests/*/fixtures/*</exclude-pattern>
+    <exclude-pattern>Standards/*/Tests/fixtures/*</exclude-pattern>
+    <exclude-pattern>Standards/*/Tests/*/fixtures/*</exclude-pattern>
 
     <!-- PSR12 with a few exceptions and adjustments -->
     <rule ref="PSR12">

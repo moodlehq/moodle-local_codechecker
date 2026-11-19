@@ -78,6 +78,7 @@ class BoilerplateCommentSniff implements Sniff
 
         $expectedafter = $stackPtr;
 
+        // Find the first comment after the opening tag/annotation.
         $firstcommentptr = $phpcsFile->findNext(T_COMMENT, $expectedafter + 1);
 
         // Check that it appears to be a Moodle boilerplate comment.
@@ -144,10 +145,27 @@ class BoilerplateCommentSniff implements Sniff
             }
         }
 
-        if ($firstcommentptr !== $expectedafter + 1) {
+        // Now check whether the boilerplate is at the expected location.
+        //
+        // The T_OPEN_TAG token includes no trailing whitespace (newline), so we cannot
+        // rely on the comment being at $expectedafter + 1. Instead we verify that the
+        // first comment starts on the next line, with only whitespace in between.
+        $interveningcode = $phpcsFile->findNext(T_WHITESPACE, $expectedafter + 1, $firstcommentptr, true);
+        if ($interveningcode !== false || $tokens[$firstcommentptr]['line'] !== ($tokens[$expectedafter]['line'] + 1)) {
+            // Report the error on the line immediately following the opening tag/annotation.
+            // The whitespace following the T_OPEN_TAG is tokenized separately and may carry
+            // the opening tag's line number, so look for a token on the next line.
+            $errorPtr = $expectedafter + 1;
+            while (
+                $errorPtr !== $interveningcode &&
+                isset($tokens[$errorPtr]) &&
+                $tokens[$errorPtr]['line'] <= $tokens[$expectedafter]['line']
+            ) {
+                $errorPtr++;
+            }
             $fix = $phpcsFile->addFixableError(
                 'Moodle boilerplate not found at first line',
-                $expectedafter + 1,
+                $errorPtr,
                 'NotAtFirstLine'
             );
 
@@ -233,14 +251,26 @@ class BoilerplateCommentSniff implements Sniff
 
     private function insertBoilerplate(File $file, int $stackptr): void
     {
-        $token = $file->getTokens()[$stackptr];
+        $tokens = $file->getTokens();
         $paddedComment = implode("\n", $this->fullComment()) . "\n";
 
-        if ($token['code'] === T_OPEN_TAG) {
-            $replacement = trim($token['content']) . "\n" . $paddedComment;
+        if ($tokens[$stackptr]['code'] === T_OPEN_TAG) {
+            // PHPCS versions differ on whether trailing whitespace belongs to T_OPEN_TAG.
+            // Remove same-line whitespace so the boilerplate starts immediately after it.
+            for ($i = ($stackptr + 1); isset($tokens[$i]); $i++) {
+                if ($tokens[$i]['code'] !== T_WHITESPACE) {
+                    break;
+                }
+                if ($tokens[$i]['line'] !== $tokens[$stackptr]['line']) {
+                    break;
+                }
+                $file->fixer->replaceToken($i, '');
+            }
+
+            $replacement = trim($tokens[$stackptr]['content']) . "\n" . $paddedComment;
             $file->fixer->replaceToken($stackptr, $replacement);
         } else {
-            $prefix = substr($token['content'], -1) === "\n" ? '' : "\n";
+            $prefix = substr($tokens[$stackptr]['content'], -1) === "\n" ? '' : "\n";
             $file->fixer->addContent($stackptr, $prefix . $paddedComment);
         }
     }
@@ -258,6 +288,13 @@ class BoilerplateCommentSniff implements Sniff
             foreach (range($target + 1, $start - 1) as $whitespaceptr) {
                 $file->fixer->replaceToken($whitespaceptr, '');
             }
+            // Add a newline only when it is not already part of T_OPEN_TAG.
+            if (
+                $tokens[$target]['code'] === T_OPEN_TAG &&
+                substr($tokens[$target]['content'], -1) !== "\n"
+            ) {
+                $file->fixer->addContent($target, "\n");
+            }
             $file->fixer->endChangeset();
             return;
         }
@@ -272,7 +309,16 @@ class BoilerplateCommentSniff implements Sniff
             $file->fixer->replaceToken($tokenptr, '');
         }
 
-        $file->fixer->addContent($target, implode("", $existingboilerplate) . "\n");
+        if ($tokens[$target]['code'] === T_OPEN_TAG) {
+            $openTag = $tokens[$target]['content'];
+            $trailingWhitespace = substr($openTag, strlen(rtrim($openTag, " \t")));
+            $file->fixer->replaceToken(
+                $target,
+                trim($openTag) . "\n" . implode('', $existingboilerplate) . "\n" . $trailingWhitespace
+            );
+        } else {
+            $file->fixer->addContent($target, implode('', $existingboilerplate) . "\n");
+        }
 
         $file->fixer->endChangeset();
     }

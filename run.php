@@ -36,11 +36,13 @@ if (!autoload_tools()) {
 }
 
 // Get the command-line options.
-list($options, $unrecognized) = cli_get_params(
+[$options, $unrecognized] = cli_get_params(
     ['help' => false, 'interactive' => false, 'exclude' => ''],
     ['h' => 'help',
     'i' => 'interactive',
-    'e' => 'exclude', ]);
+    'e' => 'exclude',
+    ]
+);
 
 if (count($unrecognized) != 1) {
     $options['help'] = true;

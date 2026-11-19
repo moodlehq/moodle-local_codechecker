@@ -25,6 +25,7 @@
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHPUnit;
 
 use MoodleHQ\MoodleCS\moodle\Util\MoodleUtil;
+use PHPCSUtils\Utils\Namespaces;
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
 
@@ -92,13 +93,20 @@ class TestCaseNamesSniff implements Sniff
         }
 
         // Get the class namespace.
+        //
+        // Note: As of PHPCS 4.0 namespace names are tokenized as a single name token
+        // (e.g. T_NAME_QUALIFIED), so we rely on PHPCSUtils to retrieve the name in a
+        // cross-version compatible way.
         $namespace = '';
         $nsStart = 0;
+        $nsEnd = 0;
         if ($nsStart = $file->findNext(T_NAMESPACE, ($pointer + 1))) {
-            $nsEnd = $file->findNext([T_NS_SEPARATOR, T_STRING, T_WHITESPACE], ($nsStart + 1), null, true);
-            $namespace = strtolower(trim($file->getTokensAsString(($nsStart + 1), ($nsEnd - $nsStart - 1))));
+            $namespace = strtolower(trim((string) Namespaces::getDeclaredName($file, $nsStart)));
+            // Move the pointer to the end of the namespace declaration so that any T_CLASS
+            // tokens which form part of the namespace name are not mistaken for class declarations.
+            $nsEnd = $file->findNext([T_SEMICOLON, T_OPEN_CURLY_BRACKET], ($nsStart + 1));
+            $pointer = $nsEnd !== false ? $nsEnd : $nsStart;
         }
-        $pointer = $nsEnd ?? $pointer; // When possible, move the pointer to after the namespace name.
 
         // Get the name of the 1st class in the file (this Sniff doesn't detects multiple),
         // verify that it extends something and that has a test_ method.

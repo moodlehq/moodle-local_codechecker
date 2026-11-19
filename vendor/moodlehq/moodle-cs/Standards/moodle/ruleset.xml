@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpcodesniffer.com/phpcs.xsd"
     name="moodle"
     namespace="MoodleHQ\MoodleCS\moodle">
 
@@ -23,6 +23,7 @@
         <exclude name="Generic.Files.LineLength.TooLong"/>
 
         <!-- Moodle has a header manager and places its copyright on the first line after the opening tag -->
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterTagBlock"/>
         <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock"/>
 
         <!-- Moodle doesn't mandate (nor support) namespaces everywhere, so remove this for now -->
@@ -41,6 +42,7 @@
         <exclude name="PSR2.ControlStructures.ElseIfDeclaration.NotAllowed"/>
 
         <!-- Moodle casing rules do not allow camel case at all -->
+        <exclude name="Squiz.Classes.ValidClassName.NotPascalCase"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
 
         <!-- Moodle currently places the brace in the same line -->
@@ -196,4 +198,14 @@
     <rule ref="PSR12.Properties.ConstantVisibility.NotFound">
         <severity>0</severity>
     </rule>
+
+    <rule ref="moodle.Deprecations.DeprecatedCFGProperties">
+        <properties>
+            <property name="deprecatedProperties" type="array">
+                <element key="httpswwwroot" value="wwwroot" />
+                <element key="admin" value="" />
+            </property>
+        </properties>
+    </rule>
+
 </ruleset>

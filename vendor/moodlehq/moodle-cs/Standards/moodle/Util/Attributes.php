@@ -68,7 +68,7 @@ abstract class Attributes
     /**
      * Get the properties of an Attribute.
      *
-     * Note: The attribute name is not currently qualified relative to the current namespace or any imported classes.
+     * Note: The attribute_name is the raw text from the source. Use qualified_name for import-aware comparisons.
      *
      * @param File $phpcsFile
      * @param int $stackPtr
@@ -238,14 +238,6 @@ abstract class Attributes
             return false;
         }
 
-        $attributes = self::getAttributePointers($phpcsFile, $stackPtr);
-        foreach ($attributes as $attributePtr) {
-            $attribute = self::getAttributeProperties($phpcsFile, $attributePtr);
-            if ($attribute['attribute_name'] === '\Override') {
-                return true;
-            }
-        }
-
-        return false;
+        return self::hasAttribute($phpcsFile, $stackPtr, 'Override');
     }
 }

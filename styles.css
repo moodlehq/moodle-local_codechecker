@@ -33,9 +33,9 @@
 #page-admin-local-codechecker-index .local_codechecker_results pre {
     margin-top: 1em;
     margin-bottom: 0;
-    color: var(--mds-text-default,var(--bs-body-color, #222));
-    background-color: var(--mds-bg-surface-strong, var(--bs-body-bg,#ddd));
-    border: 1px solid var(--mds-border-default, var(--bs-border-color,#dee2e6));
+    color: var(--mds-text-default, var(--bs-body-color, #222));
+    background-color: var(--mds-bg-surface-strong, var(--bs-body-bg, #ddd));
+    border: 1px solid var(--mds-border-default, var(--bs-border-color, #dee2e6));
     border-radius: var(--mds-border-radius-md, 0.25rem);
     padding: 0.5em;
     word-break: break-all;

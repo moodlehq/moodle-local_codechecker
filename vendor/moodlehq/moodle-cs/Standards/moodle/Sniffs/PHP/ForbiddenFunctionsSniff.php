@@ -18,8 +18,6 @@
 namespace MoodleHQ\MoodleCS\moodle\Sniffs\PHP;
 
 use PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff as GenericForbiddenFunctionsSniff;
-use PHP_CodeSniffer\Sniffs\Sniff;
-use PHP_CodeSniffer\Files\File;
 
 /**
  * Sniff for debugging and other functions that we don't want used in finished code.
@@ -63,5 +61,6 @@ class ForbiddenFunctionsSniff extends GenericForbiddenFunctionsSniff
         'print_object' => null,
         // Dangerous functions. From coding style.
         'extract'      => null,
+        'unserialize'  => null,
     ];
 }

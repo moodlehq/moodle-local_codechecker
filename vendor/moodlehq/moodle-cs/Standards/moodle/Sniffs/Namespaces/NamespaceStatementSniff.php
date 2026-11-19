@@ -26,7 +26,6 @@ namespace MoodleHQ\MoodleCS\moodle\Sniffs\Namespaces;
 
 use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Util\Tokens;
 
 class NamespaceStatementSniff implements Sniff
 {
@@ -40,19 +39,25 @@ class NamespaceStatementSniff implements Sniff
     public function process(File $file, $stackPtr)
     {
         $tokens = $file->getTokens();
-        // Format should be:
-        // - T_NAMESPACE
-        // - T_WHITESPACE
-        // - T_STRING
 
         $checkPtr = $stackPtr + 2;
         $token = $tokens[$checkPtr];
-        if ($token['code'] === T_NS_SEPARATOR) {
+
+        if ($token['code'] === T_NAME_FULLY_QUALIFIED) {
+            $fqdn = $token['content'];
+        } elseif ($token['code'] === T_NS_SEPARATOR) {
             $fqdn = '';
-            $stop = $file->findNext(Tokens::$emptyTokens, ($stackPtr + 2));
-            for ($i = $stackPtr + 2; $i < $stop; $i++) {
-                $fqdn .= $tokens[$i]['content'];
+            for ($ptr = $checkPtr; isset($tokens[$ptr]); $ptr++) {
+                if ($tokens[$ptr]['code'] !== T_NS_SEPARATOR && $tokens[$ptr]['code'] !== T_STRING) {
+                    break;
+                }
+                $fqdn .= $tokens[$ptr]['content'];
             }
+        } else {
+            return;
+        }
+
+        if ($fqdn !== '' && $fqdn[0] === '\\') {
             $fix = $file->addFixableError(
                 'Namespace should not start with a slash: %s',
                 $checkPtr,
@@ -61,9 +66,11 @@ class NamespaceStatementSniff implements Sniff
             );
 
             if ($fix) {
-                $file->fixer->beginChangeset();
-                $file->fixer->replaceToken($checkPtr, '');
-                $file->fixer->endChangeset();
+                if ($token['code'] === T_NAME_FULLY_QUALIFIED) {
+                    $file->fixer->replaceToken($checkPtr, ltrim($fqdn, '\\'));
+                } else {
+                    $file->fixer->replaceToken($checkPtr, '');
+                }
             }
         }
     }

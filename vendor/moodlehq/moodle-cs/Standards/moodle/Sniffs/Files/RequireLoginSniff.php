@@ -127,13 +127,13 @@ class RequireLoginSniff implements Sniff
         $tokens = $file->getTokens();
 
         for ($i = $pointer; $i > 0; $i--) {
-            $i = $file->findPrevious(T_STRING, $i);
+            $i = $file->findPrevious([T_STRING, T_NAME_FULLY_QUALIFIED], $i);
             if ($i === false) {
                 // We've got to the start. A login function must be necessary.
                 return false;
             }
 
-            if (strtolower($tokens[$i]['content']) !== 'define') {
+            if (strtolower(ltrim($tokens[$i]['content'], '\\')) !== 'define') {
                 // Not a define statement, let move onto the next string.
                 continue;
             }
@@ -160,7 +160,7 @@ class RequireLoginSniff implements Sniff
     protected function isLginFunction(File $file, $pointer) {
         $tokens = $file->getTokens();
 
-        if (in_array($tokens[$pointer]['content'], $this->loginfunctions)) {
+        if (in_array(ltrim($tokens[$pointer]['content'], '\\'), $this->loginfunctions)) {
             return true;
         }
 
@@ -176,7 +176,7 @@ class RequireLoginSniff implements Sniff
      */
     protected function isLoginFunctionPresent(File $file, $pointer) {
         for ($i = $pointer; $i < $file->numTokens; $i++) {
-            $i = $file->findNext(T_STRING, $i);
+            $i = $file->findNext([T_STRING, T_NAME_FULLY_QUALIFIED], $i);
             if ($i === false) {
                 return false;
             }

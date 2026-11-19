@@ -35,7 +35,6 @@ namespace local_codechecker;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class runner extends \PHP_CodeSniffer\Runner {
-
     /**
      * Create an instance of the runner.
      */
@@ -144,7 +143,7 @@ class runner extends \PHP_CodeSniffer\Runner {
                     echo $e->getMessage();
                     return $e->getCode();
                 } catch (\Exception $e) {
-                    $error = 'Problem during processing; checking has been aborted. The error message was: '.$e->getMessage();
+                    $error = 'Problem during processing; checking has been aborted. The error message was: ' . $e->getMessage();
                     $file->addErrorOnLine($error, 1, 'Internal.Exception');
                 }
                 $file->cleanUp();
