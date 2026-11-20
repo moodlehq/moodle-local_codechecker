@@ -48,7 +48,7 @@ class ParentSetUpTearDownSniff implements Sniff
     /**
      * Register for open tag (only process once per file).
      */
-    public function register(): array {
+    public function register() {
         return [T_OPEN_TAG];
     }
 
@@ -58,7 +58,7 @@ class ParentSetUpTearDownSniff implements Sniff
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position in the stack.
      */
-    public function process(File $phpcsFile, $stackPtr): void {
+    public function process(File $phpcsFile, $stackPtr) {
 
         // Before starting any check, let's look for various things.
 
@@ -210,7 +210,7 @@ class ParentSetUpTearDownSniff implements Sniff
      * @param int $mStart The position of the method.
      * @return int The position where the parent::setUp method should be inserted.
      */
-    private function findSetUpInsertionPoint(File $phpcsFile, int $mStart): int {
+    private function findSetUpInsertionPoint(File $phpcsFile, int $mStart) {
         // By default, we are going to insert it at the beginning.
         $insertionPoint = $phpcsFile->getTokens()[$mStart]['scope_opener'];
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7df93a530dccf1651cff344ec068cace",
+    "content-hash": "51cd67d78d54b2fca8b5c28e5d28e2ed",
     "packages": [
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -105,22 +105,22 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.9.1",
+            "version": "v3.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "1af198a091a03f21f1520c466ad75bf8325afc28"
+                "reference": "09b467fed4c6c834fa5c68909837012f0580ea1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/1af198a091a03f21f1520c466ad75bf8325afc28",
-                "reference": "1af198a091a03f21f1520c466ad75bf8325afc28",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/09b467fed4c6c834fa5c68909837012f0580ea1c",
+                "reference": "09b467fed4c6c834fa5c68909837012f0580ea1c",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.2.1",
                 "ext-json": "*",
-                "php": ">=8.0",
+                "php": ">=7.4",
                 "phpcsstandards/phpcsextra": "^1.5.0",
                 "squizlabs/php_codesniffer": "^3.13.6 || ^4.0.4"
             },
@@ -169,8 +169,8 @@
                 "source": "https://github.com/moodlehq/moodle-cs",
                 "wiki": "https://github.com/moodlehq/moodle-cs/wiki"
             },
-            "time": "2026-11-19T15:24:07+00:00",
-            "published-time": "2026-11-19T15:28:52+00:00"
+            "time": "2026-11-20T01:16:14+00:00",
+            "published-time": "2026-11-20T01:16:32+00:00"
         },
         {
             "name": "phpcsstandards/phpcsextra",
@@ -437,11 +437,11 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.1"
+        "php": ">=7.4"
     },
     "platform-dev": {},
     "platform-overrides": {
-        "php": "8.1.0"
+        "php": "7.4.0"
     },
     "plugin-api-version": "2.11.0"
 }

@@ -52,11 +52,11 @@ class LangFilesOrderingSniff implements Sniff
      */
     protected array $strings = [];
 
-    public function register(): array {
+    public function register() {
         return [T_OPEN_TAG]; // We are going to process the whole file, finding all the strings and comments within it.
     }
 
-    public function process(File $phpcsFile, $stackPtr): void {
+    public function process(File $phpcsFile, $stackPtr) {
         // If the file is not a lang file, return.
         if (!MoodleUtil::isLangFile($phpcsFile)) {
             return;
@@ -216,7 +216,7 @@ class LangFilesOrderingSniff implements Sniff
      *
      * @param File $phpcsFile The lang file being processed.
      */
-    protected function sortStringsAndFix(File $phpcsFile): void {
+    protected function sortStringsAndFix(File $phpcsFile) {
         // Because of hard restrictions in CodeSniffer fixer (we cannot apply more than one change
         // to the same token in the same pass), we need to accumulate all the changes and apply them
         // at the end of the process. So we are going to build a big changeset to be applied all together.
@@ -289,7 +289,7 @@ class LangFilesOrderingSniff implements Sniff
      * @param int $stackPtr
      * @return string|null
      */
-    protected function getStringKey(File $phpcsFile, int $stackPtr): ?string {
+    protected function getStringKey(File $phpcsFile, int $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 
         // If the structure is not exactly: $string[KEY], add error and return null.
@@ -317,7 +317,7 @@ class LangFilesOrderingSniff implements Sniff
      * @param int $stackPtr
      * @return int|null The pointer to the end of the string, or null if it's not an expected string end.
      */
-    protected function getStringEnd(File $phpcsFile, int $stackPtr): ?int {
+    protected function getStringEnd(File $phpcsFile, int $stackPtr) {
         $tokens = $phpcsFile->getTokens();
         $currentEndToken = $phpcsFile->findNext(T_SEMICOLON, $stackPtr + 1) + 1;
 

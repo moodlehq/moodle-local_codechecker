@@ -64,7 +64,7 @@ class MissingDocblockSniff implements Sniff
         $this->processConstants($phpcsFile, $stackPtr);
     }
 
-    protected function processScopes(File $phpcsFile, int $stackPtr): void {
+    protected function processScopes(File $phpcsFile, int $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 
         // Each class, interface, trait, and enum must have a docblock.
@@ -131,7 +131,7 @@ class MissingDocblockSniff implements Sniff
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position in the stack.
      */
-    protected function processFunctions(File $phpcsFile, int $stackPtr): void {
+    protected function processFunctions(File $phpcsFile, int $stackPtr) {
         // Missing docblocks for unit tests are treated as warnings.
         $isUnitTestFile = MoodleUtil::isUnitTest($phpcsFile);
 
@@ -218,7 +218,7 @@ class MissingDocblockSniff implements Sniff
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position in the stack.
      */
-    protected function processConstants(File $phpcsFile, int $stackPtr): void {
+    protected function processConstants(File $phpcsFile, int $stackPtr) {
         $tokens = $phpcsFile->getTokens();
 
         $typePtr = $stackPtr + 1;

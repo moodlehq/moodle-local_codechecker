@@ -51,12 +51,12 @@ class BoilerplateCommentSniff implements Sniff
 
     public string $firstLinePostfix = ' - https://moodle.org/';
 
-    public function register(): array
+    public function register()
     {
         return [T_OPEN_TAG];
     }
 
-    public function process(File $phpcsFile, $stackPtr): void
+    public function process(File $phpcsFile, $stackPtr)
     {
         // We only want to do this once per file.
         $prevopentag = $phpcsFile->findPrevious(T_OPEN_TAG, $stackPtr - 1);
@@ -236,7 +236,7 @@ class BoilerplateCommentSniff implements Sniff
         }
     }
 
-    private function fullComment(): array
+    private function fullComment()
     {
         $result = [];
         foreach (self::$comment as $lineindex => $line) {
@@ -249,7 +249,7 @@ class BoilerplateCommentSniff implements Sniff
         return $result;
     }
 
-    private function insertBoilerplate(File $file, int $stackptr): void
+    private function insertBoilerplate(File $file, int $stackptr)
     {
         $tokens = $file->getTokens();
         $paddedComment = implode("\n", $this->fullComment()) . "\n";
@@ -275,7 +275,7 @@ class BoilerplateCommentSniff implements Sniff
         }
     }
 
-    private function moveBoilerplate(File $file, int $start, int $target): void
+    private function moveBoilerplate(File $file, int $start, int $target)
     {
         $tokens = $file->getTokens();
 
@@ -323,7 +323,7 @@ class BoilerplateCommentSniff implements Sniff
         $file->fixer->endChangeset();
     }
 
-    private function completeBoilerplate(File $file, $stackptr, int $lineindex): void
+    private function completeBoilerplate(File $file, $stackptr, int $lineindex)
     {
         $file->fixer->addContent($stackptr, implode("\n", array_slice($this->fullComment(), $lineindex)) . "\n");
     }
@@ -332,7 +332,7 @@ class BoilerplateCommentSniff implements Sniff
      * @param string $line
      * @return string
      */
-    private function regexForLine(string $line): string
+    private function regexForLine(string $line)
     {
         // We need to match the blank lines in their entirety.
         if ($line === '//') {

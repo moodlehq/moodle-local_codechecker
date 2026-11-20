@@ -15,7 +15,7 @@ This repository is the Moodle Coding Style, implemented as PHP_CodeSniffer (PHPC
 - Never guess sniff names, error codes, or properties. Verify them in the sniff class (`$this->...` public properties, `addError/addWarning/addFixableError` codes) or in `vendor/squizlabs/php_codesniffer` / `vendor/phpcsstandards/*`. Use `vendor/bin/phpcs --standard=moodle -e` to list sniffs.
 - Always use fully-qualified references in rulesets: `Standard.Category.Sniff[.Code]` (e.g. `moodle.Files.BoilerplateComment`). Do not pull in whole categories blindly.
 - Don't re-declare rules already inherited from an included standard unless changing severity/properties. Use `<exclude>` only to remove a specific sub-rule.
-- Support PHP >= 8.0 (CI covers multiple versions and Windows). Avoid syntax or functions newer than that; keep line endings LF and paths OS-agnostic.
+- Support PHP >= 7.4 (CI covers multiple versions and Windows). Avoid syntax or functions newer than that; keep line endings LF and paths OS-agnostic.
 - Match the existing code style; the repo lints itself with `vendor/bin/phpcs -ps .`.
 - Keep changes surgical; don't refactor unrelated sniffs.
 

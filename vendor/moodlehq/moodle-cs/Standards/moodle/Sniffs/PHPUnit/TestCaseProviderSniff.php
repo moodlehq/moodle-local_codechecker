@@ -50,7 +50,7 @@ class TestCaseProviderSniff extends AbstractTestCaseSniff
     /**
      * Register for open tag (only process once per file).
      */
-    public function register(): array
+    public function register()
     {
         return [
             T_OPEN_TAG,
@@ -63,7 +63,7 @@ class TestCaseProviderSniff extends AbstractTestCaseSniff
      * @param File $file The file being scanned.
      * @param int $pointer The position in the stack.
      */
-    public function process(File $file, $pointer): void
+    public function process(File $file, $pointer)
     {
         if (!$this->shouldCheckFile($file)) {
             // Nothing to check.
@@ -478,7 +478,7 @@ class TestCaseProviderSniff extends AbstractTestCaseSniff
         File $phpcsFile,
         int $classPtr,
         string $methodName
-    ): array {
+    ) {
         $data = [];
 
         $mStart = $classPtr;

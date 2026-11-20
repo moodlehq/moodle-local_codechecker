@@ -97,7 +97,7 @@ class PackageSniff implements Sniff
         File $phpcsFile,
         int $stackPtr,
         int $docPtr
-    ): bool {
+    ) {
         $expectedPackage = MoodleUtil::getMoodleComponent($phpcsFile, true);
 
         // Nothing to do if we have been unable to determine the package
