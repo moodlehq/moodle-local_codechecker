@@ -1,3 +1,7 @@
+Changes in version 5.2.1 (20261120) - A smoother route to release
+--------------------------------------------------------
+- Introduce plugin release workflow with Moodle Marketplace.
+
 Changes in version 5.2.0 (20261120) - A bump in the code
 --------------------------------------------------------
 - Updated styling for Moodle 5.3 and up.
