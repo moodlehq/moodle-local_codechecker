@@ -7,7 +7,12 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ## [Unreleased]
 ### Changed
-- Switch changelog format
+- Switch changelog format.
+- Automate GitHub release creation from the changelog before submitting to Moodle Marketplace.
+
+### Fixed
+- Submit only the tagged release notes to Moodle Marketplace to avoid its 10,000-character limit.
+- Correct the plugin release version to match the release tag.
 
 ## [v5.2.1] - 2026-11-20 - A smoother route to release
 ### Added

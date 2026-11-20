@@ -1,4 +1,4 @@
-name: Release Plugin version to Moodle Marketplace
+name: Release Plugin version
 
 on:
   push:
@@ -10,10 +10,66 @@ on:
         description: 'Tag to be released (e.g. v1.4.0)'
         required: true
 
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
+  release:
+    # Avoid forks to perform this job.
+    if: github.repository_owner == 'moodlehq'
+    name: Create Release
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ inputs.tag || github.ref_name }}
+      release-notes: ${{ steps.extract-release-notes.outputs.release_notes }}
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - name: Extract release notes from changelog
+        id: extract-release-notes
+        uses: yashanand1910/standard-release-notes@v1.5.0
+        with:
+          changelog_path: ./CHANGELOG.md
+          version: ${{ inputs.tag || github.ref_name }}
+
+      - name: Validate release notes for Marketplace
+        env:
+          RELEASE_NOTES: ${{ steps.extract-release-notes.outputs.release_notes }}
+        run: |
+          python3 - <<'PY'
+          import os
+
+          notes = os.environ["RELEASE_NOTES"]
+          if not notes.strip() or len(notes) > 10000:
+              raise SystemExit("Release notes must contain between 1 and 10000 characters.")
+          PY
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ inputs.tag || github.ref_name }}
+          allowUpdates: true
+          body: |
+            ${{ steps.extract-release-notes.outputs.release_notes }}
+
+            Take a look at the [CHANGELOG](https://github.com/${{ github.repository }}/blob/${{ inputs.tag || github.ref_name }}/CHANGELOG.md) for details about other releases.
+
   release-to-marketplace:
+    if: github.repository_owner == 'moodlehq'
+    needs: release
     uses: moodlehq/moodle-plugin-release/.github/workflows/moodle-release.yml@main
     with:
-      tag: ${{ inputs.tag }}
+      tag: ${{ needs.release.outputs.tag }}
+      release_notes: ${{ needs.release.outputs.release-notes }}
     secrets:
       MOODLE_MARKETPLACE_TOKEN: ${{ secrets.MOODLE_MARKETPLACE_TOKEN }}
