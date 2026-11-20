@@ -1,3 +1,10 @@
+Changes in version 5.2.0 (20261120) - A bump in the code
+--------------------------------------------------------
+- Updated styling for Moodle 5.3 and up.
+- Updated CI to test current supported Moodle branches and PHP versions.
+- Bundled dependencies updated:
+  - Moodle CS v3.9.1.
+
 Changes in version 5.1.0 (20251202) - No longer compatible
 -------------------------------------------------------
 - Bundled dependencies updated:
