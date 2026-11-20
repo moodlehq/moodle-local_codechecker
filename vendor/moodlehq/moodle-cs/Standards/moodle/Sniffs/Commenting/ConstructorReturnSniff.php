@@ -64,7 +64,7 @@ class ConstructorReturnSniff implements Sniff
      * @param File $phpcsFile The file being scanned.
      * @param int $stackPtr The position in the stack.
      */
-    protected function processClassMethod(File $phpcsFile, int $stackPtr): void {
+    protected function processClassMethod(File $phpcsFile, int $stackPtr) {
         $objectName = TokenUtil::getObjectName($phpcsFile, $stackPtr);
         if ($objectName !== '__constructor') {
             // We only care about constructors.

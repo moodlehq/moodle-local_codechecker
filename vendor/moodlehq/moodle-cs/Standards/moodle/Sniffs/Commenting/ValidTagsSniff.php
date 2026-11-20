@@ -108,7 +108,7 @@ class ValidTagsSniff implements Sniff
      * @param int $ptr
      * @return int[]
      */
-    protected function getTokensOnTokenLine(File $phpcsFile, int $ptr): array {
+    protected function getTokensOnTokenLine(File $phpcsFile, int $ptr) {
         $tokens = $phpcsFile->getTokens();
         $line = $tokens[$ptr]['line'];
         $lineTokens = [];

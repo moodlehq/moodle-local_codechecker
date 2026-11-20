@@ -49,29 +49,66 @@ jobs:
           - php: 8.4
             moodle-branch: MOODLE_501_STABLE
             database: pgsql
+
+          - php: 8.3
+            moodle-branch: MOODLE_500_STABLE
+            database: pgsql
           - php: 8.3
             moodle-branch: MOODLE_405_STABLE
+            database: pgsql
+          - php: 8.3
+            moodle-branch: MOODLE_404_STABLE
+            database: pgsql
+
+          - php: 8.2
+            moodle-branch: MOODLE_403_STABLE
+            database: pgsql
+          - php: 8.2
+            moodle-branch: MOODLE_402_STABLE
+            database: pgsql
+
+          - php: 8.1
+            moodle-branch: MOODLE_401_STABLE
             database: pgsql
 
           # Lowest php versions supported by each branch (with main always being tested twice).
           - php: 8.4
             moodle-branch: main
             database: pgsql
+          - php: 8.4
+            moodle-branch: main
+
+            database: mariadb
           - php: 8.3
             moodle-branch: MOODLE_503_STABLE
             database: pgsql
           - php: 8.3
             moodle-branch: MOODLE_502_STABLE
             database: pgsql
+
           - php: 8.2
             moodle-branch: MOODLE_501_STABLE
             database: pgsql
-          - php: 8.4
-            moodle-branch: main
-            database: mariadb
+          - php: 8.2
+            moodle-branch: MOODLE_500_STABLE
+            database: pgsql
 
           - php: 8.1
             moodle-branch: MOODLE_405_STABLE
+            database: pgsql
+          - php: 8.1
+            moodle-branch: MOODLE_404_STABLE
+            database: pgsql
+
+          - php: 8.0
+            moodle-branch: MOODLE_403_STABLE
+            database: pgsql
+          - php: 8.0
+            moodle-branch: MOODLE_402_STABLE
+            database: pgsql
+
+          - php: 7.4
+            moodle-branch: MOODLE_401_STABLE
             database: pgsql
     steps:
       - name: Check out repository code

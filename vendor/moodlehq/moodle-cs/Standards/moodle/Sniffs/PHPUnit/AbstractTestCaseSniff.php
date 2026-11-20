@@ -60,7 +60,7 @@ abstract class AbstractTestCaseSniff implements Sniff
      * @param \PHP_CodeSniffer\Files\File $file
      * @return bool
      */
-    protected function shouldCheckTestCaseAttributes(File $file): bool {
+    protected function shouldCheckTestCaseAttributes(File $file) {
         return MoodleUtil::meetsMinimumMoodleVersion($file, 500) !== false;
     }
 

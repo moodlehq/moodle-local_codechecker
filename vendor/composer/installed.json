@@ -102,23 +102,23 @@
         },
         {
             "name": "moodlehq/moodle-cs",
-            "version": "v3.9.1",
-            "version_normalized": "3.9.1.0",
+            "version": "v3.9.2",
+            "version_normalized": "3.9.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/moodlehq/moodle-cs.git",
-                "reference": "1af198a091a03f21f1520c466ad75bf8325afc28"
+                "reference": "09b467fed4c6c834fa5c68909837012f0580ea1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/1af198a091a03f21f1520c466ad75bf8325afc28",
-                "reference": "1af198a091a03f21f1520c466ad75bf8325afc28",
+                "url": "https://api.github.com/repos/moodlehq/moodle-cs/zipball/09b467fed4c6c834fa5c68909837012f0580ea1c",
+                "reference": "09b467fed4c6c834fa5c68909837012f0580ea1c",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^1.2.1",
                 "ext-json": "*",
-                "php": ">=8.0",
+                "php": ">=7.4",
                 "phpcsstandards/phpcsextra": "^1.5.0",
                 "squizlabs/php_codesniffer": "^3.13.6 || ^4.0.4"
             },
@@ -133,8 +133,8 @@
                 "phpunit/phpunit": "^9.6",
                 "thor-juhasz/phpunit-coverage-check": "^0.3.0"
             },
-            "time": "2026-11-19T15:24:07+00:00",
-            "published-time": "2026-11-19T15:28:52+00:00",
+            "time": "2026-11-20T01:16:14+00:00",
+            "published-time": "2026-11-20T01:16:32+00:00",
             "type": "phpcodesniffer-standard",
             "installation-source": "dist",
             "autoload": {

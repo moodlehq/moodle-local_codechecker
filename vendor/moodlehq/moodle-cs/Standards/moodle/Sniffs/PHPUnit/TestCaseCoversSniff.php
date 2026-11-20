@@ -376,7 +376,7 @@ class TestCaseCoversSniff extends AbstractTestCaseSniff
         File $file,
         int $pointer,
         array $validAttributes
-    ): bool {
+    ) {
         // Find all the attributes for this class.
         $attributes = Attributes::getAttributePointers($file, $pointer);
         foreach ($attributes as $attributePtr) {
