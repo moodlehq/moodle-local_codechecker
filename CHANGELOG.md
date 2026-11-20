@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
 ## [Unreleased]
+
+## [v5.2.2] - 2026-11-20 - A release in order
 ### Changed
 - Switch changelog format.
 - Automate GitHub release creation from the changelog before submitting to Moodle Marketplace.
